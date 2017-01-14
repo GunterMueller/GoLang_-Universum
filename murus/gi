@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+# gi
+#
+# (c) murus.org  v. 140331
+
+function install {
+  local -i n=$(ls -l *.go | wc -l)
+  if [ $n -eq 0 ]; then d=$PWD; echo there are no go-files in $PWD; echo; exit 1; fi
+  local -i m=$(grep -l ^package.main *.go | wc -l)
+  local -i f=$(grep -l func.main *.go | wc -l)
+  case $m in 0)
+    go install -v ;;
+  1)
+    case $n in 1)
+      go install -v ;;
+    *)
+      echo one main-package and some non-main-go-files; exit 1;;
+    esac ;;
+  *)
+    case $f in 0)
+      echo there is no func main in $d; exit 1;;
+    $m)
+      for p in $(ls *.go); do
+        go build $p
+        b=${p%.go}; echo $b
+        strip $b; mv $b $GOBIN
+      done ;;
+    1)
+      go install -v ;;
+    *)
+      echo $m main-packages among $n go-files with $f main-functions; exit 1;;
+    esac
+  esac
+}
+
+if [ $# = 0 ]; then
+  install
+  $GO/bin/murus
+  exit
+fi
+
+for p in $*; do
+  cd $GOSRC/$*
+  install
+  shift
+done
+$GO/bin/murus

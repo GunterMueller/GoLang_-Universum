@@ -1,0 +1,42 @@
+package sem
+
+// (c) murus.org  v. 140803 - license see murus.go
+
+// >>> corrected naive solution
+//     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 71
+
+import
+  "sync"
+type
+  correct struct {
+                 int "value"
+          binsem,
+           mutex sync.Mutex
+                 }
+
+func NewCorrect (n uint) Semaphore {
+  x:= new (correct)
+  x.int = int(n)
+  x.binsem.Lock()
+  return x
+}
+
+func (x *correct) P() {
+  x.mutex.Lock()
+  x.int--
+  if x.int < 0 {
+    x.mutex.Unlock()
+    x.binsem.Lock()
+  }
+  x.mutex.Unlock()
+}
+
+func (x *correct) V() {
+  x.mutex.Lock()
+  x.int++
+  if x.int <= 0 {
+    x.binsem.Unlock()
+  } else {
+    x.mutex.Unlock()
+  }
+}

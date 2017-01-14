@@ -1,0 +1,17 @@
+package kernel
+
+// (c) murus.org  v. 110405 - license see murus.go
+
+// #cgo LDFLAGS: -lc
+// #include <stdlib.h>
+import
+  "C"
+import (
+  "unsafe"
+)
+
+
+func installTerm (f func()) {
+//
+  C.atexit ((*[0]byte)(unsafe.Pointer(&f)))
+}

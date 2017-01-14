@@ -1,0 +1,24 @@
+package pbox
+
+// (c) murus.org  v. 161216 - license see murus.go
+
+import
+  "murus/font"
+type
+  Printbox interface {
+
+// TODO Spec
+  SetFont (f font.Font)
+
+// TODO Spec
+  Font() font.Font
+
+// TODO Spec
+
+  Print (s string, l, c uint)
+
+// TODO Spec
+  PageReady()
+}
+// Returns a new print box with font Roman.
+func New() Printbox { return newPbox() }
