@@ -5,15 +5,12 @@ package clk
 import
   . "murus/obj"
 const ( // Format
-  Hh_mm = iota // e.g. "07.32"
-  Hh_mm_ss     // e.g. "13.45:27"
-  Mm_ss        // e.g. "04:19"
+  Hh_mm = iota // e.g. "13.27"
+  Hh_mm_ss     // e.g. "13.27:46"
+  Mm_ss        // e.g. "27:46"
   NFormats
   NSecondsPerDay = sd
 )
-
-func New() Clocktime { return newClk() }
-
 type
   Clocktime interface { // given by a triple of uints h.m:s with h < 24 and m, s < 60.
 
@@ -53,3 +50,6 @@ type
 // such that y.NSeconds() == s. Otherwise x is empty.
   SetSeconds(s uint) bool
 }
+
+// Returns a new empty (i.e. with undefined data) clocktime.
+func New() Clocktime { return new_() }

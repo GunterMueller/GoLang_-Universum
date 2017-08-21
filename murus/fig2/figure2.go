@@ -1,11 +1,19 @@
 package fig2
 
-// (c) murus.org  v. 150425 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/str"; "murus/kbd"; "murus/font"
-  "murus/col"; "murus/scr"; "murus/box"; "murus/errh"; "murus/sel"
-  "murus/img"; "murus/psp"
+  . "murus/obj"
+  "murus/str"
+  "murus/kbd"
+  "murus/font"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/errh"
+  "murus/sel"
+  "murus/img"
+  "murus/psp"
 )
 const (
   lenText = 40 // maximal len of text
@@ -13,7 +21,7 @@ const (
 )
 type (
   figure2 struct {
-                 Kind
+                 Type
           colour col.Colour
             x, y []int
           marked,
@@ -30,20 +38,25 @@ var (
            "Rechteck  ", "Kreis     ", "Ellipse   ", "Text      ", "Bild      " }
 )
 
-func (f *figure2) imp (Y Any) *figure2 {
-  y, ok:= Y.(*figure2)
-  if ! ok { TypeNotEqPanic (f, Y) }
-  return y
+func init() {
+  bx.Transparence (true)
+  bx.Wd (lenText)
 }
 
-func New() Figure2 {
+func new_() Figure2 {
   xx, yy = int(scr.Wd()), int(scr.Ht())
-  f:= new (figure2)
+  f := new (figure2)
   f.Clr()
-//  f.Kind = Points
-  f.Kind = Segments
-  f.colour, _ = col.StartCols()
+//  f.Type = Points
+  f.Type = Segments
+  f.colour, _ = scr.StartCols()
   return f
+}
+
+func (f *figure2) imp (Y Any) *figure2 {
+  y, ok := Y.(*figure2)
+  if ! ok { TypeNotEqPanic (f, Y) }
+  return y
 }
 
 func (f *figure2) Empty() bool {
@@ -56,36 +69,36 @@ func (f *figure2) Clr() {
   f.string = ""
 }
 
-func (f *figure2) SetKind (k Kind) {
+func (f *figure2) SetType (k Type) {
   f.Clr()
-  f.Kind = k
+  f.Type = k
 }
 
 func (f *figure2) Select() {
   f.Clr()
-  Acolour:= f.colour
-  Hcolour:= Acolour
+  Acolour := f.colour
+  Hcolour := Acolour
   col.Contrast (&Hcolour)
   scr.SetFontsize (font.Normal)
-  n:= uint(Rectangle)
-  Z, S:= scr.MousePos()
-  sel.Select1 (name, NKinds, BB, &n, Z, S, Acolour, Hcolour)
-  if n < NKinds {
-    f.Kind = Kind(n)
+  n := uint(Rectangle)
+  Z, S := scr.MousePos()
+  sel.Select1 (name, NTypes, BB, &n, Z, S, Acolour, Hcolour)
+  if n < NTypes {
+    f.Type = Type(n)
   }
 }
 
 func (f *figure2) Eq (Y Any) bool {
-  f1:= f.imp (Y)
-  n, n1:= uint(len (f.x)), uint(len (f1.x))
-  if f.Kind != f1.Kind || n != n1 || f.filled != f1.filled {
+  f1 := f.imp (Y)
+  n, n1 := uint(len (f.x)), uint(len (f1.x))
+  if f.Type != f1.Type || n != n1 || f.filled != f1.filled {
     return false
   }
   if n == 0 { return true } // ?
   if f.x[0] != f1.x[0] || f.y[0] != f1.y[0] {
     return false
   }
-  switch f.Kind {
+  switch f.Type {
   case Text:
     if f.string != f1.string {
       return false
@@ -98,7 +111,7 @@ func (f *figure2) Eq (Y Any) bool {
       return false
     }
   default:
-    for i:= uint(1); i < n; i++ {
+    for i := uint(1); i < n; i++ {
       if f.x[i] != f1.x[i] || f.y[i] != f1.y[i] {
         return false
       }
@@ -112,26 +125,26 @@ func (x *figure2) Less (Y Any) bool {
 }
 
 func (f *figure2) Copy (Y Any) {
-  f1:= f.imp (Y)
-  f.Kind = f1.Kind
+  f1 := f.imp (Y)
+  f.Type = f1.Type
   f.colour = f1.colour
-  n1:= uint(len (f1.x))
+  n1 := uint(len (f1.x))
   f.x, f.y = make ([]int, n1), make ([]int, n1)
-  for i:= uint(0); i < n1; i++ {
+  for i := uint(0); i < n1; i++ {
     f.x[i] = f1.x[i]
     f.y[i] = f1.y[i]
   }
   f.filled = f1.filled
   f.string = f1.string
-  if f.Kind == Image {
+  if f.Type == Image {
     // Kopieren des Image fehlt
   }
 }
 
-func (f *figure2) Clone() Any {
-  f1:= New()
-  f1.Copy (f)
-  return f1
+func (x *figure2) Clone() Any {
+  y := new_()
+  y.Copy (x)
+  return y
 }
 
 func (f *figure2) Pos() (int, int) {
@@ -140,7 +153,7 @@ func (f *figure2) Pos() (int, int) {
 
 func (f *figure2) On (a, b int, t uint) bool {
   if ! f.Empty() {
-    switch f.Kind {
+    switch f.Type {
     case Points, Segments:
       return scr.OnSegments (f.x, f.y, a, b, t)
     case Polygon:
@@ -166,8 +179,8 @@ func (f *figure2) On (a, b int, t uint) bool {
 }
 
 func (f *figure2) convex() bool {
-  n:= uint(len (f.x))
-  switch f.Kind {
+  n := uint(len (f.x))
+  switch f.Type {
   case Rectangle, Circle, Ellipse, Image:
     return true
   case Polygon:
@@ -182,21 +195,21 @@ func (f *figure2) convex() bool {
  // polygon with 3 or more nodes
 /*
  // TODO
-  dxi:= f.x[0] - f.x[n - 1]
-  dxk:= f.x[1] - f.x[0]
-  dyi:= f.y[0] - f.y[n - 1]
-  dyk:= f.y[1] - f.y[0]
-  z:= uint(0)
+  dxi := f.x[0] - f.x[n - 1]
+  dxk := f.x[1] - f.x[0]
+  dyi := f.y[0] - f.y[n - 1]
+  dyk := f.y[1] - f.y[0]
+  z := uint(0)
   if dxi * dxk + dyi * dyk < 0 { z = 1 }
-  a:= dxi * dyk
-  b:= dxk * dyi
+  a := dxi * dyk
+  b := dxk * dyi
   if a == b { // polygon reduced by a node
     return true
     // for n > 3 we are going to roasted in devils oven ...
   }
-  gr:= a > b
+  gr := a > b
   var k uint
-  for i:= uint(1); i < n; i++ {
+  for i := uint(1); i < n; i++ {
     if i < n { k = i + 1 } else { k = 0 }
     dxi = f.x[i] - f.x[i - 1]
     dyi = f.y[i] - f.y[i - 1]
@@ -219,11 +232,11 @@ func (f *figure2) convex() bool {
 }
 
 func (f *figure2) rectangular() bool {
-  switch f.Kind {
+  switch f.Type {
   case Rectangle, Image:
     return true
   }
-  if f.Kind != Polygon { return false }
+  if f.Type != Polygon { return false }
   if len (f.x) != 4 { return false }
   return f.x[1] + f.x[3] == f.x[0] + f.x[2] && f.y[1] + f.y[3] == f.y[0] + f.y[2] &&
          f.x[1] * f.x[1] + f.x[0] * f.x[2] + f.y[1] * f.y[1] + f.y[0] * f.y[2] ==
@@ -231,14 +244,14 @@ func (f *figure2) rectangular() bool {
 }
 
 func (f *figure2) UnderMouse (t uint) bool {
-  a, b:= scr.MousePosGr()
+  a, b := scr.MousePosGr()
   return f.On (a, b, t)
 }
 
 // Locate (a, b) = Relocate (a - x[0], b - y[0])
 func (f *figure2) Move (a, b int) {
   var n uint
-  switch f.Kind {
+  switch f.Type {
   case Points, Segments, Polygon, Curve, InfLine, Rectangle:
     n = uint(len (f.x))
   case Circle, Ellipse:
@@ -246,7 +259,7 @@ func (f *figure2) Move (a, b int) {
   case Text, Image:
     n = 2
   }
-  for i:= uint(0); i < n; i++ {
+  for i := uint(0); i < n; i++ {
     f.x[i] += a
     f.y[i] += b
   }
@@ -263,7 +276,7 @@ func (f *figure2) Mark (m bool) {
 func (f *figure2) SetColour (c col.Colour) {
   f.colour = c
   bx.ColourF (f.colour)
-  if f.Kind == Image {
+  if f.Type == Image {
     // what ?
   }
 }
@@ -273,11 +286,11 @@ func (f *figure2) Colour() col.Colour {
 }
 
 func (f *figure2) Erase() {
-  switch f.Kind {
+  switch f.Type {
   case Image:
     scr.ClrGr (f.x[0], f.y[0], f.x[1], f.y[1])
   default:
-    c:= f.colour
+    c := f.colour
     f.SetColour (scr.ScrColB())
     f.Write()
     f.SetColour (c)
@@ -287,7 +300,7 @@ func (f *figure2) Erase() {
 func (f *figure2) Write() {
   if f.Empty() { return }
   scr.ColourF (f.colour)
-  switch f.Kind {
+  switch f.Type {
   case Points:
     scr.Points (f.x, f.y)
   case Segments:
@@ -300,7 +313,7 @@ func (f *figure2) Write() {
   case Curve:
     scr.Curve (f.x, f.y)
     if f.filled {
-      n:= len (f.x) - 1
+      n := len (f.x) - 1
       scr.CircleFull (f.x[n], f.y[n], 4) // ?
     }
   case InfLine:
@@ -339,47 +352,47 @@ func (f *figure2) Write() {
 
 func (f *figure2) Print (p psp.PostscriptPage) {
   if f.Empty() { return }
-  n:= uint(len (f.x))
+  n := uint(len (f.x))
   p.SetColour (f.colour)
-  switch f.Kind {
+  switch f.Type {
   case Points:
-    x, y:= make ([]float64, n), make ([]float64, n)
-    for i:= uint(0); i < n; i++ {
+    x, y := make ([]float64, n), make ([]float64, n)
+    for i := uint(0); i < n; i++ {
       x[i], y[i] = p.S (f.x[i]), p.Sy (f.y[i])
     }
     p.Points (x, y)
   case Segments:
-    x, y:= make ([]float64, n), make ([]float64, n)
-    for i:= uint(0); i < n; i++ {
+    x, y := make ([]float64, n), make ([]float64, n)
+    for i := uint(0); i < n; i++ {
       x[i], y[i] = p.S (f.x[i]), p.Sy (f.y[i])
     }
     p.Segments (x, y)
   case Polygon:
-    x, y:= make ([]float64, n), make ([]float64, n)
-    for i:= uint(0); i < n; i++ {
+    x, y := make ([]float64, n), make ([]float64, n)
+    for i := uint(0); i < n; i++ {
       x[i], y[i] = p.S (f.x[i]), p.Sy (f.y[i])
     }
     p.Polygon (x, y, f.filled)
   case Curve:
-    x, y:= make ([]float64, n), make ([]float64, n)
-    for i:= uint(0); i < n; i++ {
+    x, y := make ([]float64, n), make ([]float64, n)
+    for i := uint(0); i < n; i++ {
       x[i], y[i] = p.S (f.x[i]), p.Sy (f.y[i])
     }
     p.Curve (x, y)
   case InfLine:
-    x, y, x1, y1:= p.S (f.x[0]), p.Sy (f.y[0]), p.S (f.x[1]), p.Sy (f.y[1])
+    x, y, x1, y1 := p.S (f.x[0]), p.Sy (f.y[0]), p.S (f.x[1]), p.Sy (f.y[1])
     p.Line (x, y, x1, y1)
   case Rectangle:
-    x, y, x1, y1:= p.S (f.x[0]), p.Sy (f.y[0]), p.S(f.x[1]), p.Sy (f.y[1])
+    x, y, x1, y1 := p.S (f.x[0]), p.Sy (f.y[0]), p.S(f.x[1]), p.Sy (f.y[1])
     p.Rectangle (x, y, x1 - x, y1 - y, f.filled)
   case Circle:
-    x, y, r:= p.S (f.x[0]), p.Sy (f.y[0]), p.S (f.x[1])
+    x, y, r := p.S (f.x[0]), p.Sy (f.y[0]), p.S (f.x[1])
     p.Circle (x, y, r, f.filled)
   case Ellipse:
-    x, y, a, b:= p.S (f.x[0]), p.Sy (f.y[0]), p.S (f.x[1]), p.S (f.y[1])
+    x, y, a, b := p.S (f.x[0]), p.Sy (f.y[0]), p.S (f.x[1]), p.S (f.y[1])
     p.Ellipse (x, y, a, b, f.filled)
   case Text:
-    x, y:= p.S (f.x[0]), p.Sy (f.y[0])
+    x, y := p.S (f.x[0]), p.Sy (f.y[0])
     p.Write (f.string, x, y)
   case Image:
 // TODO
@@ -388,7 +401,7 @@ func (f *figure2) Print (p psp.PostscriptPage) {
 
 func (f *figure2) Invert() {
   if f.Empty() { return }
-  switch f.Kind {
+  switch f.Type {
   case Points:
     scr.PointsInv (f.x, f.y)
   case Segments:
@@ -402,7 +415,7 @@ func (f *figure2) Invert() {
   case Curve:
     scr.CurveInv (f.x, f.y)
     if f.filled {
-      n:= len (f.x) - 1
+      n := len (f.x) - 1
       scr.CircleInv (f.x[n], f.y[n], 4) // TODO ?
     }
   case InfLine:
@@ -436,7 +449,7 @@ func (f *figure2) Invert() {
 }
 
 func (f *figure2) invertN() {
-  switch f.Kind {
+  switch f.Type {
   case Points:
     scr.PointsInv (f.x, f.y)
   case Segments:
@@ -446,24 +459,24 @@ func (f *figure2) invertN() {
   case Curve:
     scr.CurveInv (f.x, f.y)
     if f.filled {
-      n:= len (f.x) - 1
+      n := len (f.x) - 1
       scr.CircleInv (f.x[n], f.y[n], 4) // TODO ?
     }
   }
 }
 
 func (f *figure2) editN() {
-  switch f.Kind {
+  switch f.Type {
   case Points, Segments, Polygon, Curve: default: return }
-  x0:= make ([]int, 2); x0[0] = f.x[0]; f.x = x0
-  y0:= make ([]int, 2); y0[0] = f.y[0]; f.y = y0
+  x0 := make ([]int, 2); x0[0] = f.x[0]; f.x = x0
+  y0 := make ([]int, 2); y0[0] = f.y[0]; f.y = y0
   f.x[1], f.y[1] = scr.MousePosGr()
   f.invertN()
   var ( K kbd.Comm; T uint )
   loop: for {
     K, T = kbd.Command()
     scr.MousePointer (true)
-    n:= uint(len (f.x))
+    n := uint(len (f.x))
     switch K { case kbd.Esc:
       break loop
     case kbd.Go,
@@ -471,10 +484,10 @@ func (f *figure2) editN() {
          kbd.There, kbd.Push, kbd.Thither,
          kbd.This: // kbd.ToThis:
       f.invertN()
-//      if f.Kind == Curve {
+//      if f.Type == Curve {
 //        if n == scr.MaxBezierdegree { break loop }
 //      }
-      if f.Kind == Points {
+      if f.Type == Points {
         if K != kbd.Go {
           n++
         }
@@ -484,7 +497,7 @@ func (f *figure2) editN() {
         }
       }
       if K == kbd.This {
-        n:= len (f.x)
+        n := len (f.x)
         if n == 0 {
           break loop
         } else { // TODO
@@ -503,7 +516,7 @@ func (f *figure2) editN() {
       }
       f.x[n-1], f.y[n-1] = scr.MousePosGr()
       f.invertN()
-      if f.Kind == Points {
+      if f.Type == Points {
         if K == kbd.Hither { break loop }
       } else {
         if K == kbd.Thither { break loop }
@@ -515,7 +528,7 @@ func (f *figure2) editN() {
     return
   }
   scr.ColourF (f.colour)
-  switch f.Kind {
+  switch f.Type {
   case Points:
     scr.Points (f.x, f.y)
   case Segments:
@@ -530,14 +543,14 @@ func (f *figure2) editN() {
     scr.Curve (f.x, f.y)
     f.filled = T > 0
     if f.filled {
-      n:= len (f.x) - 1
+      n := len (f.x) - 1
       scr.CircleFull (f.x[n], f.y[n], 4)
     }
   }
 }
 
 func (f *figure2) invert1() {
-  switch f.Kind {
+  switch f.Type {
   case InfLine:
     scr.InfLineInv (f.x[0], f.y[0], f.x[1], f.y[1])
   case Rectangle:
@@ -548,9 +561,9 @@ func (f *figure2) invert1() {
 }
 
 func (f *figure2) edit1() {
-  x0:= make ([]int, 2); x0[0] = f.x[0]; f.x = x0
-  y0:= make ([]int, 2); y0[0] = f.y[0]; f.y = y0
-  switch f.Kind {
+  x0 := make ([]int, 2); x0[0] = f.x[0]; f.x = x0
+  y0 := make ([]int, 2); y0[0] = f.y[0]; f.y = y0
+  switch f.Type {
   case InfLine:
     if f.x[0] == 0 {
       f.x[1] = 1
@@ -570,11 +583,11 @@ func (f *figure2) edit1() {
 //    scr.PointInv (f.x[0], f.y[0])
   f.invert1()
   loop: for {
-    K, T:= kbd.Command()
+    K, T := kbd.Command()
     switch K { case kbd.Pull, kbd.Hither:
       f.invert1()
       f.x[1], f.y[1] = scr.MousePosGr()
-      switch f.Kind {
+      switch f.Type {
       case InfLine:
         if f.x[1] == f.x[0] && f.y[1] == f.y[0] {
           if f.x[0] == 0 {
@@ -596,7 +609,7 @@ func (f *figure2) edit1() {
         } else {
           f.y[1] = f.y[0] - f.y[1]
         }
-        if f.Kind == Circle {
+        if f.Type == Circle {
           if f.x[1] > f.y[1] {
             f.y[1] = f.x[1]
           } else {
@@ -613,7 +626,7 @@ func (f *figure2) edit1() {
       }
     }
   }
-  switch f.Kind {
+  switch f.Type {
   case InfLine:
     scr.InfLine (f.x[0], f.y[0], f.x[1], f.y[1])
   case Rectangle:
@@ -632,13 +645,13 @@ func (f *figure2) edit1() {
 }
 
 func (f *figure2) editText() {
-  if f.Kind != Text { return }
+  if f.Type != Text { return }
   scr.MousePointer (false)
   bx.Wd (lenText)
   bx.ColourF (f.colour)
-  x1:= f.x[0] + int(lenText * scr.Wd1()) - 1
+  x1 := f.x[0] + int(lenText * scr.Wd1()) - 1
   if x1 >= xx { x1 = xx - 1 }
-  y1:= f.y[0] + int(scr.Ht1()) - 1
+  y1 := f.y[0] + int(scr.Ht1()) - 1
   if y1 >= yy { y1 = yy - 1 }
   scr.SaveGr (f.x[0], f.y[0], x1, y1)
   bx.Transparence (false)
@@ -646,13 +659,13 @@ func (f *figure2) editText() {
   bx.EditGr (&f.string, f.x[0], f.y[0])
   bx.Transparence (true)
   scr.RestoreGr (f.x[0], f.y[0], x1, y1)
-  if C, _:= kbd.LastCommand(); C == kbd.Enter {
+  if C, _ := kbd.LastCommand(); C == kbd.Enter {
     bx.Transparence (true)
 //    scr.RestoreGr (f.x[0], f.y[0], x1, y1)
     bx.WriteGr (f.string, f.x[0], f.y[0])
-    k:= str.ProperLen (f.string)
-    x0:= make ([]int, 2); x0[0] = f.x[0]; f.x = x0
-    y0:= make ([]int, 2); y0[0] = f.y[0]; f.y = y0
+    k := str.ProperLen (f.string)
+    x0 := make ([]int, 2); x0[0] = f.x[0]; f.x = x0
+    y0 := make ([]int, 2); y0[0] = f.y[0]; f.y = y0
     f.x[1] = f.x[0] + int(scr.Wd1() * k) - 1
     f.y[1] = f.y[0] + int(scr.Ht1()) - 1
     scr.WarpMouseGr (f.x[0], f.y[1])
@@ -666,7 +679,7 @@ func (f *figure2) editText() {
 }
 
 func (f *figure2) editImage() {
-  if f.Kind != Image { return }
+  if f.Type != Image { return }
   scr.MousePointer (false)
   errh.Hint ("Name des Bildes eingeben")
   bx.Wd (32) // reine Willkür
@@ -674,11 +687,11 @@ func (f *figure2) editImage() {
   f.string = str.Clr (BB)
   bx.EditGr (&f.string, f.x[0], f.y[0])
   str.OffSpc (&f.string)
-  W, H:= img.Size (f.string)
-  w, h:= int(W), int(H)
+  W, H := img.Size (f.string)
+  w, h := int(W), int(H)
   if w <= xx && h <= yy {
-    x0:= make ([]int, 2); x0[0] = f.x[0]; f.x = x0
-    y0:= make ([]int, 2); y0[0] = f.y[0]; f.y = y0
+    x0 := make ([]int, 2); x0[0] = f.x[0]; f.x = x0
+    y0 := make ([]int, 2); y0[0] = f.y[0]; f.y = y0
     f.x[1] = f.x[0] + w - 1
     f.y[1] = f.y[0] + h - 1
     if f.x[1] >= xx {
@@ -703,9 +716,9 @@ func (f *figure2) editImage() {
 
 func (f *figure2) uM() uint {
   const ( r = 4; t = 4 )
-  a, b:= scr.MousePosGr()
-  n:= uint(len (f.x))
-  for i:= uint(0); i < n; i++ {
+  a, b := scr.MousePosGr()
+  n := uint(len (f.x))
+  for i := uint(0); i < n; i++ {
     if scr.OnCircle (f.x[i], f.y[i], r, a, b, t) {
       return uint(i)
     }
@@ -714,8 +727,8 @@ func (f *figure2) uM() uint {
 }
 
 func (f *figure2) mark (i uint) {
-//  if f.Kind != Curve { return }
-  for r:= uint(3); r <= 4; r++ {
+//  if f.Type != Curve { return }
+  for r := uint(3); r <= 4; r++ {
     scr.CircleInv (f.x[i], f.y[i], r)
   }
 }
@@ -725,7 +738,7 @@ func (f *figure2) Edit() {
     scr.ColourF (f.colour)
     f.x, f.y = make ([]int, 1), make ([]int, 1)
     f.x[0], f.y[0] = scr.MousePosGr()
-    switch f.Kind {
+    switch f.Type {
     case Points, Segments, Polygon, Curve:
       f.editN()
     case InfLine, Rectangle, Circle, Ellipse:
@@ -741,23 +754,23 @@ func (f *figure2) Edit() {
       f.Clr()
     }
   } else {
-    n:= uint(len (f.x))
+    n := uint(len (f.x))
 errh.Error ("Figur hat Länge", n)
-    switch f.Kind { case Text:
+    switch f.Type { case Text:
       f.editText()
     case Image:
       f.editImage()
     default:
       f.Erase()
       f.Invert()
-      if true { // f.Kind == Curve {
-        for i:= uint(0); i < n; i++ { f.mark (i) }
+      if true { // f.Type == Curve {
+        for i := uint(0); i < n; i++ { f.mark (i) }
       }
-      i:= f.uM()
+      i := f.uM()
       f.x[i], f.y[i] = scr.MousePosGr()
       loop: for {
         scr.MousePointer (true)
-        c, _:= kbd.Command()
+        c, _ := kbd.Command()
         switch c { case kbd.Esc:
           break loop
         case kbd.Enter, kbd.Tab, kbd.Search:
@@ -776,16 +789,16 @@ errh.Error ("Figur hat Länge", n)
             if c == kbd.Thither { i = n } // ? ? ?
           }
         case kbd.This:
-          switch f.Kind {
+          switch f.Type {
           case Points, Segments, Polygon, Curve:
             if f.x == nil {
               f.Clr()
             } else {
-              for i:= uint(0); i < n; i++ { f.mark (i) }
+              for i := uint(0); i < n; i++ { f.mark (i) }
               f.Erase()
               n-- // ? ? ?
               f.Invert()
-              for i:= uint(0); i < n; i++ { f.mark (i) }
+              for i := uint(0); i < n; i++ { f.mark (i) }
             }
           }
         }
@@ -793,7 +806,7 @@ errh.Error ("Figur hat Länge", n)
       }
       f.Invert()
       if true { // kind != Text {
-        for i:= uint(0); i < n; i++ { f.mark (i) }
+        for i := uint(0); i < n; i++ { f.mark (i) }
       }
       f.Write()
     }
@@ -801,8 +814,8 @@ errh.Error ("Figur hat Länge", n)
 }
 
 func (f *figure2) Codelen() uint {
-  n:= 1 + uint32(col.Codelen()) + 4
-  switch f.Kind {
+  n := 1 + uint32(col.Codelen()) + 4
+  switch f.Type {
   case Text:
     n += 2 * 4 + 1 + uint32(len (f.string)) // 4 = Codelen (uint32(0))
   case Image:
@@ -815,22 +828,22 @@ func (f *figure2) Codelen() uint {
 }
 
 func (f *figure2) Encode() []byte {
-  bs:= make ([]byte, f.Codelen())
-  a:= uint32(0)
-  bs[a] = byte(f.Kind)
+  bs := make ([]byte, f.Codelen())
+  a := uint32(0)
+  bs[a] = byte(f.Type)
   a++
   copy (bs[a:a+3], col.Encode (f.colour))
   a += 3
   var n uint32
-  if f.Kind < Text {
+  if f.Type < Text {
     n = uint32(len (f.x))
   } else {
     n = uint32(len (f.string))
   }
   copy (bs[a:a+4], Encode (n))
   a += 4
-  if f.Kind < Text {
-    for i:= uint32(0); i < n; i++ {
+  if f.Type < Text {
+    for i := uint32(0); i < n; i++ {
       copy (bs[a:a+4], Encode (int32(f.x[i])))
       a += 4
       copy (bs[a:a+4], Encode (int32(f.y[i])))
@@ -841,7 +854,7 @@ func (f *figure2) Encode() []byte {
     a += 4
     copy (bs[a:a+4], Encode (int32(f.y[0])))
     a += 4
-    if f.Kind == Image {
+    if f.Type == Image {
       copy (bs[a:a+4], Encode (int32(f.x[1])))
       a += 4
       copy (bs[a:a+4], Encode (int32(f.y[1])))
@@ -857,17 +870,17 @@ func (f *figure2) Encode() []byte {
 }
 
 func (f *figure2) Decode (bs []byte) {
-  a:= uint32(0)
-  f.Kind = Kind(bs[a])
+  a := uint32(0)
+  f.Type = Type(bs[a])
   a ++
   col.Decode (&f.colour, bs[a:a+3])
   a += 3
-  n:= uint32(0)
+  n := uint32(0)
   n = uint32(Decode (uint32(0), bs[a:a+4]).(uint32))
   a += 4
-  if f.Kind < Text {
+  if f.Type < Text {
     f.x, f.y = make ([]int, n), make ([]int, n)
-    for i:= uint32(0); i < n; i++ {
+    for i := uint32(0); i < n; i++ {
       f.x[i] = int(Decode (int32(f.x[i]), bs[a:a+4]).(int32))
       a += 4
       f.y[i] = int(Decode (int32(f.y[i]), bs[a:a+4]).(int32))
@@ -879,7 +892,7 @@ func (f *figure2) Decode (bs []byte) {
     a += 4
     f.y[0] = int(Decode (int32(f.y[0]), bs[a:a+4]).(int32))
     a += 4
-    if f.Kind == Image {
+    if f.Type == Image {
       f.x[1] = int(Decode (int32(f.x[1]), bs[a:a+4]).(int32))
       a += 4
       f.y[1] = int(Decode (int32(f.y[1]), bs[a:a+4]).(int32))
@@ -887,16 +900,11 @@ func (f *figure2) Decode (bs []byte) {
     }
     f.string = string(bs[a:a+n])
     a += n
-    if f.Kind == Text {
+    if f.Type == Text {
       f.x[1] = f.x[0] + int(scr.Wd1()) * int(n) - 1
       f.y[1] = f.y[0] + int(scr.Ht1()) - 1
     }
   }
   f.filled = bs[a] % 2 == 1
   f.marked = (bs[a] / 2) % 2 == 1
-}
-
-func init() {
-  bx.Transparence (true)
-  bx.Wd (lenText)
 }

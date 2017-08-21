@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 140615 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 //     readers/writers problem: solution with "guarded selective waiting"
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 185
@@ -13,8 +13,8 @@ type
                   done chan int
                        }
 
-func NewGuardedSelect() ReaderWriter {
-  x:= new (guardedSelect)
+func newGSel() ReaderWriter {
+  x := new (guardedSelect)
   x.iR, x.oR = make (chan Any), make (chan Any)
   x.iW, x.oW = make (chan Any), make (chan Any)
   x.done = make (chan int)

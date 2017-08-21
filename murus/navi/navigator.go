@@ -9,17 +9,18 @@ package navi
 
 import (
   "os"
-  . "murus/obj"; . "murus/spc"
-)
-const (
-  buttonReleased = 0
-  buttonPressed = 1
+  . "murus/obj"
+  . "murus/spc"
 )
 type
   button byte; const (
   none = iota
   right
   left
+)
+const (
+  buttonReleased = 0
+  buttonPressed = 1
 )
 const ( // see mouse: Go, ...
   dummy0 = iota
@@ -37,6 +38,31 @@ var (
   sign [NDirs]int16 // +1, -1
 )
 
+func init() {
+  for d := D0; d < NDirs; d++ {
+    sign[d], index[d] = 1, int16(d)
+  }
+// The 3dconnexion SpaceNavigator has the rightoriented trihedral (x, y, z) = (right, back, bottomn):
+// it delivers the movements in 0..2 and the rotations around the corresponding axes (consequently - viewed
+// in opposition to the direction of the axes - in mathematical positive sense) in NDirs+0..2 = 3..5.
+// In murus this is translated into the trihedral (x, y, z) = (right, front, top) defined in the package spc:
+  sign[Front], sign[Top] = -1, -1
+  f, err := os.OpenFile ("/dev/input/navi", os.O_RDONLY, 0444)
+  if err == nil {
+    file = f
+    navipipe = make (chan Command)
+    go catch()
+  } else {
+    file = nil
+    navipipe = (chan Command)(nil)
+  }
+//  "Move Right"
+//  "Move Front"
+//  "Move   Top"
+//  "Rot Right"
+//  "Rot Front"
+//  "Rot   Top"
+}
 
 func exists() bool {
   return file != nil
@@ -65,7 +91,7 @@ func catch() {
     C Command
   )
   for {
-    i, _:= file.Read (B[:])
+    i, _ := file.Read (B[:])
     if i != M { continue }
     value = Decode (int16(0), B[4:6]).(int16)
     typ = B[6]
@@ -118,39 +144,11 @@ func catch() {
   }
 }
 
-
 func read() (GridCoord, GridCoord) {
   var mov, rot GridCoord
-  for d:= D0; d < NDirs; d++ {
+  for d := D0; d < NDirs; d++ {
     mov[d] = sign[d] * data[index [d]]
     rot[d] = sign[d] * data[int16(NDirs) + index [d]]
   }
   return mov, rot
-}
-
-
-func init() {
-  for d:= D0; d < NDirs; d++ {
-    sign[d], index[d] = 1, int16(d)
-  }
-// The 3dconnexion SpaceNavigator has the rightoriented trihedral (x, y, z) = (right, back, bottomn):
-// it delivers the movements in 0..2 and the rotations around the corresponding axes (consequently - viewed
-// in opposition to the direction of the axes - in mathematical positive sense) in NDirs+0..2 = 3..5.
-// In murus this is translated into the trihedral (x, y, z) = (right, front, top) defined in the package spc:
-  sign[Front], sign[Top] = -1, -1
-  f, err:= os.OpenFile ("/dev/input/navi", os.O_RDONLY, 0444)
-  if err == nil {
-    file = f
-    navipipe = make (chan Command)
-    go catch()
-  } else {
-    file = nil
-    navipipe = (chan Command)(nil)
-  }
-//  "Move Right"
-//  "Move Front"
-//  "Move   Top"
-//  "Rot Right"
-//  "Rot Front"
-//  "Rot   Top"
 }

@@ -1,13 +1,18 @@
 package euro
 
-// (c) murus.org  v. 170107 - license see murus.go
+// (c) murus.org  v. 170817 - license see murus.go
 
 import (
   "math"
-  . "murus/obj"; "murus/str"
-  "murus/col"; "murus/box"; "murus/errh"
+  . "murus/obj"
+  "murus/str"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/errh"
   "murus/nat"
-  "murus/font"; "murus/pbox"
+  "murus/font"
+  "murus/pbox"
 )
 const (
   hundred = uint(100)
@@ -22,24 +27,28 @@ type (
        cF, cB col.Colour
               font.Font
               }
-  Texte [length]byte
 )
 var (
   bx = box.New()
   pbx = pbox.New()
 )
 
-func newEuro() Euro {
+func init() {
+  bx.Wd (length)
+//  bx.SetNumerical()
+}
+
+func new_() Euro {
   x := new(euro)
   x.Clr()
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   return x
 }
 
-func (x *euro) impc (Y Any) uint {
+func (x *euro) imp (Y Any) *euro {
   y, ok := Y.(*euro)
   if ! ok { TypeNotEqPanic (x, Y) }
-  return y.cent
+  return y
 }
 
 func (x *euro) Empty() bool {
@@ -51,21 +60,28 @@ func (x *euro) Clr() {
 }
 
 func (x *euro) Copy (Y Any) {
-  x.cent = x.impc (Y)
+  x.cent = x.imp(Y).cent
 }
 
 func (x *euro) Clone() Any {
-  y := newEuro()
+  y := new_()
   y.Copy (x)
   return y
 }
 
 func (x *euro) Eq (Y Any) bool {
-  return x.cent == x.impc (Y)
+  return x.cent == x.imp(Y).cent
 }
 
 func (x *euro) Less (Y Any) bool {
-  return x.cent < x.impc (Y)
+  y := x.imp(Y)
+  if y.cent == undefined {
+    return false
+  }
+  if x.cent == undefined { // y.cent != undefined
+    return true
+  }
+  return x.cent < y.cent
 }
 
 func (x *euro) Val() uint {
@@ -108,7 +124,20 @@ func (x *euro) Null() bool {
   return x.cent == 0
 }
 
-func (x *euro) Add (Y ...Adder) Adder {
+func (x *euro) Sum (Y, Z Adder) {
+  x.cent = undefined
+  y, z := x.imp (Y), x.imp (Z)
+  if y.cent == undefined || z.cent == undefined { return }
+  if y.cent + z.cent < undefined {
+    x.cent = undefined
+  }
+}
+
+func (x *euro) Add (Y ...Adder) {
+  if x.cent == undefined { return }
+  for _, y := range Y {
+    if y.(*euro).cent == undefined { return }
+  }
   for _, y := range Y {
     x.cent += y.(*euro).cent
     if x.cent >= undefined {
@@ -116,13 +145,21 @@ func (x *euro) Add (Y ...Adder) Adder {
       break
     }
   }
-  return x.Clone().(Adder)
 }
 
-func (x *euro) Sub (Y ...Adder) Adder {
-  if x.cent == undefined { goto ret }
+func (x *euro) Diff (Y, Z Adder) {
+  x.cent = undefined
+  y, z := x.imp (Y), x.imp (Z)
+  if y.cent == undefined || z.cent == undefined { return }
+  if y.cent >= z.cent {
+    x.cent = y.cent - z.cent
+  }
+}
+
+func (x *euro) Sub (Y ...Adder) {
+  if x.cent == undefined { return }
   for _, y := range Y {
-    if y.(*euro).cent == undefined { goto ret }
+    if y.(*euro).cent == undefined { return }
   }
   for _, y := range Y {
     if x.cent >= y.(*euro).cent {
@@ -132,8 +169,6 @@ func (x *euro) Sub (Y ...Adder) Adder {
       break
     }
   }
-ret:
-  return x.Clone().(Adder)
 }
 
 func (x *euro) Operate (Faktor, Divisor uint) {
@@ -168,7 +203,7 @@ func (x *euro) ChargeInterest (p, n uint) {
 }
 
 func (x *euro) Round (Y Euro) {
-  yc := x.impc (Y)
+  yc := x.imp(Y).cent
   if x.cent == undefined || yc == undefined { return }
   x.cent = yc * (x.cent / yc)
 }
@@ -274,9 +309,4 @@ func (x *euro) Encode() []byte {
 
 func (x *euro) Decode (bs []byte) {
   x.cent = uint(Decode (uint32(0), bs).(uint32))
-}
-
-func init() {
-  bx.Wd (length)
-//  bx.SetNumerical()
 }

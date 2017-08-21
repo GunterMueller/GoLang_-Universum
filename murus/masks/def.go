@@ -13,5 +13,6 @@ type
   Line (n uint)
   Ins (m string, l, c uint)
 }
+
 // Returns a new empty mask sequence.
-func New() MaskSequence { return newMasks() }
+func New() MaskSequence { return new_() }

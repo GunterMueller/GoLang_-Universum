@@ -34,6 +34,7 @@ type
 // Undocumented (rts).
   Edit (i *uint)
 }
+
 // Returns for h == true/false a new progress bar with horizontal
 // resp. vertical fill direction, capacity 100 and fill degree 0
-func New(h bool) ProgressBar { return newPbar(h) }
+func New(h bool) ProgressBar { return new_(h) }

@@ -1,6 +1,6 @@
 package barr
 
-// (c) murus.org  v. 120910 - license see murus.go
+// (c) murus.org  v. 170627 - license see murus.go
 //
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 102, 143, 165
 
@@ -10,9 +10,16 @@ type
                       // a certain number M of goroutines have done their part.
 
 // The number of goroutines waiting for the calling barrier is incremented.
-// The calling goroutine was evtl. blocked, until the number of waiting goroutines equals
-// the number, which was given to the calling barriere as parameter to New.
+// The calling goroutine was evtl. blocked, until the number of waiting goroutines
+// equals the length of x.
 // Now no goroutines are waiting for the calling barrier.
 // The method is atomic, i.e. it cannot be interrupted by other goroutines.
   Wait ()
 }
+
+// Returns a new barrier of length n.
+func New (n uint) Barrier { return new_(n) }
+
+func NewMon (n uint) Barrier { return newMon(n) }
+
+func NewGo(n uint) Barrier { return newG(n) }

@@ -14,9 +14,9 @@ type
           mutex sync.Mutex
                 }
 
-func newMqu(a Any) MQueue {
+func new_(a Any) MQueue {
   x := new(mQueue)
-  x.Queue = qu.New (a)
+  x.Queue = qu.New(a)
   x.notEmpty.Lock()
   return x
 }

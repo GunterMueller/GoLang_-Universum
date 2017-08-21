@@ -1,6 +1,6 @@
 package mon
 
-// (c) murus.org  v. 140525 - license see murus.go
+// (c) murus.org  v. 170629 - license see murus.go
 
 // >>> Synchronization with Locker - what happens behind the scene, depends
 //     on the choice of the implementation of Locker by the call of the
@@ -11,103 +11,101 @@ package mon
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 154 ff.
 
 import (
-  . "murus/obj"; "murus/lock"; "murus/perm"
+  "sync"
+  . "murus/obj"
+  "murus/perm"
 )
 type
   monitor struct {
-            nFns uint "number of monitor functions"
-                 lock.Locker "monitor entry queue"
-               s []lock.Locker "condition variable queues"
-              nB []uint "numbers of goroutines blocked on s"
-          urgent lock.Locker "urgent queue"
+                 uint "number of monitor functions"
+                 sync.Mutex "monitor entry queue"
+               s []sync.Mutex "condition variable queues"
+        nBlocked []uint "numbers of goroutines blocked on s"
+          urgent sync.Mutex "urgent queue"
               nU uint "number of goroutines blocked on urgent"
                  FuncSpectrum "monitor functions"
                  PredSpectrum "conditions"
-            cond bool // true, iff monitor is conditioned
+                 bool "true, iff monitor is conditioned"
                  perm.Permutation "indeterminism"
                  }
 
-func New (n uint, f FuncSpectrum, p PredSpectrum) Monitor {
+func new_(n uint, f FuncSpectrum, p PredSpectrum) Monitor {
   if n == 0 { return nil }
-  x:= new (monitor)
-  x.nFns = n
-  x.Locker = lock.NewMutex()
-  x.s = make ([]lock.Locker, x.nFns)
-  for i:= uint(0); i < x.nFns; i++ {
-    x.s[i] = lock.NewMutex()
+  x := new(monitor)
+  x.uint = n
+  x.s = make ([]sync.Mutex, x.uint)
+  for i := uint(0); i < x.uint; i++ {
     x.s[i].Lock()
   }
-  x.nB = make ([]uint, x.nFns)
-  x.urgent = lock.NewMutex()
+  x.nBlocked = make ([]uint, x.uint)
   x.urgent.Lock()
-  x.FuncSpectrum = f
-  x.PredSpectrum = AllTrueSp
-  x.cond = p != nil
-  if x.cond {
+  x.FuncSpectrum, x.PredSpectrum = f, AllTrueSp
+  x.bool = p != nil
+  if x.bool {
     x.PredSpectrum = p
   }
-  x.Permutation = perm.New (x.nFns)
+  x.Permutation = perm.New (x.uint)
   return x
 }
 
 func (x *monitor) Wait (i uint) {
-  if i >= x.nFns { WrongUintParameterPanic ("mon.Wait", x, i) }
-  x.nB[i] ++
+  if i >= x.uint { WrongUintParameterPanic ("mon.Wait", x, i) }
+  x.nBlocked[i]++
   if x.nU > 0 {
     x.urgent.Unlock()
   } else {
-    x.Locker.Unlock()
+    x.Mutex.Unlock()
   }
   x.s[i].Lock()
-  x.nB[i] --
+  x.nBlocked[i]--
 }
 
 func (x *monitor) Awaited (i uint) bool {
-  if i >= x.nFns { WrongUintParameterPanic ("mon.Awaited", x, i) }
-  return x.nB[i] > 0
+  if i >= x.uint { WrongUintParameterPanic ("mon.Awaited", x, i) }
+  return x.nBlocked[i] > 0
 }
 
 func (x *monitor) Signal (i uint) {
-  if i >= x.nFns { WrongUintParameterPanic ("mon.Signal", x, i) }
-  if x.nB[i] > 0 {
-    x.nU ++
+  if i >= x.uint { WrongUintParameterPanic ("mon.Signal", x, i) }
+  if x.nBlocked[i] > 0 {
+    x.nU++
     x.s[i].Unlock()
     x.urgent.Lock()
-    x.nU --
+    x.nU--
   }
 }
 
 func (x *monitor) SignalAll (i uint) {
-  if i >= x.nFns { return }
-  if i >= x.nFns { WrongUintParameterPanic ("mon.SignalAll", x, i) }
+  if i >= x.uint { return }
+  if i >= x.uint { WrongUintParameterPanic ("mon.SignalAll", x, i) }
   for {
-    if x.nB[i] == 0 { break }
-    x.nU ++
+    if x.nBlocked[i] == 0 { break }
+    x.nU++
     x.s[i].Unlock()
     x.urgent.Lock()
-    x.nU --
+    x.nU--
   }
 }
 
 func (x *monitor) F (a Any, i uint) Any {
-  if i >= x.nFns { WrongUintParameterPanic ("mon.F", x, i) }
-  x.Locker.Lock()
-  if x.cond {
+  if i >= x.uint { WrongUintParameterPanic ("mon.F", x, i) }
+  x.Mutex.Lock()
+  if x.bool {
     for ! x.PredSpectrum (a, i) {
       x.Wait (i)
     }
   }
-  b:= x.FuncSpectrum (a, i)
-  if x.cond {
+  b := x.FuncSpectrum (a, i)
+  if x.bool {
     x.Permutation.Permute()
-    for j:= uint(0); j < x.nFns; j++ {
+    for j := uint(0); j < x.uint; j++ {
       x.Signal (x.Permutation.F (j))
     }
   }
   if x.nU > 0 {
     x.urgent.Unlock()
   } else {
-    x.Locker.Unlock()
+    x.Mutex.Unlock()
   }
   return b
 }

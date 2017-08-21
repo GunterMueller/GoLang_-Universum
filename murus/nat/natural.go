@@ -17,6 +17,10 @@ var (
   width uint
 )
 
+func init() {
+//  bx.SetNumerical() // TODO
+}
+
 func isDigit (b byte) bool {
   return '0' <= b && b <= '9'
 }
@@ -148,8 +152,4 @@ func edit (n *uint, l, c uint) {
   }
 //  scr.Write ("            ", scr.NLines() - 1, 0) // provisorial
 //  bx.Write (String (*n), l, c + 1 - w)
-}
-
-func init() {
-//  bx.SetNumerical() // TODO
 }

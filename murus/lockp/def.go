@@ -1,6 +1,6 @@
 package lockp
 
-// (c) murus.org  v. 161212 - license see murus.go
+// (c) murus.org  v. 170807 - license see murus.go
 
 // Ensures the access to a critical section.
 // The functions Lock and Unlock cannot be interrupted
@@ -17,12 +17,14 @@ type
 // It is not in the critical section.
   Unlock (p uint)
 }
+
 // Return new unlocked locks for 2 processes
 // with an implementation revealed by their names.
 func NewDekker() LockerP { return newDe() }
 func NewDoranThomas() LockerP { return newDT() }
 func NewKessels2() LockerP { return newK2() }
 func NewPeterson() LockerP { return newP() }
+
 // Return new unlocked locks for n processes
 // with an implementation revealed by their names.
 func NewBakery (n uint) LockerP { return newB(n) }
@@ -32,3 +34,5 @@ func NewHabermann (n uint) LockerP { return newH(n) }
 func NewKesselsN (n uint) LockerP { return newKN(n) }
 func NewTicket (n uint) LockerP { return newT(n) }
 func NewTiebreaker (n uint) LockerP { return newTb(n) }
+func NewSzymanski (n uint) LockerP { return newSz(n) }
+func NewFast (n uint) LockerP { return newF(n) }

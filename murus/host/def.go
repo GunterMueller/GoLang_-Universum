@@ -9,12 +9,6 @@ const ( // Format
   IPnumber
   NFormats
 )
-
-// Retirms a new empty host.
-func New() Host { return new_() }
-
-func Localhost() Host { return localhost() }
-
 type
   Host interface { // Hostnames and their IPv6-numbers
 
@@ -33,3 +27,8 @@ type
 // Returns true, iff x is the local host, that runs the calling process.
   Local() bool
 }
+
+// Retirms a new empty host.
+func New() Host { return new_() }
+
+func Localhost() Host { return localhost() }

@@ -1,6 +1,6 @@
 package set
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170424 - license see murus.go
 
 import (
   "murus/ker"
@@ -11,11 +11,11 @@ type
              Any
       anchor,
       actual *tree
-         num uint
+             uint "number of objects in set"
         path *node
              }
 
-func newSet (a Any) Set {
+func new_(a Any) Set {
   CheckAtomicOrObject(a)
   x := new (set)
   x.Any = Clone(a)
@@ -43,7 +43,7 @@ func (x *set) Empty() bool {
 
 func (x *set) Clr() {
   x.anchor, x.actual = nil, nil
-  x.num = 0
+  x.uint = 0
   x.path = nil
 }
 
@@ -51,18 +51,18 @@ func (x *set) Copy (Y Any) {
   y := x.imp (Y)
   x.Clr()
   y.Trav (func (a Any) { x.Ins (a) })
-  x.num = y.num
+  x.uint = y.uint
 }
 
 func (x *set) Clone() Any {
-  y := newSet(x.Any).(*set)
+  y := new_(x.Any).(*set)
   x.Trav (func (a Any) { y.Ins (a) })
-  y.num = x.num
+  y.uint = x.uint
   return y
 }
 
 func (x *set) e (y *set, r Rel) bool {
-  if x.num != y.num { return false }
+  if x.uint != y.uint { return false }
   if x.anchor == nil { return true }
   xact, yact := x.actual, y.actual
   x.Jump (false)
@@ -91,13 +91,13 @@ func (x *set) Eq (Y Any) bool {
 
 func (x *set) Less (Y Any) bool {
   y := x.imp (Y)
-  if ! Less (x.num, y.num) { return false }
+  if ! Less (x.uint, y.uint) { return false }
   if x.anchor == nil { return true }
   return x.All (func (a Any) bool { return y.Ex (a) } )
 }
 
 func (x *set) Num() uint {
-  return x.num
+  return x.uint
 }
 
 func (x *set) NumPred (p Pred) uint {
@@ -118,9 +118,9 @@ func (x *set) All (p Pred) bool {
 }
 
 func (x *set) Sort() {
-  y := newSet(x.Any).(*set)
+  y := new_(x.Any).(*set)
   x.Trav (func (a Any) { y.Ins (a) } )
-  x.anchor, x.num = y.anchor, y.num
+  x.anchor, x.uint = y.anchor, y.uint
   y.anchor = nil
 //  x.actual = y.actual
 //  x.Jump (false)
@@ -136,7 +136,7 @@ var neu *tree
 func (x *set) Step (forward bool) {
   if x == nil { return }
   if x.anchor == nil { return }
-  if x.num < 2 { return }
+  if x.uint < 2 { return }
   min, max := x.defPath()
   neu = x.actual
   if forward {
@@ -221,13 +221,13 @@ func (x *set) Ins (a Any) {
   if x.anchor == nil {
     x.anchor = leaf (a)
     x.actual = x.anchor
-    x.num = 1
+    x.uint = 1
   } else {
     var t *tree
     x.anchor, t = x.anchor.ins (a)
     if t != nil {
       x.actual = t
-      x.num ++
+      x.uint++
     }
   }
 }
@@ -249,7 +249,7 @@ func (x *set) Del() Any {
   x.anchor, oneLess = x.anchor.del (toDel)
   if oneLess {
     if act == x.actual { // the root to remove was the last right node of x
-      if x.num == 1 {    // see above
+      if x.uint == 1 {    // see above
         x.actual = nil   // x is now empty
       } else {
         x.Jump (true)
@@ -259,7 +259,7 @@ func (x *set) Del() Any {
                       // rotated off while deleting, with this trick is it restored !
       }
     }
-    x.num --
+    x.uint--
   }
   return Clone (act.Any)
 }
@@ -300,14 +300,6 @@ func (x *set) Trav (op Op) {
   x.anchor.trav (op)
 }
 
-func (x *set) TravPred (p Pred, op Op) {
-  x.anchor.travPred (p, op)
-}
-
-func (x *set) TravCond (p Pred, op CondOp) {
-  x.anchor.travCond (p, op)
-}
-
 func (x *set) Filter (Y Iterator, p Pred) {
   y := x.imp (Y)
   if x.anchor == nil { return }
@@ -320,10 +312,10 @@ func (x *set) Split (Y Iterator) {
   y := x.imp (Y)
   y.Clr()
   if x.anchor == nil { return }
-  x1 := newSet(x.Any).(*set)
+  x1 := new_(x.Any).(*set)
   b := x.actual.Any
   x.Trav (func (a Any) { if Less (a, b) { x1.Ins (a) } else { y.Ins (a) } })
-  x.anchor, x.num = x1.anchor, x1.num
+  x.anchor, x.uint = x1.anchor, x1.uint
   x.Jump (false)
   y.Jump (false)
 }
@@ -332,18 +324,18 @@ func (x *set) Cut (Y Iterator, p Pred) {
   y := x.imp (Y)
   y.Clr()
   if x.anchor == nil { return }
-  x1 := newSet(x.Any).(*set)
+  x1 := new_(x.Any).(*set)
   x.Trav (func (a Any) { if p (a) { y.Ins (a) } else { x1.Ins (a) } })
-  x.anchor, x.num = x1.anchor, x1.num
+  x.anchor, x.uint = x1.anchor, x1.uint
   x.Jump (false)
   y.Jump (false)
 }
 
 func (x *set) ClrPred (p Pred) {
   if x.anchor == nil { return }
-  y := newSet(x.Any).(*set)
+  y := new_(x.Any).(*set)
   x.Trav (func (a Any) { if ! p (a) { y.Ins (a) } })
-  x.anchor, x.num = y.anchor, y.num
+  x.anchor, x.uint = y.anchor, y.uint
   x.Jump (false)
 }
 
@@ -362,7 +354,7 @@ func (x *set) Codelen() uint {
 
 func (x *set) Encode() []byte {
   b := make ([]byte, x.Codelen())
-  copy (b[:4], Encode (x.num))
+  copy (b[:4], Encode (x.uint))
   i := uint(4)
   x.Trav (func (a Any) {
             k := Codelen (a)
@@ -375,7 +367,7 @@ func (x *set) Encode() []byte {
 }
 
 func (x *set) Ordered() bool {
-  if x.num <= 1 { return true }
+  if x.uint <= 1 { return true }
   x.Jump (false)
   result, first, o := true, true, x.actual.Any
   x.Trav (func (a Any) {

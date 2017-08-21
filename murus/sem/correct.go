@@ -1,6 +1,6 @@
 package sem
 
-// (c) murus.org  v. 140803 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 // >>> corrected naive solution
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 71
@@ -14,7 +14,7 @@ type
            mutex sync.Mutex
                  }
 
-func NewCorrect (n uint) Semaphore {
+func newCorrect (n uint) Semaphore {
   x:= new (correct)
   x.int = int(n)
   x.binsem.Lock()

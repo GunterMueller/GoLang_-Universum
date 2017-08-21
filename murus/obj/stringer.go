@@ -1,6 +1,6 @@
 package obj
 
-// (c) murus.org  v. 150215 - license see murus.go
+// (c) murus.org  v. 150418 - license see murus.go
 
 type
   Stringer interface {
@@ -9,6 +9,6 @@ type
   String() string
 
 // Returns true, iff s represents an object.
-// In this case, x is that object, otherwise x is unchanged.
-  Defined (s string) bool // TODO return error instead of bool ?
+// In this case, x is that object, otherwise x is undefined.
+  Defined (s string) bool
 }

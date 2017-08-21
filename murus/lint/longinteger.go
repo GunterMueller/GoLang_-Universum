@@ -1,6 +1,6 @@
 package lint
 
-// (c) murus.org  v. 170107 - license see murus.go
+// (c) murus.org  v. 170817 - license see murus.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 
@@ -10,8 +10,13 @@ import (
 //  "strconv"
   . "murus/obj"
 //  "murus/str"
-  "murus/col"; "murus/scr"; "murus/box"; "murus/errh"
-  "murus/font"; "murus/prt" // ; "murus/pbox";
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/errh"
+  "murus/font"
+  "murus/prt"
+//  "murus/pbox"
 )
 type (
   longInteger struct {
@@ -29,17 +34,21 @@ var (
 //  px = pbox.New()
 )
 
+func init() {
+  bx.Wd (64)
+}
+
 func newInt(n int) LongInteger {
   x:= new(longInteger)
   x.n = NewInt(int64(n))
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   return x
 }
 
 func new64 (n int64) LongInteger {
   x:= new(longInteger)
   x.n = NewInt(n)
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   return x
 }
 
@@ -273,22 +282,30 @@ func (x *longInteger) Null() bool {
   return x.n.Sign() == 0
 }
 
-func (x *longInteger) Add (Y ...Adder) Adder {
+func (x *longInteger) Sum (Y, Z Adder) {
+  x.Copy (Y)
+  x.Add (Z)
+}
+
+func (x *longInteger) Add (Y ...Adder) {
   for _, y:= range Y {
     x.n.Add (x.n, y.(*longInteger).n)
   }
-  return x.Clone().(Adder)
 }
 
 func (x *longInteger) Inc() {
   x.n.Add (x.n, one.n)
 }
 
-func (x *longInteger) Sub (Y ...Adder) Adder {
+func (x *longInteger) Diff (Y, Z Adder) {
+  x.Copy (Y)
+  x.Sub (Z)
+}
+
+func (x *longInteger) Sub (Y ...Adder) {
   for _, y:= range Y {
     x.n.Sub (x.n, y.(*longInteger).n)
   }
-  return x.Clone().(Adder)
 }
 
 func (x *longInteger) Dec() {
@@ -299,11 +316,15 @@ func (x *longInteger) One() bool {
   return x.Eq (one)
 }
 
-func (x *longInteger) Mul (Y ...Multiplier) Multiplier {
+func (x *longInteger) Prod (Y, Z Multiplier) {
+  x.Copy (Y)
+  x.Mul (Z)
+}
+
+func (x *longInteger) Mul (Y ...Multiplier) {
   for _, y:= range Y {
     x.n.Mul (x.n, y.(*longInteger).n)
   }
-  return x.Clone().(Multiplier)
 }
 
 func (x *longInteger) Sqr() {
@@ -429,8 +450,4 @@ func (x *longInteger) SetBit (i int, b bool) {
   u:= uint(0)
   if b { u++ }
   x.n.SetBit (x.n, i, u)
-}
-
-func init() {
-  bx.Wd (64)
 }

@@ -1,11 +1,14 @@
 package fig
 
-// (c) murus.org  v. 140217 - license see murus.go
+// (c) murus.org  v. 170821 - license see murus.go
 
 // >>> experimental package; specifications under work.
 
 import (
-  "murus/col"; "murus/pts"
+  "murus/col"
+  "murus/vect"
+  "murus/pt"
+  "murus/pts"
 )
 type (
   RealFunc func (float64) float64
@@ -14,61 +17,79 @@ type (
 
 // Figures are defined by points; curved surfaces are approximated by polygons.
 
-// TODO Spec
+// Eye = (x, y, z); Focus = (xf, yf, zf)
 func Start (p pts.Points, x, y, z, xf, yf, zf float64) { start(p,x,y,z,xf,yf,zf) }
+
+// GL classes //////////////////////////////////////////////////////////////////////////
+
+// cl = Points:
+//   The point (x, y, z) with colour c is in s.
+// cl = Lines:
+//   The line segment between (x, y, z) and (x1, y1, z1) with colour c is in s.
+// cl = LineLoop:
+//   Not yet implemented.
+// cl = LineStrip:
+//   Not yet implemented.
+// cl = Triangles:
+//   Pre: Any two subsequent line segments are not parallel.
+//   The triangle between the points vi = (xi, yi, zi) (i = 0..2) with colour c
+//   is in s. Its orientation is [v1 - v0, v2 - v0].
+// cl = TriangleStrip:
+//   Not yet implemented.
+// cl = TriangleFan:
+//   Not yet implemented.
+// cl = Quads:
+//   Pre: Any two subsequent line segments are not parallel.
+//   The quadrangle between the points vi = (xi, yi, zi) (i = 0..2) with colour c
+//   is in s. Its orientation is [v1 - v0, v3 - v0].
+// cl = QuadStrip:
+//   Not yet implemented.
+// cl = Polygon:
+//   Not yet implemented.
+func Figure (cl pt.Class, p pts.Points, c col.Colour, x ...vect.Vector) { figure(cl,p,c,x...) }
+
+// light ///////////////////////////////////////////////////////////////////////////////
 
 // TODO Spec
 func Light (p pts.Points, n uint, x, y, z float64, ca, cd col.Colour) { light(p,n,x,y,z,ca,cd) }
 
-// The point (x, y, z) with colour c is in s.
-func Point (p pts.Points, x, y, z float64, c col.Colour) { point(p,x,y,z,c) }
-
-// The line segment between (x, y, z) and (x1, y1, z1) with colour c is in s.
-func Segment (p pts.Points, x, y, z, x1, y1, z1 float64, c col.Colour) { segment(p,x,y,z,x1,y1,z1,c) }
-
-// Pre: Any two subsequent line segments are not parallel.
-// The triangle between the points vi = (xi, yi, zi) (i = 0..2) with colour c
-// is in s. Its orientation is [v1 - v0, v2 - v0].
-func Triangle (p pts.Points, x0, y0, z0, x1, y1, z1, x2, y2, z2 float64, c col.Colour) { triangle(p,x0,y0,z0,x1,y1,z1,x2,y2,z2,c) }
-
-// func TriangleFan (x, y, z []float64, n uint, c col.Colour)
-// func TriangleStrip (x, y, z []float64, n uint, c col.Colour)
-
-// Pre: Any two subsequent line segments are not parallel.
-// The quadrangle between the points vi = (xi, yi, zi) (i = 0..2) with colour c
-// is in s. Its orientation is [v1 - v0, v3 - v0].
-func Quad (p pts.Points, x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3 float64, c col.Colour) { quad(p,x0,y0,z0,x1,y1,z1,x2,y2,z2,x3,y3,z3,c) }
-
-// func QuadStrip (p pts.Points, x, y, z, x1, y1, z1 []float64, n uint, c col.Colour)
+// extended figures ////////////////////////////////////////////////////////////////////
 
 // Pre: x != x1, y != y1.
 // Rectangle (x, y, z, x1, y, z, x1, y1, z, x, y1, z); oriented towards the positive z-axis, iff o == true.
 func HorRectangle (p pts.Points, x0, y0, z0, x1, y1 float64, o bool, c col.Colour) { horRectangle(p,x0,y0,z0,x1,y1,o,c) }
 
 // Pre: z != z1.
-// Rectangle (x, y, z, x1, y1, z, x1, y1, z1, x, y, z1), oriented in direction [v1 - v0, v3 - v0].
+// Rectangle (x, y, z, x1, y1, z, x1, y1, z1, x, y, z1); oriented in direction [v1 - v0, v3 - v0].
+//                                                                              ^^^^^^^^^^^^^^^^^ XXX
 func VertRectangle (p pts.Points, x, y, z, x1, y1, z1 float64, c col.Colour) { vertRectangle(p,x,y,z,x1,y1,z1,c) }
 
 // Quad (x, y, z, x1, y1, z1, x1 + x2 - x, y1 + y2 - y, z1 + z2 - z, x2, y2, z2).
-func Parallelogram (p pts.Points, x, y, z, x1, y1, z1, x2, y2, z2 float64, c col.Colour) { parallelogram(p,x,y,z,x1,y1,z1,x2,y2,z2,c) }
+func Parallelogram (p pts.Points, c col.Colour, x, x1, x2 vect.Vector) { parallelogram(p,c,x,x1,x2) }
 
-func Cuboid (p pts.Points, x0, y0, z0, x1, y1, z1 float64, c col.Colour) { cuboid(p,x0,y0,z0,x1,y1,z1,c) }
+func Cube (p pts.Points, x vect.Vector, a float64, c col.Colour) { cube(p,x,a,c) }
 
-func Cuboid1 (p pts.Points, x, y, z, b, t, h, a float64, c col.Colour) { cuboid1(p,x,y,z,b,t,h,a,c) }
+func CubeC (p pts.Points, x vect.Vector, a float64, c []col.Colour) { cubeC(p,x,a,c) }
 
-// Pre: At the moment: z[i] == z[0] for 0 < i < n, z[n] != z[0]. len(x) == len(y) == len(z).
-// Corners = (x[0], y[0], z[0], ..., x[n-1], y[n-1], z[n-1]), top = (x[n], y[n], z[n]).
-func Prism (p pts.Points, x, y, z []float64, c col.Colour) { prism(p,x,y,z,c) }
+func Cuboid (p pts.Points, x, x1 vect.Vector, c col.Colour) { cuboid(p,x,x1,c) }
 
-func Parallelepiped (p pts.Points, x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3 float64, c col.Colour) { parallelepiped(p,x0,y0,z0,x1,y1,z1,x2,y2,z2,x3,y3,z3,c) }
+func CuboidC (p pts.Points, x, x1 vect.Vector, c []col.Colour) { cuboidC(p,x,x1,c) }
 
-func Pyramid (p pts.Points, x0, y0, z0, x1, y1, z1, x2, y2, z2 float64, c col.Colour) { pyramid(p,x0,y0,z0,x1,y1,z1,x2,y2,z2,c) }
-
-func Octahedron (p pts.Points, x, y, z, r float64, c col.Colour) { octahedron(p,x,y,z,r,c) }
+func Cuboid1 (p pts.Points, c col.Colour, x, y, z, b, t, h, a float64) { cuboid1(p,c,x,y,z,b,t,h,a) }
 
 // Pre: At the moment: z[i] == z[0] for 0 < i < n, z[n] != z[0]. len(x) == len(y) == len(z).
 // Corners = (x[0], y[0], z[0], ..., x[n-1], y[n-1], z[n-1]), top = (x[n], y[n], z[n]).
-func Multipyramid (p pts.Points, x, y, z []float64, c col.Colour) { multipyramid(p,x,y,z,c) }
+func Prism (p pts.Points, c col.Colour, x, y, z []float64) { prism(p,c,x,y,z) }
+
+func Parallelepiped (p pts.Points, c col.Colour, x, x1, x2, x3 vect.Vector) { parallelepiped(p,c,x,x1,x2,x3) }
+
+func Pyramid (p pts.Points, c col.Colour, x, x1, x2 vect.Vector) { pyramid(p,c,x,x1,x2) }
+
+func Octahedron (p pts.Points, c col.Colour, x, y, z, r float64) { octahedron(p,c,x,y,z,r) }
+
+// Pre: At the moment: z[i] == z[0] for 0 < i < n, z[n] != z[0]. len(x) == len(y) == len(z).
+// Corners = (x[0], y[0], z[0], ..., x[n-1], y[n-1], z[n-1]), top = (x[n], y[n], z[n]).
+func Multipyramid (p pts.Points, c col.Colour, x, y, z []float64) { multipyramid(p,c,x,y,z) }
 
 // For r == 0 a point (x, y, z); otherwise a horizontal circle around (x, y, z) with radius abs(r);
 // oriented nach oben, iff r > 0.

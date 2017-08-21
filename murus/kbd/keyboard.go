@@ -1,13 +1,15 @@
 package kbd
 
-// (c) murus.org  v. 161023 - license see murus.go
+// (c) murus.org  v. 170817 - license see murus.go
 
 import (
-  "murus/spc"; "murus/xker"
-  "murus/z"; "murus/mouse"; "murus/navi"
+  "murus/spc"
+  "murus/xwin"
+  "murus/z"
+  "murus/mouse"
+  "murus/navi"
 )
 const (
-  pack = "kbd"
 // PIPE_BUF = 256
 // raw key codes
 // alphanumeric keyboard: control keys
@@ -79,30 +81,31 @@ func init() {
   //           012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
   bB = []byte("  !  $%&/()=?`  QWERTZUIOP *  ASDFGHJKL    'YXCVBNM;:_ *               789-456+1230,  >           /")
   //               §                     Ü            ÖÄ°
-  bB [4] = z.Para
-  bB[26] = z.UE
-  bB[39] = z.OE
-  bB[40] = z.AE
+  bB [4] = z.Paragraph
+  bB[26] = z.Ü
+  bB[39] = z.Ö
+  bB[40] = z.Ä
   bB[41] = z.Degree
 
   //           0         1         2         3         4         5         6         7         8         9
   //           012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
-  aa = []byte("  !  $%&/()=?`  @WERTZUIOP ~  ASDFGHJKL    'YXCVBNM;:_ ~               {[]-456+123},  |           /")
-  //              ²³             ¤       ü            öä     ¢   µ
+  aa = []byte("     $%&/()=?`  @WERTZUIOP ~  ASDFGHJKL    'YX VBN ;:_ ~               {[]-456+123},  |           /")
+  //             ¹²³             €       ü            öä    ¢©   µ
+  aa [2] = z.ToThe1
   aa [3] = z.ToThe2
   aa [4] = z.ToThe3
   aa[18] = z.Euro
   aa[26] = z.Ue
   aa[39] = z.Oe
   aa[40] = z.Ae
-  aa[46] = z.Copyright
+  aa[45] = z.Cent
   aa[50] = z.Mue
 
   //           0         1         2         3         4         5         6         7         8         9
   //           012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
-  aA = []byte("  !  $%&/()=?`  @WERTZUIOP ~  ASDFGHJKL    'YXCVBNM;:_ ~               {[]-456+123},  |           /")
-  //                              ®             ª       ¬    ¢   º ÷                    ± ¤     £ ×
-  aA[19] = z.Registered
+  aA = []byte("  ! $%&/()=?`  @WERTZUIOP ~  ASDFGHJKL    'YXCVBNM;:_ ~               {[]-456+123},  |           /")
+  //                             ®             ª       ¬    ¢   º ÷                    ± ¤     £ ×
+  aA[18] = z.Registered
   aA[33] = z.Female
   aA[41] = z.Negate
   aA[46] = z.Copyright
@@ -157,26 +160,10 @@ func init() {
   kK[onOff] = OnOff
   kK[lower] = Lower
   kK[louder] = Louder
-
-  text = [NComms]string {
-    "       ", "Esc    ", "Eingabe", "<==    ",
-    "<-     ", "->     ", "^      ", "_      ",
-    "Pos1   ", "Ende   ",
-    "Tab    ", "Entf   ", "Einfg  ",
-//  "F1     ", "F2     ", "F3     ", "F4     ", "F5     ", "F6     ", "F7     ", "F8     ", "F9     ", "F10    ", "F11    ", "F12    ",
-    "hilf   ", "such   ", "aktual.", "kfg    ", "markier", "markweg", "cut    ", "copy   ", "paste  ", "Rot    ", "Grün   ", "Blau   ",
-    "drucke ", "rolle  ", "Pause  ",
-    "an/aus ", "leiser ", "lauter ",
-    "laufe  ",
-    "hier   ", "ziehe  ", "hierhin",
-    "dort   ", "schiebe", "dorthin",
-    "da     ", "bewege ", "dahin  ",
-    "Navigat" }
-
   lastbyte, lastcommand, lastdepth = 0, None, 0
-  underX = xker.UnderX()
+  underX = xwin.UnderX()
   if underX {
-    xpipe = make (chan xker.Event)
+    xpipe = make (chan xwin.Event)
     go catchX()
   } else {
     initConsole()
@@ -241,7 +228,7 @@ func mouseEx() bool {
 func byte_() byte {
   b:= byte(0)
   for {
-    b, _, _ = Read()
+    b, _, _ = read()
     if b != 0 {
       break
     }
@@ -252,7 +239,7 @@ func byte_() byte {
 func command() (Comm, uint) {
   var ( c Comm; d uint )
   for {
-    _, c, d = Read()
+    _, c, d = read()
 //    if b == 0 { break }
     if c != None { break }
   }
@@ -319,16 +306,6 @@ func confirmed (w bool) bool {
   }
   lastcommand, lastdepth = c0, d0
   return b
-}
-
-var
-  text [NComms]string
-
-func string_ (c Comm) string {
-  if c < NComms {
-    return text[c]
-  }
-  return "häh ???"
 }
 
 /*

@@ -14,7 +14,6 @@ var
   []string { "", "masculinum", "femininum", "neutrum" },
   []string { "", "m.", "f.", "n." }
 
-
 func init() {
   l[Genus], s[Genus] = lGenus, sGenus
 }

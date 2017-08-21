@@ -1,50 +1,74 @@
 package errh
 
-// (c) murus.org  v. 170112 - license see murus.go
+// (c) murus.org  v. 170814 - license see murus.go
 
 import (
 //  "murus/env"
-  "murus/z"; "murus/str"; "murus/kbd"
+  "murus/z"
+  "murus/str"
+  "murus/kbd"
   "murus/scr"
-  "murus/col"; . "murus/scr"; "murus/box"; "murus/nat"
+  "murus/col"
+  . "murus/scr"
+  "murus/box"
+  "murus/nat"
 )
 var (
   errorbox, headbox, hintbox, licenseBox, choiceBox = box.New(), box.New(), box.New(), box.New(), box.New()
-//  errorbox box.Box
   headWritten, hintWritten, hintPosWritten /* , DocExists */ bool
   hintwidth uint
   transparent bool
 //           1         2         3         4         5         6         7         8         9
-// 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345
+// 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
   license = []string {
-  " Die Quellen von murus sind lediglich zum Einsatz in der Lehre konstruiert und haben demzufolge ",
-  " einen rein akademischen Charakter; sie liefern u.a. eine Reihe von Beispielen für das Lehrbuch ",
-  " \"Nichtsequentielle Programmierung mit Go 1 kompakt\" (Springer, 2. Aufl. 2012, 223 S. 14 Abb.). ",
-  " Für Lehrzwecke an Universitäten und in Schulen sind die Quelltexte uneingeschränkt verwendbar; ",
-  " jegliche Form weitergehender (insbesondere kommerzieller) Nutzung ist jedoch strikt untersagt. ",
-  " Davon abweichende Bedingungen sind der schriftlichen Vereinbarung mit dem Urheber vorbehalten. ",
-  "                                                                                                ",
-  " THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER AND THE CONTRIBUTORS \"AS IS\" AND ANY EXPRESS ",
-  " OR IMPLIED WARRANTIES, INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY ",
-  " AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR ",
-  " ANY CONTRIBUTOR BE LIABLE  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSE- ",
-  " QUENTIAL DAMAGES  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; ",
-  " LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)  HOWEVER CAUSED  AND ON ANY THEORY OF ",
-  " LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT  (INCLUDING NEGLIGENCE OR OTHERWISE) ",
-  " ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH ",
-  " DAMAGE. APART FROM THIS THE TEXT IN GERMAN ABOVE AND BELOW IS A MANDATORY PART OF THE LICENSE. ",
-  "                                                                                                ",
-  " Die Quelltexte von murus sind mit größter Sorgfalt entwickelt und werden laufend überarbeitet. ",
-  " ABER: Es gibt keine fehlerfreie Software - dies gilt natürlich auch für die Quellen von murus. ",
-  " Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, z. B. zur Inbrandsetzung von Rechnern, ",
-  " zur Entgleisung von Eisenbahnzügen, zum GAU in Atomkraftwerken oder zum Absturz des Mondes ... ",
-  " Deshalb wird vor der Einbindung irgendwelcher Quelltexte von murus in Programme zu ernsthaften ",
-  " Zwecken AUSDRÜCKLICH GEWARNT ! (Ausgenommen sind nur Demo-Programme zum Einsatz in der Lehre.) ",
-  "                                                                                                ",
-  " Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden jederzeit dankbar angenommen. " }
+  " Die Quellen von murus sind nur zum Einsatz in der Lehre konstruiert  und haben demzufolge ",
+  " einen rein akademischen Charakter;  sie liefern u.a. etliche Beispiele  für mein Lehrbuch ",
+  " \"Nichtsequentielle Programmierung mit Go 1 kompakt\"  (Springer, 2. Auflage 2012, 223 S.). ",
+  " Für Lehrzwecke in Universitäten und Schulen  sind die Quellen uneingeschränkt verwendbar; ",
+  " jegliche weitergehende - insbesondere kommerzielle - Nutzung ist jedoch strikt untersagt. ",
+  "                                                                                           ",
+  " THIS SOFTWARE  IS PROVIDED BY  murus.org  \"AS IS\"  AND ANY EXPRESS OR IMPLIED WARRANTIES, ",
+  " INCLUDING,  BUT NOT LIMITED TO,  THE IMPLIED WARRANTIES  OF MERCHANTABILITY  AND  FITNESS ",
+  " FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL  murus.org  BE LIABLE FOR ANY ",
+  " DIRECT, INDIRECT,  INCIDENTAL, SPECIAL,  EXEMPLARY, OR CONSEQUENTIAL DAMAGES  (INCLUDING, ",
+  " BUT NOT LIMITED TO,  PROCUREMENT OF SUBSTITUTE GOODS  OR SERVICES;  LOSS OF USE, DATA, OR ",
+  " PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER ",
+  " IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY ",
+  " WAY OUT OF THE USE OF THIS SOFTWARE,  EVEN IF ADVISED  OF THE POSSIBILITY OF SUCH DAMAGE. ",
+  " APART FROM THIS  THE TEXT IN GERMAN ABOVE AND BELOW  IS A MANDATORY PART  OF THE LICENSE. ",
+  "                                                                                           ",
+  " Die Quelltexte von murus sind sehr sorgfältig entwickelt und werden laufend überarbeitet. ",
+  " ABER: Es gibt keine fehlerfreie Software - dies gilt natürlich auch für diese Quelltexte. ",
+  " Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, z. B. zum Abfackeln von Rechnern, ",
+  " zur Entgleisung von Eisenbahnen, zum GAU in Atomkraftwerken  oder zum Absturz des Mondes. ",
+  " Deshalb wird  vor dem Einbau irgendwelcher Quellen von murus  in Programme zu ernsthaften ",
+  " Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.) ",
+  "                                                                                           ",
+  " Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen. " }
 //  actualFontsize FontSizes
   first bool = true
 )
+
+func init() {
+  for i, l := range (license) { license[i] = str.Lat1 (l) }
+  headbox.Colours (col.HeadF, col.HeadB)
+  hintbox.Colours (col.HintF, col.HintB)
+//  errorbox.Colours (col.ErrorF, col.ErrorB)
+//  pre() TODO theScreen not yet defined
+//  post() TODO theScreen not yet defined
+//                                         1         2         3         4         5         6         7
+//                               012345678901234567890123456789012345678901234567890123456789012345678901234567
+  ToWait            = str.Lat1 ("einen Augenblick bitte ...")
+  ToContinue        = str.Lat1 ("weiter: Einter")
+  ToContinueOrNot   = str.Lat1 ("weiter: Einter                                                     fertig: Esc")
+  ToCancel          = str.Lat1 ("                                                                abbrechen: Esc")
+  ToScroll          = str.Lat1 ("blättern: Pfeiltasten                                           abbrechen: Esc")
+  ToSelect          = str.Lat1 ("blättern/auswählen/abbrechen: Pfeiltasten/Enter/Esc, Maus bewegen/links/rechts")
+  ToChange          = str.Lat1 ("blättern: Pfeiltasten       ändern: Enter       abbrechen: Esc")
+  ToSwitch          = str.Lat1 ("blättern: Pfeiltasten    auswählen: Enter    umschalten: Tab    abbrechen: Esc")
+  ToSelectWithPrint = str.Lat1 ("blättern: Pfeiltasten    auswählen: Enter    drucken: Druck     abbrechen: Esc")
+  ToPrint           = str.Lat1 ("ausdrucken: Druck                                         fertig: andere Taste")
+}
 
 func wait() { // TODO -> kbd, other name
   loop: for {
@@ -63,7 +87,7 @@ func pre() {
     errorbox = box.New()
     errorbox.Colours (col.ErrorF, col.ErrorB)
   }
-//  actualFontsize = Fontgroesse()
+//  actualFontsize = ActFontsize()
 //  if actualFontsize # Normal {
 //    SwitchFontsize (Normal)
 //  }
@@ -143,7 +167,6 @@ func hintPos (s string, l, c uint) {
   post()
 }
 
-
 func delHintPos (s string, l, c uint) {
   if hintPosWritten {
     hintPosWritten = false
@@ -151,7 +174,7 @@ func delHintPos (s string, l, c uint) {
   }
 }
 
-func error0 (s string) {
+func do (s string, enter bool) {
   pre()
   s = str.Lat1 (s)
   str.Center (&s, NColumns())
@@ -159,23 +182,52 @@ func error0 (s string) {
   Save (l, 0, NColumns(), 1)
   errorbox.Wd (NColumns())
   errorbox.Write (s, l, 0)
-  kbd.Wait (false)
+  errorbox.Colours(col.ErrorF, col.ErrorB)
+  kbd.Wait (enter)
   Restore (l, 0, NColumns(), 1)
   post()
   Flush()
 }
 
+func proceed0 (s string) {
+  do (s, true)
+}
+
+func error0 (s string) {
+  do (s, false)
+}
+
+func proceed (s string, n uint) {
+  do (s + " " + nat.String(n), true)
+}
 
 func error (s string, n uint) {
-  s += " " + nat.String(n)
-  error0(s)
+  do (s + " " + nat.String(n), false)
+}
+
+func conc2 (s string, n uint, s1 string, n1 uint) string {
+  s += " " + nat.String (n)
+  s1 += " " + nat.String(n1)
+  return s + " " + s1
+}
+
+func conc3 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint) string {
+  s += " " + nat.String (n)
+  s1 += " " + nat.String(n1)
+  s2 += " " + nat.String(n2)
+  return s + " " + s1 + " " + s2
+}
+
+func proceed2 (s string, n uint, s1 string, n1 uint) {
+  do (conc2(s, n, s1, n1), true)
 }
 
 func error2 (s string, n uint, s1 string, n1 uint) {
-  s, s1 = str.Lat1 (s), str.Lat1 (s1)
-  s = s + " " + nat.String (n)
-  s1 = s1 + " " + nat.String (n1)
-  error0(s + " " + s1)
+  do (conc2(s, n, s1, n1), false)
+}
+
+func error3 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint) {
+  do (conc3(s, n, s1, n1, s2, n2), false)
 }
 
 func error0Pos (s string, l, c uint) {
@@ -198,10 +250,7 @@ func errorPos (s string, n, l, c uint) {
 }
 
 func error2Pos (s string, n uint, s1 string, n1 uint, l, c uint) {
-  s, s1 = str.Lat1 (s), str.Lat1 (s1)
-  if n > 0 { s = s + " " + nat.String (n) }
-  if n1 > 0 { s1 = s1 + " " + nat.String (n1) }
-  errorPos (s + s1, 0, l, c)
+  error0Pos(conc2(s, n, s1, n1), l, c)
 }
 
 func confirmed() bool {
@@ -342,25 +391,4 @@ func help1() {
   Restore (l, c, w + 4, 3)
 //  if mouseOn { MousePointer (true) }
   post()
-}
-
-func init() {
-  for i, l := range (license) { license[i] = str.Lat1 (l) }
-  headbox.Colours (col.HeadF, col.HeadB)
-  hintbox.Colours (col.HintF, col.HintB)
-//  errorbox.Colours (col.ErrorF, col.ErrorB)
-//  pre() TODO theScreen not yet defined
-//  post() TODO theScreen not yet defined
-//                                         1         2         3         4         5         6         7
-//                               012345678901234567890123456789012345678901234567890123456789012345678901234567
-  ToWait            = str.Lat1 ("einen Augenblick bitte ...")
-  ToContinue        = str.Lat1 ("weiter: Einter")
-  ToContinueOrNot   = str.Lat1 ("weiter: Einter                                                     fertig: Esc")
-  ToCancel          = str.Lat1 ("                                                                abbrechen: Esc")
-  ToScroll          = str.Lat1 ("blättern: Pfeiltasten                                           abbrechen: Esc")
-  ToSelect          = str.Lat1 ("blättern/auswählen/abbrechen: Pfeiltasten/Enter/Esc, Maus bewegen/links/rechts")
-  ToChange          = str.Lat1 ("blättern: Pfeiltasten       ändern: Enter       abbrechen: Esc")
-  ToSwitch          = str.Lat1 ("blättern: Pfeiltasten    auswählen: Enter    umschalten: Tab    abbrechen: Esc")
-  ToSelectWithPrint = str.Lat1 ("blättern: Pfeiltasten    auswählen: Enter    drucken: Druck     abbrechen: Esc")
-  ToPrint           = str.Lat1 ("ausdrucken: Druck                                         fertig: andere Taste")
 }

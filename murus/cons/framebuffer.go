@@ -3,8 +3,12 @@ package cons
 // (c) murus.org  v. 140728 - license see murus.go
 
 import (
-  "syscall"; "strconv"
-  . "murus/shape"; . "murus/mode"; "murus/ker"; "murus/col"
+  "syscall"
+  "strconv"
+  . "murus/shape"
+  . "murus/mode"
+  "murus/ker"
+  "murus/col"
 )
 const (
   esc1 = "\x1b["
@@ -20,16 +24,16 @@ var (
 
 func consoleOn() {
   ker.ActivateConsole()
-  n:= width * height * uint(colourdepth)
+  n := width * height * uint(colourdepth)
   copy (fbmem[:n], fbcop[:n])
   visible = true
-  c:= actual
+  c := actual
   c.Warp (c.ht1 * c.blinkY, c.wd1 * c.blinkX, c.consoleShape)
 }
 
 func consoleOff() {
   visible = false
-  c:= actual
+  c := actual
   c.consoleShape = c.blinkShape
   c.Warp (c.ht1 * c.blinkY, c.wd1 * c.blinkX, Off)
   ker.DeactivateConsole()
@@ -38,7 +42,7 @@ func consoleOff() {
 func consoleFin() {
 // TODO wait (blink())
 // TODO fin (blink())
-  c:= actual
+  c := actual
   finished = true
   ker.Msleep (250) // provisorial
   c.cursorShape = Off
@@ -56,7 +60,7 @@ func resMaxConsole() (uint, uint) {
 func consoleInit() {
   if initialized { return }
   initialized = true
-  colbits:= uint(0)
+  colbits := uint(0)
   width, height, colbits, fbmem = ker.Framebuffer()
   if fbmem == nil {
     ker.Panic ("framebuffer was not initialized ! (Is /dev/fb0 crw-rw-rw ?)")

@@ -3,7 +3,9 @@ package eye
 // (c) murus.org  v. 161216 - license see murus.go
 
 import (
-  . "murus/spc"; "murus/col"; "murus/vect"
+  . "murus/spc"
+  "murus/col"
+  "murus/vect"
 )
 type
   Eye interface {
@@ -22,4 +24,5 @@ type
   Push (c col.Colour)
   Colour () col.Colour
 }
-func New() Eye { return newEye() }
+
+func New() Eye { return new_() }

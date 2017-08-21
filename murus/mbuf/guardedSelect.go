@@ -1,19 +1,21 @@
 package mbuf
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170218 - license see murus.go
 
 // >>> implementation with synchronous message passing and guarded selective waiting
 
-import
+import (
+  "murus/ker"
   . "murus/obj"
+)
 type
   guardedSelect struct {
                 cI, cG chan Any
                        }
 
-func NewGuardedSelect (a Any, n uint) MBuffer {
-  if n == 0 { return nil } // panic
-  x:= new (guardedSelect)
+func newgs (a Any, n uint) MBuffer {
+  if a == nil || n == 0 { ker.Panic ("mbuf.NewGS with param nil or 0") }
+  x := new (guardedSelect)
   x.cI, x.cG = make (chan Any), make (chan Any)
   go func() {
     buffer:= make ([]Any, n)

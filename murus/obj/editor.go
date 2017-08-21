@@ -4,7 +4,6 @@ package obj
 
 import
   "murus/col"
-
 type
   Editor interface { // Objects, that can be printed to a particular
                      // position of a screen and that can be changed

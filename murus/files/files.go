@@ -1,24 +1,28 @@
 package files
 
-// (c) murus.org  v. 150826 - license see murus.go
+// (c) murus.org  v. 170814 - license see murus.go
 
 // >>> alpha-version - still a lot TODO, also some bugs there
 
 import (
-  "os"; "path" // ; "exec"
-  "murus/ker"; . "murus/obj"
-  "murus/str"; "murus/env"
-  "murus/nat"; "murus/seq"
+  "os"
+  "path"
+//  "exec"
+  "murus/ker"
+  . "murus/obj"
+  "murus/str"
+  "murus/env"
+  "murus/nat"
+  "murus/seq"
   "murus/files/internal"
 )
 const (
-  pack = "files"
-  dot = "."
+  temp = "tmp"
   RWX = 7 * 8 * 8
   worldRX = RWX + 7 * 8 + 7 // = rwxrwxrwx, which is changed to rwxr-xr-x
                             // by & with ~umask for the default umask = 022
-  tmp = "/tmp"
-  tempPraefix = dot + "tmp" + dot + ker.Murus + dot
+  tmp = ker.Separator + temp
+  tempPraefix = ker.Dot + tmp + ker.DotMurus + ker.Dot
 )
 var (
   pa = internal.New()
@@ -40,7 +44,7 @@ func init() {
 
 func actualPath() string {
   p, err := os.Getwd()
-  if err != nil { ker.Stop (pack, 1) }
+  if err != nil { ker.Shit() }
   return p
 }
 
@@ -54,7 +58,7 @@ func ex (path string) bool {
   if os.Chdir (path) != nil {
     return false
   }
-  if os.Chdir (p) != nil { ker.Stop (pack, 2) }
+  if os.Chdir (p) != nil { ker.Oops() }
   return true
 }
 
@@ -93,11 +97,11 @@ func initialize (b bool) { // TODO
   }
   sq.Clr()
   for t := Unknown; t < NTypes; t++ { sq1 [t].Clr() }
-  file, e := os.Open (dot)
+  file, e := os.Open (ker.Dot)
   defer file.Close()
-  if e != nil { ker.Stop (pack, 3) }
+  if e != nil { ker.Shit() }
   fi, err := file.Readdir (-1)
-  if err != nil { ker.Stop (pack, 4) }
+  if err != nil { ker.Shit() }
   t := Unknown
   for i := 0; i < len (fi); i++ {
     f := fi [i]
@@ -137,7 +141,7 @@ func initialize (b bool) { // TODO
     default:
       t = Unknown
     }
-    if t != Dir || (f.Name() != dot && f.Name() != "..") {
+    if t != Dir || (f.Name() != ker.Dot && f.Name() != "..") {
       pp := internal.New()
       pp.Set (f.Name(), byte(t))
       sq.Ins (pp)
@@ -153,50 +157,39 @@ func initialize (b bool) { // TODO
 func cd (path string) {
   str.OffSpc (&path)
   if path == "" {
-    path = env.Val ("HOME")
+    path = env.Home()
   }
   if os.Chdir (path) != nil {
-    ker.Stop (pack + " cd error; path == " + path, 5)
+    ker.Panic1 ("files cd error; path == " + path, 5)
     return
   }
   initialized = true
   initialize (true)
 }
 
+/*
 var
-  gesetzt bool
+  isSet bool
 
 func set (v string) {
   progvar = v
-  gesetzt = true
+  isSet = true
 }
+*/
 
 func cd0() {
-  pth := ""
-  if gesetzt {
-    pth = progvar
-  } else {
-    _, call := path.Split (env.Par(0))
-    progvar = call
-    pth = env.Val (progvar)
+  home, v := env.Home(), ker.Separator + ker.DotMurus + ker.Separator + env.Call()
+  p := home + v
+  if ! ex (p) {
+    ins (home, v)
   }
-  if ex (pth) {
-    // pth = $progvar
-  } else {
-    Home := env.Val ("HOME")
-    v := dot + progvar
-    pth = Home + "/" + v // $HOME/.progvar
-    if ! ex (pth) {
-      Ins (Home, v)
-    }
-  }
-  cd (pth)
+  cd (p)
 }
 
 /*
 func CopyFilesOfMurus (prog string) {
   if Num() == 0 {
-//    exec.Command ("cp", "$MURUS/." + prog + "/*", dot).Run() // TODO
+//    exec.Command ("cp", "$MURUS/." + prog + ker.Separator + "*", ker.Dot).Run() // TODO
   }
 }
 */
@@ -214,13 +207,13 @@ func Temp (filename *string) {
 
 func ins (path, dir string) {
   if str.ProperLen (path) == 0 { return }
-  err := os.Mkdir (path + "/" + dir, worldRX)
-//  if err != os.EEXIST { ker.Stop (pack, 6) }
+  err := os.Mkdir (path + ker.Separator + dir, worldRX)
+//  if err != os.EEXIST { ker.Shit() }
   if err != nil { /* then WHAT ? */ }
 }
 
 func del (path, dir string) {
-  os.Remove (path + "/" + dir)
+  os.Remove (path + ker.Separator + dir)
 }
 
 func empty() bool {
@@ -343,10 +336,10 @@ func namePred (p Pred, i uint) string {
 
 func TmpDir() string {
   N := ker.Murus + "-" + env.User()
-  Ins (tmp, N)
-  return tmp + "/" + N + "/" // /tmp/ker.Murus-$USER/
+  ins (tmp, N)
+  return tmp + ker.Separator + N + ker.Separator // /tmp/murus-$USER/
 }
 
 func Tmp() string {
-  return TmpDir() + nat.StringFmt (uint(os.Getpid()), 5, true) + dot
+  return TmpDir() + nat.StringFmt (uint(os.Getpid()), 5, true) + ker.Dot
 }

@@ -349,24 +349,6 @@ func (x *tree) trav (op Op) {
   }
 }
 
-func (x *tree) travPred (p Pred, op Op) {
-  if x != nil {
-    x.left.travPred (p, op)
-    if p (x.Any) {
-      op (x.Any)
-    }
-    x.right.travPred ( p, op)
-  }
-}
-
-func (x *tree) travCond (p Pred, op CondOp) {
-  if x != nil {
-    x.left.travCond (p, op)
-    op (x.Any, p (x.Any))
-    x.right.travCond ( p, op)
-  }
-}
-
 func (x *tree) split (p Pred) (*tree, *tree) {
   return nil, nil
 }

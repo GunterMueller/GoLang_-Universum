@@ -3,7 +3,8 @@ package pers
 // (c) murus.org  v. 140217 - license see murus.go
 
 import (
-  "murus/rand"; "murus/text"
+  "murus/rand"
+  "murus/text"
 )
 const
   N = 200

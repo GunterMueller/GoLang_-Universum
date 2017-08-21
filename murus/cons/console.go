@@ -1,12 +1,17 @@
 package cons
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
-  "sync"; "strconv"
+  "sync"
+  "strconv"
 //  . "murus/linewd"
-  . "murus/shape"; . "murus/mode"
-  "murus/ker"; "murus/col"; "murus/font"; "murus/ptr"
+  . "murus/shape"
+  . "murus/mode"
+  "murus/ker"
+  "murus/col"
+  "murus/font"
+  "murus/ptr"
 )
 type
   console struct {
@@ -17,7 +22,7 @@ nLines, nColumns uint
           shadow [][]byte
             buff bool
         wd1, ht1 uint
-          cF, cB col.Colour
+cF, cB, cFA, cBA col.Colour
     codeF, codeB []byte
       scrF, scrB col.Colour
 //          lineWd Linewidth
@@ -47,7 +52,7 @@ var (
 )
 
 func imp (x, y uint) *console {
-  for _, s:= range consList {
+  for _, s := range consList {
     if s.x <= int(x) && x <= s.wd && s.y <= int(y) && y <= s.ht {
       return s
     }
@@ -61,12 +66,13 @@ func (X *console) ok() bool {
 }
 
 func newCons (x, y uint, m Mode) Console {
-  X:= new(console)
+  X := new(console)
   actual = X
   mouseConsole = X
   X.x, X.y = int(x), int(y)
   X.wd, X.ht = Wd(m), Ht(m)
-  X.cF, X.cB = col.White, col.Black
+  X.cF, X.cB = col.StartCols()
+  X.cFA, X.cBA = col.StartColsA()
   consoleInit()
   if ! X.ok() {
     ker.Panic ("new console too large: " +
@@ -75,10 +81,10 @@ func newCons (x, y uint, m Mode) Console {
   }
   X.archive = make ([]byte, fbmemsize)
   X.shadow = make ([][]byte, X.ht)
-  for i:= 0; i < int(X.ht); i++ { X.shadow[i] = make ([]byte, X.wd * colourdepth) }
+  for i := 0; i < int(X.ht); i++ { X.shadow[i] = make ([]byte, X.wd * colourdepth) }
   X.initMouse()
   X.pg = make ([][]bool, X.ht)
-  for i:= 0; i < int(X.ht); i++ { X.pg[i] = make ([]bool, X.wd) }
+  for i := 0; i < int(X.ht); i++ { X.pg[i] = make ([]bool, X.wd) }
   X.ScrColours (X.cF, X.cB)
   X.Cls()
   if first { defer goMouse(); first = false }
@@ -101,8 +107,8 @@ func goMouse() {
 func actIndex() int {
   actMutex.Lock()
   defer actMutex.Unlock()
-  n:= len (consList)
-  for i:= mouseIndex; i < n - 1; i++ {
+  n := len (consList)
+  for i := mouseIndex; i < n - 1; i++ {
     consList[i] = consList[i + 1]
   }
   consList[n - 1] = mouseConsole
@@ -113,11 +119,11 @@ func actIndex() int {
 
 func followMouse() {
   for {
-    i:= len(consList) - 1
+    i := len(consList) - 1
     actMutex.Lock()
     for {
-      s:= consList[i]
-      xm, ym:= s.MousePosGr()
+      s := consList[i]
+      xm, ym := s.MousePosGr()
       if 0 <= xm && xm <= int(s.wd) && 0 <= ym && ym <= int(s.ht) {
         mouseIndex, mouseConsole = i, s
         break // if consoles overlap, the last (= newest) one is the actual one

@@ -1,9 +1,11 @@
 package mbuf
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170218 - license see murus.go
 
-import
+import (
   . "murus/obj"
+  "murus/host"
+)
 type
   MBuffer interface { // Synchronized Queues of bounded capacity.
                       // The exported functions cannot be interrupted
@@ -20,4 +22,23 @@ type
 // Pre: a is atomic or of a type implementing Object.
 // Returns an empty buffer of capacity n for objects of the type of a
 // to be used by concurrent processes.
-func New (a Any, n uint) MBuffer { return newMbuf(a,n) }
+// Classical implementation with explicit synchronisation. 
+func New (a Any, n uint) MBuffer { return new_(a,n) }
+
+// Implementation using synchronisation of murus/buf.
+func New1 (a Any, n uint) MBuffer { return new1(a,n) }
+
+// Implementation with asynchronous message passing
+func NewCh (a Any, n uint) MBuffer { return newch(a,n) }
+
+// Implementation with asynchronous message passing and guarded selective waiting
+func NewGS (a Any, n uint) MBuffer { return newgs(a,n) }
+
+// Implementation with a monitor
+func NewM (a Any, n uint) MBuffer { return newm(a,n) }
+
+// Implementation with a conditioned monitor a la Go.
+func NewGo (a Any, n uint) MBuffer { return newgo(a,n) }
+
+// Implementation with a far monitor
+func NewFM (a Any, n uint, h host.Host, p uint16, s bool) MBuffer { return newfm(a,n,h,p,s) }

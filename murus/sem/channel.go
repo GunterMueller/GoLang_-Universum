@@ -1,6 +1,6 @@
 package sem
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 // >>> Implementation with synchronous message passing
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 180
@@ -10,7 +10,7 @@ type
             p, v chan int
                  }
 
-func NewChannel (n uint) Semaphore {
+func newChannel (n uint) Semaphore {
   x:= new (channel)
   x.p, x.v = make (chan int), make (chan int)
   go func() {

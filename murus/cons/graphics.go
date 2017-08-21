@@ -5,7 +5,8 @@ package cons
 import (
   "math"
   . "murus/linewd"
-  "murus/ker"; "murus/col"
+  "murus/ker"
+  "murus/col"
 )
 type
   pointFunc func (int, int)
@@ -39,8 +40,8 @@ func intord (x, y, x1, y1 *int) {
 func (X *console) Point (x, y int) {
   if ! visible || ! X.iok (x, y) { return }
   x += X.x; y += X.y
-//  ux, uy:= uint(x), uint(y)
-  a:= (int(width) * y + x) * int(colourdepth)
+//  ux, uy := uint(x), uint(y)
+  a := (int(width) * y + x) * int(colourdepth)
   copy (fbcop[a:a+int(colourdepth)], X.codeF)
   if ! X.buff {
     copy (fbmem[a:a+int(colourdepth)], X.codeF)
@@ -104,11 +105,16 @@ func (X *console) Point (x, y int) {
 
 func (X *console) PointInv (x, y int) {
   if ! X.iok (x, y) { return }
-  c:= X.Colour (uint(x), uint(y))
+  c := X.Colour (uint(x), uint(y))
   col.Invert (&c)
   X.ColourF (c)
   X.Point (x, y)
   X.ColourF (X.cF)
+}
+
+func (X *console) OnPoint (x, y, a, b int, d uint) bool {
+  dx, dy := x - a, y - b
+  return dx * dx + dy * dy <= int(d * d)
 }
 
 // Returns true, iff m is up to tolerance t between i and k.
@@ -118,26 +124,26 @@ func between (i, k, m, t int) bool {
 
 func ok2 (xs, ys []int) bool {
   if ! visible { return false }
-  n:= len (xs)
+  n := len (xs)
   return n != 0 && n == len (ys)
 }
 
 func ok4 (xs, ys, xs1, ys1 []int) bool {
   if ! visible { return false }
-  n:= len (xs)
+  n := len (xs)
   return n != 0 && n == len (ys) && n == len (xs1) && len (xs1) == len (ys1)
 }
 
 func (X *console) Points (xs, ys []int) {
   if ! ok2 (xs, ys) { return }
-  for i:= 0; i < len (xs); i++ {
+  for i := 0; i < len (xs); i++ {
     X.Point (xs[i], ys[i])
   }
 }
 
 func (X *console) PointsInv (xs, ys []int) {
   if ! ok2 (xs, ys) { return }
-  for i:= 0; i < len (xs); i++ {
+  for i := 0; i < len (xs); i++ {
     X.PointInv (xs[i], ys[i])
   }
 }
@@ -148,18 +154,18 @@ func (X *console) horizontal (x, y, x1 int, f pointFunc) {
   if x > x1 { x, x1 = x1, x }
 //  if x >= X.wd { return }
   if x1 >= int(X.wd) { x1 = int(X.wd) - 1 }
-  x0:= x
-  for x:= x0; x <= x1; x++ {
+  x0 := x
+  for x := x0; x <= x1; x++ {
     f (x, y)
   }
 /*
   if X.lineWd > Thin && y + 1 <= int(X.ht) {
-    for x:= x0; x <= x1; x++ {
+    for x := x0; x <= x1; x++ {
       f (x, y + 1)
     }
   }
   if X.lineWd > Thick && y > 0 {
-    for x:= x0; x <= x1; x++ {
+    for x := x0; x <= x1; x++ {
       f (x, y - 1)
     }
   }
@@ -170,18 +176,18 @@ func (X *console) horizontal (x, y, x1 int, f pointFunc) {
 func (X *console) vertical (x, y, y1 int, f pointFunc) {
   if y > y1 { y, y1 = y1, y }
   if y1 >= int(X.ht) { y1 = int(X.ht) - 1 }
-  y0:= y
-  for y:= y0; y <= y1; y++ {
+  y0 := y
+  for y := y0; y <= y1; y++ {
     f (x, y)
   }
 /*
   if X.lineWd > Thin && x + 1 < int(X.wd) {
-    for y:= y0; y <= y1; y++ {
+    for y := y0; y <= y1; y++ {
       f (x + 1, y)
     }
   }
   if X.lineWd > Thick && x > 0 {
-    for y:= y0; y <= y1; y++ {
+    for y := y0; y <= y1; y++ {
       f (x - 1, y)
     }
   }
@@ -190,8 +196,8 @@ func (X *console) vertical (x, y, y1 int, f pointFunc) {
 
 // Pre: 0 <= x <= x1 < NColumns, 0 <= y != y1 < NLines.
 func (X *console) bresenham (x, y, x1, y1 int, f pointFunc) {
-  dx:= x1 - x
-  Fehler, dy:= 0, 0
+  dx := x1 - x
+  Fehler, dy := 0, 0
   if y <= y1 { // Steigung positiv
     dy = y1 - y
     if dy <= dx { // Steigung <= 45°
@@ -247,9 +253,9 @@ func (X *console) bresenham (x, y, x1, y1 int, f pointFunc) {
 
 // Pre: 0 <= x <= x1 < xx, y != y1, 0 <= y, y1 < yy.
 func (X *console) bresenhamInf (xx, yy, x, y, x1, y1 int, f pointFunc) {
-  x0, y0:= x, y
-  dx:= x1 - x
-  Fehler, dy:= 0, 0
+  x0, y0 := x, y
+  dx := x1 - x
+  Fehler, dy := 0, 0
   if y <= y1 { // Steigung positiv
     dy = y1 - y
     if dy <= dx { // Steigung <= 45°
@@ -395,7 +401,7 @@ func (X *console) OnLine (x, y, x1, y1, a, b int, t uint) bool {
 
 func (X *console) lines (xs, ys, xs1, ys1 []int, f pointFunc) {
   if ! ok4 (xs, ys, xs1, ys1) { return }
-  for i:= 0; i < len (xs); i++ {
+  for i := 0; i < len (xs); i++ {
     if X.iok (xs[i], ys[i]) && X.iok (xs1[i], ys1[i]) {
       X.line (xs[i], ys[i], xs1[i], ys1[i], f)
     }
@@ -415,7 +421,7 @@ func (X *console) OnLines (xs, ys, xs1, ys1 []int, a, b int, t uint) bool {
   if len (xs) == 1 {
     return between (xs[0], xs[0], a, int(t)) && between (ys[0], ys[0], b, int(t))
   }
-  for i:= 0; i < len (xs); i++ {
+  for i := 0; i < len (xs); i++ {
     if X.OnLine (xs[i], ys[i], xs1[i], ys1[i], a, b, t) {
       return true
     }
@@ -425,8 +431,8 @@ func (X *console) OnLines (xs, ys, xs1, ys1 []int, a, b int, t uint) bool {
 
 func (X *console) segs (xs, ys []int, f pointFunc) {
   if ! ok2 (xs, ys) { return }
-  n:= len (xs)
-  for i:= 0; i < n; i++ {
+  n := len (xs)
+  for i := 0; i < n; i++ {
     if ! X.iok (xs[i], ys[i]) {
       return
     }
@@ -434,7 +440,7 @@ func (X *console) segs (xs, ys []int, f pointFunc) {
   if n == 0 {
     f (xs[0], ys[0])
   } else {
-    for i:= 1; i < len (xs); i++ {
+    for i := 1; i < len (xs); i++ {
       X.line (xs[i-1], ys[i-1], xs[i], ys[i], f)
     }
   }
@@ -449,7 +455,7 @@ func (X *console) SegmentsInv (xs, ys []int) {
   if ! ok2 (xs, ys) { return }
   X.segs (xs, ys, X.PointInv)
   if len (xs) > 1 {
-    for i:= 1; i < len (xs); i++ {
+    for i := 1; i < len (xs); i++ {
       X.PointInv (xs[i], ys[i])
     }
   }
@@ -460,7 +466,7 @@ func (X *console) OnSegments (xs, ys []int, a, b int, t uint) bool {
   if len (xs) == 1 {
     return xs[0] == a && ys[0] == b // TODO, weil das noch Blödsinn ist
   }
-  for i:= 1; i < len (xs); i++ {
+  for i := 1; i < len (xs); i++ {
     if X.OnLine (xs[i-1], ys[i-1], xs[i], ys[i], a, b, t) {
       return true
     }
@@ -568,7 +574,7 @@ func (X *console) InRectangle (x, y, x1, y1, a, b int, t uint) bool {
 func (X *console) Polygon (xs, ys []int) {
   if ! ok2 (xs, ys) { return }
   X.segs (xs, ys, X.Point)
-  n:= len (xs)
+  n := len (xs)
   if n > 1 {
     X.line (xs[n-1], ys[n-1], xs[0], ys[0], X.Point)
   }
@@ -577,7 +583,7 @@ func (X *console) Polygon (xs, ys []int) {
 func (X *console) PolygonInv (xs, ys []int) {
   if ! ok2 (xs, ys) { return }
   X.segs (xs, ys, X.PointInv)
-  n:= len (xs)
+  n := len (xs)
   if n > 1 {
     X.line (xs[n-1], ys[n-1], xs[0], ys[0], X.PointInv)
     X.PointInv (xs[0], ys[0])
@@ -601,14 +607,14 @@ func (X *console) interior (x, y int, xs, ys []int) bool {
 
 func (X *console) PolygonFull (xs, ys []int) {
   if ! ok2 (xs, ys) { return }
-  n:= len (xs)
+  n := len (xs)
   if n < 2 { return }
   X.segs (xs, ys, X.set)
 /*
-  xx, yy:= 0, 0
-  xMin, yMin:= int(X.wd), int(X.ht)
-  xMax, yMax:= 0, 0
-  for i:= 0; i <= int(n); i++ {
+  xx, yy := 0, 0
+  xMin, yMin := int(X.wd), int(X.ht)
+  xMax, yMax := 0, 0
+  for i := 0; i <= int(n); i++ {
     xx += xs[i]; yy += ys[i]
     if xs[i] < xMin { xMin = xs[i] }
     if ys[i] < yMin { yMin = ys[i] }
@@ -616,14 +622,14 @@ func (X *console) PolygonFull (xs, ys []int) {
     if ys[i] > yMax { yMax = ys[i] }
   }
 // need a point in the interior of the polygon (not on its boundary !)
-  x0, y0:= xx / (n + 1), yy / (n + 1) // stupid first attempt
+  x0, y0 := xx / (n + 1), yy / (n + 1) // stupid first attempt
 // TODO for ! X.interior (x0, y0, xs, ys) {
 //        x0, y0 = random ...
 //        or moving around xs[0], ys[0] or (x0, y0) ...
 //      }
   X.set (x0, y0)
-  for j:= yMin; j <= yMax; j++ {
-    for i:= xMin; i <= xMax; i++ {
+  for j := yMin; j <= yMax; j++ {
+    for i := xMin; i <= xMax; i++ {
       if X.pg[i][j] { X.Point (i, j) }
     }
   }
@@ -635,11 +641,11 @@ func (X *console) PolygonFullInv (xs, ys []int) {
 }
 
 func (X *console) OnPolygon (xs, ys []int, a, b int, t uint) bool {
-  n:= len (xs)
+  n := len (xs)
   if n == 0 { return false }
   if ! ok2 (xs, ys) { return false }
   if n == 1 { return xs[0] == a && ys[0] == b }
-  for i:= 1; i < int(n); i++ {
+  for i := 1; i < int(n); i++ {
     if X.OnLine (xs[i-1], ys[i-1], xs[i], ys[i], a, b, t) {
       return true
     }
@@ -657,8 +663,8 @@ func (X *console) circ (x, y int, r uint, filled bool, f pointFunc) {
     f (x, y)
     return
   }
-  x1, y1:= 0, int(r)
-  Fehler:= 3
+  x1, y1 := 0, int(r)
+  Fehler := 3
   Fehler -= 2 * int(r)
 /*
   if filled {
@@ -678,7 +684,7 @@ func (X *console) circ (x, y int, r uint, filled bool, f pointFunc) {
   }
   Fehler += 6
 */
-  y0:= y1 + 1
+  y0 := y1 + 1
   for x1 <= y1 {
     if filled {
       X.horizontal (x - y1, y - x1, x + y1, f)
@@ -740,14 +746,14 @@ func (X *console) CircleFullInv (x, y int, r uint) {
 func (X *console) arc (x, y int, r uint, a, b float64, filled bool, f pointFunc) {
   if filled { ker.Panic ("filled arcs not yet implemented") }
 // lousy implementation, but better than nothing
-  a0, b0, r0, db:= a / 180 * math.Pi, b / 180 * math.Pi, float64(r), 1.0 / 180 * math.Pi
-  a1:= a0; if b0 > 0 { a1 += b0 } else { a0 += b0 }
+  a0, b0, r0, db := a / 180 * math.Pi, b / 180 * math.Pi, float64(r), 1.0 / 180 * math.Pi
+  a1 := a0; if b0 > 0 { a1 += b0 } else { a0 += b0 }
   var x1, y1 []int
-  for alpha:= a0; alpha < a1; alpha += db {
+  for alpha := a0; alpha < a1; alpha += db {
     x1, y1 = append (x1, x + int(r0 * math.Cos(alpha))), append(y1, y - int(r0 * math.Sin(alpha)))
   }
   x1, y1 = append (x1, x + int(r0 * math.Cos(a1))), append(y1, y - int(r0 * math.Sin(a1)))
-  for i:= 1; i < len(x1); i+= 1 {
+  for i := 1; i < len(x1); i+= 1 {
     X.line (x1[i-1], y1[i-1], x1[i], y1[i], f)
   }
 }
@@ -811,11 +817,11 @@ func (X *console) ell (x, y int, a, b uint, filled bool, f pointFunc) {
       return
     }
   }
-  a1, b1:= 2 * a * a, 2 * b * b
-  i:= int (a * b * b)
-  x2, y2:= int(2 * a * b * b), 0
-  xi, x1:= x - int(a), x + int(a)
-  yi, y1:= y, y
+  a1, b1 := 2 * a * a, 2 * b * b
+  i := int (a * b * b)
+  x2, y2 := int(2 * a * b * b), 0
+  xi, x1 := x - int(a), x + int(a)
+  yi, y1 := y, y
   var xl int
   if xi < 0 {
     xl = 0
@@ -926,15 +932,15 @@ func (X *console) OnEllipse (x, y int, a, b uint, A, B int, t uint) bool {
 }
 
 func (X *console) curve (xs, ys []int, f pointFunc) {
-  m:= len (xs)
+  m := len (xs)
   if m == 0 || m != len (ys) { return }
-  n:= ker.ArcLen (xs, ys)
-  xs1, ys1:= make ([]int, n), make ([]int, n)
-  for i:= uint(0); i < n; i++ {
+  n := ker.ArcLen (xs, ys)
+  xs1, ys1 := make ([]int, n), make ([]int, n)
+  for i := uint(0); i < n; i++ {
     xs1[i], ys1[i] = ker.Bezier (xs, ys, uint(m), n, i)
   }
   f (xs[0], ys[0])
-  for i:= 0; i < len(xs1); i++ {
+  for i := 0; i < len(xs1); i++ {
     f (xs1[i], ys1[i])
   }
 }

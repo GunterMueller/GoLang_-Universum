@@ -5,6 +5,7 @@ package prt
 import
   "murus/font"
 var
+//  PrintCommand string = "lp -o fit-to-page -d pomona"
   PrintCommand string = "lp"
 
 // The actual fontsize is f.

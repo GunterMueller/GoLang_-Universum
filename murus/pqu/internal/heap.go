@@ -1,6 +1,6 @@
 package internal
 
-// (c) murus.org  v. 150122 - license see murus.go
+// (c) murus.org  v. 150316 - license see murus.go
 
 import
   . "murus/obj"
@@ -10,7 +10,7 @@ type
   left, right *heap
               }
 
-func New() Heap {
+func new_() Heap {
   return nil
 }
 
@@ -28,12 +28,12 @@ func g (n uint) uint {
 // in the left subheap of x, and in this case the number of nodes
 // in the left, otherwise in the right subheap of x.
 func f (n uint) (bool, uint) {
-  left:= true
+  left := true
   if n == 1 {
     return left, 0
   }
-  a:= g (n)
-  b:= n - a
+  a := g (n)
+  b := n - a
   left = b < a / 2
   if left {
     b += a / 2
@@ -47,7 +47,7 @@ func (x *heap) Ins (a Any, n uint) Heap {
     x.Any = Clone (a)
     x.left, x.right = nil, nil
   } else {
-    left, k:= f (n)
+    left, k := f (n)
     if left {
       x.left = x.left.Ins (a, k).(*heap)
     } else {
@@ -73,7 +73,7 @@ func (x *heap) swap (l bool) {
 
 func (x *heap) Lift (n uint) {
   if n > 0 {
-    left, k:= f (n)
+    left, k := f (n)
     if left {
       x.left.Lift (k)
     } else {
@@ -90,15 +90,15 @@ func (x *heap) last (n uint) *heap {
   switch n { case 1:
     return x
   case 2:
-    y:= x.left
+    y := x.left
     x.left = nil
     return y
   case 3:
-    y:= x.right
+    y := x.right
     x.right = nil
     return y
   }
-  left, k:= f (n)
+  left, k := f (n)
   if left {
     return x.left.last (k)
   }
@@ -106,7 +106,7 @@ func (x *heap) last (n uint) *heap {
 }
 
 func (x *heap) Del (n uint) (Heap, Any) {
-  y:= x.last (n)
+  y := x.last (n)
   switch n { case 1:
     y = nil
   case 2:

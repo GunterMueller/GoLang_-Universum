@@ -21,5 +21,6 @@ type
 // The value of x is set to b.
   Set (b bool)
 }
+
 // Returns a new truth value with value undecidable.
-func New() TruthValue { return newTval() }
+func New() TruthValue { return new_() }

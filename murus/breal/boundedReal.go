@@ -1,14 +1,21 @@
 package breal
 
-// (c) murus.org  v. 170108 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 // TODO: more than 2 digits after the decimal point
 
 import (
 //  "math"
   . "murus/obj"
-  "murus/str"; "murus/col"; "murus/box"; "murus/errh"; "murus/font"; "murus/pbox"
-  "murus/nat"; "murus/real"
+  "murus/str"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/errh"
+  "murus/font"
+  "murus/pbox"
+  "murus/nat"
+  "murus/real"
 )
 const
   m = 9 // 
@@ -25,13 +32,13 @@ var (
   pbx = pbox.New()
 )
 
-func newBreal (d uint) Real {
+func new_(d uint) Real {
   x := new(breal)
   if d == 0 { d = 1 }
   if d > m { d = m }
   x.pre, x.wd = d, 1 + d + 1 + 2
   x.invalid = exp(d)
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   return x
 }
 
@@ -59,7 +66,7 @@ func (x *breal) Copy (Y Any) {
 }
 
 func (x *breal) Clone() Any {
-  y := newBreal(x.pre)
+  y := new_(x.pre)
   y.Copy(x)
   return y
 }
@@ -92,7 +99,7 @@ func (x *breal) Decode (b []byte) {
 
 func (x *breal) Defined (s string) bool {
   if uint(len (s)) > x.wd { return false }
-  str.OffSpaces (&s)
+  str.OffAllSpaces (&s)
 //  n := x.wd / 2
 //  P, L := make ([]uint, n), make ([]uint, n)
 //  n = nat.NDigitSequences (s, &P, &L)

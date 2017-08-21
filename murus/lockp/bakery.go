@@ -12,8 +12,8 @@ type
                        }
 
 func (L *lockerPBakery) max() uint {
-  m:= uint(0)
-  for i:= uint(1); i <= L.nProcesses; i++ {
+  m := uint(0)
+  for i := uint(1); i <= L.nProcesses; i++ {
     if L.number[i] > m {
       m = L.number[i]
     }
@@ -33,7 +33,7 @@ func (L *lockerPBakery) less (i, k uint) bool {
 
 func newB (n uint) LockerP {
   if n < 2 { return nil }
-  L:= new (lockerPBakery)
+  L := new(lockerPBakery)
   L.nProcesses = n
   L.number = make ([]uint, n)
   L.draws = make ([]bool, n)
@@ -45,7 +45,7 @@ func (L *lockerPBakery) Lock (p uint) {
   L.draws[p] = true
   L.number[p] = L.max() + 1
   L.draws[p] = false
-  for a:= uint(1); a <= L.nProcesses; a++ {
+  for a := uint(1); a <= L.nProcesses; a++ {
     for L.draws[a] { /* do nothing */ }
     for L.number[a] > 0 && L.less (a, p) { /* do nothing */ }
   }

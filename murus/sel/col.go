@@ -4,7 +4,8 @@ package sel
 
 import (
   "murus/kbd"
-  "murus/col"; "murus/scr"
+  "murus/col"
+  "murus/scr"
 )
 const (
   M = 128 // max < M
@@ -16,85 +17,6 @@ var (
   pattern16 [16]col.Colour
   max uint
 )
-
-
-func write (FZ, B, x, y int) {
-  f:= scr.ColF()
-  for i:= 0; i < FZ; i++ {
-    switch FZ { case 16:
-      scr.ColourF (pattern16[i])
-    default:
-      scr.ColourF (pattern[i])
-    }
-    scr.RectangleFull (x + i * B, y, x + i * B + B - 1, y + H - 1)
-  }
-  scr.ColourF (f)
-}
-
-
-func define (FZ, B uint, C *col.Colour) {
-  xi, yi:= scr.MousePosGr()
-  x, y:= xi, yi
-  x -= X
-  x = x / int(B)
-  if x < int(FZ) && Y <= y && y < Y + H {
-    if FZ == 16 {
-      *C = pattern16[x]
-    } else {
-      *C = pattern[x]
-    }
-    scr.ColourF (*C)
-  } else {
-    *C = scr.ScrColB()
-  }
-}
-
-
-func colour (FZ, B uint) col.Colour {
-  MausAn:= scr.MousePointerOn()
-  if ! MausAn {
-    scr.MousePointer (true)
-  }
-  xm, ym:= scr.MousePosGr()
-  X, Y = xm, ym
-  M:= int(FZ * B) / 2
-  if X >= int(scr.Ht()) - M { X = int(scr.Wd()) - M }
-  if X >= M { X -= M } else { X = 0 }
-  if Y >= H { Y -= H } else { Y = 0 }
-  scr.SaveGr (X, Y, X + 2 * int(FZ * B), Y + H)
-  write (int(FZ), int(B), X, Y)
-  clicked:= false
-  C:= scr.ScrColF()
-  loop: for {
-    scr.MousePointer (true)
-    K, _:= kbd.Command()
-    switch K { case kbd.Esc, kbd.Back, kbd.There, kbd.This:
-      break loop
-    case kbd.Here:
-      define (FZ, B, &C)
-      clicked = true
-    case kbd.Hither:
-      if clicked { break loop }
-    }
-  }
-  scr.RestoreGr (X, Y, X + 2 * int(FZ * B), Y + H)
-  if ! MausAn {
-    scr.MousePointer (false)
-  }
-  return C
-}
-
-
-var
-  n int
-
-
-func use (C col.Colour) {
-  if n > M { n = M }
-  pattern [n] = C
-  n++
-}
-
 
 func init() {
   pattern16[ 0] = col.Black
@@ -876,4 +798,77 @@ func init() {
 //  use (col.Thistle4)
 
   max = uint(n)
+}
+
+func write (FZ, B, x, y int) {
+  f := scr.ColF()
+  for i := 0; i < FZ; i++ {
+    switch FZ { case 16:
+      scr.ColourF (pattern16[i])
+    default:
+      scr.ColourF (pattern[i])
+    }
+    scr.RectangleFull (x + i * B, y, x + i * B + B - 1, y + H - 1)
+  }
+  scr.ColourF (f)
+}
+
+func define (FZ, B uint, C *col.Colour) {
+  xi, yi := scr.MousePosGr()
+  x, y := xi, yi
+  x -= X
+  x = x / int(B)
+  if x < int(FZ) && Y <= y && y < Y + H {
+    if FZ == 16 {
+      *C = pattern16[x]
+    } else {
+      *C = pattern[x]
+    }
+    scr.ColourF (*C)
+  } else {
+    *C = scr.ScrColB()
+  }
+}
+
+func colour (FZ, B uint) col.Colour {
+  MausAn := scr.MousePointerOn()
+  if ! MausAn {
+    scr.MousePointer (true)
+  }
+  xm, ym := scr.MousePosGr()
+  X, Y = xm, ym
+  M := int(FZ * B) / 2
+  if X >= int(scr.Ht()) - M { X = int(scr.Wd()) - M }
+  if X >= M { X -= M } else { X = 0 }
+  if Y >= H { Y -= H } else { Y = 0 }
+  scr.SaveGr (X, Y, X + 2 * int(FZ * B), Y + H)
+  write (int(FZ), int(B), X, Y)
+  clicked := false
+  C := scr.ScrColF()
+  loop: for {
+    scr.MousePointer (true)
+    K, _ := kbd.Command()
+    switch K { case kbd.Esc, kbd.Back, kbd.There, kbd.This:
+      break loop
+    case kbd.Here:
+      define (FZ, B, &C)
+      clicked = true
+    case kbd.Hither:
+      if clicked { break loop }
+    }
+  }
+  scr.RestoreGr (X, Y, X + 2 * int(FZ * B), Y + H)
+  if ! MausAn {
+    scr.MousePointer (false)
+  }
+  return C
+}
+
+var
+  n int
+
+func use (C col.Colour) {
+  if n > M { n = M }
+  pattern [n] = C
+  n++
 }

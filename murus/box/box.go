@@ -1,19 +1,19 @@
 package box
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170423 - license see murus.go
 
 import (
   "strconv"
   "murus/z"
   "murus/ker"
   . "murus/shape"
-  . "murus/str"; "murus/kbd"
-  "murus/col"; "murus/scr"
+  . "murus/str"
+  "murus/kbd"
+  "murus/col"
+  "murus/scr"
 )
-const (
-  pack = "box"
+const
   space = byte(' ')
-)
 type
   box struct {
        width,
@@ -32,10 +32,10 @@ overwritable,
 var
   edited bool = true
 
-func newBox() Box {
+func new_() Box {
   x := new (box)
   x.width = 0 // scr.NColumns() // does not work, if no scr.New was called before
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   x.Comm = kbd.None
   return x
 }

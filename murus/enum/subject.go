@@ -1,8 +1,8 @@
 package enum
 
-// (c) murus.org  v. 140522 - license see murus.go
+// (c) murus.org  v. 170419 - license see murus.go
 
-var
+var (
   lSubject, sSubject =
   []string { "keinFach",
              "Deutsch", "Englisch", "Französisch", "Italienisch", "Spanisch",
@@ -38,11 +38,9 @@ var
              "wi", "ti", "mi", "it",
              "mt", "gm", "gt",
              "sp" }
-const
-  NSubjects = 57
-
+  NSubjects = uint8(len(lSubject))
+)
 
 func init() {
   l[Subject], s[Subject] = lSubject, sSubject
-  if NSubjects != uint8(len(lSubject)) { panic ("enum.NSubjects wrong") }
 }

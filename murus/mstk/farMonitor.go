@@ -21,25 +21,25 @@ type
                     }
 
 func NewFarMonitor (a Any, h host.Host, p uint16, s bool) MStack {
-  x:= new (farMonitor)
+  x := new (farMonitor)
   x.Stack = stk.New (a)
-  c:= func (a Any, i uint) bool {
-        if i == push {
-          return true
-        }
-        return ! x.Stack.Empty() // top, pop
-      }
-  f:= func (a Any, i uint) Any {
-        switch i {
-        case push:
-          x.Stack.Push (a)
-        case pop:
-          x.Stack.Pop()
-        case top:
-          return x.Stack.Top()
-        }
-        return a // push, pop
-      }
+  c := func (a Any, i uint) bool {
+         if i == push {
+           return true
+         }
+         return ! x.Stack.Empty() // top, pop
+       }
+  f := func (a Any, i uint) Any {
+         switch i {
+         case push:
+           x.Stack.Push (a)
+         case pop:
+           x.Stack.Pop()
+         case top:
+           return x.Stack.Top()
+         }
+         return a // push, pop
+       }
   x.FarMonitor = fmon.New (a, nFuncs, f, c, h, p, s)
   return x
 }
@@ -49,11 +49,11 @@ func (x *farMonitor) Push (a Any) {
 }
 
 func (x *farMonitor) Pop() {
-  var dummy Any
-  x.FarMonitor.F (dummy, pop)
+  var a Any
+  x.FarMonitor.F(a, pop)
 }
 
 func (x *farMonitor) Top() Any {
-  var dummy Any
-  return x.FarMonitor.F (dummy, top)
+  var a Any
+  return x.FarMonitor.F(a, top)
 }

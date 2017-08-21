@@ -111,8 +111,11 @@ void stop (int d) { ioctl (d, CDROMSTOP); }
 import
   "C"
 import (
-  "os"; "syscall"
-  "murus/ker"; "murus/env"; "murus/clk"
+  "os"
+  "syscall"
+  "murus/ker"
+  "murus/env"
+  "murus/clk"
 )
 const (
   invalid = iota

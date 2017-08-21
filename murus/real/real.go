@@ -1,16 +1,23 @@
 package real
 
-// (c) murus.org  v. 170108 - license see murus.go
+// (c) murus.org  v. 170423 - license see murus.go
 
 import (
-  "math"; "strconv"
-  "murus/obj"; "murus/str"; "murus/col"; "murus/box"; "murus/errh"
-)
-const (
-  pack = "real"
+  "math"
+  "strconv"
+  "murus/obj"
+  "murus/str"
+  "murus/col"
+  "murus/box"
+  "murus/errh"
 )
 var
   bx = box.New()
+
+func init() {
+//  bx.SetNumerical()
+//  setFormat()
+}
 
 func NDigits (x float64) uint {
   return 1 + uint(math.Floor (math.Log (math.Abs (x)) / math.Ln10))
@@ -21,7 +28,7 @@ func valid (x float64) bool {
 }
 
 func number (s string) float64 {
-  if x, err:= strconv.ParseFloat (s, 64); err == nil {
+  if x, err := strconv.ParseFloat (s, 64); err == nil {
     return x
   }
   return math.NaN()
@@ -29,7 +36,7 @@ func number (s string) float64 {
 
 func defined (s string) (float64, bool) {
   str.OffSpc (&s)
-  r, e:= strconv.ParseFloat (s, 64)
+  r, e := strconv.ParseFloat (s, 64)
   if e != strconv.ErrSyntax {
     return r, true
   }
@@ -37,7 +44,7 @@ func defined (s string) (float64, bool) {
 }
 
 func string_ (x float64) string {
-  s:= strconv.FormatFloat (x, 'f', 2, 64)
+  s := strconv.FormatFloat (x, 'f', 2, 64)
   str.OffSpc (&s)
   return s
 }
@@ -51,11 +58,11 @@ func write (x float64, l, c uint) {
 }
 
 func edit (x *float64, l, c uint) {
-  s:= String (*x)
+  s := String (*x)
   for {
     bx.Edit (&s, l, c)
-    _, ok:= str.Pos (s, 'e')
-    _, ok1:= str.Pos (s, 'E')
+    _, ok := str.Pos (s, 'e')
+    _, ok1 := str.Pos (s, 'E')
     if ! ok && ! ok1 {
       *x = number (s)
       if ! math.IsNaN (*x) {
@@ -96,8 +103,3 @@ func Decode (b []byte) float64 {
   }
   return 0.0
 } */
-
-func init() {
-//  bx.SetNumerical()
-//  setFormat()
-}

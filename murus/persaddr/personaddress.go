@@ -1,18 +1,22 @@
 package persaddr
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170419 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/col"
-  "murus/pers"; "murus/addr"
-  "murus/atom"; "murus/mol"; "murus/masks"
+  . "murus/obj"
+  "murus/col"
+  "murus/pers"
+  "murus/addr"
+  "murus/atom"
+  "murus/mol"
+  "murus/masks"
 )
 type
   personAddress struct {
                        mol.Molecule
                        }
 
-func newPersaddr() PersonAddress {
+func new_() PersonAddress {
   x := new (personAddress)
   x.Molecule = mol.New()
   a := atom.New (pers.New())
@@ -23,11 +27,11 @@ func newPersaddr() PersonAddress {
   a.Colours (col.LightGreen, col.Black)
   x.Ins (a, 2, 0)
   m := masks.New()
-  m.Ins ("Anschrift:", 2,  0) // TODO: von addr übernehmen
-  m.Ins ("PLZ:",       3,  0)
-  m.Ins ("Ort:",       3, 12)
-  m.Ins ("Tel.:",      2, 41)
-  m.Ins ("Funk:",      3, 41)
+  m.Ins ("Str./Nr.:", 2,  0) // TODO: von addr übernehmen
+  m.Ins ("Tel.:",     2, 39)
+  m.Ins ("PLZ:",      3,  0)
+  m.Ins ("Ort:",      3, 11)
+  m.Ins ("Funk:",     3, 39)
   x.SetMask(m)
   return x
 }
@@ -39,21 +43,21 @@ func (x *personAddress) imp (Y Any) *personAddress {
 }
 
 func (x *personAddress) Eq (Y Any) bool {
-  return x.Molecule.Eq (x.imp (Y))
+  return x.Molecule.Eq (x.imp (Y).Molecule)
 }
 
 func (x *personAddress) Copy (Y Any) {
-  x.Molecule.Copy (x.imp (Y))
+  x.Molecule.Copy (x.imp (Y).Molecule)
 }
 
 func (x *personAddress) Clone() Any {
-  y := newPersaddr()
+  y := new_()
   y.Copy (x)
   return y
 }
 
 func (x *personAddress) Less (Y Any ) bool {
-  return x.Molecule.Less (x.imp (Y))
+  return x.Molecule.Less (x.imp (Y).Molecule)
 }
 
 func (x *personAddress) Index() Func {

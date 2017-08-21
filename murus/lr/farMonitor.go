@@ -1,6 +1,6 @@
 package lr
 
-// (c) murus.org  v. 161225 - license see murus.go
+// (c) murus.org  v. 170520 - license see murus.go
 
 // >>> left/right problem: implementation with far monitors
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 209
@@ -16,46 +16,54 @@ type
                     fmon.FarMonitor
                     }
 
-func NewFarMonitor (h host.Host, p uint16, s bool) LeftRight {
+func newFMon (h host.Host, p uint16, s bool) LeftRight {
   x := new(farMonitor)
-  c := func (a Any, i uint) bool {
-        switch i {
-        case lIn:
-          return x.nR == 0
-        case rIn:
-          return x.nL == 0
+  ps := func (a Any, i uint) bool {
+          switch i {
+          case leftIn:
+            return x.nR == 0
+          case rightIn:
+            return x.nL == 0
+          }
+          return true // leftOut, rightOut
         }
-        return true // lOut, rOut
-      }
-  f := func (a Any, i uint) Any {
-        switch i {
-        case lIn:
-          x.nL++
-        case rIn:
-          x.nR++
-        case lOut:
-          x.nL--
-        case rOut:
-          x.nR--
+  fs := func (a Any, i uint) Any {
+          switch i {
+          case leftIn:
+            x.nL++
+            writeL (x.nL)
+          case rightIn:
+            x.nR++
+            writeR (x.nR)
+          case leftOut:
+            x.nL--
+            writeL (x.nL)
+          case rightOut:
+            x.nR--
+            writeR (x.nR)
+          }
+          return true
         }
-        return true
-      }
-  x.FarMonitor = fmon.New (true, nFuncs, f, c, h, p, s)
+  x.FarMonitor = fmon.New (false, nFuncs, fs, ps, h, p, s)
   return x
 }
 
 func (x *farMonitor) LeftIn() {
-  x.F (true, lIn)
+  x.F(true, leftIn)
 }
 
 func (x *farMonitor) LeftOut() {
-  x.F (true, lOut)
+  x.F(true, leftOut)
 }
 
 func (x *farMonitor) RightIn() {
-  x.F (true, rIn)
+  x.F(true, rightIn)
 }
 
 func (x *farMonitor) RightOut() {
-  x.F (true, rOut)
+  x.F(true, rightOut)
+}
+
+func (x *farMonitor) Fin() {
+  x.FarMonitor.Fin()
 }

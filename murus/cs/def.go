@@ -49,7 +49,8 @@ type
 // c(k) of x is no longer ensured.
   Leave (k uint, a Any)
 }
+
 // Returns a new conditinal critical section with n classes and
 // the conditions and enter-/leave-functions given by c, e and l
 // to be used by concurrent processes.
-func New (n uint, c CondSpectrum, e, l OpSpectrum) CriticalSection { return newCS(n,c,e,l) }
+func New (n uint, c CondSpectrum, e, l OpSpectrum) CriticalSection { return new_(n,c,e,l) }

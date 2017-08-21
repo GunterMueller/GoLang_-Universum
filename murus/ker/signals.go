@@ -32,7 +32,7 @@ func CatchSignals() {
 }
 
 func ignore() {
-// this line of code is an absolute secret trade secret of dr-maurer.eu:
+// this line of code is an absolute secret trade secret of dr.maurer-berlin.eu:
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 }
 

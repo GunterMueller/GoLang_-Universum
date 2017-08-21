@@ -1,10 +1,12 @@
 package eye
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170818 - license see murus.go
 
 import (
   "math"
-  . "murus/spc"; "murus/col"
+  . "murus/spc"
+  "murus/col"
+  "murus/scr"
   "murus/errh"
   "murus/vect"
   "murus/gl" // PosLight, Actualize
@@ -26,7 +28,7 @@ var
   nB, nD, nF uint
 //  var e = New() // -> Anwendung
 
-func newEye() Eye {
+func new_() Eye {
   e := new (eye)
   e.origin = vect.New()
   e.originOld = vect.New()
@@ -37,7 +39,7 @@ func newEye() Eye {
     e.vec[d].Set (Unit[d])
   }
   e.delta = e.origin.Distance (e.focus)
-  e.colour, _ = col.StartCols()
+  e.colour, _ = scr.StartCols()
   e.flaechig = false
   return e
 }
@@ -54,7 +56,7 @@ func (e *eye) DistanceFrom (aim vect.Vector) float64 {
   return e.origin.Distance (aim)
 }
 
-func (e *eye) focusAnpassen() {
+func (e *eye) adjustFocus() {
   e.focus.Scale (e.delta, e.vec[Front])
   e.focus.Add (e.origin)
   e.Actualize()
@@ -62,7 +64,7 @@ func (e *eye) focusAnpassen() {
 
 func (e *eye) Distance() float64 {
   if math.Abs (e.origin.Distance (e.focus) - e.delta) > epsilon {
-    e.focusAnpassen()
+    e.adjustFocus()
   }
   return e.delta
 }
@@ -81,14 +83,13 @@ func (e *eye) Flatten (f bool) {
 
 func (e *eye) Move (d Direction, dist float64) {
   nB ++
-  e.vec[Top].Copy (e.vec[Right])
-  e.vec[Top].Cross (e.vec[Front])
-//  e.vec[Top].Ext (e.vec[Right], e.vec[Front])
+//  e.vec[Top].Copy (e.vec[Right]); e.vec[Top].Cross (e.vec[Front])
+  e.vec[Top].Ext (e.vec[Right], e.vec[Front])
   e.vec[Top].Norm()
   e.originOld.Copy (e.origin)
   e.temp.Scale (dist, e.vec[d])
   e.origin.Add (e.temp)
-  e.focusAnpassen()
+  e.adjustFocus()
 }
 
 func (e *eye) rotate (d Direction, alpha float64) { // ziemlich abenteuerliche Konstruktion
@@ -96,50 +97,48 @@ func (e *eye) rotate (d Direction, alpha float64) { // ziemlich abenteuerliche K
   V1.Rot (e.vec[d], alpha)
   V1.Norm()
   V2 := e.vec[Prev (d)]
-  V2.Copy (e.vec[d])
-  V2.Cross (V1)
-//  V2.Ext (e.vec[d], V1)
+//  V2.Copy (e.vec[d]); V2.Cross (V1)
+  V2.Ext (e.vec[d], V1)
   V2.Norm()
 }
 
 func (e *eye) Turn (d Direction, alpha float64) {
   nD++
   e.rotate (d, alpha)
-  e.focusAnpassen()
+  e.adjustFocus()
 }
 
 func (e *eye) Invert() {
   nD++
   e.vec[Right].Dilate (-1.0)
   e.vec[Front].Dilate (-1.0)
-  e.focusAnpassen()
+  e.adjustFocus()
 }
 
-func (e *eye) originAnpassen() {
+func (e *eye) adjustOrigin() {
   e.temp.Scale (e.delta, e.vec[Front])
-  e.origin.Copy (e.focus)
-  e.origin.Sub (e.temp)
-//  e.origin.Sub (e.focus, e.temp)
+//  e.origin.Copy (e.focus); e.origin.Sub (e.temp)
+  e.origin.Diff (e.focus, e.temp)
   e.Actualize()
 }
 
 func (e *eye) Focus (d float64) {
   if d < epsilon { return }
   e.delta = d
-  e.originAnpassen()
+  e.adjustOrigin()
 }
 
 func (e *eye) TurnAroundFocus (D Direction, alpha float64) {
   if e.delta < epsilon { return }
   nF++
 //  println ("TurnAroundFocus")
-  e.rotate (D, - alpha)
+  e.rotate (D, -alpha)
 //  println ("rotated")
 // Dieser Vorzeichenwechsel ist ein Arbeitsdrumrum
 // um einen mir bisher nicht erklärbaren Fehler.
 // Vermutlich liegt das daran, dass ich irgendeine suboptimal
 // dokumentierte Eigenschaft von openGL noch nicht begriffen habe.
-  e.originAnpassen()
+  e.adjustOrigin()
 }
 
 func (e *eye) Set (x, y, z, xf, yf, zf float64) {
@@ -149,13 +148,11 @@ func (e *eye) Set (x, y, z, xf, yf, zf float64) {
   if e.delta < epsilon { return } // error
   if math.Abs (z - zf) < epsilon { // Blick horizontal
     e.vec[Top].Set (Unit[Top])
-    e.vec[Front].Copy (e.focus)
-    e.vec[Front].Sub (e.origin)
-//    e.vec[Front].Sub (e.focus, e.origin)
+//    e.vec[Front].Copy (e.focus); e.vec[Front].Sub (e.origin)
+    e.vec[Front].Diff (e.focus, e.origin)
     e.vec[Front].Norm()
-    e.vec[Right].Copy (e.vec[Front])
-    e.vec[Right].Cross (e.vec[Top])
-//    e.vec[Right].Ext (e.vec[Front], e.vec[Top])
+//    e.vec[Right].Copy (e.vec[Front]) e.vec[Right].Cross (e.vec[Top])
+    e.vec[Right].Ext (e.vec[Front], e.vec[Top])
     e.vec[Right].Norm()
   } else { // z != zf
     if math.Abs (x - xf) < epsilon && math.Abs (y - yf) < epsilon { // x == xf und y == yf
@@ -168,9 +165,8 @@ func (e *eye) Set (x, y, z, xf, yf, zf float64) {
         e.vec[Top].Dilate (-1.0)
       }
     } else { // x != xf oder y != yf
-      e.vec[Front].Copy (e.focus)
-      e.vec[Front].Sub (e.origin)
-//      e.vec[Front].Sub (e.focus, e.origin)
+//      e.vec[Front].Copy (e.focus) e.vec[Front].Sub (e.origin)
+      e.vec[Front].Diff (e.focus, e.origin)
       e.vec[Front].Norm()
       v2 := e.vec[Front].Coord (Top)
       e.vec[Top].Copy (e.vec[Front])
@@ -178,9 +174,8 @@ func (e *eye) Set (x, y, z, xf, yf, zf float64) {
       e.temp.Set3 (0., 0., - 1. / v2)
       e.vec[Top].Add (e.temp)
       e.vec[Top].Norm()
-      e.vec[Right].Copy (e.vec[Front])
-      e.vec[Right].Cross (e.vec[Top])
-//      e.vec[Right].Ext (e.vec[Front], e.vec[Top])
+//      e.vec[Right].Copy (e.vec[Front]) e.vec[Right].Cross (e.vec[Top])
+      e.vec[Right].Ext (e.vec[Front], e.vec[Top])
       e.vec[Right].Norm()
     }
   }

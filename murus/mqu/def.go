@@ -1,9 +1,11 @@
 package mqu
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170218 - license see murus.go
 
-import
+import (
   . "murus/obj"
+  "murus/host"
+)
 type
   MQueue interface { // Synchronized Queues.
                      // The exported functions cannot be interrupted
@@ -20,4 +22,7 @@ type
 // Pre: a is atomic or of a type implementing Object.
 // Returns an empty queue for objects of the type of a
 // to be used by concurrent processes.
-func New (a Any) MQueue { return newMqu(a) }
+func New (a Any) MQueue { return new_(a) }
+
+// TODO Spec
+func NewFar (a Any, h host.Host, p uint16, s bool) MQueue { return newf(a,h,p,s) }

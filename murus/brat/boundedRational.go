@@ -1,12 +1,16 @@
 package brat
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170817 - license see murus.go
 
 import (
   "math"
-  . "murus/obj"; "murus/str"
-  "murus/col"; "murus/box"
-  "murus/font"; "murus/pbox"
+  . "murus/obj"
+  "murus/str"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/font"
+  "murus/pbox"
   "murus/nat"
   "murus/errh"
 )
@@ -20,14 +24,18 @@ type
                   font.Font
                   }
 var (
-  reciprocal = New().(*rational)
+  reciprocal = new_().(*rational)
   bx = box.New()
   pbx = pbox.New()
 )
 
-func newRat() Rational {
+func init() {
+  bx.Wd (1 + 9 + 1 + 9) // sign, numerator, fraction bar, denominator
+}
+
+func new_() Rational {
   x := new(rational)
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   if col.Eq (x.cF, col.White) && col.Eq (x.cB, col.Black) { x.cF = col.LightWhite } // Firlefanz
   x.geq0 = true
   return x
@@ -59,7 +67,7 @@ func (x *rational) Copy (Y Any) {
 }
 
 func (x *rational) Clone() Any {
-  y := newRat()
+  y := new_()
   y.Copy (x)
   return y
 }
@@ -287,8 +295,13 @@ func (x *rational) Plus (Y Adder) {
 }
 */
 
+func (x *rational) Sum (Y, Z Adder) {
+  x.Copy (Y)
+  x.Add (Z)
+}
+
 func (x *rational) add (Y Adder) {
-  y := x.imp (Y)
+  y := x.imp(Y)
   if y.num == 0 {
     return
   }
@@ -346,11 +359,10 @@ func (x *rational) add (Y Adder) {
   x.reduce()
 }
 
-func (x *rational) Add (Y ...Adder) Adder {
+func (x *rational) Add (Y ...Adder) {
   for i, _ := range Y {
     x.add (Y[i])
   }
-  return x.Clone().(Adder)
 }
 
 func (x *rational) changeSign() {
@@ -358,7 +370,12 @@ func (x *rational) changeSign() {
   if x.num == 0 { x.geq0 = true }
 }
 
-func (x *rational) Sub (Y ...Adder) Adder {
+func (x *rational) Diff (Y, Z Adder) {
+  x.Copy (Y)
+  x.Sub (Z)
+}
+
+func (x *rational) Sub (Y ...Adder) {
   for i, _ := range Y {
     y := x.imp(Y[i])
     yg := y.geq0
@@ -366,7 +383,11 @@ func (x *rational) Sub (Y ...Adder) Adder {
     x.Add (y)
     y.geq0 = yg
   }
-  return x.Clone().(Adder)
+}
+
+func (x *rational) Prod (Y, Z Multiplier) {
+  x.Copy (Y)
+  x.Mul (Z)
 }
 
 func (x *rational) mul (Y Multiplier) {
@@ -394,11 +415,10 @@ func (x *rational) mul (Y Multiplier) {
   x.reduce()
 }
 
-func (x *rational) Mul (Y ...Multiplier) Multiplier {
+func (x *rational) Mul (Y ...Multiplier) {
   for i, _ := range Y {
     x.mul (Y[i])
   }
-  return x.Clone().(Multiplier)
 }
 
 func (x *rational) Sqr() {
@@ -444,7 +464,3 @@ func (x *rational) Operate (Y ...Rational, op Operation) { // TODO Rational -> .
   }
 }
 */
-
-func init() {
-  bx.Wd (1 + 9 + 1 + 9) // sign, numerator, fraction bar, denominator
-}

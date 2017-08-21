@@ -16,7 +16,6 @@ const (
   NCasus
 )
 
-
 func init() {
   l[Casus], s[Casus] = lCasus, sCasus
 }

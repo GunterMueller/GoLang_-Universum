@@ -1,12 +1,12 @@
 package mouse
 
-// (c) murus.org  140202 - license see murus.go
+// (c) murus.org  170814 - license see murus.go
 
 import
 (
   "os"
   "murus/ker"
-  "murus/xker"
+  "murus/xwin"
 )
 const (
   move = iota         // mousemove without any button pressed
@@ -32,7 +32,7 @@ var (
 )
 
 func init() {
-  if xker.UnderX() {
+  if xwin.UnderX() {
     mousepipe = (chan Command)(nil)
   } else {
     var err error

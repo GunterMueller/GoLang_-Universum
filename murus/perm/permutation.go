@@ -10,7 +10,7 @@ type
             p []uint
               }
 
-func newPerm (n uint) Permutation {
+func new_(n uint) Permutation {
   if n == 0 { return nil }
   x := new (permutation)
   x.uint = n

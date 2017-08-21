@@ -1,0 +1,81 @@
+package dgra
+
+// (c) murus.org  v. 170803 - license see murus.go
+
+import (
+  "murus/ker"
+  . "murus/obj"
+)
+const (
+  child = 1027
+  noChild = 1099
+)
+
+func (x *distributedGraph) bfsx (o Op) {
+  x.connect (x.time)
+  defer x.fin()
+  x.Op = o
+  if x.me == x.root { // root sends the first message
+    x.time = x.me
+    x.parent = inf + 1 // trick, see below
+    for i := uint(0); i < x.n; i++ {
+      x.ch[i].Send (x.me)
+mutex.Lock(); println ("send", x.me, "to", x.nr[0]); mutex.Unlock()
+      x.child[i] = true
+    }
+  }
+
+  for j := uint(0); j < x.n; j++ {
+    go func (i uint) {
+      for {
+        t := x.ch[i].Recv().(uint)
+        x.chanuint[i] <- t
+        t = <-x.chanuint[i]
+        x.ch[i].Send(t)
+      }
+    }(j)
+  }
+
+  for i := uint(0); i < x.n; i++ {
+    go func (j uint) {
+//      loop:
+      got := x.ch[j].Recv() {      for {
+        select {
+        case got := <-x.chanuint[j]:
+          mutex.Lock()
+println ("recv", got , "from", x.nr[j])
+          switch got {
+          case child:
+            x.child[j] = true
+println ("have child", x.nr[j])
+          case noChild:
+            x.child[j] = false
+          default:
+            if x.parent == inf {
+              x.parent = x.nr[j]
+println ("have parent", x.nr[j])
+              x.chanuint[j] <- child
+              for i := uint(0); i < x.n; i++ {
+                x.chanuint[i] <- x.me
+              }
+            } else {
+println ("send", noChild, "to", x.nr[j])
+              x.chanuint[j] <- noChild
+            }
+          }
+          mutex.Unlock()
+//          done <- 0
+//          break loop
+        default:
+        }
+        ker.Msleep(300)
+      }
+    }(i)
+  }
+/*
+  for i := uint(0); i < x.n; i++ {
+    <-done
+  }
+  x.Op(x.actVertex)
+*/
+}

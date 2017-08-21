@@ -1,13 +1,15 @@
 package fig2
 
-// (c) murus.org  v. 150425 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 import (
 //  "murus/font"
-  . "murus/obj"; "murus/col"; "murus/psp"
+  . "murus/obj"
+  "murus/col"
+  "murus/psp"
 )
 type
-  Kind byte; const ( // 2-dimensional elementary figures on the screen
+  Type byte; const ( // 2-dimensional elementary figures on the screen
   Points = iota // Sequence of at most 512 points
   Segments // line segment[s]
   Polygon
@@ -18,7 +20,7 @@ type
   Ellipse
   Text // of almost 40 characters
   Image // in the ppm-format
-  NKinds
+  NTypes
 )
 type
   Figure2 interface {
@@ -27,7 +29,7 @@ type
   Marker
 
 // x is of kind k.
-  SetKind (k Kind)
+  SetType (k Type)
 
 // x is of the kind, that was selected interactively by the user.
   Select ()
@@ -78,3 +80,6 @@ type
 // TODO Spec
   Print (psp.PostscriptPage)
 }
+
+// Returns a new empty figure of undefined Type.
+func New() Figure2 { return new_() }

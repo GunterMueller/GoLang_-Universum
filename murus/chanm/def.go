@@ -6,10 +6,6 @@ package chanm
 
 import
   . "murus/obj"
-
-// Returns an new empty channel model.
-func New() ChannelModel { return new_() }
-
 type
   ChannelModel interface { // "models" of channels (i.e. working only within one process)
 
@@ -23,3 +19,6 @@ type
 // The calling process might have been blocked, until x contained a message.
   Recv() Any
 }
+
+// Returns an new empty channel model.
+func New() ChannelModel { return new_() }

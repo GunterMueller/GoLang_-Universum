@@ -12,5 +12,6 @@ type
 
   Equiv (Y Any) bool
 }
+
 // Returns a new empty address.
-func New() Address { return newAddr() }
+func New() Address { return new_() }

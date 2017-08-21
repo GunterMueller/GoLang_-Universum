@@ -1,6 +1,6 @@
 package internal
 
-// (c) murus.org  v. 150122 - license see murus.go
+// (c) murus.org  v. 170316 - license see murus.go
 
 import
   . "murus/obj"
@@ -29,3 +29,5 @@ type
   ClrLast ()
   Write (l, c uint)
 }
+
+func New(a Any) Page { return new_(a) }

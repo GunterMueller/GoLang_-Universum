@@ -1,6 +1,6 @@
 package sem
 
-// (c) murus.org  v. 140803 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 // >>> naive incorrect solution
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 70
@@ -13,7 +13,7 @@ type
   block, mutex sync.Mutex
                }
 
-func NewNaive (n uint) Semaphore {
+func newNaive (n uint) Semaphore {
   x:= new(naive)
   x.int = int(n)
   x.block.Lock()

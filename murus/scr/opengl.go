@@ -1,11 +1,14 @@
 package scr
 
-// (c) murus.org  v. 140527 - license see murus.go
+// (c) murus.org  v. 170818 - license see murus.go
+
+import
+  "murus/ker"
 
 func (X *screen) WriteGlx() {
   if underX {
-    X.Window.WriteGlx()
+    X.XWindow.WriteGlx()
   } else {
-    X.Console.WriteGlx()
+    ker.Panic ("no GUI")
   }
 }

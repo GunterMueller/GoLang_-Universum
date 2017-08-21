@@ -1,10 +1,10 @@
 package enum
 
-// (c) murus.org  v. 141212 - license see murus.go
+// (c) murus.org  v. 170r19 - license see murus.go
 
 import
   "murus/str"
-var
+var (
   lWrit, sWrit[]string =
   []string { "",
     "Gellert, Christian Fürchtegott (1715-1769)",
@@ -57,8 +57,9 @@ var
 */
   },
   lWrit
-const
-  NWriters = uint8(46)
+  NWriters = uint8(len(lWrit))
+)
+
 func init() {
   for i:= 1; i < len(lWrit); i++ {
     p, _:= str.Pos (lWrit[i], ',')
@@ -66,5 +67,4 @@ func init() {
   }
   sWrit[21] = "Bach, Ph.E."
   l[Writer], s[Writer] = lWrit, sWrit
-  if NWriters != uint8(len(lWrit)) { panic ("enum.NWritosers wrong") }
 }

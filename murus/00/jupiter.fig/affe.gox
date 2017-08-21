@@ -1,0 +1,73 @@
+package fig
+
+func init_v (v, n []vect.Vector, x ...vect.Vector) {
+  k := len(v)
+  if k != len(x) { ker.Oops() }
+  for i := 0; i < k; i++ {
+    v[i].Copy (x[i])
+  }
+  n[0].Set3 (0, 0, 1)
+  if k > 3 {
+    n[1].Set3 (0, 0, 1)
+  }
+}
+
+func ready (p pts.Points) {
+  v, n := vectors(1)
+  p.Ins (pt.Undef, v, n, col.Black)
+}
+
+func figure (class pt.Class, p pts.Points, c col.Colour, x ...vect.Vector) {
+  v, n := vectors(uint(len(x)))
+  switch class {
+  case pt.Points:
+    init_v (v, n, x[0])
+    p.Ins (pt.Points, v, n, c)
+  case pt.Lines:
+    init_v (v, n, x[0], x[1])
+    p.Ins (pt.Lines, v, n, c)
+  case pt.Triangles:
+    init_v (v, n, x[0], x[1], x[2])
+    n[1].Diff (v[1], v[0])
+    n[2].Diff (v[2], v[0])
+    n[0].Ext (n[1], n[2])
+    n[0].Norm()
+    for i := 1; i < 3; i++ { n[i].Copy (n[0]) }
+    p.Ins (pt.Triangles, v, n, c)
+  case pt.Quads:
+    init_v (v, n, x[0], x[1], x[2], x[3])
+    n[1].Diff (v[1], v[0])
+    n[2].Diff (v[3], v[0])
+    n[0].Ext (n[1], n[2])
+    n[0].Norm()
+    for i := 1; i < 4; i++ { n[i].Copy (n[0]) }
+    p.Ins (pt.Quads, v, n, c)
+  }
+  ready (p)
+}
+
+func horRectangle (p pts.Points, x, y, z, x1, y1 float64, up bool, c col.Colour) {
+  v, n := vectors(4)
+  v[0].Set3 (x,  y,  z)
+  v[1].Set3 (x1, y,  z)
+  v[2].Set3 (x1, y1, z)
+  v[3].Set3 (x,  y1, z)
+  p.Ins (pt.Quads, v, n, c); ready (p)
+  figure (pt.Lines, p, c, vect.New3(x , y , z), vect.New3(x1, y , z))
+  figure (pt.Lines, p, c, vect.New3(x1, y , z), vect.New3(x1, y1, z)) // offen
+  figure (pt.Lines, p, c, vect.New3(x1, y1, z), vect.New3(x , y1, z))
+  figure (pt.Lines, p, c, vect.New3(x , y1, z), vect.New3(x , y , z))
+}
+
+func vertRectangle (p pts.Points, x, y, z, x1, y1, z1 float64, c col.Colour) {
+  v, n := vectors(4)
+  v[0].Set3 (x,  y,  z )
+  v[1].Set3 (x1, y1, z )
+  v[2].Set3 (x1, y1, z1)
+  v[3].Set3 (x,  y,  z1)
+  p.Ins (pt.Quads, v, n, c); ready (p)
+  figure (pt.Lines, p, c, vect.New3(x , y , z ), vect.New3(x1, y1, z ))
+  figure (pt.Lines, p, c, vect.New3(x1, y1, z ), vect.New3(x1, y1, z1)) // offen
+  figure (pt.Lines, p, c, vect.New3(x1, y1, z1), vect.New3(x , y , z1))
+  figure (pt.Lines, p, c, vect.New3(x , y , z1), vect.New3(x1, y1, z ))
+}

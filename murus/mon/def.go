@@ -1,6 +1,6 @@
 package mon
 
-// (c) murus.org  v. 130726 - license see murus.go
+// (c) murus.org  v. 170411 - license see murus.go
 
 //     Nichtsequentielle Programmierung mit Go 1 kompakt,
 //     Kap. 6, insbesondere Abschnitt 6.15
@@ -9,7 +9,7 @@ import
   . "murus/obj"
 type
   Monitor interface {
-// Specifications: Buy my book and read chapter 6.
+// Specs: Buy my book and read chapter 6.
 
   Wait (i uint)
 
@@ -19,8 +19,8 @@ type
 
   SignalAll (i uint)
 
-//  Func (i uint, a Any) Any // deprecated, replaced by F
-//                           // with reversed parameter order
   F (a Any, i uint) Any
-  S (a Any, i uint, c chan Any) // experimental
 }
+
+// Returns a new Monitor with Func- and Pred-Spectrum f and p resp.
+func New (n uint, f FuncSpectrum, p PredSpectrum) Monitor { return new_(n,f,p) }

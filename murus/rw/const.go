@@ -1,15 +1,15 @@
 package rw
 
-// (c) murus.org  v. 150304 - license see murus.go
+// (c) murus.org  v. 170411 - license see murus.go
 
 const (
   reader = uint(iota)
   writer
 )
 const (
-  rIn = uint(iota)
-  rOut
-  wIn
-  wOut
+  readerIn = uint(iota)
+  readerOut
+  writerIn
+  writerOut
   nFuncs
 )

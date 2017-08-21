@@ -1,9 +1,11 @@
 package day
 
-// (c) murus.org  v. 161120 - license see murus.go
+// (c) murus.org  v. 170801 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/kbd"; "murus/col"
+  . "murus/obj"
+  "murus/kbd"
+  "murus/col"
 )
 type
   Period byte; const (
@@ -16,25 +18,31 @@ type
 const
   NWeekdays = uint(nWeekdays)
 const ( // Format
-  Dd = iota  // e.g. "15"
-  Dd_mm_     // e.g. "15.02."
-  Dd_mm_yy   // e.g. "15.02.12"
-  Yymmdd     // e.g. "121502"
-  Yyyymmdd   // e.g. "20121502"
-  Dd_mm_yyyy // e.g. "15. 2.2012"
-  Dd_M       // e.g. "15. Februar"
-  Dd_M_yyyy  // e.g. "15. Februar 2012"
-  Yy         // e.g. "12"
-  Yyyy       // e.g. "2012"
-  Wd         // e.g. "Mi"
-  WD         // e.g. "Mittwoch"
-  Mmm        // e.g. "Feb"
-  M          // e.g. "Februar"
-  Myyyy      // e.g. "Februar 2012"
-  Wn         // e.g. "16" (.Woche)
-  WN         // e.g. " 7.Woche"
-  WNyyyy     // e.g. " 7.Woche 2012"
-  Qu         // e.g. "  I/12"
+  Dd = iota  // e.g. "01"
+  Dd_mm_     // e.g. "01.08."
+  Dd_mm_yy   // e.g. "01.08.17" // default Format
+  Dd_mm_yyyy // e.g. "01.08.2017"
+//D          // e.g. "1"
+//D_m        // e.g. "1.8."
+//D_m_yy     // e.g. "1.8.17"
+//           // e.g. "1.8.2017"
+  Yymmdd     // e.g. "170801"
+  Yyyymmdd   // e.g. "20170801"
+//WD_m_yy    // e.g. "Di, 1.8.2017"
+  Dd_M       // e.g. "1. August"
+  Dd_M_yyyy  // e.g. "1. August 2017"
+//WDd_M_yyyy // e.g. "Dienstag, 1. August 2017"
+  Yy         // e.g. "17"
+  Yyyy       // e.g. "2017"
+  Wd         // e.g. "Di"
+  WD         // e.g. "Dienstag"
+  Mmm        // e.g. "Aug"
+  M          // e.g. "August"
+  Myyyy      // e.g. "August 2017"
+  Wn         // e.g. "31" (.Woche)
+  WN         // e.g. "31.Woche"
+  WNyyyy     // e.g. "31.Woche 2017"
+  Qu         // e.g. "III/17"
   NFormats
 )
 // Every day has - depending on being a holiday or not
@@ -136,6 +144,8 @@ type
 // Otherwise, x is now the easter sunday in the year of x.
   SetEaster()
 
+  SetCasetta()
+
 // Returns false, if x is empty.
 // Returns otherwise true, iff x is neither saturday nore sunday.
   IsWorkday() bool
@@ -199,3 +209,8 @@ type
 // TODO Spec
   Randomize()
 }
+
+func New() Calendarday { return new_() }
+
+// Pre: d, m and y have "reasonable" values.
+func New3 (d, m, y uint) Calendarday { return new3 (d, m, y) }

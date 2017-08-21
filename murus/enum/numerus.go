@@ -15,7 +15,6 @@ var
   []string { "", "Singular", "Plural" },
   []string { "", "Sing.", "Plur." }
 
-
 func init() {
   l[Numerus], s[Numerus] = lNum, sNum
 }

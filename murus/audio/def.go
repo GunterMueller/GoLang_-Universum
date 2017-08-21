@@ -9,4 +9,5 @@ type
 
   Indexer
 }
-func New() Audio { return newAudio() }
+
+func New() Audio { return new_() }

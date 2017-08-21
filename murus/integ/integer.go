@@ -3,8 +3,12 @@ package integ
 // (c) murus.org  v. 170107 - license see murus.go
 
 import (
-  . "murus/ker"; "murus/str"
-  "murus/col"; "murus/box"; "murus/errh"; "murus/nat"
+  . "murus/ker"
+  "murus/str"
+  "murus/col"
+  "murus/box"
+  "murus/errh"
+  "murus/nat"
 )
 const (
   max = 11 // sign plus maximal 10 digits
@@ -14,6 +18,10 @@ var (
   bx = box.New()
   width uint
 )
+
+func init() {
+//  bx.SetNumerical() // TODO
+}
 
 func defined (z *int, s string) bool {
   str.Move (&s, true)
@@ -107,8 +115,4 @@ func edit (z *int, l, c uint) {
     }
   }
   bx.Write (StringFmt (*z, w), l, c + 1 - w)
-}
-
-func init() {
-//  bx.SetNumerical() // TODO
 }

@@ -1,14 +1,15 @@
 package scr
 
-// (c) murus.org  v. 140527 - license see murus.go
+// (c) murus.org  v. 170814 - license see murus.go
 
 import (
-  "murus/xker"; "murus/cons"
+  "murus/xwin"
+  "murus/cons"
 )
 
 func lock() {
   if underX {
-    xker.Lock()
+    xwin.Lock()
   } else {
     cons.Lock()
   }
@@ -16,7 +17,7 @@ func lock() {
 
 func unlock() {
   if underX {
-    xker.Unlock()
+    xwin.Unlock()
   } else {
     cons.Unlock()
   }

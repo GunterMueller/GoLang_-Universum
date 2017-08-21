@@ -1,16 +1,22 @@
 package addr
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170419 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/kbd"
-  "murus/col"; "murus/box"
-  "murus/font"; "murus/pbox"; "murus/masks"
-  "murus/text"; "murus/bnat"; "murus/phone"
+  . "murus/obj"
+  "murus/kbd"
+  "murus/col"
+  "murus/box"
+  "murus/font"
+  "murus/pbox"
+  "murus/masks"
+  "murus/text"
+  "murus/bnat"
+  "murus/phone"
 )
 const (
-  LenStreet = 28
-  LenCity   = 22
+  lenStreet = uint(28)
+  lenCity   = uint(22)
 )
 type
   address struct {
@@ -26,12 +32,12 @@ var (
   cF, cB = col.LightCyan, col.Black
   mask masks.MaskSequence = masks.New()
 //  mask = [2]masks.MaskSequence { masks.New(), masks.New() }
-  cst, cpc, cci, cph uint = 11, 5, 17, 47 // TODO parametrize
+  cst, cpc, cci, cph uint = 10, 5, 16, 45 // TODO parametrize
 )
 
-func newAddr() Address {
+func new_() Address {
   x:= new(address)
-  x.street, x.city = text.New (LenStreet), text.New (LenCity)
+  x.street, x.city = text.New (lenStreet), text.New (lenCity)
   x.Natural = bnat.New (5)
   x.phonenumber, x.cellnumber = phone.New(), phone.New()
   x.Colours (cF, cB)
@@ -61,7 +67,7 @@ func (x *address) Clr() {
 }
 
 func (x *address) Clone() Any {
-  y:= newAddr()
+  y:= new_()
   y.Copy (x)
   return y
 }
@@ -176,22 +182,24 @@ func (x *address) Print (l, c uint) {
 }
 
 func (x *address) Codelen() uint {
-  return 66
-  return LenStreet +                 // 28
-         x.Natural.Codelen() +       //  4
-         LenCity +                   // 22
+/*
+  return lenStreet +                 // 28
+         x.Natural.Codelen() +       //  8
+         lenCity +                   // 22
          2 * x.phonenumber.Codelen() // 12
+*/
+  return                                70
 }
 
 func (x *address) Encode() []byte {
   b:= make ([]byte, x.Codelen())
-  i, a:= uint(0), x.street.Codelen()
+  i, a:= uint(0), lenStreet
   copy (b[i:i+a], x.street.Encode())
   i += a
   a = x.Natural.Codelen()
   copy (b[i:i+a], x.Natural.Encode())
   i += a
-  a = x.city.Codelen()
+  a = lenCity
   copy (b[i:i+a], x.city.Encode())
   i += a
   a = x.phonenumber.Codelen()
@@ -202,13 +210,13 @@ func (x *address) Encode() []byte {
 }
 
 func (x *address) Decode (b []byte) {
-  i, a:= uint(0), x.street.Codelen()
+  i, a:= uint(0), lenStreet
   x.street = Decode (x.street, b[i:i+a]).(text.Text)
   i += a
   a = x.Natural.Codelen()
   x.Natural = Decode (x.Natural, b[i:i+a]).(bnat.Natural)
   i += a
-  a = x.city.Codelen()
+  a = lenCity
   x.city = Decode (x.city, b[i:i+a]).(text.Text)
   i += a
   a = x.phonenumber.Codelen()
@@ -218,22 +226,22 @@ func (x *address) Decode (b []byte) {
 }
 
 func init() {
-//           1         2         3         4         5         6
-// 012345678901234567890123456789012345678901234567890123456789012 // Compact
-// Anschrift: ____________________________  Tel.: ________________
-// PLZ: _____  Ort: ______________________  Funk: ________________
-  mask.Ins ("Anschrift:", 0,  0)
-  mask.Ins ("PLZ:",       1,  0)
-  mask.Ins ("Ort:",       1, 12)
-  mask.Ins ("Tel.:",      0, 41)
-  mask.Ins ("Funk:",      1, 41)
+//           1         2         3         4         5         6         7
+// 01234567890123456789012345678901234567890123456789012345678901234567890123456789 // Compact
+// Str./Nr.: ____________________________ Tel.: ________________
+// PLZ: _____ Ort: ______________________ Funk: ________________
+  mask.Ins ("Str./Nr.:", 0,  0)
+  mask.Ins ("Tel.:",     0, 39)
+  mask.Ins ("PLZ:",      1,  0)
+  mask.Ins ("Ort:",      1, 11)
+  mask.Ins ("Funk:",     1, 39)
 //           1         2         3         4         5         6         7         8         9        10        11        12 
 // 0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890 // Wide
 // Wide:
-// Str./Nr.: ____________________________  PLZ: _____  Ort: ______________________  Tel: ________________, ________________
-//  mask.Ins ("Str./Nr.:", 0,  0)
-//  mask.Ins ("PLZ:",      0, 40)
-//  mask.Ins ("Ort:",      0, 52)
-//  mask.Ins ("Tel:",      0, 81)
+// Str./Nr.: ____________________________  PLZ: _____ Ort: ______________________  Tel.: ________________, ________________
+//  mask.Ins ("Str./Nr.:", 0,   0)
+//  mask.Ins ("PLZ:",      0,  40)
+//  mask.Ins ("Ort:",      0,  51)
+//  mask.Ins ("Tel:",      0,  80)
 //  mask.Ins (",",         0, 102)
 }

@@ -1,8 +1,6 @@
 package bytes
 
-// (c) murus.org  v. 140330 - license see murus.go
-
-// >>> Just for fun, most likely completely worthless
+// (c) murus.org  v. 170121 - license see murus.go
 
 import
   . "murus/obj"
@@ -11,18 +9,18 @@ type
                     s []byte
                       }
 
+func new_(n uint) ByteSequence {
+  return &byteSequence { make ([]byte, n) }
+}
+
 func (x *byteSequence) imp (Y Any) *byteSequence {
-  y, ok:= Y.(*byteSequence)
+  y, ok := Y.(*byteSequence)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
 }
 
-func New (n uint) ByteSequence {
-  return &byteSequence { make ([]byte, n) }
-}
-
 func (x *byteSequence) Empty() bool {
-  for _, a:= range (x.s) {
+  for _, a := range (x.s) {
     if a != byte(0) {
       return false
     }
@@ -31,27 +29,27 @@ func (x *byteSequence) Empty() bool {
 }
 
 func (x *byteSequence) Clr() {
-  for i:= 0; i < len (x.s); i++ {
+  for i := 0; i < len (x.s); i++ {
     x.s[i] = byte(0)
   }
 }
 
 func (x *byteSequence) Copy (Y Any) {
-  y:= x.imp (Y)
-  if len (y.s) != len (x.s) { return }
-  Copy (x.s, y.s)
+  y := x.imp (Y)
+  if len(y.s) != len (x.s) { return }
+  copy (x.s, y.s)
 }
 
 func (x *byteSequence) Clone() Any {
-  y:= New (uint(len (x.s)))
-  Copy (y.s, x.s)
+  y := new_(uint(len (x.s))).(*byteSequence)
+  copy (y.s, x.s)
   return y
 }
 
 func (x *byteSequence) Eq (Y Any) bool {
-  y:= x.imp (Y)
+  y := x.imp (Y)
   if len (y.s) != len (x.s) { return false }
-  for i, a:= range (y.s) {
+  for i, a := range (y.s) {
     if x.s[i] != a {
       return false
     }
@@ -68,7 +66,7 @@ func (x *byteSequence) Codelen() uint {
 }
 
 func (x *byteSequence) Encode() []byte {
-  b:= make ([]byte, len (x.s))
+  b := make ([]byte, len (x.s))
   copy (b, x.s)
   return b
 }

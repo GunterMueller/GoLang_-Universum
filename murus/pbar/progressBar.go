@@ -18,7 +18,7 @@ type
               cF, cB col.Colour
                      }
 
-func newPbar (h bool) ProgressBar {
+func new_(h bool) ProgressBar {
   B:= new (progressBar)
   l:= scr.NLines()
   c:= scr.Wd()

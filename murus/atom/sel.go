@@ -1,12 +1,24 @@
 package atom
 
-// (c) murus.org  v. 160101 - license see murus.go
+// (c) murus.org  v. 170410 - license see murus.go
 
 import (
-  "murus/col"; "murus/scr"; "murus/sel"
-  "murus/enum"; "murus/tval"; "murus/char"; "murus/text"; "murus/bnat"; "murus/breal"
-  "murus/clk"; "murus/day"; "murus/euro"; "murus/cntry";
-  "murus/pers"; "murus/phone"; "murus/addr"
+  "murus/col"
+  "murus/scr"
+  "murus/sel"
+  "murus/enum"
+  "murus/tval"
+  "murus/char"
+  "murus/text"
+  "murus/bnat"
+  "murus/breal"
+  "murus/clk"
+  "murus/day"
+  "murus/euro"
+  "murus/cntry"
+  "murus/pers"
+  "murus/phone"
+  "murus/addr"
 )
 const
   M = 14
@@ -19,32 +31,33 @@ var
 
 
 func Selected (l, c uint) Atom {
-  cF, cB:= scr.ScrCols()
+  cF, cB := scr.ScrCols()
   col.Contrast (&cB)
-  n:= uint(0)
-  z, s:= scr.MousePos()
-  x:= new (atom)
+  n := uint(0)
+  z, s := scr.MousePos()
+  x := new(atom)
   sel.Select1 (name, uint(Ntypes), M, &n, z, s, cF, cB)
   if n < Ntypes {
     x.uint = n
   } else {
     return nil
   }
-  switch x.uint { case Enumerator:
-    e:= enum.Title // TODO e per select-menue aussuchen
+  switch x.uint {
+  case Enumerator:
+    e := enum.Title // TODO e per select-menue aussuchen
     x.Object = enum.New (e)
   case TruthValue:
     x.Object = tval.New()
   case Character:
     x.Object = char.New()
   case Text:
-    n:= uint(10) // TODO n editieren
+    n := uint(10) // TODO n editieren
     x.Object = text.New (n)
   case Natural:
-    n:= uint(2) // TODO n editieren
+    n := uint(2) // TODO n editieren
     x.Object = bnat.New (n)
   case Real:
-    n:= uint(6) // TODO n editieren
+    n := uint(6) // TODO n editieren
     x.Object = breal.New (n)
   case Clocktime:
     x.Object = clk.New()
@@ -61,5 +74,5 @@ func Selected (l, c uint) Atom {
   case Address:
     x.Object = addr.New()
   }
-  return New (x)
+  return x
 }

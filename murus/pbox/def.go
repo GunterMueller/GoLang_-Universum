@@ -20,5 +20,6 @@ type
 // TODO Spec
   PageReady()
 }
+
 // Returns a new print box with font Roman.
-func New() Printbox { return newPbox() }
+func New() Printbox { return new_() }

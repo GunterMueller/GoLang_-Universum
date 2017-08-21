@@ -20,5 +20,6 @@ type
   ChargeInterest (p, n uint)
   Round (E Euro)
 }
+
 // Returns a new empty Euro.
-func New() Euro { return newEuro() }
+func New() Euro { return new_() }

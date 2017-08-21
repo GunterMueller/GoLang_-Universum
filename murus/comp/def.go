@@ -1,6 +1,6 @@
 package comp
 
-// (c) murus.org  v. 151117 - license see murus.org
+// (c) murus.org  v. 151117 - license see murus.go
 
 func Hosts() []string { return hosts }
 

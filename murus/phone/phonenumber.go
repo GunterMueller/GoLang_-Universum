@@ -1,11 +1,17 @@
 package phone
 
-// (c) murus.org  v. 170107 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/str"
-  "murus/col"; "murus/box"; "murus/errh"; "murus/nat"
-  "murus/font"; "murus/pbox"
+  . "murus/obj"
+  "murus/str"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/errh"
+  "murus/nat"
+  "murus/font"
+  "murus/pbox"
 )
 const
   width = 16
@@ -21,9 +27,9 @@ var (
   pbx = pbox.New()
 )
 
-func newPhone() PhoneNumber {
+func new_() PhoneNumber {
   x := new(phonenumber)
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   return x
 }
 
@@ -47,7 +53,7 @@ func (x *phonenumber) Copy (Y Any) {
 }
 
 func (x *phonenumber) Clone() Any {
-  y := newPhone()
+  y := new_()
   y.Copy(x)
   return y
 }
@@ -85,7 +91,7 @@ func (x *phonenumber) Defined (s string) bool {
   } else {
     x.uint16 = 0
   }
-  str.OffSpaces (&s)
+  str.OffAllSpaces (&s)
   if s == "" {
     x.uint32 = uint32(x.uint16)
     x.uint16 = 0

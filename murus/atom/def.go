@@ -33,6 +33,7 @@ type
 // Returns the Atomtype of x.
 //  Type () Atomtype
 }
+
 // Returns a new Atom of the type of o, where o is an object
 // of one of the types corresponding to the above constants.
-func New(o Object) Atom { return newAtom(o) }
+func New(o Object) Atom { return new_(o) }

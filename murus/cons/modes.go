@@ -1,6 +1,6 @@
 package cons
 
-// (c) murus.org  v. 140615 - license see murus.go
+// (c) murus.org  v. 170818 - license see murus.go
 
 import (
   "murus/ker"
@@ -9,6 +9,10 @@ import (
 var (
   fullScreen, modus Mode
 )
+
+func init() {
+  visible = true // TODO -> only in initConsole()
+}
 
 func maxMode() Mode {
   width, height = resMaxConsole()
@@ -24,42 +28,6 @@ func ok (m Mode) bool {
   return Wd(m) <= Wd(fullScreen) && Ht(m) <= Ht(fullScreen)
 }
 
-func (x *console) X() uint{
-  return uint(x.x)
-}
-
-func (x *console) Y() uint{
-  return uint(x.y)
-}
-
-func (x *console) Wd() uint{
-  return x.wd
-}
-
-func (x *console) Ht() uint{
-  return x.ht
-}
-
-func (x *console) Wd1() uint{
-  return x.wd1
-}
-
-func (x *console) Ht1() uint{
-  return x.ht1
-}
-
-func (x *console) NLines() uint{
-  return x.nLines
-}
-
-func (x *console) NColumns() uint{
-  return x.nColumns
-}
-
 func (x *console) Fin() {
   ker.Fin()
-}
-
-func init() {
-  visible = true // TODO -> only in initConsole()
 }

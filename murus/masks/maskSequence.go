@@ -1,11 +1,14 @@
 package masks
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/str"
-  "murus/col"; "murus/scr"
-  "murus/font"; "murus/pbox"
+  . "murus/obj"
+  "murus/str"
+  "murus/col"
+  "murus/scr"
+  "murus/font"
+  "murus/pbox"
 //  "murus/errh"
 )
 type
@@ -19,9 +22,9 @@ type
 var
   pbx = pbox.New()
 
-func newMasks() MaskSequence {
+func new_() MaskSequence {
   x := new (maskSequence)
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   return x
 }
 

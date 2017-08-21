@@ -13,7 +13,6 @@ var
   []string { "", "Indikativ", "Konjunktiv", },
   []string { "", "Ind.", "Konj.", }
 
-
 func init() {
   l[Modus], s[Modus] = lModus, sModus
 }

@@ -1,21 +1,38 @@
 package enum
 
-// (c) murus.org  v. 140522 - license see murus.go
+// (c) murus.org  v. 170419 - license see murus.go
 
-var
+var (
   lTitle, sTitle []string =
   []string {
     "",
-    "Dr.", "Dr.med.", "Dr.med.dent.", "Dr.rer.nat.", "Dr.phil.",
-    "Dr.iur.", "Dr.med.vet.", "Dr.rer.pol.", "Dr.-Ing.",
-    "Prof.Dr.", "Prof.Dr.med.", "Prof.Dr.-Ing.",
+    "Dr.",
+    "Dr.med.",
+    "Dr.med.dent.",
+    "Dr.rer.nat.",
+    "Dr.phil.",
+    "Dr.iur.",
+    "Dr.med.vet.",
+    "Dr.rer.pol.",
+    "Dr.-Ing.",
+    "Prof.Dr.",
+    "Prof.Dr.med.",
+    "Prof.Dr.-Ing.",
+    "Dipl.-Math.",
+    "Dipl.-Phys.",
+    "Dipl.-Chem.",
+    "Dipl.-Biol.",
+    "Dipl.-Geol.",
+    "Dipl.-Ing.",
+    "Dipl.-Jur.",
+    "Dipl.-Kfm.",
+    "M.Sc.",
   },
   lTitle
-const
-  NTitles = uint8(13)
+  NTitles = uint8(len(lTitle))
+)
 
 
 func init() {
   l[Title], s[Title] = lTitle, sTitle
-  if NTitles != uint8(len(lTitle)) { panic ("enum.Titles wrong") }
 }

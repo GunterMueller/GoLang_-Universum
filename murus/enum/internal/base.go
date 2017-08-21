@@ -1,11 +1,19 @@
 package internal
 
-// (c) murus.org  v. 170107 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
-  "murus/ker"; . "murus/obj"; "murus/str"; "murus/kbd"
-  "murus/col"; "murus/box"; "murus/errh"; "murus/sel"
-  "murus/font"; "murus/pbox"
+  "murus/ker"
+  . "murus/obj"
+  "murus/str"
+  "murus/kbd"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/errh"
+  "murus/sel"
+  "murus/font"
+  "murus/pbox"
 )
 type
   base struct {
@@ -22,7 +30,7 @@ var (
   pbx = pbox.New()
 )
 
-func New (t uint8, s [NFormats][]string) Base {
+func new_(t uint8, s [NFormats][]string) Base {
   x:= new (base)
   x.typ, x.s = t, s
   x.num = uint8(len (s[Short]))
@@ -37,7 +45,7 @@ func New (t uint8, s [NFormats][]string) Base {
     x.wd[f] = m[f]
   }
 //  x.wd = m
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   x.Format = Short
   return x
 }

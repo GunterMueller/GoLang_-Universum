@@ -1,13 +1,11 @@
 package obj
 
-// (c) murus.org  v. 140812 - license see murus.go
+// (c) murus.org  v. 170424 - license see murus.go
 
 type
   Iterator interface {
 
-//  Collector
-
-//  ExGeq (a Any) bool // TODO
+  Collector
 
 // Returns the number of those elements in x, for which p returns true.
   NumPred (p Pred) uint
@@ -35,18 +33,12 @@ type
 // The actual element of x is the same as before.
   Trav (op Op)
 
-// Pre: See Trav.
-// op was applied to all elements in x (in their order in x),
-// for which p returns true.
-// The actual element of x is the same as before.
-  TravPred (p Pred, o Op)
+// op was applied to all elements in x, for which p returns true.
+//  TravPred (p Pred, o Op) = Trav (PredOp2Op (p, o))
 
-// Pre: See Trav.
-// o(-, p(-)) was applied to all elements in x (in their order
-// in x), i.e. o(-, true) was applied to all elements in x,
+// o(-, true) was applied to all elements in x,
 // for which p returns true, otherwise p(-, false).
-// The actual element of x is the same as before.
-  TravCond (p Pred, o CondOp)
+//  TravCond (p Pred, o CondOp) = Trav (PredCondOp2Op (p, o))
 
 // Pre: y is a collector of elements of the same type as x
 //      (especially contains elements of the same type as a).
@@ -72,7 +64,7 @@ type
 // actual element of x and exactly all elements behind it, both in
 // their former order in x. In this case the actual element of x
 // is undefined and the actual element of y is its first element.
-  Split (c Iterator)
+  Split (y Iterator)
 
 // Pre: See Filter.
 // If x == y or if x and y do not have the same type,

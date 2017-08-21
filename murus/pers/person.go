@@ -1,11 +1,19 @@
 package pers
 
-// (c) murus.org  v. 161217 - license see murus.go
+// (c) murus.org  v. 170218 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/str"; "murus/kbd"
-  "murus/col"; "murus/box"; "murus/font"; "murus/pbox"
-  "murus/text"; "murus/tval"; "murus/enum"; "murus/day"
+  . "murus/obj"
+  "murus/str"
+  "murus/kbd"
+  "murus/col"
+  "murus/box"
+  "murus/font"
+  "murus/pbox"
+  "murus/text"
+  "murus/tval"
+  "murus/enum"
+  "murus/day"
 )
 const (
   lenName = uint(26)
@@ -39,7 +47,7 @@ func init() {
   shbx.Wd (lenShort)
 }
 
-func newPers() Person {
+func new_() Person {
   x := new(person)
   x.surname = text.New(lenName)
   x.firstName = text.New(lenFirstName)
@@ -99,7 +107,7 @@ func (x *person) Copy (Y Any) {
 }
 
 func (x *person) Clone() Any {
-  y := newPers()
+  y := new_()
   y.Copy (x)
   return y
 }

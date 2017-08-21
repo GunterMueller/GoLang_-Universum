@@ -2,10 +2,24 @@ package v
 
 // (c) murus.org  v. 150401 - license see murus.go
 
-import ("strconv"; "murus/ker"; "murus/str"; "murus/col"; "murus/scr"; "murus/box"; "murus/pseq")
-
-const (f = "/tmp/april"; t = ".tmp")
-var (x0, y0 uint; ok bool; doofcol = col.Pink)
+import (
+  "strconv"
+  "murus/ker"
+  "murus/str"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/pseq"
+)
+const (
+  f = "/tmp/april"
+  t = ".tmp"
+)
+var (
+  x0, y0 uint
+  ok bool
+  doofcol = col.Pink
+)
 
 func rot (n int) { var b byte
   for i:= 0; ! ok; i++ {

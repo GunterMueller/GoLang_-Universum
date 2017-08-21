@@ -1,6 +1,6 @@
 package scr
 
-// (c) murus.org  v. 151028 - license see murus.go
+// (c) murus.org  v. 170817 - license see murus.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -18,10 +18,14 @@ package scr
    No process is in the exclusive possession of the screen. */
 
 import (
-  . "murus/shape"; . "murus/linewd"; "murus/mode"; "murus/cons"; "murus/ptr"
-  "murus/col"; "murus/font"
+  . "murus/shape"
+  . "murus/linewd"
+  "murus/mode"
+  "murus/cons"
+  "murus/ptr"
+  "murus/col"
+  "murus/font"
 )
-
 const
   ClearScreen = cons.ClearScreen
 
@@ -38,6 +42,10 @@ func MaxY() uint { return maxY() }
 
 // Returns true, iff the Res(m) <= MaxRes().
 func Ok (m mode.Mode) bool { return ok(m) }
+
+// Returns the colours at the start of the system.
+func StartCols() (col.Colour, col.Colour) { return startCols() }
+func StartColsA() (col.Colour, col.Colour) { return startColsA() }
 
 // Lock / Unlock guarantee the mutual exclusion when writing on the screen
 // (e.g. to avoid, that a process after having set its colours
@@ -71,6 +79,8 @@ func New (x, y uint, m mode.Mode) Screen { return newScr(x,y,m) }
 
 func NewMax() Screen { return newMax() }
 
+func NewWH (x, y, w, h uint) Screen { return newWH(x,y,w,h) }
+
 type
   Screen interface {
 
@@ -83,11 +93,10 @@ type
 // Spec TODO
   Name (n string)
 
+
 // experimental ////////////////////////////////////////////////////////
 
   Move (x, y int)
-
-// modes and sizes /////////////////////////////////////////////////////
 
 // Returns the actual mode.
   ActMode() mode.Mode
@@ -250,6 +259,8 @@ type
 // on the screen resp. the colour of that pixel is inverted.
   Point (x, y int); PointInv (x, y int)
 
+  OnPoint (x, y, a, b int, d uint) bool
+
 // Pre: See above.
 // At (xs[i], ys[i]) (i < len(xs) == len(ys)) a pixel is set in the actual
 // foregroundcolour resp. that pixel is inverted in its colour.
@@ -263,8 +274,8 @@ type
 
 // Pre: See above.
 // Returns true, iff the point at (x, y) has a distance of
-// at most t pixels from the line segment between (x, y) to (x1, y1).
-  OnLine (x, y, x1, y1, a, b int, t uint) bool
+// at most d pixels from the line segment between (x, y) to (x1, y1).
+  OnLine (x, y, x1, y1, a, b int, d uint) bool
 
 // Pre: See above.
 //      If the calling process runs under X:
@@ -280,7 +291,7 @@ type
 
 // Pre: See above.
 // TODO Spec
-  OnLines (x, y, x1, y1 []int, a, b int, t uint) bool
+  OnLines (x, y, x1, y1 []int, a, b int, d uint) bool
 
 // Pre: See above.
 //      x[i] < Wd, y[i] < Ht für alle i < n:= len(x) == len(y).
@@ -288,17 +299,17 @@ type
 // a sequence of line segments is drawn resp. all points on it are inverted.
   Segments (x, y []int); SegmentsInv (x, y []int)
 
-// Returns true, iff the point at (a, b) has a distance of at most t pixels
+// Returns true, iff the point at (a, b) has a distance of at most d pixels
 // from one of the sequence of line segments defined by x and y.
-  OnSegments (x, y []int, a, b int, t uint) bool
+  OnSegments (x, y []int, a, b int, d uint) bool
 
 // Pre: See above.
 // A line through (x, y) and (x1, y1) is drawn resp. all points on it are inverted.
   InfLine (x, y, x1, y1 int); InfLineInv (x, y, x1, y1 int)
 
-// Returns true, iff the point at (a, b) has a distance of at most t pixels
+// Returns true, iff the point at (a, b) has a distance of at most d pixels
 // from the line through (x, y) and (x1, y1).
-  OnInfLine (x, y, x1, y1, a, b int, t uint) bool
+  OnInfLine (x, y, x1, y1, a, b int, d uint) bool
 
 // Pre: See above.
 // Between (x, y) and (x1, y1) a rectangle (with horizontal and vertical borders)
@@ -308,9 +319,9 @@ type
   RectangleFull (x, y, x1, y1 int); RectangleFullInv (x, y, x1, y1 int)
 
 // Pre: See above.
-// Returns true, iff the point at (a, b) has a distance of at most t pixels
+// Returns true, iff the point at (a, b) has a distance of at most d pixels
 // from the border of the rectangle between (x, y) and (x1, y1).
-  OnRectangle (x, y, x1, y1, a, b int, t uint) bool
+  OnRectangle (x, y, x1, y1, a, b int, d uint) bool
 
 // Returns true, iff the point at (a, b) is not outside the rectangle
 // between (x, y) and (x1, y1) up to tolerance of t pixels.
@@ -328,9 +339,9 @@ type
   Polygon (x, y []int); PolygonInv (x, y []int)
   PolygonFull (x, y []int); PolygonFullInv (x, y []int)
 
-// Returns true, iff the point at (a, b) has a distance of at most t pixels
+// Returns true, iff the point at (a, b) has a distance of at most d pixels
 // from the polyon defined by x and y.
-  OnPolygon (x, y []int, a, b int, t uint) bool
+  OnPolygon (x, y []int, a, b int, d uint) bool
 
 // Pre: See above. r <= x, x + r < Wd, r <= y, y + r < Ht. 
 // Around (x, y) a circle with radius r is drawn / inverted
@@ -349,9 +360,9 @@ type
   ArcFull (x, y int, r uint, a, b float64)
   ArcFullInv (x, y int, r uint, a, b float64)
 
-// Returns true, iff the point at (x, y) has a distance of at most t pixels
+// Returns true, iff the point at (x, y) has a distance of at most d pixels
 // from the border of the circle around (a, b) with radius r.
-  OnCircle (x, y int, r uint, a, b int, t uint) bool
+  OnCircle (x, y int, r uint, a, b int, d uint) bool
 //  InCircle (x, y int, r uint, a, b int) bool // TODO
 
 // Pre: See above. a <= x, x + a < Wd, b <= y, y + b < Ht. 
@@ -360,9 +371,9 @@ type
   Ellipse (x, y int, a, b uint); EllipseInv (x, y int, a, b uint)
   EllipseFull (x, y int, a, b uint); EllipseFullInv (x, y int, a, b uint)
 
-// Returns true, iff the point at (A, B) has a distance of at most t pixels
+// Returns true, iff the point at (A, B) has a distance of at most d pixels
 // from the border of the ellipse around (x, y) with semiaxis a and b.
-  OnEllipse (x, y int, a, b uint, A, B int, t uint) bool
+  OnEllipse (x, y int, a, b uint, A, B int, d uint) bool
 // func InEllipse (x, y int, a, b uint, A, B int) bool // TODO
 
 // Pre: See above. n:= len(xs) == len(ys).
@@ -373,9 +384,9 @@ type
 // for n == 1 the line between (xs[0], ys[0]) and (xs[1], ys[1]).
   Curve (xs, ys []int); CurveInv (xs, ys []int)
 
-// Returns true, iff the point at (x, y) has a distance of at most t pixels
+// Returns true, iff the point at (x, y) has a distance of at most d pixels
 // from the curve defined by xs and ys.
-  OnCurve (xs, ys []int, a, b int, t uint) bool
+  OnCurve (xs, ys []int, a, b int, d uint) bool
 
 // mouse ///////////////////////////////////////////////////////////////
 
@@ -471,5 +482,5 @@ type
 
 // TODO Spec
   Paste() string
-
 }
+

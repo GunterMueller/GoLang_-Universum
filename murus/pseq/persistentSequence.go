@@ -1,13 +1,14 @@
 package pseq
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170509 - license see murus.go
 
 // >>> still a lot of things TODO
 
 import (
   "io"
 // "reflect"
-  . "murus/ker"; . "murus/obj"
+  . "murus/ker"
+  . "murus/obj"
   "murus/str"
 //  "murus/errh"
 //  "murus/seq"
@@ -15,7 +16,6 @@ import (
 )
 
 const (
-  pack = "pseq"
   null = uint64(0)
   one  = uint64(1)
 )
@@ -62,8 +62,17 @@ func (x *persistentSequence) check (a Any) {
   CheckTypeEq (x.emptyObject, a)
 }
 
-func newPseq (a Any) PersistentSequence {
-  CheckAtomicOrObject(a)
+func new_(a Any) PersistentSequence {
+  switch a.(type) {
+  case Equaler, Coder:
+    ; // ok
+  default:
+    if Atomic(a) {
+      ; // ok
+    } else {
+      panic("not Atomic or Equaler and Coder")
+    }
+  }
   x := new(persistentSequence)
   x.emptyObject = Clone(a)
   x.Any = Clone(a)
@@ -196,7 +205,7 @@ func (x *persistentSequence) Copy (Y Any) {
 }
 
 func (x *persistentSequence) Clone () Any {
-  y := newPseq(Clone(x.emptyObject))
+  y := new_(Clone(x.emptyObject))
   y.Copy(x)
   return y
 }
@@ -302,7 +311,7 @@ func (x *persistentSequence) Pos() uint {
 
 func (x *persistentSequence) Get() Any {
   x.file.Seek (x.pos * x.size)
-  if x.file.Position() != x.pos * x.size { Stop (pack, 10000000 + uint(x.pos)) }
+  if x.file.Position() != x.pos * x.size { Panic1 ("pseq", 10000000 + uint(x.pos)) }
   x.read (x.buf)
   return Clone (Decode (Clone (x.Any), x.buf))
 }
@@ -324,7 +333,7 @@ func (x *persistentSequence) insert (a Any) {
     return
   }
 // x.pos < x.num:
-  x1 := New (x.emptyObject).(*persistentSequence)
+  x1 := new_(x.emptyObject).(*persistentSequence)
   x1.Name (x.tmpName)
   x1.Clr()
   x.file.Seek (0)
@@ -355,7 +364,7 @@ func (x *persistentSequence) insert (a Any) {
 }
 
 func (x *persistentSequence) insertOrd (a Any) {
-  ps := New (x.emptyObject).(*persistentSequence)
+  ps := new_(x.emptyObject).(*persistentSequence)
   ps.Name (x.tmpName)
   ps.Clr()
   x.file.Seek (0)
@@ -415,7 +424,7 @@ func (x *persistentSequence) Del() Any {
     return nil
   }
   n := x.num
-  x1 := New (x.emptyObject).(*persistentSequence)
+  x1 := new_(x.emptyObject).(*persistentSequence)
   x1.Name (x.tmpName)
   x1.Clr()
   x.file.Seek (0)
@@ -580,47 +589,6 @@ func (x *persistentSequence) Trav (op Op) {
   x.file.Fin()
 }
 
-func (x *persistentSequence) TravCond (p Pred, op CondOp) {
-  if x.num != uint64(x.Num()) { Panic ("pseq.TravCond: num bug") }
-  if x.num == 0 { return }
-  if x.Empty() { return }
-  x.file.Seek (0)
-  for i := null; i < x.num; i++ {
-    x.read (x.buf)
-    a := Decode (Clone (x.emptyObject), x.buf)
-    op (a, p (a))
-    if ! equal (x.buf, Encode (a)) {
-      copy (x.buf, Encode (a))
-      x.file.Seek (i * x.size)
-      x.write (x.buf)
-      x.file.Seek (i * x.size)
-    }
-  }
-  x.file.Fin()
-}
-
-func (x *persistentSequence) TravPred (p Pred, op Op) {
-  if x.num != uint64(x.Num()) { Panic ("pseq.TravPred: num bug") }
-  if x.num == 0 { return }
-  if x.Empty() { return }
-  x.file.Seek (0)
-  for i := null; i < x.num; i++ {
-    x.read (x.buf)
-//    a := Decode (x.emptyObject, x.buf)
-    a := Decode (Clone (x.emptyObject), x.buf)
-    if p (a) {
-      op (a)
-      if ! equal (x.buf, Encode (a)) {
-        copy (x.buf, Encode (a))
-        x.file.Seek (i * x.size)
-        x.write (x.buf)
-        x.file.Seek (i * x.size)
-      }
-    }
-  }
-  x.file.Fin()
-}
-
 func (x *persistentSequence) Filter (Y Iterator, p Pred) {
   y := x.imp (Y)
   if y == nil { return }
@@ -636,8 +604,8 @@ func (x *persistentSequence) Filter (Y Iterator, p Pred) {
     }
   }
   y.file.Fin()
-  if x.num != uint64(x.Num()) { Panic ("pseq.TravPred: x.num bug") }
-  if y.num != uint64(y.Num()) { Panic ("pseq.TravPred: y.num bug") }
+  if x.num != uint64(x.Num()) { Panic ("pseq.Filter: x.num bug") }
+  if y.num != uint64(y.Num()) { Panic ("pseq.Filter: y.num bug") }
 }
 
 func (x *persistentSequence) Cut (Y Iterator, p Pred) {
@@ -645,7 +613,7 @@ func (x *persistentSequence) Cut (Y Iterator, p Pred) {
   if y == nil { return }
   y.Clr()
   if x.name == y.name { return }
-  x2 := New (x.emptyObject).(*persistentSequence)
+  x2 := new_(x.emptyObject).(*persistentSequence)
   x2.Name (x.tmpName)
   x2.Clr()
   x.file.Seek (0)
@@ -671,7 +639,7 @@ func (x *persistentSequence) Cut (Y Iterator, p Pred) {
 }
 
 func (x *persistentSequence) ClrPred (p Pred) {
-  y := New (x.emptyObject).(*persistentSequence)
+  y := new_(x.emptyObject).(*persistentSequence)
   if y == nil { return }
   if x.num == 0 { return }
   x.file.Seek (0)
@@ -699,7 +667,7 @@ func (x *persistentSequence) Split (Y Iterator) {
   if y == nil { return }
   if x.num == 0 { return }
   y.Clr()
-  ps := New (x.emptyObject).(*persistentSequence)
+  ps := new_(x.emptyObject).(*persistentSequence)
   ps.Name (x.tmpName)
   ps.Clr()
   x.file.Seek (0)
@@ -757,7 +725,7 @@ func (x *persistentSequence) join (Y PersistentSequence) {
     more effective: see concatenate
   }
 */
-  ps := New (x.emptyObject).(*persistentSequence)
+  ps := new_(x.emptyObject).(*persistentSequence)
   ps.Name (x.tmpName)
   ps.Clr()
   x.file.Seek (0)

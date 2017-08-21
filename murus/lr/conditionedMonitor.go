@@ -1,6 +1,6 @@
 package lr
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170731 - license see murus.go
 
 // >>> left/right problem: implementation with conditioned monitors
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 155 ff.
@@ -15,47 +15,53 @@ type
                             mon.Monitor
                             }
 
-func NewConditionedMonitor() LeftRight {
-  x:= new (conditionedMonitor)
-  p:= func (a Any, i uint) bool {
-        switch i {
-        case lIn:
-          return x.nR == 0
-        case rIn:
-          return x.nL == 0
+func newCM() LeftRight {
+  x := new (conditionedMonitor)
+  ps := func (a Any, i uint) bool {
+          switch i {
+          case leftIn:
+            return x.nR == 0
+          case rightIn:
+            return x.nL == 0
+          }
+          return true
         }
-        return true // lOut, rOut
-      }
-  f:= func (a Any, i uint) Any {
-        switch i {
-        case lIn:
-          x.nL ++
-        case lOut:
-          x.nL --
-        case rIn:
-          x.nR ++
-        case rOut:
-          x.nR --
+  fs := func (a Any, i uint) Any {
+          switch i {
+          case leftIn:
+            x.nL++
+            writeL (x.nL)
+          case leftOut:
+            x.nL--
+            writeL (x.nL)
+          case rightIn:
+            x.nR++
+            writeR (x.nR)
+          case rightOut:
+            x.nR--
+            writeR (x.nR)
+          }
+          return a
         }
-        return a
-      }
-  x.Monitor = mon.NewF (nil, nFuncs, f, p)
-  x.Monitor = mon.New (nFuncs, f, p)
+  x.Monitor = mon.New (nFuncs, fs, ps)
   return x
 }
 
 func (x *conditionedMonitor) LeftIn() {
-  x.F (true, lIn)
+  x.F (true, leftIn)
 }
 
 func (x *conditionedMonitor) LeftOut() {
-  x.F (true, lOut)
+  x.F (true, leftOut)
 }
 
 func (x *conditionedMonitor) RightIn() {
-  x.F (true, rIn)
+  x.F (true, rightIn)
 }
 
 func (x *conditionedMonitor) RightOut() {
-  x.F (true, rOut)
+  x.F (true, rightOut)
+}
+
+func (x *conditionedMonitor) Fin() {
 }

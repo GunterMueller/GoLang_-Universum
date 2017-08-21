@@ -1,13 +1,14 @@
 package gl
 
-// (c) murus.org  v. 150622 - license see murus.go
+// (c) murus.org  v. 170820 - license see murus.go
 
 import (
   "murus/col"
   "murus/vect"
 )
 type
-  Figure byte; const (
+  Class byte; const (
+//  UNDEF = iota; // -> Chaos
   POINTS = iota;
   LINES
   LINE_LOOP
@@ -50,10 +51,10 @@ func ShowLight (on bool) { lightVis = on }
 func Write0() { write0() }
 
 // TODO Spec
-func Write (f Figure, a uint, vs, ns []vect.Vector, c col.Colour) { write(f,a,vs,ns,c) }
+func Write (class Class, a uint, vs, ns []vect.Vector, c col.Colour) { write(class,a,vs,ns,c) }
 
 // TODO Spec
-func Write1 (d chan bool) { write1(d) }
+func Write1() { write1() }
 
 // TODO Spec
 func Actualize (r, v, o, a vect.Vector) { act(r,v,o,a) }

@@ -22,6 +22,7 @@ type
 // Equiv (Y Any) bool
 // Sort ()
 }
+
 // Returns a new empty molecule.
 // TODO more information
-func New() Molecule { return newMol() }
+func New() Molecule { return new_() }

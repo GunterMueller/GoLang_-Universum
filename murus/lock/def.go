@@ -17,6 +17,7 @@ type
 // It is not in the critical section.
   Unlock()
 }
+
 // Return new unlocked locks
 // with an implementation revealed by their names.
 func NewCAS() Locker { return newCAS() }

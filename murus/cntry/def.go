@@ -32,5 +32,6 @@ type
 
   InContinent (c Continent) bool
 }
+
 // Returns a new empty (undefined) Country.
-func New() Country { return newCntry() }
+func New() Country { return new_() }

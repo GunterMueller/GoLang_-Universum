@@ -1,6 +1,6 @@
 package gram
 
-// (c) murus.org  v. 151116 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 import (
   . "murus/obj"
@@ -15,23 +15,20 @@ type
 // The ppm-image with name n is the background.
   Background (n string)
 
-// f, b are the colour for normal nodes/edges.
+// f, b are the colour for normal vertices/edges.
   Colours (f, b col.Colour)
 
-// f, b are the colour for active nodes/edges.
+// f, b are the colour for active vertices/edges.
   ColoursA (f, b col.Colour)
-
-// x is written to the screen.
-  Write()
 
 // x is changed interactively by the user.
   Edit()
 
-// The posactual and actual node of x are defined by the user; they are different.
-  NodesSelected () bool
+// The posactual and actual vertex of x are defined by the user; they are different.
+  VerticesSelected () bool
 
-// The postactual node of x is defined by the user; it coincides with its actual node.
-  NodeSelected () bool
+// The postactual vertex of x is defined by the user; it coincides with its actual vertex.
+  VertexSelected () bool
 
 // The number of Ways for the execution of Hamilton == 0.
   ResetNWays ()
@@ -50,3 +47,8 @@ type
 
   Demo (gra.Demo)
 }
+
+// Returns a new empty GraphModel for vertices and edges
+// of type n and e resp., that is directed, iff d == true.
+// (See also Spec of Graph in murus/gra.)
+func New (d bool, n, e Any) GraphModel { return new_(d,n,e) }

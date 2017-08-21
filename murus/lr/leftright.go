@@ -1,8 +1,8 @@
 package lr
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170731 - license see murus.go
 
-// >>> Left/Right problem: Simple Solution with leftRightes
+// >>> Left/Right problem: Simple Solution with mutexes
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 79
 
 import
@@ -14,13 +14,14 @@ type
                 lr Mutex
                    }
 
-func New() LeftRight {
+func new_() LeftRight {
   return new (leftRight)
 }
 
 func (x *leftRight) LeftIn() {
   x.mL.Lock()
   x.nL++
+  writeL (x.nL)
   if x.nL == 1 {
     x.lr.Lock()
   }
@@ -30,6 +31,7 @@ func (x *leftRight) LeftIn() {
 func (x *leftRight) LeftOut() {
   x.mL.Lock()
   x.nL--
+  writeL (x.nL)
   if x.nL == 0 {
     x.lr.Unlock()
   }
@@ -39,6 +41,7 @@ func (x *leftRight) LeftOut() {
 func (x *leftRight) RightIn() {
   x.mR.Lock()
   x.nR++
+  writeR (x.nR)
   if x.nR == 1 {
     x.lr.Lock()
   }
@@ -48,8 +51,12 @@ func (x *leftRight) RightIn() {
 func (x *leftRight) RightOut() {
   x.mR.Lock()
   x.nR--
+  writeR (x.nR)
   if x.nR == 0 {
     x.lr.Unlock()
   }
   x.mR.Unlock()
+}
+
+func (x *leftRight) Fin() {
 }

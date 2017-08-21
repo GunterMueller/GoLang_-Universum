@@ -2,7 +2,6 @@ package ptr
 
 // (c) murus.org  v. 140131 - license see murus.go
 
-
 func Code (p Pointer) uint { // /usr/include/X11/cursorfont.h
   switch p {
   case Standard:

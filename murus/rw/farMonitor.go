@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 161226 - license see murus.go
+// (c) murus.org  v. 170520 - license see murus.go
 
 // >>> readers/writers problem: implementation with far monitors
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, Abschnitt 8.3
@@ -16,46 +16,54 @@ type
                     fmon.FarMonitor
                     }
 
-func NewFarMonitor (h host.Host, p uint16, s bool) ReaderWriter {
-  x:= new (farMonitor)
-  c:= func (a Any, k uint) bool {
-        switch k {
-        case rIn:
-          return x.nW == 0
-        case wIn:
-          return x.nR == 0 && x.nW == 0
+func newFMon (h host.Host, p uint16, s bool) ReaderWriter {
+  x := new(farMonitor)
+  ps := func (a Any, k uint) bool {
+          switch k {
+          case readerIn:
+            return x.nW == 0
+          case writerIn:
+            return x.nR == 0 && x.nW == 0
+          }
+          return true // rOut, wOut
         }
-        return true // rOut, wOut
-      }
-  f:= func (a Any, k uint) Any {
-        switch k {
-        case rIn:
-          x.nR ++
-        case rOut:
-          x.nR --
-        case wIn:
-          x.nW = 1
-        case wOut:
-          x.nW = 0
+  fs := func (a Any, k uint) Any {
+          switch k {
+          case readerIn:
+            x.nR++
+            writeR (x.nR)
+          case readerOut:
+            x.nR--
+            writeR (x.nR)
+          case writerIn:
+            x.nW = 1
+            writeW (x.nW)
+          case writerOut:
+            x.nW = 0
+            writeW (x.nW)
+           }
+          return true
         }
-        return true
-      }
-  x.FarMonitor = fmon.New (true, nFuncs, f, c, h, p, s)
+  x.FarMonitor = fmon.New (true, nFuncs, fs, ps, h, p, s)
   return x
 }
 
 func (x *farMonitor) ReaderIn() {
-  x.F (true, rIn)
+  x.F(true, readerIn)
 }
 
 func (x *farMonitor) ReaderOut() {
-  x.F (true, rOut)
+  x.F(true, readerOut)
 }
 
 func (x *farMonitor) WriterIn() {
-  x.F (true, wIn)
+  x.F(true, writerIn)
 }
 
 func (x *farMonitor) WriterOut() {
-  x.F (true, wOut)
+  x.F(true, writerOut)
+}
+
+func (x *farMonitor) Fin() {
+  x.FarMonitor.Fin()
 }

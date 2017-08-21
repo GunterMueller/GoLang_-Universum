@@ -1,6 +1,7 @@
 package sem
 
 //     murus.org  v. 140803
+//
 // (c) Go-Authors
 
 import
@@ -12,10 +13,10 @@ type
               wakeup *sync.Cond
                      }
 
-func NewGo (n int) Semaphore {
-  x:= new (semaphoreGo)
+func newGo (n int) Semaphore {
+  x := new(semaphoreGo)
   x.int = n
-  x.mutex = new (sync.Mutex)
+  x.mutex = new(sync.Mutex)
   x.wakeup = sync.NewCond (x.mutex)
   return x
 }
@@ -31,8 +32,8 @@ func (x *semaphoreGo) P() {
 
 func (x *semaphoreGo) V() {
   x.mutex.Lock()
-  wakeOthers:= x.int < 0
-  x.int ++
+  wakeOthers := x.int < 0
+  x.int++
   if wakeOthers {
     x.wakeup.Signal()
   }

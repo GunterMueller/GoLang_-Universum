@@ -1,14 +1,13 @@
 package enum
 
-// (c) murus.org  v. 140522 - license see murus.go
+// (c) murus.org  v. 170419 - license see murus.go
 
-var
+var (
   lSparsCode, sSparsCode []string =
   []string { "AAA", "AAD", "ADD", "DAD", "DDD" },
   lSparsCode
-const
-  NSparsCodes = 5
-
+  NSparsCodes = uint8(len(lSparsCode))
+)
 
 func init() {
   l[SparsCode], s[SparsCode] = lSparsCode, sSparsCode

@@ -1,6 +1,6 @@
 package mqu
 
-// (c) murus.org  v. 161226 - license see murus.go
+// (c) murus.org  v. 170218 - license see murus.go
 
 import (
   . "murus/obj"
@@ -19,23 +19,23 @@ type
                     fmon.FarMonitor
                     }
 
-func NewFarMonitor (a Any, h host.Host, p uint16, s bool) MQueue {
-  x:= new (farMonitor)
+func newf (a Any, h host.Host, p uint16, s bool) MQueue {
+  x := new(farMonitor)
   x.Queue = qu.New (a)
-  c:= func (a Any, i uint) bool {
-        if i == get {
-          return x.Queue.Num() > 0
+  ps := func (a Any, i uint) bool {
+          if i == get {
+            return x.Queue.Num() > 0
+          }
+          return true // ins
         }
-        return true // ins
-      }
-  f:= func (a Any, i uint) Any {
-        if i == get {
-          return x.Queue.Get()
+  fs := func (a Any, i uint) Any {
+          if i == get {
+            return x.Queue.Get()
+          }
+          x.Queue.Ins (a) // ins
+          return a
         }
-        x.Queue.Ins (a) // ins
-        return a
-      }
-  x.FarMonitor = fmon.New (x.Queue, nFuncs, f, c, h, p, s)
+  x.FarMonitor = fmon.New (x.Queue, nFuncs, fs, ps, h, p, s)
   return x
 }
 
@@ -44,10 +44,10 @@ func (x *farMonitor) Fin() {
 }
 
 func (x *farMonitor) Ins (a Any) {
-  x.F (a, ins)
+  x.F(a, ins)
 }
 
 func (x *farMonitor) Get() Any {
-  var dummy Any
-  return x.F (dummy, get)
+  var a Any
+  return x.F(a, get)
 }

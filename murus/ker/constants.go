@@ -1,15 +1,18 @@
 package ker
 
-// (c) murus.org  v. 150915 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 const (
+  Dot = "."
+  Separator = "/"
   Murus = "murus"
+  DotMurus = Dot + "murus"
   Zero, One = uint(0), uint(1)
 
   PointsPerInch = 72
   MillimetersPerInch = 25.4
   PointsPerMillimeter = float64(PointsPerInch) / MillimetersPerInch
-                        // 1 mm = 2.period 834645669291338582677165354330708661417322 pt
+                        // 1 mm = 2.834645669291338582677165354330708661417322 pt
   PointsPerCentimeter = 10 * PointsPerMillimeter
 
   A4wd = 210 // mm

@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170411 - license see murus.go
 
 // >>> readers/writers problem: implementation with conditioned monitors
 
@@ -15,46 +15,49 @@ type
                             }
 
 
-func NewConditionedMonitor() ReaderWriter {
-  x:= new (conditionedMonitor)
-  f:= func (a Any, i uint) Any {
-        switch i {
-        case rIn:
-          x.nR++
-        case rOut:
-          x.nR--
-        case wIn:
-          x.nW++
-        case wOut:
-          x.nW--
+func newCondMon() ReaderWriter {
+  x := new (conditionedMonitor)
+  fs := func (a Any, i uint) Any {
+          switch i {
+          case readerIn:
+            x.nR++
+          case readerOut:
+            x.nR--
+          case writerIn:
+            x.nW++
+          case writerOut:
+            x.nW--
+          }
+          return nil
         }
-        return nil
-      }
-  p:= func (a Any, i uint) bool {
-        switch i {
-        case rIn:
-          return x.nW == 0
-        case wIn:
-          return x.nR == 0 && x.nW == 0
+  ps := func (a Any, i uint) bool {
+          switch i {
+          case readerIn:
+            return x.nW == 0
+          case writerIn:
+            return x.nR == 0 && x.nW == 0
+          }
+          return true
         }
-        return true
-      }
-  x.Monitor = mon.New (nFuncs, f, p)
+  x.Monitor = mon.New (nFuncs, fs, ps)
   return x
 }
 
 func (x *conditionedMonitor) ReaderIn() {
-  x.F (nil, rIn)
+  x.F (nil, readerIn)
 }
 
 func (x *conditionedMonitor) ReaderOut() {
-  x.F (nil, rOut)
+  x.F (nil, readerOut)
 }
 
 func (x *conditionedMonitor) WriterIn() {
-  x.F (nil, wIn)
+  x.F (nil, writerIn)
 }
 
 func (x *conditionedMonitor) WriterOut() {
-  x.F (nil, wOut)
+  x.F (nil, writerOut)
+}
+
+func (x *conditionedMonitor) Fin() {
 }

@@ -3,7 +3,9 @@ package naddr
 // (c) murus.org  v. 170106 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/str"; "murus/nat"
+  . "murus/obj"
+  "murus/str"
+  "murus/nat"
   "murus/host"
 )
 type

@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170411 - license see murus.go
 
 // >>> 1st readers/writers problem (readers' preference)
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 75
@@ -13,11 +13,9 @@ type
       mutex, rw Mutex
                 }
 
-
-func NewMutex1() ReaderWriter {
+func new1() ReaderWriter {
   return new (mutex1)
 }
-
 
 func (x *mutex1) ReaderIn() {
   x.mutex.Lock()
@@ -28,7 +26,6 @@ func (x *mutex1) ReaderIn() {
   x.mutex.Unlock()
 }
 
-
 func (x *mutex1) ReaderOut() {
   x.mutex.Lock()
   x.nR--
@@ -38,12 +35,13 @@ func (x *mutex1) ReaderOut() {
   x.mutex.Unlock()
 }
 
-
 func (x *mutex1) WriterIn() {
   x.rw.Lock()
 }
 
-
 func (x *mutex1) WriterOut() {
   x.rw.Unlock()
+}
+
+func (x *mutex1) Fin() {
 }

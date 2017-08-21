@@ -3,7 +3,8 @@ package fuday
 // (c) murus.org  v. 161216 - license see murus.go
 
 import (
-  "murus/nat"; "murus/day"
+  "murus/nat"
+  "murus/day"
 )
 type
   fuDay struct {
@@ -12,7 +13,7 @@ type
 var
   tmp, tmp1, tmp2 day.Calendarday = day.New(), day.New(), day.New()
 
-func newFU() FUDay {
+func new_() FUDay {
   x := new (fuDay)
   x.Calendarday = day.New()
   x.Actualize()

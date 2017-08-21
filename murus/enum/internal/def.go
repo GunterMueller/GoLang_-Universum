@@ -1,6 +1,6 @@
 package internal
 
-// (c) murus.org  v. 150123 - license see murus.go
+// (c) murus.org  v. 170316 - license see murus.go
 
 import
   . "murus/obj"
@@ -35,3 +35,5 @@ type
 // In this case x is that element, otherwise x is empty.
   Set (n uint8) bool
 }
+
+func New (t uint8, s [NFormats][]string) Base { return new_(t,s) }

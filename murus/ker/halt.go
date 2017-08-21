@@ -1,6 +1,6 @@
 package ker
 
-// (c) murus.org  v. 160101 - license see murus.go
+// (c) murus.org  v. 170424 - license see murus.go
 
 import (
   "os"
@@ -28,14 +28,18 @@ func Oops() {
   Panic ("oops")
 }
 
-func Panic1 (p string, n uint) {
-  Fin()
-  panic ("Programm wegen Fehler Nr. " + strconv.Itoa (int(n)) + " im Paket " + p + " abgebrochen")
+func Todo() {
+  Panic ("TODO")
 }
 
-func Stop (p string, n uint) {
+func Panic1 (s string, n uint) {
   Fin()
-  panic ("Programm wegen Fehler Nr. " + strconv.Itoa (int(n)) + " im Paket " + p + " abgebrochen")
+  panic (s + strconv.Itoa (int(n)))
+}
+
+func Shit() {
+  Fin()
+  panic ("shit happens")
 }
 
 func StopErr (t string, n uint, e error) {

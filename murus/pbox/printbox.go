@@ -4,7 +4,8 @@ package pbox
 
 import (
   "murus/str"
-  "murus/font"; "murus/prt"
+  "murus/font"
+  "murus/prt"
 )
 type
   printbox struct {
@@ -19,7 +20,7 @@ func NColumns () uint {
   return prt.NColumns()
 }
 
-func newPbox() Printbox {
+func new_() Printbox {
   return &printbox { font.Roman }
 }
 

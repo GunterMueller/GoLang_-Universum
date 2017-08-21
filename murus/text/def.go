@@ -39,5 +39,6 @@ type
   WriteGr (x, y int)
   EditGr (x, y int)
 }
+
 // Returns a new empty text of length n.
-func New (n uint) Text { return newText(n) }
+func New (n uint) Text { return new_(n) }

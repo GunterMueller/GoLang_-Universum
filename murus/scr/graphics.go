@@ -1,20 +1,20 @@
 package scr
 
-// (c) murus.org  v. 140625 - license see murus.go
+// (c) murus.org  v. 170814 - license see murus.go
 
 import
   . "murus/linewd"
 
 func (X *screen) ActLinewidth() Linewidth {
   if underX {
-    return X.Window.ActLinewidth()
+    return X.XWindow.ActLinewidth()
   }
   return X.Console.ActLinewidth()
 }
 
 func (X *screen) SetLinewidth (w Linewidth) {
   if underX {
-    X.Window.SetLinewidth (w)
+    X.XWindow.SetLinewidth (w)
   } else {
     X.Console.SetLinewidth (w)
   }
@@ -22,7 +22,7 @@ func (X *screen) SetLinewidth (w Linewidth) {
 
 func (X *screen) Point (x, y int) {
   if underX {
-    X.Window.Point (x, y)
+    X.XWindow.Point (x, y)
   } else {
     X.Console.Point (x, y)
   }
@@ -30,7 +30,7 @@ func (X *screen) Point (x, y int) {
 
 func (X *screen) PointInv (x, y int) {
   if underX {
-    X.Window.PointInv (x, y)
+    X.XWindow.PointInv (x, y)
   } else {
     X.Console.PointInv (x, y)
   }
@@ -38,7 +38,7 @@ func (X *screen) PointInv (x, y int) {
 
 func (X *screen) Points (xs, ys []int) {
   if underX {
-    X.Window.Points (xs, ys)
+    X.XWindow.Points (xs, ys)
   } else {
     X.Console.Points (xs, ys)
   }
@@ -46,15 +46,23 @@ func (X *screen) Points (xs, ys []int) {
 
 func (X *screen) PointsInv (xs, ys []int) {
   if underX {
-    X.Window.PointsInv (xs, ys)
+    X.XWindow.PointsInv (xs, ys)
   } else {
     X.Console.PointsInv (xs, ys)
   }
 }
 
+func (X *screen) OnPoint (x, y, a, b int, d uint) bool {
+  if underX {
+    return X.XWindow.OnPoint (x, y, a, b, d)
+  } else {
+    return X.Console.OnPoint (x, y, a, b, d)
+  }
+}
+
 func (X *screen) Line (x, y, x1, y1 int) {
   if underX {
-    X.Window.Line (x, y, x1, y1)
+    X.XWindow.Line (x, y, x1, y1)
   } else {
     X.Console.Line (x, y, x1, y1)
   }
@@ -62,7 +70,7 @@ func (X *screen) Line (x, y, x1, y1 int) {
 
 func (X *screen) LineInv (x, y, x1, y1 int) {
   if underX {
-    X.Window.LineInv (x, y, x1, y1)
+    X.XWindow.LineInv (x, y, x1, y1)
   } else {
     X.Console.LineInv (x, y, x1, y1)
   }
@@ -70,14 +78,14 @@ func (X *screen) LineInv (x, y, x1, y1 int) {
 
 func (X *screen) OnLine (x, y, x1, y1, a, b int, t uint) bool {
   if underX {
-    return X.Window.OnLine (x, y, x1, y1, a, b, t)
+    return X.XWindow.OnLine (x, y, x1, y1, a, b, t)
   }
   return X.Console.OnLine (x, y, x1, y1, a, b, t)
 }
 
 func (X *screen) Lines (xs, ys, xs1, ys1 []int) {
   if underX {
-    X.Window.Lines (xs, ys, xs1, ys1)
+    X.XWindow.Lines (xs, ys, xs1, ys1)
   } else {
     X.Console.Lines (xs, ys, xs1, ys1)
   }
@@ -85,7 +93,7 @@ func (X *screen) Lines (xs, ys, xs1, ys1 []int) {
 
 func (X *screen) LinesInv (xs, ys, xs1, ys1 []int) {
   if underX {
-    X.Window.LinesInv (xs, ys, xs1, ys1)
+    X.XWindow.LinesInv (xs, ys, xs1, ys1)
   } else {
     X.Console.LinesInv (xs, ys, xs1, ys1)
   }
@@ -93,14 +101,14 @@ func (X *screen) LinesInv (xs, ys, xs1, ys1 []int) {
 
 func (X *screen) OnLines (xs, ys, xs1, ys1 []int, a, b int, t uint) bool {
   if underX {
-    return X.Window.OnLines (xs, ys, xs1, ys1, a, b, t)
+    return X.XWindow.OnLines (xs, ys, xs1, ys1, a, b, t)
   }
   return X.Console.OnLines (xs, ys, xs1, ys1, a, b, t)
 }
 
 func (X *screen) Segments (xs, ys []int) {
   if underX {
-    X.Window.Segments (xs, ys)
+    X.XWindow.Segments (xs, ys)
   } else {
     X.Console.Segments (xs, ys)
   }
@@ -108,7 +116,7 @@ func (X *screen) Segments (xs, ys []int) {
 
 func (X *screen) SegmentsInv (xs, ys []int) {
   if underX {
-    X.Window.SegmentsInv (xs, ys)
+    X.XWindow.SegmentsInv (xs, ys)
   } else {
     X.Console.SegmentsInv (xs, ys)
   }
@@ -116,14 +124,14 @@ func (X *screen) SegmentsInv (xs, ys []int) {
 
 func (X *screen) OnSegments (xs, ys []int, a, b int, t uint) bool {
   if underX {
-    return X.Window.OnSegments (xs, ys, a, b, t)
+    return X.XWindow.OnSegments (xs, ys, a, b, t)
   }
   return X.Console.OnSegments (xs, ys, a, b, t)
 }
 
 func (X *screen) InfLine (x, y, x1, y1 int) {
   if underX {
-    X.Window.InfLine (x, y, x1, y1)
+    X.XWindow.InfLine (x, y, x1, y1)
   } else {
     X.Console.InfLine (x, y, x1, y1)
   }
@@ -131,7 +139,7 @@ func (X *screen) InfLine (x, y, x1, y1 int) {
 
 func (X *screen) InfLineInv (x, y, x1, y1 int) {
   if underX {
-    X.Window.InfLineInv (x, y, x1, y1)
+    X.XWindow.InfLineInv (x, y, x1, y1)
   } else {
     X.Console.InfLineInv (x, y, x1, y1)
   }
@@ -139,14 +147,14 @@ func (X *screen) InfLineInv (x, y, x1, y1 int) {
 
 func (X *screen) OnInfLine (x, y, x1, y1, a, b int, t uint) bool {
   if underX {
-    return X.Window.OnInfLine (x, y, x1, y1, a, b, t)
+    return X.XWindow.OnInfLine (x, y, x1, y1, a, b, t)
   }
   return X.Console.OnInfLine (x, y, x1, y1, a, b, t)
 }
 
 func (X *screen) Rectangle (x, y, x1, y1 int) {
   if underX {
-    X.Window.Rectangle (x, y, x1, y1)
+    X.XWindow.Rectangle (x, y, x1, y1)
   } else {
     X.Console.Rectangle (x, y, x1, y1)
   }
@@ -154,7 +162,7 @@ func (X *screen) Rectangle (x, y, x1, y1 int) {
 
 func (X *screen) RectangleInv (x, y, x1, y1 int) {
   if underX {
-    X.Window.RectangleInv (x, y, x1, y1)
+    X.XWindow.RectangleInv (x, y, x1, y1)
   } else {
     X.Console.RectangleInv (x, y, x1, y1)
   }
@@ -162,7 +170,7 @@ func (X *screen) RectangleInv (x, y, x1, y1 int) {
 
 func (X *screen) RectangleFull (x, y, x1, y1 int) {
   if underX {
-    X.Window.RectangleFull (x, y, x1, y1)
+    X.XWindow.RectangleFull (x, y, x1, y1)
   } else {
     X.Console.RectangleFull (x, y, x1, y1)
   }
@@ -170,7 +178,7 @@ func (X *screen) RectangleFull (x, y, x1, y1 int) {
 
 func (X *screen) RectangleFullInv (x, y, x1, y1 int) {
   if underX {
-    X.Window.RectangleFullInv (x, y, x1, y1)
+    X.XWindow.RectangleFullInv (x, y, x1, y1)
   } else {
     X.Console.RectangleFullInv (x, y, x1, y1)
   }
@@ -178,7 +186,7 @@ func (X *screen) RectangleFullInv (x, y, x1, y1 int) {
 
 func (X *screen) OnRectangle (x, y, x1, y1, a, b int, t uint) bool {
   if underX {
-    return X.Window.OnRectangle (x, y, x1, y1, a, b, t)
+    return X.XWindow.OnRectangle (x, y, x1, y1, a, b, t)
   }
   return X.Console.OnRectangle (x, y, x1, y1, a, b, t)
 }
@@ -186,14 +194,14 @@ func (X *screen) OnRectangle (x, y, x1, y1, a, b int, t uint) bool {
 
 func (X *screen) InRectangle (x, y, x1, y1, a, b int, t uint) bool {
   if underX {
-    return X.Window.InRectangle (x, y1, x1, y1, a, b, t)
+    return X.XWindow.InRectangle (x, y1, x1, y1, a, b, t)
   }
   return X.Console.InRectangle (x, y, x1, y1, a, b, t)
 }
 
 func (X *screen) Polygon (xs, ys []int) {
   if underX {
-    X.Window.Polygon (xs, ys)
+    X.XWindow.Polygon (xs, ys)
   } else {
     X.Console.Polygon (xs, ys)
   }
@@ -201,7 +209,7 @@ func (X *screen) Polygon (xs, ys []int) {
 
 func (X *screen) PolygonInv (xs, ys []int) {
   if underX {
-    X.Window.PolygonInv (xs, ys)
+    X.XWindow.PolygonInv (xs, ys)
   } else {
     X.Console.PolygonInv (xs, ys)
   }
@@ -209,7 +217,7 @@ func (X *screen) PolygonInv (xs, ys []int) {
 
 func (X *screen) PolygonFull (xs, ys []int) {
   if underX {
-    X.Window.PolygonFull (xs, ys)
+    X.XWindow.PolygonFull (xs, ys)
   } else {
     X.Console.PolygonFull (xs, ys)
   }
@@ -217,7 +225,7 @@ func (X *screen) PolygonFull (xs, ys []int) {
 
 func (X *screen) PolygonFullInv (xs, ys []int) {
   if underX {
-    X.Window.PolygonFullInv (xs, ys)
+    X.XWindow.PolygonFullInv (xs, ys)
   } else {
     X.Console.PolygonFullInv (xs, ys)
   }
@@ -225,14 +233,14 @@ func (X *screen) PolygonFullInv (xs, ys []int) {
 
 func (X *screen) OnPolygon (xs, ys []int, a, b int, t uint) bool {
   if underX {
-    return X.Window.OnPolygon (xs, ys, a, b, t)
+    return X.XWindow.OnPolygon (xs, ys, a, b, t)
   }
   return X.Console.OnPolygon (xs, ys, a, b, t)
 }
 
 func (X *screen) Circle (x, y int, r uint) {
   if underX {
-    X.Window.Circle (x, y, r)
+    X.XWindow.Circle (x, y, r)
   } else {
     X.Console.Circle (x, y, r)
   }
@@ -240,7 +248,7 @@ func (X *screen) Circle (x, y int, r uint) {
 
 func (X *screen) CircleInv (x, y int, r uint) {
   if underX {
-    X.Window.CircleInv (x, y, r)
+    X.XWindow.CircleInv (x, y, r)
   } else {
     X.Console.CircleInv (x, y, r)
   }
@@ -248,7 +256,7 @@ func (X *screen) CircleInv (x, y int, r uint) {
 
 func (X *screen) CircleFull (x, y int, r uint) {
   if underX {
-    X.Window.CircleFull (x, y, r)
+    X.XWindow.CircleFull (x, y, r)
   } else {
     X.Console.CircleFull (x, y, r)
   }
@@ -256,7 +264,7 @@ func (X *screen) CircleFull (x, y int, r uint) {
 
 func (X *screen) CircleFullInv (x, y int, r uint) {
   if underX {
-    X.Window.CircleFullInv (x, y, r)
+    X.XWindow.CircleFullInv (x, y, r)
   } else {
     X.Console.CircleFullInv (x, y, r)
   }
@@ -264,14 +272,14 @@ func (X *screen) CircleFullInv (x, y int, r uint) {
 
 func (X *screen) OnCircle (x, y int, r uint, a, b int, t uint) bool {
   if underX {
-    return X.Window.OnCircle (x, y, r,a, b, t)
+    return X.XWindow.OnCircle (x, y, r,a, b, t)
   }
   return X.Console.OnCircle (x, y, r, a, b, t)
 }
 
 func (X *screen) Arc (x, y int, r uint, a, b float64) {
   if underX {
-    X.Window.Arc (x, y, r, a, b)
+    X.XWindow.Arc (x, y, r, a, b)
   } else {
     X.Console.Arc (x, y, r, a, b)
   }
@@ -279,7 +287,7 @@ func (X *screen) Arc (x, y int, r uint, a, b float64) {
 
 func (X *screen) ArcInv (x, y int, r uint, a, b float64) {
   if underX {
-    X.Window.ArcInv (x, y, r, a, b)
+    X.XWindow.ArcInv (x, y, r, a, b)
   } else {
     X.Console.ArcInv (x, y, r, a, b)
   }
@@ -287,7 +295,7 @@ func (X *screen) ArcInv (x, y int, r uint, a, b float64) {
 
 func (X *screen) ArcFull (x, y int, r uint, a, b float64) {
   if underX {
-    X.Window.ArcFull (x, y, r, a, b)
+    X.XWindow.ArcFull (x, y, r, a, b)
   } else {
     X.Console.ArcFull (x, y, r, a, b)
   }
@@ -295,7 +303,7 @@ func (X *screen) ArcFull (x, y int, r uint, a, b float64) {
 
 func (X *screen) ArcFullInv (x, y int, r uint, a, b float64) {
   if underX {
-    X.Window.ArcFullInv (x, y, r, a, b)
+    X.XWindow.ArcFullInv (x, y, r, a, b)
   } else {
     X.Console.ArcFullInv (x, y, r, a, b)
   }
@@ -303,7 +311,7 @@ func (X *screen) ArcFullInv (x, y int, r uint, a, b float64) {
 
 func (X *screen) Ellipse (x, y int, a, b uint) {
   if underX {
-    X.Window.Ellipse (x, y, a, b)
+    X.XWindow.Ellipse (x, y, a, b)
   } else {
     X.Console.Ellipse (x, y, a, b)
   }
@@ -311,7 +319,7 @@ func (X *screen) Ellipse (x, y int, a, b uint) {
 
 func (X *screen) EllipseInv (x, y int, a, b uint) {
   if underX {
-    X.Window.EllipseInv (x, y, a, b)
+    X.XWindow.EllipseInv (x, y, a, b)
   } else {
     X.Console.EllipseInv (x, y, a, b)
   }
@@ -319,7 +327,7 @@ func (X *screen) EllipseInv (x, y int, a, b uint) {
 
 func (X *screen) EllipseFull (x, y int, a, b uint) {
   if underX {
-    X.Window.EllipseFull (x, y, a, b)
+    X.XWindow.EllipseFull (x, y, a, b)
   } else {
     X.Console.EllipseFull (x, y, a, b)
   }
@@ -327,7 +335,7 @@ func (X *screen) EllipseFull (x, y int, a, b uint) {
 
 func (X *screen) EllipseFullInv (x, y int, a, b uint) {
   if underX {
-    X.Window.EllipseFullInv (x, y, a, b)
+    X.XWindow.EllipseFullInv (x, y, a, b)
   } else {
     X.Console.EllipseFullInv (x, y, a, b)
   }
@@ -335,14 +343,14 @@ func (X *screen) EllipseFullInv (x, y int, a, b uint) {
 
 func (X *screen) OnEllipse (x, y int, a, b uint, A, B int, t uint) bool {
   if underX {
-    return X.Window.OnEllipse (x, y, a, b, A, B, t)
+    return X.XWindow.OnEllipse (x, y, a, b, A, B, t)
   }
   return X.Console.OnEllipse (x, y, a, b, A, B, t)
 }
 
 func (X *screen) Curve (xs, ys []int) {
   if underX {
-    X.Window.Curve (xs, ys)
+    X.XWindow.Curve (xs, ys)
   } else {
     X.Console.Curve (xs, ys)
   }
@@ -350,7 +358,7 @@ func (X *screen) Curve (xs, ys []int) {
 
 func (X *screen) CurveInv (xs, ys []int) {
   if underX {
-    X.Window.CurveInv (xs, ys)
+    X.XWindow.CurveInv (xs, ys)
   } else {
     X.Console.CurveInv (xs, ys)
   }
@@ -358,7 +366,7 @@ func (X *screen) CurveInv (xs, ys []int) {
 
 func (X *screen) OnCurve (xs, ys []int, a, b int, t uint) bool {
   if underX {
-    return X.Window.OnCurve (xs, ys, a, b, t)
+    return X.XWindow.OnCurve (xs, ys, a, b, t)
   }
   return X.Console.OnCurve (xs, ys, a, b, t)
 }

@@ -1,16 +1,11 @@
 package adj
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170217 - license see murus.go
 
 import (
   . "murus/obj"
   "murus/col"
 )
-
-// Pre: n > 0; e is of type Valuator or a uint-type or e == nil. 
-// Returns an n*n-matrix with all entries of (false, 0).
-func New (n uint, e Any) AdjacencyMatrix { return newAdj(n,e) }
-
 type
   AdjacencyMatrix interface {
 // Sqare matrices with pairs (d, v) as entries,
@@ -94,3 +89,8 @@ type
 // every node has at least one outgoing edge.
   Full () bool
 }
+
+// Pre: n > 0; e is of type Valuator or a uint-type or e == nil. 
+// Returns an n*n-matrix with all entries of (false, 0).
+func New (n uint, e Any) AdjacencyMatrix { return new_(n,e) }
+//          ^^^^ XXX generalize to allow also node.Node !!!

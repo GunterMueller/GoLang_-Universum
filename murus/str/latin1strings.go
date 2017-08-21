@@ -1,14 +1,14 @@
 package str
 
-// (c) murus.org  v. 150121 - license see murus.go
+// (c) murus.org  v. 170417 - license see murus.go
 
 import
   "murus/z"
 const
   spc = byte(' ')
 
-func isUTF8 (S *string) bool {
-  return z.DevilsDung (S)
+func devilsDung (s *string) bool {
+  return z.DevilsDung (s)
 }
 
 func clr (n uint) string {
@@ -24,8 +24,8 @@ func lat1 (s string) string {
 }
 
 func utf8 (s string) string {
-  for i:= len(s) - 1; i >= 0; i-- {
-    c:= s[i]
+  for i := len(s) - 1; i >= 0; i-- {
+    c := s[i]
     if z.IsLatin1 (c) {
       s = s[:i] + string(c) + s[i+1:]
     }
@@ -49,25 +49,25 @@ func letterOrDigit (c byte) bool {
 }
 
 func lit (s string) bool {
-  n:= len (s)
+  n := len (s)
   if n == 0 { return false }
   if ! letter (s[0]) { return false }
-  for i:= 1; i < n; i++ {
+  for i := 1; i < n; i++ {
     if ! letterOrDigit (s[i]) { return false }
   }
   return true
 }
 
 func replace (s *string, p uint, c byte) {
-  n:= len (*s)
+  n := len (*s)
   if int(p) >= n { return }
-  t:= string(c)
+  t := string(c)
   *s = (*s)[:p] + t + (*s)[p+1:]
   z.ToHellWithUTF8 (s)
 }
 
 func empty (s string) bool {
-  for i:= 0; i < len (s); i++ {
+  for i := 0; i < len (s); i++ {
     if s[i] != spc {
       return false
     }
@@ -76,9 +76,9 @@ func empty (s string) bool {
 }
 
 func const_ (c byte, n uint) string {
-  s:= ""
-  for i:= uint(0); i < n; i++ {
-    t:= string(c)
+  s := ""
+  for i := uint(0); i < n; i++ {
+    t := string(c)
     z.ToHellWithUTF8 (&t)
     s += t
   }
@@ -86,7 +86,7 @@ func const_ (c byte, n uint) string {
 }
 
 func properLen (s string) uint {
-  n:= len (s)
+  n := len (s)
   for {
     if n == 0 { break }
     if s[n-1] == spc {
@@ -99,27 +99,27 @@ func properLen (s string) uint {
 }
 
 func eq (s, t string) bool {
-  n, k:= properLen (s), properLen (t)
+  n, k := properLen (s), properLen (t)
   if n != k { return false }
   if n == 0 { return true }
   return s[0:n] == t[0:n]
 }
 
 func toUpper (s *string) {
-  n:= properLen (*s)
+  n := properLen (*s)
   if n == 0 { return }
-  b:= make ([]byte, n)
-  for i:= uint(0); i < n; i++ {
+  b := make ([]byte, n)
+  for i := uint(0); i < n; i++ {
     b[i] = z.Cap ((*s)[i])
   }
   *s = string(b)
 }
 
 func toLower (s *string) {
-  n:= properLen (*s)
+  n := properLen (*s)
   if n == 0 { return }
-  b:= make ([]byte, n)
-  for i:= uint(0); i < n; i++ {
+  b := make ([]byte, n)
+  for i := uint(0); i < n; i++ {
     b[i] = z.Lower ((*s)[i])
   }
   *s = string(b)
@@ -141,11 +141,11 @@ func cap0 (s string) bool {
 }
 
 func equiv (s, t string) bool {
-  n:= properLen (s) // len(s)
+  n := properLen (s) // len(s)
   if properLen (t) /* len(t) */ != n {
     return false
   }
-  for i:= uint(0); i < n; i++ {
+  for i := uint(0); i < n; i++ {
     if ! z.Equiv (s[i], t[i]) {
       return false
     }
@@ -154,8 +154,8 @@ func equiv (s, t string) bool {
 }
 
 func less (s, t string) bool {
-  n, n1:= len (s), len (t)
-  i:= 0
+  n, n1 := len (s), len (t)
+  i := 0
   for {
     if i == n {
       return n < n1
@@ -181,8 +181,8 @@ func equivLess (s, t string) bool {
 }
 
 func pos (s string, b byte) (uint, bool) {
-  n:= uint(len (s))
-  for i:= uint(0); i < n; i++ {
+  n := uint(len (s))
+  for i := uint(0); i < n; i++ {
     if s[i] == b {
       return i, true
     }
@@ -191,8 +191,8 @@ func pos (s string, b byte) (uint, bool) {
 }
 
 func equivPos (s string, b byte) (uint, bool) {
-  n:= uint(len (s))
-  for i:= uint(0); i < n; i++ {
+  n := uint(len (s))
+  for i := uint(0); i < n; i++ {
     if z.Equiv (s[i], b) {
       return i, true
     }
@@ -203,14 +203,14 @@ func equivPos (s string, b byte) (uint, bool) {
 func sub (s, t string) (uint, bool) {
 //  z.ToHellWithUTF8 (&s) // sicher ist sicher
 //  z.ToHellWithUTF8 (&t)
-  n:= properLen (s)
+  n := properLen (s)
   if n == 0 { return 0, true }
-  k, m:= uint(len (t)), properLen (t)
+  k, m := uint(len (t)), properLen (t)
   if n > m {
     return k, false
   }
   s = s[:n]
-  for i:= uint(0); i + n <= m; i++ {
+  for i := uint(0); i + n <= m; i++ {
     if s == t[i:i+n] {
       return i, true
     }
@@ -219,7 +219,7 @@ func sub (s, t string) (uint, bool) {
 }
 
 func sub0 (s, t string) bool {
-  n:= properLen(s)
+  n := properLen(s)
   if int(n) > len(t) { return false }
   return s[:n] == t[:n]
 }
@@ -232,7 +232,7 @@ func equivSub (s, t string) (uint, bool) {
 }
 
 func ins1 (s *string, c byte, p uint) {
-  t:= string(c)
+  t := string(c)
   z.ToHellWithUTF8 (&t)
   ins (s, t, p)
 }
@@ -244,7 +244,7 @@ func ins (s *string, t string, p uint) {
 
 func rem (s *string, p, n uint) {
   if n == 0 { return }
-  l:= uint(len (*s))
+  l := uint(len (*s))
   if p >= l { return }
   if p + n >= l {
     n = l - p
@@ -254,7 +254,7 @@ func rem (s *string, p, n uint) {
 
 func part (s string, p, n uint) string {
   if n == 0 { return "" }
-  l:= uint(len (s))
+  l := uint(len(s))
   if p >= l { return s }
   if p + n > l { n = l - p }
   return s[p:p+n]
@@ -262,18 +262,18 @@ func part (s string, p, n uint) string {
 
 func norm (s *string, n uint) {
   if n == 0 { *s = ""; return }
-  k:= uint(len (*s))
+  k := uint(len (*s))
   if k > n {
     *s = (*s)[:n]
     return
   }
-  for i:= k; i < n; i++ { // k <= n
+  for i := k; i < n; i++ { // k <= n
     *s += " "
   }
 }
 
 func offSpc (s *string) {
-  n:= len (*s)
+  n := len (*s)
   for n > 0 && (*s)[0] == spc {
     *s = (*s)[1:]
     n--
@@ -284,11 +284,11 @@ func offSpc (s *string) {
   *s = (*s)[:n]
 }
 
-func offSpaces (s *string) {
-  n:= len (*s)
+func offAllSpaces (s *string) {
+  n := len (*s)
   if n == 0 { return }
-  b:= make ([]byte, n)
-  i, j:= 0, 0
+  b := make ([]byte, n)
+  i, j := 0, 0
   loop: for j < n {
     if j == n { break }
     for (*s)[j] == spc {
@@ -305,10 +305,10 @@ func offSpaces (s *string) {
 }
 
 func move (s *string, left bool) {
-  l:= uint(len (*s))
+  l := uint(len (*s))
   if l == 0 { return }
   if left {
-    n:= l
+    n := l
     for n > 0 && (*s)[0] == spc {
       *s = (*s)[1:]
       n--
@@ -318,27 +318,27 @@ func move (s *string, left bool) {
       n++
     }
   } else {
-    n:= l
+    n := l
     for n = l; n >= 1; n-- {
       if (*s)[n - 1] != spc {
         break
       }
     }
     *s = (*s)[:n]
-    for i:= n; i < l; i++ {
+    for i := n; i < l; i++ {
       *s = " " + *s
     }
   }
 }
 
 func insSpace (s *string, p uint) {
-  l:= uint(len (*s))
-  if l == 0 || p > l { return }
+  l := uint(len (*s))
+  if l == 0 || p >= l { return }
   *s = (*s)[:p] + " " + (*s)[p:]
 }
 
 func shift (s *string, p uint) {
-  l:= uint(len (*s))
+  l := uint(len (*s))
   if l <= 1 || p + 1 >= l { return }
   if (*s)[l-1] != spc { return }
   *s = (*s)[0:p] + " " + (*s)[p:l-1]
@@ -349,7 +349,7 @@ func center (s *string, n uint) {
     return
   }
   move (s, false)
-  l:= ProperLen (*s)
+  l := ProperLen (*s)
   if n < l {
     *s = (*s)[:n]
     return
@@ -360,15 +360,15 @@ func center (s *string, n uint) {
     *s += " "
     return
   }
-  k:= (n - l) / 2 // + (n - l) % 2
+  k := (n - l) / 2 // + (n - l) % 2
   *s = clr (k) + *s + clr (n - (l + k))
 }
 
 func offNondigits (s *string) {
-  l:= uint(len (*s))
+  l := uint(len (*s))
   if l == 0 { return }
-  b:= make ([]byte, l)
-  i, j:= uint(0), uint(0)
+  b := make ([]byte, l)
+  i, j := uint(0), uint(0)
   loop: for j < l {
     if j == l { break }
     for ! digit ((*s)[j]) {
@@ -388,10 +388,10 @@ func split (s string) (uint, []string, []uint) {
   z.ToHellWithUTF8 (&s)
   var t []string
   var p []uint
-  l:= properLen (s)
-  spaceBefore:= true
-  n:= uint(0)
-  for i:= uint(0); i < l; i++ {
+  l := properLen (s)
+  spaceBefore := true
+  n := uint(0)
+  for i := uint(0); i < l; i++ {
     switch s[i] {
     case spc, byte(','), byte(';'):
       spaceBefore = true
@@ -418,16 +418,59 @@ func appendLine (s *string, t string) {
 }
 
 func splitLine (s *string) string {
-  l:= uint(len (*s))
+  l := uint(len (*s))
   if l == 0 { return "" }
-  n:= uint(0)
+  n := uint(0)
   for n = 0; n < l; n++ {
     if (*s)[n] == byte('\n') {
       break
     }
   }
-  t:= (*s)[:n]
+  t := (*s)[:n]
   n ++
   *s = (*s)[n:]
   return t
+}
+
+func splitBrackets (s string, sep, b byte) []string {
+  var b1 byte
+  switch b {
+  case byte('('): b1 = byte(')')
+  case byte('['): b1 = byte(']')
+  case byte('{'): b1 = byte('}')
+  case byte('<'): b1 = byte('>')
+  default:
+    return nil
+  }
+  p, l := make([]uint, 0), make([]uint, 0)
+  n := uint(len(s))
+  if s[0] != b || s[n-1] != b1 {
+    return nil
+  }
+  p = append(p, 0)
+  c, j := 0, uint(1)
+  for i := uint(1); i < n - 1; i++ {
+    switch s[i] {
+    case b:
+      c++
+    case b1:
+      if c > 0 {
+        c--
+      } else {
+        return nil
+      }
+    case sep:
+      if c == 0 {
+        p, l = append(p, i), append(l, i - j)
+        j = i + 1
+      }
+    }
+  }
+  p, l = append(p, n - 1), append(l, n - 1 - j)
+  n = uint(len(p)) - 1
+  ss := make([]string, n)
+  for i := uint(0); i < n; i++ {
+    ss[i] = part (s, p[i]+1, l[i])
+  }
+  return ss
 }

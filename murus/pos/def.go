@@ -44,5 +44,6 @@ type
   Save()
   Restore()
 }
+
 // Returns a new position of size (width, height) = (w, h) (in pixels).
-func New (w, h uint) Position { return newPos(w,h) }
+func New (w, h uint) Position { return new_(w,h) }

@@ -1,6 +1,6 @@
 package lr
 
-// (c) murus.org  v. 140615 - license see murus.go
+// (c) murus.org  v. 170731 - license see murus.go
 
 // >>> left/right problem: implementation with channels
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 183
@@ -11,8 +11,8 @@ type
             done chan int
                  }
 
-func NewChannel() LeftRight {
-  x:= new (channel)
+func newChan() LeftRight {
+  x := new (channel)
   x.lI, x.lO = make (chan int), make (chan int)
   x.rI, x.rO = make (chan int), make (chan int)
   x.done = make (chan int)
@@ -22,23 +22,32 @@ func NewChannel() LeftRight {
 //      if _, ok:= <-x.done; ok { break }
       if nL == 0 {
         if nR == 0 {
-          select { case <-x.lI:
-            nL ++
+          select {
+          case <-x.lI:
+            nL++
+            writeL (nL)
           case <-x.rI:
-            nR ++
+            nR++
+            writeR (nR)
           }
         } else { // nR > 0
-          select { case <-x.rI:
-            nR ++
+          select {
+          case <-x.rI:
+            nR++
+            writeR (nR)
           case <-x.rO:
-            nR --
+            nR--
+            writeR (nR)
           }
         }
       } else { // nL > 0
-        select { case <-x.lI:
-          nL ++
+        select {
+        case <-x.lI:
+          nL++
+          writeL (nL)
         case <-x.lO:
-          nL --
+          nL--
+          writeL (nL)
         }
       }
     }

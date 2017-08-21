@@ -1,10 +1,13 @@
 package img
 
-// (c) murus.org  v. 140615 - license see murus.go
+// (c) murus.org  v. 170814 - license see murus.go
 
 import (
   "os/exec"
-  "murus/ker"; "murus/str"; "murus/scr"; "murus/prt"
+  "murus/ker"
+  "murus/str"
+  "murus/scr"
+  "murus/prt"
   "murus/errh"
   "murus/pseq"
 )
@@ -16,11 +19,11 @@ var
 func put (n string, x, y, w, h uint) {
   if str.Empty (n) { return }
   str.OffSpc (&n)
-  filename:= n + suffix
-  if scr.UnderX() { errh.Hint (errh.ToWait) }
-  buf:= scr.P6Encode (x, y, w, h)
+  filename := n + suffix
+//  if scr.UnderX() { errh.Hint (errh.ToWait) }
+  buf := scr.P6Encode (x, y, w, h)
   if scr.UnderX() { errh.DelHint() }
-  file:= pseq.New (buf)
+  file := pseq.New (buf)
   file.Name (filename)
   file.Clr()
   file.Put (buf)
@@ -39,11 +42,11 @@ func put1 (n string) {
 func size_(n string) (uint, uint) {
   if str.Empty (n) { return 0, 0 }
   str.OffSpc (&n)
-  filename:= n + suffix
-  l:= pseq.Length (filename)
+  filename := n + suffix
+  l := pseq.Length (filename)
   if l == 0 { return 0, 0 }
-  buf:= make ([]byte, l)
-  file:= pseq.New (buf)
+  buf := make ([]byte, l)
+  file := pseq.New (buf)
   file.Name (filename)
   buf = file.Get().([]byte)
   file.Fin()
@@ -54,11 +57,11 @@ func get (n string, x, y uint) {
   if str.Empty (n) { return }
   if ! scr.UnderX() { x += scr.X(); y += scr.Y() }
   str.OffSpc (&n)
-  filename:= n + suffix
-  l:= pseq.Length (filename)
+  filename := n + suffix
+  l := pseq.Length (filename)
   if l == 0 { return }
-  buf:= make ([]byte, l)
-  file:= pseq.New (buf)
+  buf := make ([]byte, l)
+  file := pseq.New (buf)
   file.Name (filename)
   buf = file.Get().([]byte)
   file.Fin()
@@ -67,7 +70,7 @@ func get (n string, x, y uint) {
 
 func print_ (x, y, w, h uint) {
   toPrint = true
-  filename:= "tmp"
+  filename := "tmp"
   put (filename, x, y, w, h)
   toPrint = false
 //  exec.Command (prt.PrintCommand, "-o", "landscape", "-o", "fit-to-page", filename + suffix).Run()

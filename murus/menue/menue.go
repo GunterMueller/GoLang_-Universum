@@ -3,8 +3,12 @@ package menue
 // (c) murus.org  v. 161216 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/str"
-  "murus/col"; "murus/scr"; "murus/box"; "murus/errh"
+  . "murus/obj"
+  "murus/str"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/errh"
   "murus/sel"
 )
 type
@@ -22,7 +26,7 @@ var (
   depth uint
 )
 
-func newMenue (s string) Menue {
+func new_(s string) Menue {
   x := new (menue)
   x.string = str.Lat1 (s) + " "
   str.Norm (&x.string, scr.NColumns())

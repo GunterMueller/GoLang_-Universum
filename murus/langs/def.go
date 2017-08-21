@@ -1,11 +1,9 @@
 package langs
 
-// (c) murus.org  v. 130115 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
-import (
+import
   . "murus/obj"
-//  "murus/enum"
-)
 type
   LanguageSequence interface {
 
@@ -15,3 +13,5 @@ type
 
 //  Num (l[]subject.Subject, v, b[]uint) uint
 }
+
+func New() LanguageSequence { return new_() }

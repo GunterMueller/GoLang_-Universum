@@ -4,8 +4,12 @@ package prt
 
 import (
   "os/exec"
-  "murus/ker"; "murus/str"; . "murus/font"
-  "murus/nat"; "murus/pseq"; "murus/files"
+  "murus/ker"
+  "murus/str"
+  . "murus/font"
+  "murus/nat"
+  "murus/pseq"
+  "murus/files"
 )
 const (
   maxC = 160
@@ -22,6 +26,15 @@ var (
   code, cm [NFonts][NSizes]string
   initialized bool
 )
+
+func init() {
+  cm[Roman]        = [NSizes]string { "cmtt8 scaled 725",    "cmtt8",               "cmtt10",   "cmtt12",               "cmtt12 scaled 1200" }
+  cm[Bold]         = [NSizes]string { "cmbtt10 scaled 600",  "cmbtt8",              "cmbtt10",  "cmbtt10 scaled 1200",  "cmbtt10 scaled 1440" }
+  cm[Slanted]      = [NSizes]string { "cmsltt10 scaled 600", "cmsltt10 scaled 800", "cmsltt10", "cmsltt10 scaled 1200", "cmsltt10 scaled 1440" }
+  cm[Italic]       = [NSizes]string { "cmitt10 scaled 600",  "cmitt10 scaled 800",  "cmitt10",  "cmitt10 scaled 1200",  "cmitt10 scaled 1440" }
+  dH               = [NSizes]string { "6.75",                "9.2",                 "12",       "14.4",                 "17.28" }
+  dW               = [NSizes]string { "3.661",               "4.446",               "5.412",    "6.224",                "7.78" } // 175 / nC * 72.27 / 25.4
+}
 
 func _switch (s Size) {
   size = s
@@ -157,13 +170,4 @@ func goPrint() {
   exec.Command (PrintCommand, psname, "-o", "fit-to-page").Run()
   tex.Clr(); log.Clr(); dvi.Clr(); ps.Clr()
 //  pseq.Erase (texname); pseq.Erase (logname); pseq.Erase (dviname); pseq.Erase (psname) // TODO
-}
-
-func init() {
-  cm[Roman]        = [NSizes]string { "cmtt8 scaled 725",    "cmtt8",               "cmtt10",   "cmtt12",               "cmtt12 scaled 1200" }
-  cm[Bold]         = [NSizes]string { "cmbtt10 scaled 600",  "cmbtt8",              "cmbtt10",  "cmbtt10 scaled 1200",  "cmbtt10 scaled 1440" }
-  cm[Slanted]      = [NSizes]string { "cmsltt10 scaled 600", "cmsltt10 scaled 800", "cmsltt10", "cmsltt10 scaled 1200", "cmsltt10 scaled 1440" }
-  cm[Italic]       = [NSizes]string { "cmitt10 scaled 600",  "cmitt10 scaled 800",  "cmitt10",  "cmitt10 scaled 1200",  "cmitt10 scaled 1440" }
-  dH               = [NSizes]string { "6.75",                "9.2",                 "12",       "14.4",                 "17.28" }
-  dW               = [NSizes]string { "3.661",               "4.446",               "5.412",    "6.224",                "7.78" } // 175 / nC * 72.27 / 25.4
 }

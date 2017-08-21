@@ -21,5 +21,6 @@ type
   Integer () bool
   GeqNull () bool
 }
+
 // Returns a new empty rational.
-func New() Rational { return newRat() }
+func New() Rational { return new_() }

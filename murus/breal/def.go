@@ -18,4 +18,4 @@ type
 
 // Returns a new Object, that can hold real numbers
 // with at most d digits , where d = nat.Len (n).
-func New (n uint) Real { return newBreal(n) }
+func New (n uint) Real { return new_(n) }

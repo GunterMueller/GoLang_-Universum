@@ -1,11 +1,17 @@
 package text
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
-  "murus/rand"; . "murus/obj"; "murus/z"; "murus/str"
-  "murus/col"; "murus/box"
-  "murus/font"; "murus/pbox"
+  "murus/rand"
+  . "murus/obj"
+  "murus/z"
+  "murus/str"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/font"
+  "murus/pbox"
 )
 type
   text struct {
@@ -21,12 +27,12 @@ var (
   upper, lower string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz"
 )
 
-func newText (n uint) Text {
+func new_(n uint) Text {
   if n == 0 { return nil }
   x := new (text)
   x.uint = n
   x.string = str.Clr (n)
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   x.Font = font.Normal
   return x
 }
@@ -98,7 +104,7 @@ func (x *text) Copy (Y Any) {
 }
 
 func (x *text) Clone() Any {
-  y := newText(x.uint)
+  y := new_(x.uint)
   y.Copy (x)
   return y
 }

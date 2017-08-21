@@ -1,11 +1,12 @@
 package internal
 
-// (c) murus.org  v. 150122 - license see murus.go
+// (c) murus.org  v. 170316 - license see murus.go
 
 import (
   "os"
 //  . "murus/ker"
-  "murus/str" // ; "murus/env"
+  "murus/str"
+//  "murus/env"
   "murus/errh"
 )
 const
@@ -33,7 +34,7 @@ var (
 */
 /*
 func Owner (N string) uint {
-  fi, err:= Stat (N)
+  fi, err := Stat (N)
   if err != nil {
     return MaxCard
   }
@@ -42,7 +43,7 @@ func Owner (N string) uint {
 */
 /*
 func FileGroup (N string) uint {
-  fi, err:= Stat (N)
+  fi, err := Stat (N)
   if err == nil {
     return uint(fi.Uid)
   }
@@ -51,7 +52,7 @@ func FileGroup (N string) uint {
 */
 /*
 func accessible (N string, a accesses) bool {
-  fi, err:= Stat (N)
+  fi, err := Stat (N)
   if err == nil {
     return caller == Owner (N)       && statuscode [a, user]  IN fi.Mode ||
            callerGroup == Gruppe (N) && statuscode [a, group] IN fi.Mode
@@ -61,7 +62,7 @@ func accessible (N string, a accesses) bool {
 */
 
 func directLength (N string) uint64 {
-  fi, err:= os.Stat (N)
+  fi, err := os.Stat (N)
   if err == nil {
     return uint64(fi.Size())
   }
@@ -69,14 +70,14 @@ func directLength (N string) uint64 {
 }
 
 func erase (N string) {
-  _, err:= os.Stat (N)
+  _, err := os.Stat (N)
   if err != nil {
     os.Remove (N)
   }
 }
 
-func New() File {
-  f:= new (file)
+func new_() File {
+  f := new (file)
   f.file = nil
   f.exists = false
   f.offset = 0
@@ -178,7 +179,7 @@ func (f *file) Position() uint64 {
 
 func (f *file) open() {
   if f.isOpen { return }
-//  f, err:= OpenFile (f.file.Name(), /* os.O_APPEND */ os.O_RDWR, rights) // ; f.report ("open", f.file.Name(), 0)
+//  f, err := OpenFile (f.file.Name(), /* os.O_APPEND */ os.O_RDWR, rights) // ; f.report ("open", f.file.Name(), 0)
   f.file, f.error = os.OpenFile (f.file.Name(), /* os.O_APPEND */ os.O_RDWR, rights) // ; f.report ("open", f.file.Name(), 0)
 //  if err == nil {
   if f.error == nil {
@@ -192,7 +193,7 @@ func (f *file) open() {
 func (f *file) read (bs []byte) uint {
   f.open()
   if ! f.isOpen { errh.Error (f.file.Name(), uint(f.offset)) }
-  r:= len (bs)
+  r := len (bs)
 //  r, f.error = f.file.ReadAt (bs, int64(f.offset)) // macht Zicken
   _ /* off */, _ = f.file.Seek (int64(f.offset), 0) // ; f.report ("read", "Seek at offset", uint(off))
   r, _ = f.file.Read (bs) // ; f.report ("Read", "at offset", uint(off))
@@ -203,7 +204,7 @@ func (f *file) read (bs []byte) uint {
 func (f *file) Read (bs []byte) (int, error) {
 // TODO
   f.open()
-  r:= len (bs)
+  r := len (bs)
   r, f.error = f.file.ReadAt (bs, int64 (f.offset))
   f.offset += uint64(r)
   return r, f.error
@@ -213,7 +214,7 @@ func (f *file) write (bs []byte) uint {
 // is going to be deprecated - will be replaced by the next method
 /*
   f.open()
-  w:= len (bs)
+  w := len (bs)
 //  w, f.error = f.file.WriteAt (bs, int64(f.offset)) // ; f.report ("WriteAt", "", 1000000 + uint(w)
   _, _ = f.file.Seek (int64(f.offset), 0) // ; f.report ("write", "Seek at offset", uint (off))
   w, _ = f.file.Write (bs) // ; f.report ("Write", "at offset", uint (off))
@@ -221,14 +222,14 @@ func (f *file) write (bs []byte) uint {
   if f.offset > f.endoffset { f.endoffset = f.offset }
   return uint(w)
 */
-  w:= len (bs)
+  w := len (bs)
   w, f.error = f.Write (bs)
   return uint (w)
 }
 
 func (f *file) Write (bs []byte) (int, error) {
   f.open()
-  w:= len (bs)
+  w := len (bs)
   w, f.error = f.file.WriteAt (bs, int64 (f.offset)) // ; f.report ("WriteAt", "", 1000000 + uint(w)
 //  var off int64
 //  /* off */ _, _ = f.file.Seek (int64(f.offset), 0) // ; f.report ("write", "Seek at offset", uint (off))
@@ -249,13 +250,13 @@ func (f *file) flush() {
 /*
 func init() {
 // nonsense - only some ideas
-  for access:= readable; access <= executable; access++ {
-    for client:= user; client <= world; client++ {
+  for access := readable; access <= executable; access++ {
+    for client := user; client <= world; client++ {
       statuscode [access, client] = 3 * (2 - client) + (2 - access)
     }
   }
-  callingProgram:= env.Parameter (0)
-  fi, err:= Stat (callingProgram)
+  callingProgram := env.Parameter (0)
+  fi, err := Stat (callingProgram)
   if err == nil {
     caller = MaxCard
     callerGroup = MaxCard

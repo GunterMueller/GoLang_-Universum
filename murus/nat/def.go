@@ -4,7 +4,8 @@ package nat
 
 import (
 //  . "murus/obj" // Experimente, Experimente, ...
-  "murus/ker"; "murus/col"
+  "murus/ker"
+  "murus/col"
 )
 /*
 type

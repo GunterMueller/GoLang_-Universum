@@ -1,12 +1,16 @@
 package bnat
 
-// (c) murus.org  v. 170107 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
   . "murus/obj"
   "murus/col"
-  "murus/str"; "murus/box"; "murus/errh"
-  "murus/font"; "murus/pbox"
+  "murus/scr"
+  "murus/str"
+  "murus/box"
+  "murus/errh"
+  "murus/font"
+  "murus/pbox"
   "murus/nat"
 )
 type
@@ -22,7 +26,7 @@ var (
   pbx = pbox.New()
 )
 
-func newNat (w uint) Natural {
+func new_(w uint) Natural {
   x := new(natural)
   if w == 0 { w = 1 } else if w > 19 { w = 19 }
   x.wd = w
@@ -31,7 +35,7 @@ func newNat (w uint) Natural {
     x.invalid *= 10
   }
   x.n = x.invalid
-  x.f, x.b = col.StartCols()
+  x.f, x.b = scr.StartCols()
   return x
 }
 
@@ -56,7 +60,7 @@ func (x *natural) Copy (Y Any) {
 }
 
 func (x *natural) Clone() Any {
-  y := newNat(x.wd)
+  y := new_(x.wd)
   y.Copy (x)
   return y
 }

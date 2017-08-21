@@ -1,6 +1,6 @@
 package font
 
-// (c) murus.org  v. 140110 - license see murus.go
+// (c) murus.org  v. 170328 - license see murus.go
 
 var (
   sign = []string { "r", "b", "s", "i" }
@@ -8,6 +8,10 @@ var (
   width = []uint { 5, 6, 8, 12, 16 }
   height = []uint { 7, 10, 16, 24, 32 }
 )
+
+func init() {
+  Name = []string { "tiny  ", "small ", "normal", "big   ", "huge  " }
+}
 
 func code (f Font, s Size) string {
   x, y:= "?", "?"
@@ -26,8 +30,4 @@ func wd (s Size) uint {
 
 func ht (s Size) uint {
   return height[s]
-}
-
-func init() {
-  Name = []string { "winzig", "klein ", "normal", "groß  ", "riesig" }
 }

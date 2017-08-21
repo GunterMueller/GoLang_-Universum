@@ -3,7 +3,8 @@ package enum
 // (c) murus.org  v. 161216 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/ker"
+  . "murus/obj"
+  "murus/ker"
   "murus/enum/internal"
 )
 type
@@ -13,7 +14,7 @@ type
 var
   l, s [NEnums][]string
 
-func newEnum (e uint8) Enumerator {
+func new_(e uint8) Enumerator {
   if e >= NEnums { ker.Panic ("enum.New: Parameter >= NEnums") }
   return &enumerator { internal.New (e, [internal.NFormats][]string { s[e], l[e] }) }
 }
@@ -34,7 +35,7 @@ func (x *enumerator) Copy (Y Any) {
 }
 
 func (x *enumerator) Clone() Any {
-  y := newEnum(x.Base.Typ()).(*enumerator)
+  y := new_(x.Base.Typ()).(*enumerator)
   x.Base.Copy (y.Base)
   return y
 }

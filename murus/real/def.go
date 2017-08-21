@@ -4,7 +4,10 @@ package real
 
 // >>> alpha-version !
 
-import ( "math"; "murus/col" )
+import (
+  "math"
+  "murus/col"
+)
 
 /* float64 = real numbers representable in the 64-bit floating point
              format due to IEEE 754 (including Inf, -Inf and NaN)

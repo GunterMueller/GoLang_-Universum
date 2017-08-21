@@ -1,18 +1,22 @@
 package pset
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170520 - license see murus.go
 
-// >>> TODO
-//     still some subtle bugs in Del !
-//     freelist
+// TODO nearly all Iterator methods
+// BUG  still some subtle bugs in Del
+// TODO freelist
 
 import (
-  . "murus/obj"; "murus/ker"; "murus/str"
-  "murus/col"; "murus/scr"; "murus/errh"
-  "murus/pseq"; "murus/pset/internal"
+  . "murus/obj"
+  "murus/ker"
+  "murus/str"
+  "murus/col"
+  "murus/scr"
+  "murus/errh"
+  "murus/pseq"
+  "murus/pset/internal"
 )
 const (
-  pack = "pset"
   N = internal.N
   max = 2 * N
   maxDepth = 31
@@ -21,7 +25,7 @@ const (
 type (
   persistentSet struct {
                 string "name"
-                pseq.PersistentSequence
+            seq pseq.PersistentSequence
             num,
        freelist uint
           empty Object
@@ -35,16 +39,16 @@ type (
                 }
 )
 
-func newPset (a Object) PersistentSet {
-  x:= new(persistentSet)
-  x.PersistentSequence = pseq.New(internal.New(a))
+func new_(a Object) PersistentSet {
+  x := new(persistentSet)
+  x.seq = pseq.New(internal.New(a))
   x.empty = a.Clone().(Object)
   x.tmp = internal.New (a)
   x.newPg = internal.New (a)
   x.nbPg = internal.New (a)
   x.freePg = internal.New (a)
   x.idx [0] = 0
-  for t:= 0; t <= maxDepth; t++ {
+  for t := 0; t <= maxDepth; t++ {
     x.pg[t] = internal.New (a)
   }
   x.pg[0].PutPos (0, 1)
@@ -54,24 +58,24 @@ func newPset (a Object) PersistentSet {
 }
 
 func (x *persistentSet) Fin() {
-  x.PersistentSequence.Fin()
+  x.seq.Fin()
 }
 
 func (x *persistentSet) write (p internal.Page, n uint) {
-  x.PersistentSequence.Seek (n)
+  x.seq.Seek (n)
   if n == 0 { x.pg[1].PutPos (1, x.num) }
-  x.PersistentSequence.Put (p)
+  x.seq.Put (p)
 }
 
 func (x *persistentSet) read (n uint) internal.Page {
-  x.PersistentSequence.Seek (n)
-  return x.PersistentSequence.Get().(internal.Page)
+  x.seq.Seek (n)
+  return x.seq.Get().(internal.Page)
 }
 
 func (x *persistentSet) Name (s string) {
   x.string = s
-  x.PersistentSequence.Name (x.string + "." + suffix)
-  if x.PersistentSequence.Empty() {
+  x.seq.Name (x.string + "." + suffix)
+  if x.seq.Empty() {
     x.num = 0
     x.pg[0].PutPos (0, 1)
     x.pg[0].PutPos (1, 0)
@@ -86,7 +90,7 @@ func (x *persistentSet) Name (s string) {
     x.pg [1] = x.read (x.pg [0].GetPos (0))
     if x.freelist == 0 {
       x.freePg.Clr()
-      n:= x.PersistentSequence.Num()
+      n := x.seq.Num()
       x.freePg.PutPos (0, n)
       x.freePg.PutPos (max, n)
       x.freePg.PutNum (0)
@@ -101,7 +105,7 @@ func (x *persistentSet) Name (s string) {
 func (x *persistentSet) Rename (s string) {
   if str.Empty (s) || s == x.string { return }
   x.string = s
-  x.PersistentSequence.Rename (x.string + "." + suffix)
+  x.seq.Rename (x.string + "." + suffix)
 }
 
 func (x *persistentSet) Empty() bool {
@@ -110,8 +114,8 @@ func (x *persistentSet) Empty() bool {
 
 func (x *persistentSet) Clr() {
   x.num = 0
-  x.PersistentSequence.Clr()
-  for d:= 0; d <= maxDepth; d++ {
+  x.seq.Clr()
+  for d := 0; d <= maxDepth; d++ {
     x.pg [d].Clr()
   }
   x.pg[0].PutPos (0, 1)
@@ -134,7 +138,7 @@ func (x *persistentSet) ins (o Object, n uint) {
 }
 
 func (x *persistentSet) Ins (a Any) {
-  o:= a.(Object)
+  o := a.(Object)
   if x.Ex (a) {
     return
   }
@@ -150,7 +154,7 @@ func (x *persistentSet) Ins (a Any) {
     x.newPg.Clr()
     x.newPg.PutNum (N)
     x.pg [x.dp].PutNum (N)
-    for i:= uint(0); i < N; i++ {
+    for i := uint(0); i < N; i++ {
       x.newPg.Put (i, x.pg [x.dp].Get (N + i + 1))
       x.pg [x.dp].Put (i + 1 + N, x.empty)
       x.newPg.PutPos (i, x.pg [x.dp].GetPos (i + 1 + N))
@@ -158,12 +162,12 @@ func (x *persistentSet) Ins (a Any) {
     }
     x.newPg.PutPos (N, x.pg [x.dp].GetPos (max + 1))
     x.pg [x.dp].PutPos (max + 1, 0)
-    n:= x.pg [x.dp - 1].GetPos (x.idx [x.dp - 1])
+    n := x.pg [x.dp - 1].GetPos (x.idx [x.dp - 1])
 // save middle object in b and overwrite it with x.empty:
-    b:= x.pg [x.dp].Get (N)
+    b := x.pg [x.dp].Get (N)
     x.pg [x.dp].Put (N, x.empty)
     x.write (x.pg [x.dp], n)
-    n = x.PersistentSequence.Num()
+    n = x.seq.Num()
     x.write (x.newPg, n)
     if x.dp == 1 { // generate new root page
       x.idx [x.dp] = 0
@@ -177,11 +181,11 @@ func (x *persistentSet) Ins (a Any) {
       x.ins (b, n)
     }
   }
-  n:= x.pg [x.dp - 1].GetPos (x.idx [x.dp - 1])
+  n := x.pg [x.dp - 1].GetPos (x.idx [x.dp - 1])
   x.write (x.pg [x.dp], n)
   x.pg [0].PutPos (1, x.num)
   x.write (x.pg [0], 0)
-  if ! x.Ex (a) { ker.Stop (pack, 1) }
+  if ! x.Ex (a) { ker.Oops() }
 }
 
   func rrx (n int) { println ("# ", n) }
@@ -205,7 +209,7 @@ func (x *persistentSet) Step (forward bool) {
           x.idx [x.dp]--
           return
         }
-        if x.dp == 0 { ker.Stop ("übles Problem hoch", 3) }
+        if x.dp == 0 { ker.Panic1("übles Problem hoch", 3) }
         x.dp--
         if x.dp == 0 || x.idx [x.dp] < x.pg [x.dp].GetNum() {
           return
@@ -213,7 +217,7 @@ func (x *persistentSet) Step (forward bool) {
       }
     } else { // x.pg [x.dp].pos [x.idx [x.dp]] > 0
       for {
-        n:= x.pg [x.dp].GetPos (x.idx [x.dp])
+        n := x.pg [x.dp].GetPos (x.idx [x.dp])
         x.dp++
         x.pg [x.dp] = x.read (n)
         x.idx [x.dp] = 0
@@ -266,7 +270,7 @@ rrx (11)
       errh.Error2 ("idx", x.idx [x.dp], ">>> Pos", x.pg [x.dp].GetPos (x.idx [x.dp]))
       for {
 rrx (12)
-        n:= x.pg [x.dp].GetPos (x.idx [x.dp])
+        n := x.pg [x.dp].GetPos (x.idx [x.dp])
         x.dp++ // hier ist der Wurm drin
         x.pg [x.dp] = x.read (n)
         if x.pg [x.dp].GetPos (x.pg [x.dp].GetNum()) == 0 {
@@ -274,7 +278,7 @@ rrx (1300 + int(x.dp))
           if x.pg [x.dp].GetNum() > 0 {
             x.idx [x.dp] = x.pg [x.dp].GetNum() - 1
           } else {
-            ker.Stop (pack, 11) // böses Problem
+            ker.Shit() // böses Problem
           }
 rrx (14)
           return
@@ -306,7 +310,7 @@ func (x *persistentSet) Jump (forward bool) {
       }
       break
     } else {
-      n:= x.pg [x.dp].GetPos (x.idx [x.dp])
+      n := x.pg [x.dp].GetPos (x.idx [x.dp])
       x.dp++
       x.pg [x.dp] = x.read (n)
     }
@@ -316,8 +320,8 @@ func (x *persistentSet) Jump (forward bool) {
 func (x *persistentSet) Eoc (forward bool) bool {
   if x.num == 0 { return false }
   if forward {
-    for d:= uint(1); d <= x.dp; d++ {
-      i:= x.pg [d].GetNum()
+    for d := uint(1); d <= x.dp; d++ {
+      i := x.pg [d].GetNum()
       if d == x.dp && x.pg [d].GetPos (x.idx [d]) == 0 {
         i--
       }
@@ -327,7 +331,7 @@ func (x *persistentSet) Eoc (forward bool) bool {
     }
     return true
   }
-  for d:= uint(1); d <= x.dp; d++ {
+  for d := uint(1); d <= x.dp; d++ {
     if x.idx [d] > 0 {
       return false
     }
@@ -337,12 +341,12 @@ func (x *persistentSet) Eoc (forward bool) bool {
 
 func (x *persistentSet) Get() Any {
   if x.dp == 0 {
-    ker.Stop (pack, 2)
+    ker.Oops()
   }
   if x.num == 0 {
     return x.empty.Clone()
   }
-  if x.idx [x.dp] > 100 { ker.Stop (pack, 1000 + x.idx [x.dp]) }
+  if x.idx [x.dp] > 100 { ker.Panic1 ("pset.Get", 1000 + x.idx [x.dp]) }
   return x.pg [x.dp].Get (x.idx [x.dp])
 }
 
@@ -355,8 +359,8 @@ func (x *persistentSet) Put (a Any) {
 
 // Pre: d > 1, x.nbPg.GetNum() > N.
 func (x *persistentSet) rot (d uint, right bool) {
-  i:= x.idx [d - 1]
-  i1:= i
+  i := x.idx [d - 1]
+  i1 := i
   if right { // rotation from right neighbour page to x.pg [d] on the left
     i1 ++
     x.pg [d].Put (x.pg [d].GetNum(), x.pg [d - 1].Get (i))
@@ -366,7 +370,7 @@ func (x *persistentSet) rot (d uint, right bool) {
     x.nbPg.RotLeft()
 /********************************************************
 // with nbPg
-    for i:= uint(1); i < num; i++ {
+    for i := uint(1); i < num; i++ {
       content [i - 1] = content [i]
       pos [i - 1] = pos [i]
     }
@@ -377,13 +381,13 @@ func (x *persistentSet) rot (d uint, right bool) {
 ********************************************************/
   } else { // rotation from left neighbour page to x.pg [d] on the right
     i1 --
-    if x.pg [d].GetNum() == 0 { ker.Stop (pack, 3) }
+    if x.pg [d].GetNum() == 0 { ker.Oops() }
     x.pg [d].RotRight()
 /********************************************************
 // with pg [d]
     pos [num + 1] = pos [num]
-//  for i:= num - 1; i >= 0; i-- { // does not work, because for uint: 0-- == 2^32 - 1  !
-    i:= num - 1
+//  for i := num - 1; i >= 0; i-- { // does not work, because for uint: 0-- == 2^32 - 1  !
+    i := num - 1
     for {
       content [i + 1] = content [i]
       pos [i + 1] = pos [i]
@@ -413,18 +417,18 @@ func (x *persistentSet) ClrLast() {
 }
 
 func (x *persistentSet) join (d uint, right bool) {
-  j:= x.idx [d - 1]
-  j1:= j
+  j := x.idx [d - 1]
+  j1 := j
   var j0 uint
   if right { // move right neighbour page into x.pg [d]
     j1 ++
     j0 = j1
-    n:= x.pg [d].GetNum()
+    n := x.pg [d].GetNum()
     x.pg [d].Put (n, x.pg [d - 1].Get (j))
     x.pg [d].PutNum (N)
-    if x.nbPg.GetNum() != N { ker.Stop (pack, 4) }
+    if x.nbPg.GetNum() != N { ker.Oops() }
     n = x.pg [d].GetNum()
-    for i:= uint(0); i < N; i++ {
+    for i := uint(0); i < N; i++ {
       x.pg [d].Put (n + i, x.nbPg.Get (i))
       x.pg [d].PutPos (n + i, x.nbPg.GetPos (i))
     }
@@ -436,13 +440,13 @@ func (x *persistentSet) join (d uint, right bool) {
   } else { // move x.pg [d] into left neighbour page
     j1 --
     j0 = j
-    n:= x.nbPg.GetNum()
-    if n != N { ker.Stop (pack, 5) }
+    n := x.nbPg.GetNum()
+    if n != N { ker.Oops() }
     x.nbPg.Put (n, x.pg [d - 1].Get (j1))
     n++
     x.nbPg.PutNum (n)
-    if x.pg [d].GetNum() != N - 1 { ker.Stop (pack, 6) }
-    for i:= uint(0); i < N - 1; i++ {
+    if x.pg [d].GetNum() != N - 1 { ker.Oops() }
+    for i := uint(0); i < N - 1; i++ {
       x.nbPg.Put (n + i, x.pg [d].Get (i))
       x.nbPg.PutPos (n + i, x.pg [d].GetPos (i))
     }
@@ -456,7 +460,7 @@ func (x *persistentSet) join (d uint, right bool) {
 /********************************************************
 // with pg [d - 1]
   if j0 < num {
-    for i:= j0; i < num; i++ {
+    for i := j0; i < num; i++ {
       content [i - 1] = content [i]
       pos [i] = pos [i + 1]
     }
@@ -470,7 +474,7 @@ func (x *persistentSet) join (d uint, right bool) {
 
 func (x *persistentSet) removeUnderflow (d uint) {
   if d == 1 {
-    n:= x.pg [0].GetPos (0)
+    n := x.pg [0].GetPos (0)
     if x.pg [1].GetNum() == 0 {
       x.pg [0].PutPos (0, x.pg [1].GetPos (0))
       x.pg [0].PutPos (1, x.num)
@@ -482,20 +486,20 @@ func (x *persistentSet) removeUnderflow (d uint) {
     return
   }
   // d > 1
-  i:= x.idx [d - 1]
-  right:= i < x.pg [d - 1].GetNum()
-  i1:= i
+  i := x.idx [d - 1]
+  right := i < x.pg [d - 1].GetNum()
+  i1 := i
   if right {
     i1 ++ // x.nbPg becomes right neighbour page
   } else { // i == x.pg [d - 1].GetNum()
     i1 -- // x.nbPg becomes left neighbour page
   }
-  nn:= x.pg [d - 1].GetPos (i1)
+  nn := x.pg [d - 1].GetPos (i1)
   x.nbPg = x.read (nn)
   if x.nbPg.GetNum() > N { // rotation possible
     x.rot (d, right)
   } else { // x.nbPg.GetNum() <= N
-    if x.nbPg.GetNum() < N { ker.Stop (pack, 7) } // happens TODO
+    if x.nbPg.GetNum() < N { ker.Todo() } // happens TODO
     x.join (d, right)
     if x.pg [d - 1].GetNum() < N {
       x.removeUnderflow (d - 1)
@@ -516,14 +520,14 @@ func (x *persistentSet) Del() Any {
     x.num --
     x.pg [0].PutPos (1, x.num)
   }
-  a:= x.pg [x.dp].Get (x.idx [x.dp])
+  a := x.pg [x.dp].Get (x.idx [x.dp])
   if x.pg [x.dp].GetPos (0) == 0 { // we are on leaf level
 tst (1)
     x.pg [x.dp].Del (x.idx [x.dp])
 /**********************************************************
 //  with pg [dp]
     if idx [dp] + 1 < num {
-      for i:= idx [dp} + 1; i < num; i++ {
+      for i := idx [dp} + 1; i < num; i++ {
         content [i - 1] = content [i]
         pos [i] = pos [i + 1]
       }
@@ -532,7 +536,7 @@ tst (1)
     pos [num] = 0
 }
 **********************************************************/
-    for i:= uint(0); i < x.pg [x.dp].GetNum(); i++ {
+    for i := uint(0); i < x.pg [x.dp].GetNum(); i++ {
 errh.Error2 ("i =", i, ">>> Pos =", x.pg [x.dp].GetPos (i))
     }
     x.pg [x.dp].DecNum()
@@ -552,15 +556,15 @@ tst (4)
 // We look for the greatest object < x.Get (idx [x.dp]) in a node of depth x.dp,
 // copy it to x.content [idx [x.dp]] and replace it by x.empty:
 tst (10)
-    d:= x.dp
+    d := x.dp
     for {
-      n:= x.idx [d]
+      n := x.idx [d]
       x.pg [d + 1] = x.read (x.pg [d].GetPos (n))
       d++
       if x.pg [d].GetPos (x.idx [d]) == 0 { // we are on leaf level
         x.pg [d].DecNum()
         x.idx [d] = x.pg [d].GetNum()
-        if x.idx [d] > 100 { ker.Stop (pack, 10) }
+        if x.idx [d] > 100 { ker.Oops() }
         x.pg [x.dp].Put (x.idx [x.dp], x.pg [d].Get (x.idx [d]))
         x.pg [d].Put (x.idx [d], x.empty)
         break
@@ -583,7 +587,7 @@ tst (10)
 
 func (x *persistentSet) Ex (a Any) bool {
   x.dp = 0
-  n:= x.pg [x.dp].GetPos (x.idx [0])
+  n := x.pg [x.dp].GetPos (x.idx [0])
   for {
     x.dp++
     x.pg [x.dp] = x.read (n)
@@ -591,9 +595,9 @@ func (x *persistentSet) Ex (a Any) bool {
       return false
     }
     x.idx [x.dp] = 0
-    i1:= x.pg [x.dp].GetNum()
+    i1 := x.pg [x.dp].GetNum()
     for x.idx [x.dp] < i1 {
-      i:= (x.idx [x.dp] + i1) / 2
+      i := (x.idx [x.dp] + i1) / 2
       if Less (x.pg [x.dp].Get (i), a) {
         x.idx [x.dp] = i + 1
       } else {
@@ -613,21 +617,34 @@ func (x *persistentSet) Ex (a Any) bool {
   return false
 }
 
+func (x *persistentSet) Write() {
+  const n0 = 1
+  for n := uint(0); n < x.seq.Num(); n++ {
+    scr.Colours (col.Yellow, col.Green); scr.WriteNat (n, n0 + n, 0)
+//    x.tmp = x.read (n)
+//    x.tmp.Write (n0 + n, 8)
+    x.read (n).Write (n0 + n, 4)
+  }
+  for d := uint(1); d < maxDepth; d++ {
+    scr.WriteNat (x.idx [d], n0 + d, 70)
+  }
+}
+
 func (x *persistentSet) ExGeq (a Object) bool {
   x.dp = 0
-  n:= x.pg [x.dp].GetPos (0)
+  n := x.pg [x.dp].GetPos (0)
   loop:
   for {
-    if x.dp >= maxDepth { ker.Stop (pack, 8) }
+    if x.dp >= maxDepth { ker.Oops() }
     x.dp++
     x.pg [x.dp] = x.read (n)
     if x.pg [x.dp].GetNum() == 0 {
       return false
     }
     x.idx [x.dp] = 0
-    i1:= x.pg [x.dp].GetNum()
+    i1 := x.pg [x.dp].GetNum()
     for x.idx [x.dp] < i1 {
-      i:= (x.idx [x.dp] + i1) / 2
+      i := (x.idx [x.dp] + i1) / 2
       if Less (x.pg [x.dp].Get (i), a) {
         x.idx [x.dp] = i + 1
       } else {
@@ -663,8 +680,24 @@ func (x *persistentSet) ExGeq (a Object) bool {
   return true
 }
 
+func (x *persistentSet) NumPred (p Pred) uint {
+  return 0
+}
+
+func (x *persistentSet) All (p Pred) bool {
+  return false
+}
+
+func (x *persistentSet) ExPred (p Pred, f bool) bool {
+  return false
+}
+
+func (x *persistentSet) StepPred (p Pred, f bool) bool {
+  return false
+}
+
 func (x *persistentSet) trav (d, n uint, op Op) {
-  for i:= uint(0); i <= x.pg [d].GetNum(); i++ {
+  for i := uint(0); i <= x.pg [d].GetNum(); i++ {
     if x.pg [d].GetPos (i) > 0 {
       x.pg [d + 1] = x.read (x.pg [d].GetPos (i))
       x.trav (d + 1, (2 * N + 1) * n + i, op)
@@ -676,21 +709,26 @@ func (x *persistentSet) trav (d, n uint, op Op) {
 }
 
 func (x *persistentSet) Trav (op Op) {
-  if x.num == 0 {
-    return
-  }
+  if x.num == 0 { return }
   x.trav (1, 0, op)
 }
 
-func (x *persistentSet) Write() {
-  const n0 = 1
-  for n:= uint(0); n < x.PersistentSequence.Num(); n++ {
-    scr.Colours (col.Yellow, col.Green); scr.WriteNat (n, n0 + n, 0)
-//    x.tmp = x.read (n)
-//    x.tmp.Write (n0 + n, 8)
-    x.read (n).Write (n0 + n, 4)
-  }
-  for d:= uint(1); d < maxDepth; d++ {
-    scr.WriteNat (x.idx [d], n0 + d, 70)
-  }
+func (x *persistentSet) Filter (y Iterator, p Pred) {
+
+}
+
+func (x *persistentSet) Cut (y Iterator, p Pred) {
+
+}
+
+func (x *persistentSet) ClrPred (p Pred) {
+
+}
+
+func (x *persistentSet) Split (y Iterator) {
+
+}
+
+func (x *persistentSet) Join (y Iterator) {
+
 }

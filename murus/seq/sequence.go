@@ -1,11 +1,9 @@
 package seq
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170501 - license see murus.go
 
 import
   . "murus/obj"
-const
-  pack = "seq"
 type (
   cell struct {
               Any
@@ -24,7 +22,7 @@ func (x *sequence) check (a Any) {
   CheckTypeEq (x.anchor.Any, a)
 }
 
-func newSeq (a Any) Sequence {
+func new_(a Any) Sequence {
   CheckAtomicOrObject(a)
   x := new(sequence)
   x.anchor = new(cell)
@@ -84,7 +82,7 @@ func (x *sequence) Copy (Y Any) {
 }
 
 func (x *sequence) Clone() Any {
-  y := newSeq(Clone(x.anchor.Any))
+  y := new_(Clone(x.anchor.Any))
   y.Copy (x)
   return y
 }
@@ -290,7 +288,7 @@ func (x *sequence) Del() Any {
     return nil
   }
   defer x.remove()
-  x.num --
+  x.num--
   return Clone (x.actual.Any)
 }
 
@@ -377,7 +375,7 @@ func (x *sequence) Sort() {
   l.next.prev = x.anchor
   x.num --
   var y *sequence
-  y = newSeq (x.anchor.Any).(*sequence)
+  y = new_(x.anchor.Any).(*sequence)
   l1 := x.anchor.next
   var l2 *cell
   for l1 != x.anchor {
@@ -424,20 +422,6 @@ func (x *sequence) ExGeq (a Any) bool {
 func (x *sequence) Trav (op Op) {
   for l := x.anchor.next; l != x.anchor; l = l.next {
     op (l.Any)
-  }
-}
-
-func (x *sequence) TravCond (p Pred, op CondOp) {
-  for l := x.anchor.next; l != x.anchor; l = l.next {
-    op (l.Any, p (l.Any))
-  }
-}
-
-func (x *sequence) TravPred (p Pred, op Op) {
-  for l := x.anchor.next; l != x.anchor; l = l.next {
-    if p (l.Any) {
-      op (l.Any)
-    }
   }
 }
 
@@ -638,20 +622,18 @@ func (x *sequence) Encode() []byte {
   return b
 }
 
-func (x *sequence) Decode (b []byte) {
+func (x *sequence) Decode (bs []byte) {
   x.Clr()
   i, a := uint32(0), uint32(4)
-  x.num = uint(Decode (uint32(0), b[i:a]).(uint32))
+  x.num = uint(Decode (uint32(0), bs[i:a]).(uint32))
   i += a
   for j := uint32(0); j < uint32(x.num); j++ {
-    n := Decode (uint32(0), b[i:i+a]).(uint32)
+    n := Decode (uint32(0), bs[i:i+a]).(uint32)
     i += a
-    x.ins (Decode (Clone (x.anchor.Any), b[i:i+n]))
-if a, ok := x.anchor.Any.(Editor); ok {
-  a.Write (2, 0)
-}
+    x.ins (Decode (Clone (x.anchor.Any), bs[i:i+n]))
     i += n
   }
+  return
 }
 
 func (x *sequence) Slice() []Any {

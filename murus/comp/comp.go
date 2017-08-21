@@ -1,6 +1,6 @@
 package comp
 
-// (c) murus.org  v. 151117 - license see murus.org
+// (c) murus.org  v. 151117 - license see murus.go
 //
 // XXX Modify according to your needs !
 

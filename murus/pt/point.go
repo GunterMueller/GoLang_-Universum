@@ -1,37 +1,40 @@
 package pt
 
-// (c) murus.org  v. 150403 - license see murus.go
+// (c) murus.org  v. 170820 - license see murus.go
 
 import (
   . "murus/obj"
-  "murus/col"; "murus/scr"
+  "murus/col"
+  "murus/scr"
   "murus/vect"
 )
 type
   point struct {
-             c Class
+         class Class
                uint32 "number"
         colour col.Colour
-    vect, norm vect.Vector
+        vector,
+        normal vect.Vector
                }
 
-func New() Point {
-  x:= new (point)
-  x.colour, _ = col.StartCols()
-  x.vect, x.norm = vect.New(), vect.New()
+func new_() Point {
+  x := new(point)
+  x.colour, _ = scr.StartCols()
+  x.vector, x.normal = vect.New(), vect.New()
   return x
 }
 
 func (x *point) imp (Y Any) *point {
-  y, ok:= Y.(*point)
+  y, ok := Y.(*point)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
 }
 
 func (x *point) Eq (Y Any) bool {
-  y:= x.imp (Y)
-  return x.c == y.c && x.uint32 == y.uint32 &&
-         x.vect.Eq (y.vect) && x.norm.Eq (y.norm)
+  y := x.imp (Y)
+  return x.class == y.class &&
+         x.uint32 == y.uint32 &&
+         x.vector.Eq (y.vector) && x.normal.Eq (y.normal)
 }
 
 func (x *point) Less (Y Any) bool {
@@ -39,38 +42,38 @@ func (x *point) Less (Y Any) bool {
 }
 
 func (x *point) Copy (Y Any) {
-  y:= x.imp (Y)
-  x.c = y.c
+  y := x.imp(Y)
+  x.class = y.class
   x.uint32 = y.uint32
   x.colour = y.colour
-  x.vect.Copy (y.vect)
-  x.norm.Copy (y.norm)
+  x.vector.Copy (y.vector)
+  x.normal.Copy (y.normal)
 }
 
 func (x *point) Clone() Any {
-  y:= New()
+  y := new_()
   y.Copy (x)
   return y
 }
 
 func (x *point) Empty() bool {
-  return x.c == None
+  return x.class == Undef
 }
 
 func (x *point) Clr() {
-  x.c = None
+  x.class = Undef
 }
 
 func (x *point) Set (c Class, a uint, f col.Colour, v, n vect.Vector) {
-  x.c = c
+  x.class = c
   x.uint32 = uint32(a)
   x.colour = f
-  x.vect.Copy (v)
-  x.norm.Copy (n)
+  x.vector.Copy (v)
+  x.normal.Copy (n)
 }
 
 func (x *point) Class() Class {
-  return x.c
+  return x.class
 }
 
 func (x *point) Number() uint {
@@ -82,53 +85,53 @@ func (x *point) Colour() col.Colour {
 }
 
 func (x *point) Write (i uint) {
-  x.vect.Colours (x.colour, scr.ScrColB())
-  x.norm.Colours (x.colour, scr.ScrColB())
-  x.vect.Write (i,  0)
-  x.norm.Write (i, 20)
+  x.vector.Colours (x.colour, scr.ScrColB())
+  x.normal.Colours (x.colour, scr.ScrColB())
+  x.vector.Write (i,  0)
+  x.normal.Write (i, 20)
 }
 
 func (x *point) Read() vect.Vector {
-  return x.vect.Clone().(vect.Vector)
+  return x.vector.Clone().(vect.Vector)
 }
 
 func (x *point) Read2() (vect.Vector, vect.Vector) {
-  return x.vect.Clone().(vect.Vector), x.norm.Clone().(vect.Vector)
+  return x.vector.Clone().(vect.Vector), x.normal.Clone().(vect.Vector)
 }
 
 func (x *point) Codelen() uint {
   return 1 +
          4 +
          col.Codelen() +
-         2 * x.vect.Codelen()
+         2 * x.vector.Codelen()
 }
 
 func (x *point) Encode() []byte {
-  b:= make ([]byte, x.Codelen())
-  b[0] = byte(x.c)
-  i, a:= uint(1), uint(4)
+  b := make ([]byte, x.Codelen())
+  b[0] = byte(x.class)
+  i, a := uint(1), uint(4)
   copy (b[i:i+a], Encode (x.uint32))
   i += a
   a = col.Codelen()
   copy (b[i:i+a], col.Encode (x.colour))
   i += a
-  a = x.vect.Codelen()
-  copy (b[i:i+a], x.vect.Encode())
+  a = x.vector.Codelen()
+  copy (b[i:i+a], x.vector.Encode())
   i += a
-  copy (b[i:i+a], x.norm.Encode())
+  copy (b[i:i+a], x.normal.Encode())
   return b
 }
 
 func (x *point) Decode (b []byte) {
-  x.c = Class(b[0])
-  i, a:= uint(1), uint(4)
+  x.class = Class(b[0])
+  i, a := uint(1), uint(4)
   x.uint32 = Decode (uint32(0), b[i:i+a]).(uint32)
   i += a
   a = col.Codelen()
   col.Decode (&x.colour, b[i:i+a])
   i += a
-  a = x.vect.Codelen()
-  x.vect.Decode (b[i:i+a])
+  a = x.vector.Codelen()
+  x.vector.Decode (b[i:i+a])
   i += a
-  x.norm.Decode (b[i:i+a])
+  x.normal.Decode (b[i:i+a])
 }

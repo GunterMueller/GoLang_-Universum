@@ -1,6 +1,6 @@
 package kbd
 
-// (c) murus.org  v. 161221 - license see murus.go
+// (c) murus.org  v. 170814 - license see murus.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -8,22 +8,23 @@ import
   "C"
 import (
   "os"
-  "murus/ker"; "murus/xker"
+  "murus/ker"
+  "murus/xwin"
 )
 var (
   underX bool
-  xpipe chan xker.Event
+  xpipe chan xwin.Event
   ch chan int = make (chan int, 1)
 )
 
-// Pre: xker.x.initialized == true
+// Pre: xwin.x.initialized == true
 func catchX () {
-  for xker.Eventpipe == nil {
+  for xwin.Eventpipe == nil {
     ker.Msleep (10)
   }
 //  ch <- 0
 //  println ("keyboard.catchX: Eventpipe != nil")
-  for p:= range xker.Eventpipe {
+  for p := range xwin.Eventpipe {
     xpipe <- p
     <-ch
   }
@@ -45,14 +46,14 @@ func inputX (B *byte, C *Comm, T *uint) {
     mouseBitM    = 9
     mouseBitR   = 10
   )
-  var e xker.Event
+  var e xwin.Event
 //  var k uint
-  ok:= false
+  ok := false
   loop: for {
     *B, *C, *T = 0, None, 0
     e, ok = <-xpipe
     ch <- 0
-    if ! ok { println ("xker.inputX: ! ok") }
+    if ! ok { println ("xwin.inputX: ! ok") }
     shiftX := isSet (shiftBit, e.S)
     shiftFix := isSet (shiftLockBit, e.S)
     if shiftFix { shiftX = false } // weg isser
@@ -141,7 +142,7 @@ func inputX (B *byte, C *Comm, T *uint) {
       case 5:
         *C = Down
       default:
-        println ("xker.ButtonPress: button ", e.C ,"/ state ", e.S)
+        println ("xwin.ButtonPress: button ", e.C ,"/ state ", e.S)
       }
       if *C > 0 {
         break loop
@@ -171,7 +172,7 @@ func inputX (B *byte, C *Comm, T *uint) {
       case 5:
         *C = Down
       default:
-        println ("xker.ButtonRelease: button ", e.C ,"/ state ", e.S)
+        println ("xwin.ButtonRelease: button ", e.C ,"/ state ", e.S)
       }
       if *C > 0 {
         break loop

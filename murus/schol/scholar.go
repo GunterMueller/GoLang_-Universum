@@ -1,21 +1,27 @@
 package schol
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170410 - license see murus.go
 
 // >>> TODO: simplify it into a Molecule
 
 import (
   . "murus/obj"
   "murus/kbd"
-  "murus/col"; "murus/box"
+  "murus/col"
+  "murus/box"
 //  "murus/errh"
-  "murus/font"; "murus/pbox"
-  "murus/text"; "murus/pers"; "murus/cntry"; "murus/addr"
-  "murus/langs"; "murus/enum"
-//  "murus/atom"; "murus/mol"; "murus/masks"
+  "murus/font"
+  "murus/pbox"
+  "murus/text"
+  "murus/pers"
+  "murus/cntry"
+  "murus/addr"
+  "murus/langs"
+  "murus/enum"
+//  "murus/atom"
+//  "murus/mol"
+//  "murus/masks"
 )
-const
-  pack = "schol"
 const ( // Order
   nameOrder = iota
   ageOrder
@@ -44,10 +50,10 @@ var (
   bx = box.New()
   cF, cB col.Colour = col.White, col.Black
   pbx = pbox.New()
-  temp, temp1 = New().(*scholar), New().(*scholar)
+  temp, temp1 = new_().(*scholar), new_().(*scholar)
 )
 
-func newSchol() Scholar {
+func new_() Scholar {
   x := new (scholar)
   x.Person = pers.New()
   x.Text = text.New (lenPlace)
@@ -143,7 +149,7 @@ func (x *scholar) Copy (Y Any) {
 }
 
 func (x *scholar) Clone() Any {
-  y := newSchol()
+  y := new_()
   y.Copy (x)
   return x
 }

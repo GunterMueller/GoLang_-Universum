@@ -6,15 +6,6 @@ import (
   . "murus/obj"
   "murus/host"
 )
-
-// Returns a new net address :p (without host, for servers).
-func New (p uint16) NetAddress { return new_(p) }
-
-// Returns the new net address h:p.
-func New2 (h host.Host, p uint16) NetAddress { return new2(h,p) }
-
-func NewLocal (p uint16) NetAddress { return new2(host.Localhost(), p) }
-
 type
   NetAddress interface { // host and IPnumber
 
@@ -40,3 +31,11 @@ type
 // Returns true, if the host of x is the calling host.
   Local() bool
 }
+
+// Returns a new net address :p (without host, for servers).
+func New (p uint16) NetAddress { return new_(p) }
+
+// Returns the new net address h:p.
+func New2 (h host.Host, p uint16) NetAddress { return new2(h,p) }
+
+func NewLocal (p uint16) NetAddress { return new2(host.Localhost(), p) }

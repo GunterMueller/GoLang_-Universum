@@ -28,3 +28,5 @@ type
 // Returns nil, iff x == nil, otherwise a copy of the top of x.
   Get () Any
 }
+
+func New() Heap { return new_() }

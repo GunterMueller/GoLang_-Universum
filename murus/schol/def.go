@@ -25,4 +25,5 @@ type
   Printer
   Indexer
 }
-func New() Scholar { return newSchol() }
+
+func New() Scholar { return new_() }

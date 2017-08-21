@@ -1,9 +1,10 @@
 package cons
 
-// (c) murus.org  v. 140712 - license see murus.go
+// (c) murus.org  v. 170818 - license see murus.go
 
 import (
-  "murus/mouse"; "murus/ptr"
+  "murus/mouse"
+  "murus/ptr"
   "murus/col"
 )
 
@@ -12,12 +13,12 @@ func (X *console) MouseEx() bool {
 }
 
 func (X *console) MousePos() (uint, uint) {
-  xm, ym:= mouse.Pos()
+  xm, ym := mouse.Pos()
   return uint(ym - X.y) / X.ht1, uint(xm - X.x) / X.wd1 // Offset
 }
 
 func (X *console) MousePosGr() (int, int) {
-  xm, ym:= mouse.Pos()
+  xm, ym := mouse.Pos()
   return xm - X.x, ym - X.y // Offset
 }
 
@@ -128,21 +129,23 @@ func (X *console) initMouse () {
 }
 
 func (X *console) restore (x, y int) {
-  a:= (int(width) * y + x) * int(colourdepth)
-  da:= pointerWd[X.pointer] * int(colourdepth)
-  w:= width * colourdepth
-// TODO limit to right and bottom screen border
-  for h:= 0; h < pointerHt[X.pointer]; h++ {
+  a := (int(width) * y + x) * int(colourdepth)
+  da := pointerWd[X.pointer] * int(colourdepth)
+  w := width * colourdepth
+// TODO limit to right screen border ???
+  h1, ht := pointerHt[X.pointer], int(X.ht)
+  if y + h1 > ht { h1 = ht - y }
+  for h := 0; h < h1; h++ {
     copy (fbmem[a:a+da], fbcop[a:a+da])
     a += int(w)
   }
 }
 
 func (X *console) writePointer (x, y int) {
-  cB, cW, cG:= col.Cc (col.Black), col.Cc (col.LightWhite), col.Cc (col.LightGray)
+  cB, cW, cG := col.Cc (col.Black), col.Cc (col.LightWhite), col.Cc (col.LightGray)
   var p []byte
-  for h:= 0; h < pointerHt[X.pointer]; h++ {
-    for w:= 0; w < pointerWd[X.pointer]; w++ {
+  for h := 0; h < pointerHt[X.pointer]; h++ {
+    for w := 0; w < pointerWd[X.pointer]; w++ {
       switch pointer[X.pointer][h][2 * w] { case '#':
         p = cB
       case '*':
@@ -156,7 +159,7 @@ func (X *console) writePointer (x, y int) {
          y + h < X.y || y + h >= X.y + int(X.ht) {
         continue
       }
-      a:= (int(width) * (y + h) + (x + w)) * int(colourdepth)
+      a := (int(width) * (y + h) + (x + w)) * int(colourdepth)
       copy (fbmem[a:a+int(colourdepth)], p)
 //      copy (fbcop[a:a+int(colourdepth)], p) // No, we don't want that
     }
@@ -196,20 +199,20 @@ func (X *console) WarpMouseGr (x, y int) {
 
 func (X *console) UnderMouse (l, c, w, h uint) bool {
   if ! mouse.Ex() { return false }
-  lm, cm:= X.MousePos()
+  lm, cm := X.MousePos()
   return l <= lm && lm < l + h && c <= cm && cm < c + w
 }
 
 func (X *console) UnderMouseGr (x, y, x1, y1 int, t uint) bool {
   if ! mouse.Ex() { return false }
   intord (&x, &y, &x1, &y1)
-  xm, ym:= X.MousePosGr()
+  xm, ym := X.MousePosGr()
   return x <= int(xm) + int(t) && int(xm) <= x1 + int(t) &&
          y <= int(ym) + int(t) && int(ym) <= y1 + int(t)
 }
 
 func (X *console) UnderMouse1 (x, y int, d uint) bool {
   if ! mouse.Ex() { return false }
-  xm, ym:= X.MousePosGr()
+  xm, ym := X.MousePosGr()
   return (x - xm) * (x - xm) + (y - ym) * (y - ym) <= int(d * d)
 }

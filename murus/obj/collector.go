@@ -1,6 +1,6 @@
 package obj
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170116 - license see murus.go
 
 // Collections of elements of type object or of variables of
 // a concrete atomic type (bool, [u]int.., float.., string, ...).
@@ -9,9 +9,8 @@ package obj
 //
 // In all specifications x denotes the calling collection.
 
-// XXX Returns a new collection for elements of the type of a,
-// XXX that does not contain any elements; so its actual object is undefined.
-// XXX func New(a Any) Collector { return newColl() }
+// Constructors have to return a new collection for elements of the type of a,
+// that does not contain any elements; so its actual object is undefined.
 
 type
   Collector interface {
@@ -83,4 +82,6 @@ type
 // case the first such element is the actual element of x;
 // otherwise, the actual element is the same as before.
   Ex (a Any) bool
+
+//  ExPred (p Pred) bool
 }

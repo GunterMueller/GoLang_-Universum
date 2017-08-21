@@ -1,7 +1,9 @@
 package col
 
-// (c) murus.org  v. 160101 - license see murus.go
+// (c) murus.org  v. 170813 - license see murus.go
 
+import
+  "C"
 const
   P6 = 3
 type
@@ -9,8 +11,8 @@ type
         R, G, B byte
                 }
 
-func StartCols() (Colour, Colour) { return White, Black }
-func StartColsA() (Colour, Colour) { return Red, Black }
+func StartCols() (Colour, Colour) { return startCols() }
+func StartColsA() (Colour, Colour) { return startColsA() }
 
 // Returns the colour defined by (r, g, b).
 func Colour3 (r, g, b uint) Colour { return colour3(r,g,b) }
@@ -73,29 +75,29 @@ var (
 
   Black =            colour3 (  0,   0,   0)
 
+  Brown =            colour3 ( 95,  53,  34)
   BlackBrown =       colour3 ( 30,  16,  12)
   DarkBrown =        colour3 ( 60,  33,  24)
-  Brown =            colour3 ( 95,  53,  34)
+  MediumBrown =      colour3 (149, 106,   0)
   LightBrown =       colour3 (160,  88,  63)
   WhiteBrown =       colour3 (221, 153, 106)
+//  WhiteBrown =       colour3 (255, 212, 149)
   BrownWhite =       colour3 (249, 202, 160)
 
   Siena =            colour3 (153,  85,  42)
-//  Hellsiena =        colour3 (191, 127,  42)
-//  Rotbraun1 =        colour3 (170,  64,  64)
+  LightSiena =       colour3 (191, 127,  42)
+//  RedBrown =        colour3 (170,  64,  64)
 //  Umbrabraun =       colour3 (149, 135,   0)
-//  Olivbraun1 =       colour3 (127, 127,   0)
-//  Hellolivbraun =    colour3 (170, 170,  85)
-//  Mittelbraun =      colour3 (149, 106,   0)
-//  Orangebraun1 =     colour3 (127, 106,  42)
-//  Dunkelocker =      colour3 (170, 127,  21)
+  OliveBrown =       colour3 (127, 127,   0)
+  LightOliveBrown =  colour3 (170, 170,  85)
+//  OrangeBrown1 =     colour3 (127, 106,  42)
+//  Dark Ocker =      colour3 (170, 127,  21)
 //  Ocker =            colour3 (255, 170,  64)
-//  Hellocker =        colour3 (255, 191, 106)
-//  Weißbraun =        colour3 (255, 212, 149)
+//  Light Ocker =        colour3 (255, 191, 106)
 //  Rosabraun =        colour3 (255, 191, 149)
 //  Hellbeige =        colour3 (234, 212, 170)
 //  Beige2 =           colour3 (212, 191, 149)
-//  Ganzhellbraun =    colour3 (206, 170, 127)
+//  VeryLightBrown =    colour3 (206, 170, 127)
 
   BlackRed =         colour3 ( 46,  18,  26)
   DarkRed =          colour3 ( 85,   0,   0)
@@ -106,16 +108,15 @@ var (
 //  Dunkelrosa =       colour3 (234,  0,  127)
 //  Rosa =             colour3 (255, 170, 170)
 //  Hellrosa =         colour3 (255, 191, 191)
-
-  PompejiRed =       Karminrot // colour3 (187,  68,  68)
+  PompejiRed =       colour3 (187,  68,  68)
   CinnabarRed =      colour3 (238,  64,   0)
   Carmine =          colour3 (125,   0,  42)
-  Ziegelrot =        colour3 (205,  63,  51)
+  BrickRed =         colour3 (205,  63,  51)
 
   FlashOrange =      colour3 (255, 127,   0)
   DarkOrange =       colour3 (221, 127,  68)
   Orange =           colour3 (255, 153,  51)
-  LightOrange =      colour3 (255, 170,   0)
+  LightOrange =      colour3 (255, 164,  31)
   WhiteOrange =      colour3 (255, 170,   0)
 //  BlutOrange1 =      colour3 (255, 112,  85)
 
@@ -134,11 +135,13 @@ var (
   LightGreen =       colour3 ( 85, 255,  85)
   WhiteGreen =       colour3 (170, 255, 170)
   BirchGreen =       colour3 ( 42, 153,  42)
-//  Grasgrün =         colour3 (  0, 144,   0)
-//  Hellchromgrün =    colour3 ( 85, 170,   0)
-//  Hellolivgrün =     colour3 (170, 196,  85)
-//  Gelbgrün =         colour3 (170, 255,  85)
-//  Wiesengrün =       colour3 (106, 212, 106)
+  GrassGreen =       colour3 (  0, 144,   0)
+//  ChromeGreen =    colour3 ( 85, 170,   0)
+//  LightChromeGreen =    colour3 ( 85, 170,   0)
+  OliveGreen =       colour3 ( 85, 170,   0)
+//  LightOliveGreen =     colour3 (170, 196,  85)
+  YellowGreen =         colour3 (170, 255,  85)
+//  WiesenGreen =       colour3 (106, 212, 106)
 
   BlackCyan =        colour3 (  0,  51,  51)
   DarkCyan =         colour3 (  0,  85,  85)
@@ -155,9 +158,9 @@ var (
   LightBlue =        colour3 ( 51, 102, 255)
   WhiteBlue =        colour3 (153, 221, 255)
 //  WhiteBlue =        colour3 (170, 170, 255)
-//  Enzianblau =       colour3 (  0,   0, 212)
-//  SkyBlue =          colour3 (  0, 170, 255)
-//  Ultramarinblau =   colour3 ( 68,   0, 153)
+  GentianBlue =      colour3 (  0,   0, 212)
+  SkyBlue =          colour3 (  0, 170, 255)
+  Ultramarine =      colour3 ( 68,   0, 153)
 
   BlackMagenta =     colour3 ( 51,  0,  51)
   DarkMagenta =      colour3 ( 85,  0,  85)

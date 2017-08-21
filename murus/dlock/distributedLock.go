@@ -1,6 +1,6 @@
 package dlock
 
-// (c) murus.org  v. 161224 - license see murus.go
+// (c) murus.org  v. 150505 - license see murus.go
 //
 /* >>> Distributed mutual exclusion due to
        Ricart, G., Agrawala, A. K.:
@@ -17,44 +17,18 @@ const
 type
   distributedLock struct {
                          uint "number of hosts involved"
+                      me uint // identity of the calling process
                     host []host.Host
-                      me uint
-                 request,
-                   reply []nchan.NetChannel
-         mutex, critSect sync.Mutex
-           time, ownTime,
+          request, reply []nchan.NetChannel // 0 for reqests, 1 for replies
+                    time,
+                   time1, // own time
                 nReplies uint
               requesting bool
                 deferred []bool
+         mutex, critSect sync.Mutex
                          }
 
-func pp (n, x, y uint) uint16 { // 0 <= result < n * (n - 1) / 2
-  c := uint16(0)
-  for i := uint(0); i < n; i++ {
-    for j := i+1; j < n; j++ {
-      if i == x && j == y {
-        return c
-      }
-      c++
-    }
-  }
-  return uint16(n * (n - 1) / 2)
-}
-
-func qq (n uint, k uint16) (uint, uint) { // inverse of pp
-  c := uint(0)
-  for i := uint(0); i < n; i++ {
-    for j := i+1; j < n; j++ {
-      if c == uint(k) {
-        return i, j
-      }
-      c++
-    }
-  }
-  return n, n // nonsense, just to shut the mouth of the compiler
-}
-
-func new_(me uint, hs []host.Host, port uint16) DistributedLock {
+func new_(me uint, hs []host.Host, p uint16) DistributedLock {
   n := uint(len(hs))
   if n < 2 || me >= n { return nil }
   x := new (distributedLock)
@@ -66,27 +40,28 @@ func new_(me uint, hs []host.Host, port uint16) DistributedLock {
   }
   x.me = me
   x.critSect.Lock()
-  x.request, x.reply = make([]nchan.NetChannel, x.uint), make([]nchan.NetChannel, x.uint)
-  n2 := uint16(n * (n - 1) / 2)
-  for i := uint(0); i < x.uint; i++ {
-    if i != x.me {
-//      p := port + uint16(a * x.uint + b)
-      p := pp(x.uint, x.me, i); if i < x.me { p = pp(x.uint, i, x.me) } // 0 <= p < n2
-      p += port
-      x.request[i] = nchan.New (x.ownTime, x.me, i, x.host[i], p)
-      x.reply[i] = nchan.New (x.ownTime, x.me, i, x.host[i], p + uint16(n2))
+  x.request = make([]nchan.NetChannel, x.uint)
+  x.reply = make([]nchan.NetChannel, x.uint)
+  for k := uint(0); k < x.uint; k++ {
+    i, j := x.me, k
+    if k != x.me {
+      if k < x.me {
+        i, j = j, i
+      }
+      x.request[k] = nchan.New (x.time, x.me, k, x.host[k], nchan.Port (x.uint, i, j, 0) + p)
+      x.reply[k] = nchan.New (x.time, x.me, k, x.host[k], nchan.Port (x.uint, i, j, 1) + p)
     }
   }
   for i := uint(0); i < x.uint; i++ {
     if i != x.me {
-      go func (n uint) { // bookkeeping of requests
+      go func (n uint) { // bookkeeping of request channels
         for {
           otherTime := x.request[n].Recv().(uint)
           x.mutex.Lock()
           if otherTime > x.time {
             x.time = otherTime
           }
-          if x.requesting && (x.ownTime < otherTime || (x.ownTime == otherTime && x.me < n)) {
+          if x.requesting && (x.time1 < otherTime || (x.time1 == otherTime && x.me < n)) {
             x.deferred[n] = true
           } else {
             x.reply[n].Send(ok)
@@ -96,7 +71,7 @@ func new_(me uint, hs []host.Host, port uint16) DistributedLock {
       }(i)
       go func (n uint) { // bookkeeping of ok-replies
         for {
-          _ = x.reply[n].Recv().(uint)
+          x.reply[n].Recv()
           x.mutex.Lock()
           x.nReplies++
           if x.nReplies == x.uint - 1 {
@@ -113,12 +88,12 @@ func new_(me uint, hs []host.Host, port uint16) DistributedLock {
 func (x *distributedLock) Lock() {
   x.mutex.Lock()
   x.requesting = true
-  x.ownTime = x.time + 1
+  x.time1 = x.time + 1
   x.nReplies = 0
   x.mutex.Unlock()
   for j := uint(0); j < x.uint; j++ {
     if uint(j) != x.me {
-      x.request[j].Send (x.ownTime)
+      x.request[j].Send (x.time1)
     }
   }
   x.critSect.Lock()

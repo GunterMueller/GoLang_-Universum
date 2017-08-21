@@ -4,7 +4,8 @@ package date
 
 import (
   . "murus/obj"
-  "murus/day"; "murus/clk"
+  "murus/day"
+  "murus/clk"
 )
 type
   DayTime interface {
@@ -40,5 +41,6 @@ type
 // If x is not empty, x is decreased by y.
   Dec (y clk.Clocktime)
 }
+
 // Returns a new empty pair of day and time
-func New() DayTime { return newDate() }
+func New() DayTime { return new_() }

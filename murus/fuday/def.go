@@ -29,6 +29,7 @@ type FUDay interface { // Kalendertage
 // Andernfalls ist d leer.
   Monday (d day.Calendarday, n uint)
 }
-func New() FUDay { return newFU() }
+
 // Liefert das Systemdatum des aufrufenden Rechners als neuen FU-Kalendertag.
 // Sein Semester ist das Semester, in dem er liegt.
+func New() FUDay { return new_() }

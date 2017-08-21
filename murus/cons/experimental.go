@@ -3,8 +3,8 @@ package cons
 // (c) murus.org  v. 140217 - license see murus.go
 
 func (X *console) Moved (x, y int) bool {
-  ok:= 0 <= X.x + x                          && 0 <= X.y + y                           &&
-            X.x + x + int(X.wd) < int(width) &&      X.y + y + int(X.ht) < int(height)
+  ok := 0 <= X.x + x                          && 0 <= X.y + y                           &&
+             X.x + x + int(X.wd) < int(width) &&      X.y + y + int(X.ht) < int(height)
   if ! ok {
 // println ("NOT moved by x, y ==" + i(x) + ", " + i(y))
     return false

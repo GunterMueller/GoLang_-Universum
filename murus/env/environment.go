@@ -1,9 +1,13 @@
 package env
 
-// (c) murus.org  v. 120819 - license see murus.go
+// (c) murus.org  v. 170814 - license see murus.go
 
 import
   "os"
+const (
+  user_ = "USER"
+  home_ = "HOME"
+)
 
 func set (Variable string, content *string) {
   for i:= 0; i < len (Variable); i++ {
@@ -15,6 +19,14 @@ func set (Variable string, content *string) {
 
 func val (Variable string) string {
   return os.Getenv (Variable)
+}
+
+func home() string {
+  return os.Getenv (home_)
+}
+
+func user() string {
+  return os.Getenv (user_)
 }
 
 func par1() byte {
@@ -40,4 +52,8 @@ func par (i uint) string {
     return os.Args[i]
   }
   return ""
+}
+
+func call() string {
+  return par(0)
 }

@@ -1,9 +1,10 @@
 package psp
 
-// (c) murus.org  v. 140615 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 import (
-  "murus/col"; "murus/font"
+  "murus/col"
+  "murus/font"
 )
 type
   PostscriptPage interface { // all float64-parameters in pt
@@ -49,3 +50,6 @@ type
 
   Curve (x, y []float64)
 }
+
+// Returns a new Postscript page.
+func New() PostscriptPage { return new_() }

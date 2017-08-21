@@ -1,11 +1,10 @@
 package rand
 
-// (c) murus.org  v. 150915 - license see murus.go
+// (c) murus.org  v. 170327 - license see murus.go
 
 // see D. E. Knuth, The Art of Computer Programming, 3.2.1.1-2, 3.6 i)-vi)
 
 import (
-//  "sync"
   "math"
   . "murus/ker"
 )
@@ -24,8 +23,11 @@ var (
   modulus = uint(modulusI) // 2^31 - 1 is a prime number !
   modulusF = float64(modulus)
   randomNumber uint
-//  mutex sync.Mutex
 )
+
+func init() {
+  _init()
+}
 
 func _init() {
   s, us:= SecondsSinceUnix()
@@ -47,8 +49,6 @@ func productModM (a, x uint) uint {
 }
 
 func natural (n uint) uint {
-//  mutex.Lock()
-//  defer mutex.Unlock()
   randomNumber = productModM (randomNumber, a)
   randomNumber += c
   if randomNumber >= modulus { randomNumber -= modulus }
@@ -81,23 +81,17 @@ func integer (i int) int {
   } else {
     n = uint (i)
   }
-  r:= int (Natural (n))
-  if Natural (milliard) % 2 == 0 {
+  r := int (natural (n))
+  if natural (milliard) % 2 == 0 {
     return r
   }
   return -r
 }
 
-/*
-func float() float32 {
-  return float32 (Natural (milliard)) / float32(milliard)
-}
-*/
-
 func real() float64 {
   return (float64(Natural (milliard)) + float64(Natural (milliard)) / milliardF) / milliardF
 }
 
-func init() {
-  _init()
+func even() bool {
+  return natural (2) % 2 == 0
 }

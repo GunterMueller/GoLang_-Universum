@@ -1,6 +1,6 @@
 package lr
 
-// (c) murus.org  v. 150304 - license see murus.go
+// (c) murus.org  v. 170411 - license see murus.go
 
 const (
   left = uint(iota)
@@ -11,9 +11,9 @@ const (
   out
 )
 const (
-  lIn = uint(iota)
-  lOut
-  rIn
-  rOut
+  leftIn = uint(iota)
+  leftOut
+  rightIn
+  rightOut
   nFuncs
 )

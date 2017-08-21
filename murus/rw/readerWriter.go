@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170411 - license see murus.go
 
 // >>> Solution with Go's sync.RWMutex,
 //     most likely the most efficient solution
@@ -12,7 +12,7 @@ type
                       RWMutex
                       }
 
-func New() ReaderWriter {
+func new_() ReaderWriter {
   return new (readerWriter)
 }
 
@@ -30,4 +30,7 @@ func (x *readerWriter) WriterIn() {
 
 func (x *readerWriter) WriterOut() {
   x.Unlock()
+}
+
+func (x *readerWriter) Fin() {
 }

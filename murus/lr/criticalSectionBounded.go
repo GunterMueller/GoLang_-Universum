@@ -1,39 +1,59 @@
 package lr
 
-// (c) murus.org  v. 150914 - license see murus.go
+// (c) murus.org  v. 170731 - license see murus.go
 
 // >>> left/right problem: implementation with critical sections
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 93
 
 import (
-  "murus/ker"
   . "murus/obj"
   "murus/cs"
 )
 type
   criticalSectionBounded struct {
-                      n, nr, nz [2]uint
+                         nL, nR, // number of active lefties/righties
+                         tL, tR uint // number of lefties/righties within one turn
                                 cs.CriticalSection
                                 }
 
-func NewCriticalSectionBounded (l, r uint) LeftRight {
-  x:= new (criticalSectionBounded)
-  if l == 0 { l = ker.MaxNat() }
-  if r == 0 { r = ker.MaxNat() }
-  x.nz[0], x.nz[1] = l, r
-  c:= func (i uint) bool {
-        return x.n[1-i] == 0 &&
-               (! x.Blocked (1-i) || x.nr[i] < x.nz[i])
-      }
-  e:= func (A Any, i uint) {
-        x.n[i]++
-        x.nr[i]++
-        x.nr[1-i] = 0
-      }
-  a:= func (A Any, i uint) {
-        x.n[i]--
-      }
-  x.CriticalSection = cs.New (2, c, e, a)
+func newCSB (mL, mR uint) LeftRight {
+  x := new (criticalSectionBounded)
+  if mL == 0 { mL = 1 }
+  if mR == 0 { mR = 1 }
+  c := func (k uint) bool {
+         switch k {
+         case left:
+           return x.nR == 0 && (! x.Blocked (right) || x.tL < mL)
+         case right:
+           return x.nL == 0 && (! x.Blocked (left) || x.tR < mR)
+         }
+         panic("")
+       }
+  i := func (A Any, k uint) {
+         switch k {
+         case left:
+           x.nL++
+           writeL (x.nL)
+           x.tL++
+           x.tR = 0
+         case right:
+           x.nR++
+           writeR (x.nR)
+           x.tR++
+           x.tL = 0
+         }
+       }
+  o := func (A Any, k uint) {
+         switch k {
+         case left:
+           x.nL--
+           writeL (x.nL)
+         case right:
+           x.nR--
+           writeR (x.nR)
+         }
+       }
+  x.CriticalSection = cs.New (2, c, i, o)
   return x
 }
 
@@ -51,4 +71,7 @@ func (x *criticalSectionBounded) RightIn() {
 
 func (x *criticalSectionBounded) RightOut() {
   x.Leave (right, nil)
+}
+
+func (x *criticalSectionBounded) Fin() {
 }

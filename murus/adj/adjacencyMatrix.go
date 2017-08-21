@@ -1,13 +1,13 @@
 package adj
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
   "murus/ker"
-  . "murus/obj"; "murus/col"; "murus/scr"
+  . "murus/obj"
+  "murus/col"
+  "murus/scr"
 )
-const
-  pack = "adj"
 type
   entry struct {
                bool
@@ -23,7 +23,7 @@ type
 var
   char [2]byte = [2]byte { '.', '*' }
 
-func newAdj (n uint, e Any) AdjacencyMatrix {
+func new_(n uint, e Any) AdjacencyMatrix {
   if n == 0 || e == nil { ker.Oops() }
   switch e.(type) {
   case Valuator, uint8, uint16, uint, uint32:
@@ -40,7 +40,7 @@ func newAdj (n uint, e Any) AdjacencyMatrix {
       x.edge[i][k] = entry { false, Clone(x.Any) }
     }
   }
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   return x
 }
 
@@ -115,7 +115,7 @@ func (x *adjacencyMatrix) Copy (Y Any) {
 }
 
 func (x *adjacencyMatrix) Clone() Any {
-  y := newAdj (x.uint, x.Any)
+  y := new_(x.uint, x.Any)
   y.Copy (x)
   return y
 }

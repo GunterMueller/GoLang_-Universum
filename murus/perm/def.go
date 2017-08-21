@@ -12,6 +12,7 @@ type
 // returns otherwise the k-th number of x.
   F (k uint) uint
 }
+
 // Pre: n > 1.
 // x has size n, i.e. it is a random permutation of the natural numbers < n.
-func New (n uint) Permutation { return newPerm(n) }
+func New (n uint) Permutation { return new_(n) }

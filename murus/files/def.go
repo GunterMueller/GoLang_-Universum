@@ -1,6 +1,6 @@
 package files
 
-// (c) murus.org  v. 121108 - license see murus.go
+// (c) murus.org  v. 170814 - license see murus.go
 
 // >>> alpha-version
 
@@ -80,11 +80,8 @@ func Cd (p string) { cd(p) }
 // v is the program variable.
 //  func set (v string) // TODO name
 
-// If the value of the program variable denotes an existing path,
-// to which the calling process has access rights, now this path is the actual path,
-// i.e. its target directory is the actual directory;
-// otherwise the actual directory is not changed.
-func Cd0() { cd0()}
+// The effect is secret (the source is the doc).
+func Cd0() { cd0() }
 
 // Pre: d enthält ggf. einen path und am Ende einen zulässigen Namen für einen
 //      Eintrag vom Typ Datei; die Länge dieses Eintrags ist <= maxN - 11.

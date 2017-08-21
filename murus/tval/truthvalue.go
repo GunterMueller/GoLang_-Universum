@@ -1,11 +1,16 @@
 package tval
 
-// (c) murus.org  v. 170107 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/str"
-  "murus/col"; "murus/box"; "murus/errh"
-  "murus/font"; "murus/pbox"
+  . "murus/obj"
+  "murus/str"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/errh"
+  "murus/font"
+  "murus/pbox"
 )
 const
   max = 15
@@ -31,12 +36,12 @@ var (
   pbx = pbox.New()
 )
 
-func newTval() TruthValue {
+func new_() TruthValue {
   x := new (truthValue)
   x.value = undecidable
   x.uint = 1
   x.representation = [nValues]string { " ", "n", "j" }
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   return x
 }
 
@@ -74,7 +79,7 @@ func (x *truthValue) Copy (Y Any) {
 }
 
 func (x *truthValue) Clone() Any {
-  y := newTval()
+  y := new_()
   y.Copy(x)
   return y
 }

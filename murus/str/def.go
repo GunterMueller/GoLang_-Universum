@@ -1,17 +1,17 @@
 package str
 
-// (c) murus.org  v. 141212 - license see murus.go
+// (c) murus.org  v. 170417 - license see murus.go
 
 //     latin-1-strings (without any bloody UTF-8-stuff)
 
 // Returns true, iff s contains UTF8-runes.
-func IsUTF8 (s *string) bool { return isUTF8(s) }
+func DevilsDung (s *string) bool { return devilsDung(s) }
 
 // Returns a string of n spaces.
 func Clr (n uint) string { return clr(n) }
 
 // Returns a string, then coincides with s up to certain UTF-8-runes
-// (see constants in Z.go), that are changed to latin1-bytes.
+// (see constants in z.go), that are changed to latin1-bytes.
 func Lat1 (s string) string { return lat1(s) }
 
 // Invers to Lat1.
@@ -108,8 +108,8 @@ func Ins (s *string, t string, p uint) { ins(s,t,p) }
 // Otherwise s is unchanged.
 func Rem (s *string, p, n uint) { rem(s,p,n) }
 
-// Returns the string, consisting of the n bytes of s,
-// beginning at position p, if s contains at least n bytes.
+// Returns the string consisting of n bytes of s,
+// beginning at position p, if s contains at least p + n bytes.
 // If not, the result is correspondingly shorter.
 func Part (s string, p, n uint) string { return part(s,p,n) }
 
@@ -119,7 +119,7 @@ func Part (s string, p, n uint) string { return part(s,p,n) }
 func Norm (s *string, n uint) { norm(s,n) }
 
 // As far as existent, all spaces are removed from s.
-func OffSpaces (s *string) { offSpaces(s) }
+func OffAllSpaces (s *string) { offAllSpaces(s) }
 
 // As far as existent, for left resp. !left leading resp. trailing spaces
 // are removed from s and s is filled up with spaces on the other side
@@ -129,10 +129,14 @@ func Move (s *string, left bool) { move(s,left) }
 // As far as existent, leading and trailing and spaces are removed from s.
 func OffSpc (s *string) { offSpc(s) }
 
-// TODO Spec
+// If p < len(s), a space is inserted in at position p
+// (if the last byte of s was not a space, it is lost).
+// Otherwise nothing has happened.
 func InsSpace (s *string, p uint) { insSpace(s,p) }
 
-// TODO Spec
+// If len(s) <= 1 or p + 1 >= len() or the last byte of s is not a space,
+// nothing has happened. Otherwise, a space is inserted in s at position p
+// (so no non-space byte is lost).
 func Shift (s *string, p uint) { shift(s,p) }
 
 // If n >= len(*s), then *s is on its left and right equally filled up with spaces,
@@ -153,3 +157,7 @@ func AppendLF (s *string) { appendLF(s) }
 // Returns the leading part of *s until (excluding) the first byte b with b < ' ';
 // from *s now that part and all leading bytes b with b < ' ' are removed.
 func SplitLine (s *string) string { return splitLine(s) }
+
+// Pre: b is one of '(', '[', '{', '<'
+// My work is so secret that even I do not now what I am doing.
+func SplitBrackets (s string, sep, b byte) []string { return splitBrackets (s,sep,b) }

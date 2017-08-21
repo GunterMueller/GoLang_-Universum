@@ -1,10 +1,10 @@
 package enum
 
-// (c) murus.org  v. 160107 - license see murus.go
+// (c) murus.org  v. 170419 - license see murus.go
 
 import
   "murus/str"
-var
+var (
   lComp, sComp[]string =
   []string { "",
     "Palestrina, Claudio da (1525-1594)",
@@ -95,8 +95,8 @@ var
     "Henze, Hans Werner (1926-2012)",
   },
   lComp
-const
-  NComposers = uint8(87)
+  NComposers = uint8(len(lComp))
+)
 func init() {
   for i:= 1; i < len(lComp); i++ {
     p, _:= str.Pos (lComp[i], ',')
@@ -104,5 +104,4 @@ func init() {
   }
   sComp[23] = "Bach, Ph.E."
   l[Composer], s[Composer] = lComp, sComp
-  if NComposers != uint8(len(lComp)) { panic ("enum.NComposers wrong") }
 }

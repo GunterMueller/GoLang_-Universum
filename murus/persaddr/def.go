@@ -9,5 +9,6 @@ type
 
   Indexer
 }
+
 // Returns a new empty pair of Person and Address.
-func New() PersonAddress { return newPersaddr() }
+func New() PersonAddress { return new_() }

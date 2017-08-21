@@ -1,6 +1,6 @@
 package pers
 
-// (c) murus.org  v. 161217 - license see murus.go
+// (c) murus.org  v. 170218 - license see murus.go
 
 import
   . "murus/obj"
@@ -37,5 +37,5 @@ type
 
   RotOrder()
 }
-func
-  New() Person { return newPers() }
+
+func New() Person { return new_() }

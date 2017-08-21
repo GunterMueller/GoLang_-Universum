@@ -1,17 +1,24 @@
 package gram
 
-// (c) murus.org  v. 170107 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/str"; "murus/kbd"
-  "murus/col"; "murus/scr"; "murus/errh"; "murus/img"
-  "murus/gra"; "murus/node"; "murus/edge"
+  . "murus/obj"
+  "murus/str"
+  "murus/kbd"
+  "murus/col"
+  "murus/scr"
+  "murus/errh"
+  "murus/img"
+  "murus/gra"
+  "murus/vtx"
+  "murus/edg"
 )
 type
   graphModel struct {
                     gra.Graph
-                  n node.Node
-                  e edge.Edge
+             vertex vtx.Vertex
+               edge edg.Edge
               nWays uint
                     string "name"
                     bool "has background"
@@ -37,20 +44,20 @@ func init() {
   for i, l := range (h) { help[i] = str.Lat1(l) }
 }
 
-func New (d bool, n, v Any) GraphModel {
+func new_(d bool, v, e Any) GraphModel {
   x := new(graphModel)
-// TODO  checkType node
-  x.n = Clone(n).(node.Node)
-  if v == nil {
-    x.e = nil
-  } else {
-    x.e = edge.New (v)
+// TODO  checkType vertex
+  x.vertex = Clone(v).(vtx.Vertex)
+  if e == nil {
+    e = edg.New(d, uint(1))
   }
-  x.Graph = gra.New (d, x.n, x.e)
-  x.f, x.b = col.StartCols()
+  x.edge = edg.New (d, e)
+  x.f, x.b = scr.StartCols()
   x.Colours (x.f, x.b)
-  x.fa, x.ba = col.Red, x.b
+  x.fa, x.ba = scr.StartColsA()
   x.ColoursA (x.fa, x.ba)
+  x.Graph = gra.New (d, x.vertex, x.edge)
+  x.Graph.SetWrite (vtx.W, edg.W)
   return x
 }
 
@@ -63,17 +70,21 @@ func (x *graphModel) Background (n string) {
 
 func (x *graphModel) Colours (f, b col.Colour) {
   x.f, x.b = f, b
+  x.edge.Colours (f, b)
+  x.vertex.Colours (f, b)
 }
 
 func (x *graphModel) ColoursA (f, b col.Colour) {
   x.fa, x.ba = f, b
+  x.edge.ColoursA (f, b)
+  x.vertex.ColoursA (f, b)
 }
 
 func (x *graphModel) underMouse (a Any) bool {
-  return a.(node.Node).UnderMouse()
+  return a.(vtx.Vertex).UnderMouse()
 }
 
-func (x *graphModel) selected (n node.Node) bool {
+func (x *graphModel) selected (v vtx.Vertex) bool {
   loop: for {
     c, _ := kbd.Command()
     scr.MousePointer (true)
@@ -81,11 +92,11 @@ func (x *graphModel) selected (n node.Node) bool {
     case kbd.Esc:
       break loop
     case kbd.Enter:
-      n = x.Get().(node.Node)
+      v = x.Get().(vtx.Vertex)
       return true
     case kbd.Here:
-      if x.Graph.ExPred (x.underMouse) {
-        n = x.Get().(node.Node)
+      if x.ExPred (x.underMouse) {
+        v = x.Get().(vtx.Vertex)
         return true
       }
     }
@@ -93,16 +104,16 @@ func (x *graphModel) selected (n node.Node) bool {
   return false
 }
 
-func (x *graphModel) NodesSelected() bool {
+func (x *graphModel) VerticesSelected() bool {
   scr.MousePointer (true)
   s := false
   for {
     errh.Hint ("Start auswählen")
-    if x.selected (x.n.(node.Node)) { // n local
-      x.Locate (true) // n colocal
-      x.Write()
+    if x.selected (x.vertex.(vtx.Vertex)) { // vertex local
+      x.Locate (true) // vertex colocal
+      x.Graph.Write()
       errh.Hint ("Ziel auswählen")
-      if x.selected (x.n.(node.Node)) { // n local
+      if x.selected (x.vertex.(vtx.Vertex)) { // vertex local
         errh.DelHint()
         if x.Located() {
           errh.Error0("Fehler: Start und Ziel sind gleich !")
@@ -115,53 +126,41 @@ func (x *graphModel) NodesSelected() bool {
       break
     }
   }
-  x.Write()
+  x.Graph.Write()
   errh.DelHint()
   scr.MousePointer (false)
   return s
 }
 
-func (x *graphModel) NodeSelected() bool {
+func (x *graphModel) VertexSelected() bool {
   scr.MousePointer (true)
   errh.Hint ("Ecke auswählen")
   s := false
-  if x.selected (x.n.(node.Node)) { // n local
+  if x.selected (x.vertex.(vtx.Vertex)) { // n local
     x.Locate (true) // n colocal
     s = true
-    x.Write()
+    x.Graph.Write()
   }
   errh.DelHint()
   scr.MousePointer (false)
   return s
 }
 
-func (x *graphModel) write1 (n Any, a bool) {
-  n.(node.Node).Colours (x.f, x.b)
-  n.(node.Node).ColoursA (x.fa, x.ba)
-  n.(node.Node).Write1 (a)
+func (x *graphModel) write (v Any, a bool) {
+  v.(vtx.Vertex).Colours (x.f, x.b)
+  v.(vtx.Vertex).ColoursA (x.fa, x.ba)
+  v.(vtx.Vertex).Write1 (a)
 }
 
-func (g *graphModel) write3 (n, e, n1 Any, a bool) {
-  w, h := n.(node.Node).Size()
-  if w + h == 0 { return }
-  x, y := n.(node.Node).Pos()
-  x1, y1 := n1.(node.Node).Pos()
-  f, b := g.f, g.b; if a { f, b = g.fa, g.ba }
-  scr.ColourF (f)
-  scr.Line (x, y, x1, y1)
-  if e == nil { return }
-  e.(edge.Edge).Colours (f, b)
-  e.(edge.Edge).Write (x, y, x1, y1, a)
-  if g.Graph.Directed() {
-    x0, y0 := (x + 4 * x1) / 5, (y + 4 * y1) / 5
-    scr.CircleFull (x0, y0, 4)
-  }
+func (x *graphModel) write1 (e Any, a bool) {
+  e.(edg.Edge).Colours (x.f, x.b)
+  e.(edg.Edge).Write1 (a)
 }
 
 func (x *graphModel) Write() {
   scr.Buf (true)
   if x.bool { scr.Restore1() }
-  x.Trav3Cond (x.write1, x.write3)
+  x.Graph.Write()
   scr.Buf (false)
 }
 
@@ -177,58 +176,70 @@ func (x *graphModel) Edit() {
       break loop
     case kbd.Help:
       errh.Help (help)
-    case kbd.Here: // new node or change name of existing node:
-      if x.Graph.ExPred (x.underMouse) {
+    case kbd.Here: // new vertex or change name of existing vertex:
+      if x.ExPred (x.underMouse) {
         if i > 0 {
-          x.n = x.Get().(node.Node) // local: node
-          x.n.Edit()
-          x.Put (x.n)
+          x.vertex = x.Get().(vtx.Vertex) // local: vertex
+          x.vertex.Edit()
+          x.Put (x.vertex)
           x.Write()
         }
       } else {
-        x.n.Clr()
-        x.n.Mouse()
-        x.Ins (x.n)
+        x.vertex.Clr()
+        x.vertex.Mouse()
+        x.Ins (x.vertex)
         x.Write()
-        x.n.Edit()
-        x.Put (x.n)
+        x.vertex.Edit()
+        x.Put (x.vertex)
         x.Write()
       }
-    case kbd.Del: // remove node
-      if x.Graph.ExPred (x.underMouse) {
+    case kbd.Del: // remove vertex
+      if x.ExPred (x.underMouse) {
         x.Del()
       }
       x.Write()
-    case kbd.There: // move node
+    case kbd.There: // move vertex
       switch i {
       case 0:
-        if x.Graph.ExPred (x.underMouse) { // n local
+        if x.ExPred (x.underMouse) { // vertex local
           loop1: for {
             kk, _ := kbd.Command()
             scr.MousePointer (true)
             switch kk {
             case kbd.Push:
-              x.n = x.Get().(node.Node)
-              x.n.Mouse()
-              x.Put (x.n)
+              x.vertex = x.Get().(vtx.Vertex)
+              xu, yu := x.vertex.Pos()
+              x.vertex.Mouse()
+              x.Put (x.vertex)
+              xv, yv := x.vertex.Pos()
+              x.Graph.Trav1Loc (func (a Any) {
+                                  x0, y0 := a.(edg.Edge).Pos0()
+                                  if x0 == xu && y0 == yu {
+                                    a.(edg.Edge).SetPos0 (xv, yv)
+                                  }
+                                  x1, y1 := a.(edg.Edge).Pos1()
+                                  if x1 == xu && y1 == yu {
+                                    a.(edg.Edge).SetPos1 (xv, yv)
+                                  }
+                                })
               x.Write()
             case kbd.Thither:
               break loop1
             }
           }
         }
-      default: // remove node
-        if x.Graph.ExPred (x.underMouse) {
+      default: // remove vertex
+        if x.ExPred (x.underMouse) {
           x.Del()
           x.Write()
         }
       }
-    case kbd.This: // connect nodes / remove edge:
-      xm, ym := scr.MousePosGr()
-      xm1, ym1 := xm, ym
-      if x.Graph.ExPred (x.underMouse) {
-        x.n = x.Get().(node.Node) // n local
-        x.Locate (true) // n also colocal
+    case kbd.This: // connect vertices / remove edge:
+      if x.ExPred (x.underMouse) {
+        x.vertex = x.Get().(vtx.Vertex) // vertex local
+        xm, ym := x.vertex.Pos()
+        xm1, ym1 := xm, ym
+        x.Locate (true) // vertex also colocal
         loop2: for {
           kk, _ := kbd.Command()
           scr.MousePointer (true)
@@ -239,19 +250,17 @@ func (x *graphModel) Edit() {
             scr.LineInv (xm, ym, xm1, ym1)
           case kbd.Thus:
             scr.LineInv (xm, ym, xm1, ym1)
-            if x.Graph.ExPred (x.underMouse) {
-              n1 := x.Get().(node.Node) // n1 local, n colocal
+            if x.ExPred (x.underMouse) {
               if x.Located () {
                 errh.Error0("Schleife - geht nicht")
               } else {
-                if x.e != nil {
-                  x0, y0 := x.n.Pos()
-                  x1, y1 := n1.Pos()
-                  x.e.Edit (x0, y0, x1, y1)
-                }
-                x.Edge1 (x.e)
+                xm1, ym1 := x.vertex.Pos()
+                x.edge.SetPos0(xm, ym)
+                x.edge.SetPos1(xm1, ym1)
+                x.edge.Edit()
+                x.Edge (x.edge)
 /*
-                if x.e.Val() == 0 { // XXX
+                if x.Edge.Val() == 0 { // XXX
                   x.Del1()
                 }
 */
@@ -288,7 +297,7 @@ func (x *graphModel) DFS (all bool) {
   x.Mark (true)
   x.Write()
 //  kbd.Wait (true)
-  n := x.NumLoc()
+  n := x.NumNeighboursOut()
   if n > 0 {
     for i := uint(0); i < n; i++ {
       x.Step (i, true)
@@ -306,11 +315,11 @@ func (x *graphModel) DFS (all bool) {
 }
 
 func (x *graphModel) BFS (all bool) {
-  x.Graph.SetDemo (gra.Breadth) // >>> ist eine DijkstraDemo, wenn x bewertet ist
+  x.SetDemo (gra.Breadth) // >>> ist eine DijkstraDemo, wenn x bewertet ist
   if x.Conn() {
     x.Act()
     x.Write()
-    errh.Error ("ein kürzester Weg in Hinrichtung der Länge", x.Num1Act())
+    errh.Error ("ein kürzester Weg in Hinrichtung der Länge", x.NumSub1())
   } else {
     x.Write()
     errh.Error0("es gibt keinen Weg in Hinrichtung")
@@ -321,7 +330,7 @@ func (x *graphModel) BFS (all bool) {
     if x.Conn() {
       x.Act()
       x.Write()
-      errh.Error ("ein (kürzester) Weg in Rückrichtung der Länge", x.Num1Act())
+      errh.Error ("ein (kürzester) Weg in Rückrichtung der Länge", x.NumSub1())
     } else {
       errh.Error0("es gibt keinen Weg in Rückrichtung")
     }
@@ -331,27 +340,27 @@ func (x *graphModel) BFS (all bool) {
 func (x *graphModel) Hamilton (ready, ok Cond, w *bool) {
   x.Mark (true)
   if ready() {
-    x.nWays ++
-    x.Write()
+    x.nWays++
+    x.Graph.Write()
     errh.Error ("Hamiltonweg", x.nWays)
   } else {
-    n := x.NumLoc()
+    n := x.NumNeighboursOut()
     for i := uint(0); i < n; i++ {
       x.Step (i, true)
       if x.Marked() || ! ok() {
         x.Step (0, false)
       } else {
-        x.Write(); wait (w)
+        x.Graph.Write(); wait (w)
         x.Hamilton (ready, ok, w)
         x.Mark (false)
         x.Step (0, false)
-        x.Write(); wait (w)
+        x.Graph.Write(); wait (w)
       }
     }
   }
 }
 
 func (x *graphModel) Demo (d gra.Demo) {
-  x.Graph.SetDemo (d)
-  x.Install (x.write1, x.write3)
+  x.SetDemo (d)
+  x.SetWrite (x.write, x.write1)
 }

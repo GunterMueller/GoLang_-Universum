@@ -13,7 +13,6 @@ var
   []string { "", "Aktiv", "Passiv" },
   []string { "", "Akt.", "Pass." }
 
-
 func init() {
   l[GenusVerbi], s[GenusVerbi] = lGenusVerbi, sGenusVerbi
 }

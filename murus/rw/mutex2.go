@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170411 - license see murus.go
 
 // >>> 2nd readers/writers problem (Courtois, Heymans, Parnas)
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 77
@@ -14,7 +14,7 @@ type
       r, r1, rw Mutex
                 }
 
-func NewMutex2() ReaderWriter {
+func new2() ReaderWriter {
   return new (mutex2)
 }
 
@@ -22,7 +22,7 @@ func (x *mutex2) ReaderIn() {
   x.r1.Lock()
   x.r.Lock()
   x.mutexR.Lock()
-  x.nR ++
+  x.nR++
   if x.nR == 1 {
     x.rw.Lock()
   }
@@ -33,7 +33,7 @@ func (x *mutex2) ReaderIn() {
 
 func (x *mutex2) ReaderOut() {
   x.mutexR.Lock()
-  x.nR --
+  x.nR--
   if x.nR == 0 {
     x.rw.Unlock()
   }
@@ -42,7 +42,7 @@ func (x *mutex2) ReaderOut() {
 
 func (x *mutex2) WriterIn() {
   x.mutexW.Lock()
-  x.bW ++
+  x.bW++
   if x.bW == 1 {
     x.r.Lock()
   }
@@ -53,9 +53,12 @@ func (x *mutex2) WriterIn() {
 func (x *mutex2) WriterOut() {
   x.rw.Unlock()
   x.mutexW.Lock()
-  x.bW --
+  x.bW--
   if x.bW == 0 {
     x.r.Unlock()
   }
   x.mutexW.Unlock()
+}
+
+func (x *mutex2) Fin() {
 }

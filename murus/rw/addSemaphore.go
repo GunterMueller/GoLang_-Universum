@@ -1,21 +1,23 @@
 package rw
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170411 - license see murus.go
 
 // >>> 1st readers/writers problem with additive semaphores
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 75
 
 import
   "murus/asem"
-const
-  m = 19
 type
   addSemaphore struct {
+                      uint
                       asem.AddSemaphore
                       }
 
-func NewAddSemaphore() ReaderWriter {
-  return &addSemaphore { asem.New (m) }
+func newASem (m uint) ReaderWriter {
+  x := new(addSemaphore)
+  x.uint = m
+  x.AddSemaphore = asem.New(x.uint)
+  return x
 }
 
 func (x *addSemaphore) ReaderIn() {
@@ -27,9 +29,12 @@ func (x *addSemaphore) ReaderOut() {
 }
 
 func (x *addSemaphore) WriterIn() {
-  x.AddSemaphore.P (m)
+  x.AddSemaphore.P (x.uint)
 }
 
 func (x *addSemaphore) WriterOut() {
-  x.AddSemaphore.V (m)
+  x.AddSemaphore.V (x.uint)
+}
+
+func (x *addSemaphore) Fin() {
 }

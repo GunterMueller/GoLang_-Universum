@@ -3,10 +3,14 @@ package date
 // (c) murus.org  v. 161216 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/str"
-  "murus/font"; "murus/prt"
-  "murus/col"; "murus/scr"
-  "murus/day"; "murus/clk"
+  . "murus/obj"
+  "murus/str"
+  "murus/font"
+  "murus/prt"
+  "murus/col"
+  "murus/scr"
+  "murus/day"
+  "murus/clk"
 )
 type
   daytime struct {
@@ -18,7 +22,14 @@ const
 var
   one, two, three, lastTime clk.Clocktime = clk.New(), clk.New(), clk.New(), clk.New()
 
-func newDate() DayTime {
+func init() {
+  one.Set (1, 0, 0)
+  two.Set (2, 0, 0)
+  three.Set (3, 0, 0)
+  lastTime.Set (0, 0, 0)
+}
+
+func new_() DayTime {
   return &daytime { day.New(), clk.New() }
 }
 
@@ -133,7 +144,7 @@ func (x *daytime) Copy (Y Any) {
 }
 
 func (x *daytime) Clone() Any {
-  y := newDate()
+  y := new_()
   y.Copy (x)
   return y
 }
@@ -214,11 +225,4 @@ func (x *daytime) Decode (b []byte) {
   a := x.Calendarday.Codelen()
   x.Calendarday.Decode (b[:a])
   x.Clocktime.Decode (b[a:])
-}
-
-func init() {
-  one.Set (1, 0, 0)
-  two.Set (2, 0, 0)
-  three.Set (3, 0, 0)
-  lastTime.Set (0, 0, 0)
 }

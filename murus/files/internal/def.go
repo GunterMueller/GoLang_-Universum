@@ -13,3 +13,5 @@ type
   Set (s string, b byte)
   Typ () byte
 }
+
+func New() Pair { return new_() }

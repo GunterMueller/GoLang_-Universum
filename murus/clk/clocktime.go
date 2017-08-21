@@ -1,14 +1,20 @@
 package clk
 
-// (c) murus.org  v. 170107 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
-  . "murus/ker"; . "murus/obj"; "murus/str"
-  "murus/col"; "murus/scr"; "murus/box"; "murus/font"; "murus/pbox"
-  "murus/errh"; "murus/nat"
+  . "murus/ker"
+  . "murus/obj"
+  "murus/str"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/font"
+  "murus/pbox"
+  "murus/errh"
+  "murus/nat"
 )
 const (
-  pack = "clk"
   maxlength = 8 // maximal Formatlength for "Hh_mm_ss"
   ms = 60 // minutes / hour = seconds / minute
   hd = 24 // hours per day
@@ -25,7 +31,7 @@ type
                    }
 var (
   textlength [NFormats]uint
-  currentTime, clock = newClk().(*clocktime), newClk().(*clocktime)
+  currentTime, clock = new_().(*clocktime), new_().(*clocktime)
   bx, clockbx = box.New(), box.New()
   line, column uint
   pbx = pbox.New()
@@ -40,10 +46,10 @@ func init() {
 //  SetAttributes(Zero, scr.NColumns() - textlength[clock.Format], col.HintF, col.HintB)
 }
 
-func newClk() Clocktime {
+func new_() Clocktime {
   x := new(clocktime)
   x.hour = hd
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   x.Format = Hh_mm
   return x
 }
@@ -73,7 +79,7 @@ func (x *clocktime) Copy(Y Any) {
 }
 
 func (x *clocktime) Clone() Any {
-  y := newClk()
+  y := new_()
   y.Copy(x)
   return y
 }

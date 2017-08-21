@@ -1,42 +1,52 @@
 package gra
 
-// (c) murus.org  v. 170107 - license see murus.go
-
-// >>> yet some things TODO
+// (c) murus.org  v. 170506 - license see murus.go
+//
+// >>>  References:
+// >>>  CLR  = Cormen, Leiserson, Rivest        (1990)
+// >>>  CLRS = Cormen, Leiserson, Rivest, Stein (2001)
 
 import (
-//  "fmt"; "strconv";
   "sort"
-  . "murus/obj"; "murus/ker"; "murus/str"; "murus/rand"
-  "murus/kbd"; "murus/errh"
-  "murus/pseq"; "murus/adj"
+  "murus/ker"
+  . "murus/obj"
+  "murus/str"
+  "murus/rand"
+  "murus/kbd"
+  "murus/errh"
+  "murus/pseq"
+  "murus/adj"
 )
 
-// References:
-// CLR  = Cormen, Leiserson, Rivest        1990
-// CLRS = Cormen, Leiserson, Rivest, Stein 2001
-
-/*    vertex                                                                   vertex
-                       neighbour                        neighbour
-  [-----------]                                                          [-----------]
-  [  content  ]       /------------------------------------------------->[  content  ]
-  [-----------]<-----/---------------------------------------------\     [-----------]
-  [   nbPtr --]-----/-----\                                  /------\----[-- nbPtr   ]
-  [-----------]    /       |              edge              |        \   [-----------]
-  [inSubgraph ]   /        V                                V         |  [inSubgraph ]
-  [-----------]  |   [-----------]    [----------]    [-----------]   |  [-----------]
-  [  marked   ]  |   [  edgePtr -]--->[  attrib  ]<---[- edgePtr  ]   |  [  marked   ]
-  [-----|-----]  |   [-----------]    [----------]    [-----------]   |  [-----|-----]
-  [dist |time ]<-----[-- from    ]<---[- nbPtr0  ]    [   from ---]----->[dist |time ]
-  [-----|-----]  |   [-----------]    [----------]    [-----------]   |  [-----|-----]
-  [predecessor]   \--[--- to     ]    [  nbPtr1 -]--->[    to ----]--/   [predecessor]
-  [-----------]      [-----------]    [----------]    [-----------]      [-----------]
-  [    repr   ]      [  forward  ]    [inSubgraph]    [  forward  ]      [    repr   ]
-  [-----------]      [-----------]    [----------]    [-----------]      [-----------]
-  [   nextV --]->    [  nextNb --]->  [  nextE --]->  [  nextNb --]->    [   nextV --]->
-  [-----------]      [-----------]    [----------]    [-----------]      [-----------]
-<-[-- prevV   ]    <-[-- prevNb  ]  <-[-- prevE  ]  <-[-- prevNb  ]    <-[-- prevV   ]
-  [-----------]      [-----------]    [----------]    [-----------]      [-----------]
+/*    vertex           neighbour                        neighbour            vertex
+   ___________                                                            ___________ 
+  /           \         /----------------------------------------------->/           \
+  |  content  |        /                                                 |  content  |
+  |___________|<--------------------------------------------------\      |___________|
+  |           |      /                                             \     |           |
+  |   nbPtr---|-----------\                                  /-----------|---nbPtr   |
+  |___________|    /       |                                |        \   |___________|
+  |           |   |        |                                |         |  |           |
+  |inSubgraph |   |        v              edge              V         |  |inSubgraph |
+  |___________|   |   ___________      __________      ___________    |  |___________|
+  |           |   |  /           \    /          \    /           \   |  |           |
+  |  marked   |   |  | edgePtr---|--->|  attrib  |<---|--edgePtr  |   |  |  marked   |
+  |___________|   |  |___________|    |__________|    |___________|   |  |___________|
+  |     |     |   |  |           |    |          |    |           |   |  |     |     |
+  |dist | time|<-----|---from    |<---|--nbPtr0  |    |   from----|----->|dist | time|
+  |_____|_____|   |  |___________|    |__________|    |___________|   |  |_____|_____|
+  |           |   \  |           |    |          |    |           |   |  |           |
+  |predecessor|    --|----to     |    |  nbPtr1 -|--->|    to-----|--/   |predecessor|
+  |___________|      |___________|    |__________|    |___________|      |___________|
+  |           |      |           |    |          |    |           |      |           |
+  |    repr   |      | outgoing  |    |inSubgraph|    | outgoing  |      |    repr   |
+  |___________|      |___________|    |__________|    |___________|      |___________|
+  |           |      |           |    |          |    |           |      |           |
+  |   nextV---|->    |  nextNb---|->  |  nextE---|->  |  nextNb---|->    |   nextV---|->
+  |___________|      |___________|    |__________|    |___________|      |___________|
+  |           |      |           |    |          |    |           |      |          _|
+<-|---prevV   |    <-|---prevNb  |  <-|---prevE  |  <-|---prevNb  |    <-|---prevV   |
+  \___________/      \___________/    \__________/    \___________/      \___________/
 
 The vertices of a graph are represented by structs,
 whose field "content" represents the "real" vertex.
@@ -44,45 +54,41 @@ All vertices are connected in a doubly linked list with anchor cell,
 that can be traversed to execute some operation on all vertices of the graph.
 
 The edges are also represented by structs,
-whose field "attrib" is either nil (with value 1)
-or carries a variable of type Valuator.
+whose field "attrib" is a variable of a type that implements Valuator.
 Also all edges are connected in a doubly linked list with anchor cell.
 
-For a vertex n one finds all outgoing and incoming edges
+For a vertex v one finds all outgoing and incoming edges
 with the help of a further doubly linked ringlist of neighbour(hoodrelation)s
-  nb1 = n.nbPtr, nb2 = n.nbPtr.nextNb, nb3 = n.nbPtr.nextNb.nextNb etc.
+  nb1 = v.nbPtr, nb2 = v.nbPtr.nextNb, nb3 = v.nbPtr.nextNb.nextNb etc.
 by the links outgoing from the nbi (i = 1, 2, 3, ...)
   nb1.edgePtr, nb2.edgePtr, nb3.edgePtr etc.
 In directed graphs the edges outgoing from a vertex are exactly those ones
-in the neighbourlist, for which forward == true.
+in the neighbourlist, for which outgoing == true.
 
 For an edge e one finds its two vertices by the links
   e.nbPtr0.from = e.nbPtr1.to und e.nbPtr0.to = e.nbPtr1.from.
 
 Semantics of some variables, that are "hidden" in fields of vAnchor:
   vAnchor.time0: in that the "time" is incremented for each search step
-  vAnchor.marked: (after call of search) == true <=> graph has no cycles
-*/
+  /bvAnchor.acyclic: (after call of search) == true <=> graph has no cycles. */
 
 const (
-  pack = "gra"
-  suffix = pack
+  suffix = "gra"
   inf = uint32(1<<32 - 1)
 )
 type (
   vertex struct {
-      content Any
-        nbPtr *neighbour
-   inSubgraph,       // characteristic function of the vertices in the actual subgraph
-       marked bool   // for the development of design patterns by clients
-         dist,       // for breadth first search/Dijkstra and use in En/Decode
- time0, time1 uint32 // for applications of depth first search
-  predecessor,       // for back pointers in depth first search and in ways
-         repr,       // for the computation of connected components
- nextV, prevV *vertex
-              }
-
-  vSet []*vertex // to be able to apply sort.Sort to []*vertex
+        content Any
+          nbPtr *neighbour
+     inSubgraph,       // characteristic function of the vertices in the actual subgraph
+         marked,
+        acyclic bool   // for the development of design patterns by clients
+           dist,       // for breadth first search/Dijkstra and use in En/Decode
+   time0, time1 uint32 // for applications of depth first search
+    predecessor,       // for back pointers in depth first search and in ways
+           repr,       // for the computation of connected components
+   nextV, prevV *vertex
+                }
 
   vCell struct {
           vPtr *vertex
@@ -97,12 +103,10 @@ type (
  nextE, prevE *edge
               }
 
-  eSet []*edge // to be able to apply sort.Sort to []*vertex
-
   neighbour struct {
            edgePtr *edge
           from, to *vertex
-           forward bool
+          outgoing bool
     nextNb, prevNb *neighbour
                    }
 
@@ -121,40 +125,40 @@ type (
        nlocPtr,
      ncolocPtr *vCell
           demo Demoset
-         write CondOp
-        write3 CondOp3
+        writeV,
+        writeE CondOp
                }
 )
 
-func newNode (a Any) *vertex {
-  n := new (vertex)
-  n.content = Clone(a)
-  n.time1 = inf // for applications of depth first search
-  n.dist = inf
-  n.repr = n
-  n.nextV, n.prevV = n, n
-  return n
+func newVertex (a Any) *vertex {
+  v := new (vertex)
+  v.content = Clone(a)
+  v.time1 = inf // for applications of depth first search
+  v.dist = inf
+  v.repr = v
+  v.nextV, v.prevV = v, v
+  return v
 }
 
 func (n *vertex) Clone() *vertex {
   return n
 }
 
-func insert (s []*vertex, n *vertex, i uint) []*vertex {
+func insert (s []*vertex, v *vertex, i uint) []*vertex {
   l := uint(len (s))
   if i > l { i = l }
   s1 := make ([]*vertex, l + 1)
   copy (s1[:i], s[:i])
-  s1[i] = n
+  s1[i] = v
   copy (s1[i+1:], s[i:])
   return s1
 }
 
-func contains (s []*vertex, n *vertex) bool {
-  l := uint(len (s))
+func contains (vs []*vertex, v *vertex) bool {
+  l := uint(len (vs))
   c := l
-  for i, a := range s {
-    if a == n {
+  for i, a := range vs {
+    if a == v {
       c = uint(i)
       break
     }
@@ -162,93 +166,44 @@ func contains (s []*vertex, n *vertex) bool {
   return c < l
 }
 
-func exists (s []*vertex, p Pred) (*vertex, bool) {
-  for _, a := range s {
-    if p (a) {
-      return a, true
-    }
-  }
-  return nil, false
-}
-
-func remove (s []*vertex, i uint) []*vertex {
-  l := uint(len (s))
+func remove (vs []*vertex, i uint) []*vertex {
+  l := uint(len (vs))
   if l == 0 { return nil }
-  if i >= l { return s }
-  s1 := make ([]*vertex, l - 1)
-  copy (s1[:i], s[:i])
-  copy (s1[i:], s[i+1:])
-  return s1
+  if i >= l { return vs }
+  vs1 := make ([]*vertex, l - 1)
+  copy (vs1[:i], vs[:i])
+  copy (vs1[i:], vs[i+1:])
+  return vs1
 }
 
-func (s vSet) Len() int {
-  return len (s)
-}
-
-func (s vSet) Swap (i, j int) {
-  s[i], s[j] = s[j], s[i]
-}
-
-func (s vSet) Less (i, j int) bool {
-  if s[i].dist == s[j].dist {
-    if s[i] == s[j] {
-      return false
-    }
-    return i < j
-  }
-  return s[i].dist < s[j].dist
-}
-
-func newEdge() *edge {
-  e := new (edge)
+func newEdge (a Any) *edge {
+  e := new(edge)
+  e.attrib = Clone(a)
   e.nextE, e.prevE = e, e
   return e
 }
 
-func (s eSet) Len() int {
-  return len (s)
-}
-
-func (s eSet) Swap (i, j int) {
-  s[i], s[j] = s[j], s[i]
-}
-
-func (s eSet) Less (i, j int) bool {
-  return Val (s[i]) < Val (s[j])
-}
-
-func newNeighbour (e *edge, n, n1 *vertex, f bool) *neighbour {
-  nb := new (neighbour)
+func newNeighbour (e *edge, v, v1 *vertex, f bool) *neighbour {
+  nb := new(neighbour)
   nb.edgePtr = e
-  nb.from, nb.to = n, n1
-  nb.forward = f
+  nb.from, nb.to = v, v1
+  nb.outgoing = f
   nb.nextNb, nb.prevNb = nb, nb
   return nb
 }
 
-func existsnb (s []*neighbour, p Pred) (*neighbour, bool) {
-  for _, a := range s {
-    if p (a) {
-      return a, true
-    }
-  }
-  return nil, false
-}
-
-func newGra (d bool, n, e Any) Graph {
-  CheckAtomicOrObject(n)
+func new_(d bool, v, e Any) Graph {
+  CheckAtomicOrObject(v)
   x := new (graph)
   x.directed = d
-  x.vAnchor, x.eAnchor = newNode(n), newEdge()
+  x.vAnchor = newVertex(v)
   if e == nil {
-    x.eAnchor.attrib = nil
-  } else {
-    CheckUintOrValuator (e)
-    x.eAnchor.attrib = Clone(e)
+    e = uint(1)
   }
+  CheckUintOrValuator (e)
+  x.eAnchor = newEdge (e)
   x.colocal, x.local = x.vAnchor, x.vAnchor
-  x.write = CondIgnore
-  x.write3 = CondIgnore3
+  x.writeV, x.writeE = CondIgnore, CondIgnore
   return x
 }
 
@@ -256,6 +211,41 @@ func (x *graph) imp (Y Any) *graph {
   y, ok := Y.(*graph)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
+}
+
+type nSeq []*neighbour
+
+func (ns nSeq) Less (i, j int) bool {
+  return ns[i].to.content.(Valuator).Val() < ns[j].to.content.(Valuator).Val()
+}
+
+func (x *graph) SortNeighbours() {
+  switch x.vAnchor.content.(type) {
+  case Valuator:
+    // see below
+  default:
+    return
+  }
+  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
+    c := x.numEdges (v)
+    if c > 1 {
+      ns := make(nSeq, c)
+      for n, i := v.nbPtr.nextNb, 0; n != v.nbPtr; n, i = n.nextNb, i + 1 {
+        ns[i] = n
+      }
+      sort.Slice (ns, ns.Less)
+      v.nbPtr.nextNb = ns[0]
+      for i := uint(0); i < c - 1; i++ {
+        ns[i].nextNb = ns[i + 1]
+      }
+      ns[c - 1].nextNb = v.nbPtr
+      v.nbPtr.prevNb = ns[c - 1]
+      ns[0].prevNb = v.nbPtr
+      for i := uint(1); i < c; i++ {
+        ns[i].prevNb = ns[i - 1]
+      }
+    }
+  }
 }
 
 func (x *graph) Name (s string) {
@@ -311,21 +301,21 @@ func (x *graph) Empty() bool {
 }
 
 func delEdge (e *edge) {
-  if e.nbPtr0 == nil { ker.Panic ("gra.delEdge: e.nbPtr0 == nil") }
+  if e.nbPtr0 == nil { ker.Panic("gra.delEdge: e.nbPtr0 == nil") }
   e.prevE.nextE, e.nextE.prevE = e.nextE, e.prevE
   e.nbPtr0.prevNb.nextNb, e.nbPtr0.nextNb.prevNb = e.nbPtr0.nextNb, e.nbPtr0.prevNb // bug
   e.nbPtr1.prevNb.nextNb, e.nbPtr1.nextNb.prevNb = e.nbPtr1.nextNb, e.nbPtr1.prevNb
 }
 
-func delNode (n *vertex) {
-  N := n.nbPtr.nextNb
-  for N != n.nbPtr {
-    N = n.nbPtr
-    N.to.predecessor = nil
-    n.nbPtr = n.nbPtr.nextNb
+func delVertex (v *vertex) {
+  n := v.nbPtr.nextNb
+  for n != v.nbPtr {
+    n = v.nbPtr
+    n.to.predecessor = nil
+    v.nbPtr = v.nbPtr.nextNb
   }
-  n.prevV.nextV, n.nextV.prevV = n.nextV, n.prevV
-  n = n.nextV
+  v.prevV.nextV, v.nextV.prevV = v.nextV, v.prevV
+  v = v.nextV
 }
 
 func (x *graph) Clr() {
@@ -334,14 +324,14 @@ func (x *graph) Clr() {
   }
   x.nEdges = 0
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    delNode (v)
+    delVertex (v)
   }
   x.nVertices = 0
   x.colocal, x.local = x.vAnchor, x.vAnchor
   x.path, x.eulerPath = nil, nil
 }
 
-func (x *graph) nE (n *vertex) uint {
+func (x *graph) numEdges (n *vertex) uint {
   c := uint(0)
   for nb := n.nbPtr; nb.nextNb != n.nbPtr; nb = nb.nextNb {
     c++
@@ -359,24 +349,24 @@ func (x *graph) Eq (Y Any) bool { // disgusting complexity
   ya := y.local // save
   eq := true
   loop:
-  for xn := x.vAnchor.nextV; xn != x.vAnchor; xn = xn.nextV {
-    if ! y.Ex (xn.content) {
+  for xv := x.vAnchor.nextV; xv != x.vAnchor; xv = xv.nextV {
+    if ! y.Ex (xv.content) {
       eq = false
       break
     }
-    yn := y.local // y.local was changed
-    if x.nE (xn) != y.nE (yn) {
+    yv := y.local // y.local was changed
+    if x.numEdges (xv) != y.numEdges (yv) {
       eq = false
       break
     }
-    for xnb := xn.nbPtr; xnb.nextNb != xn.nbPtr; xnb = xnb.nextNb {
-      for ynb := yn.nbPtr; ynb.nextNb != yn.nbPtr; ynb = ynb.nextNb {
-        if ynb.to == xnb.to {
+    for xn := xv.nbPtr; xn.nextNb != xv.nbPtr; xn = xn.nextNb {
+      for yn := yv.nbPtr; yn.nextNb != yv.nbPtr; yn = yn.nextNb {
+        if yn.to == xn.to {
           aa := true
           if x.eAnchor.attrib != nil {
-            if xnb.edgePtr == nil { break }
-            if ynb.edgePtr == nil { break }
-            aa = Eq (xnb.edgePtr.attrib, ynb.edgePtr.attrib)
+            if xn.edgePtr == nil { break }
+            if yn.edgePtr == nil { break }
+            aa = Eq (xn.edgePtr.attrib, yn.edgePtr.attrib)
           }
           if aa {
             break // next xnb
@@ -396,15 +386,15 @@ func (x *graph) Less (Y Any) bool {
   return false
 }
 
-// XXX The actual subgraph, the actual path and the actual verticestack are not copied.
+// XXX The actual path and the actual vertexstack are not copied.
 func (x *graph) Copy (Y Any) {
   y := x.imp(Y)
-  x.Clr()
   x.Decode (y.Encode())
+  x.SetWrite (y.Writes())
 }
 
 func (x *graph) Clone() Any {
-  y := newGra(x.directed, x.vAnchor.content, x.eAnchor.attrib)
+  y := new_(x.directed, x.vAnchor.content, x.eAnchor.attrib)
   y.Copy (x)
   return y
 }
@@ -413,79 +403,76 @@ func (x *graph) Num() uint {
   return uint(x.nVertices)
 }
 
-func (x *graph) NumAct() uint {
-  c := uint(0)
+func (x *graph) NumSub() uint {
+  n := uint(0)
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     if v.inSubgraph {
-      c++
+      n++
     }
   }
-  return c
+  return n
 }
 
-func (x *graph) Num1Act() uint {
-  c := uint(0)
+func (x *graph) NumSub1() uint {
+  n := uint(0)
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
     if e.inSubgraph {
-      c++
+      n++
     }
   }
-  return c
+  return n
 }
 
 func (x *graph) NumPred (p Pred) uint {
-  c := uint(0)
+  n := uint(0)
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     if p (v.content) {
-      c++
+      n++
     }
   }
-  return c
+  return n
 }
 
 func (x *graph) Num1() uint {
   return uint(x.nEdges)
 }
 
-func (x *graph) insertedNode (a Any) *vertex {
-  n := newNode (a)
-  n.nbPtr = newNeighbour (nil, n, nil, false)
-  n.nextV, n.prevV = x.vAnchor, x.vAnchor.prevV
-  n.prevV.nextV = n
-  x.vAnchor.prevV = n
-  return n
+func (x *graph) insertedVertex (a Any, inSubgraph bool) *vertex {
+  v := newVertex (a)
+  v.inSubgraph = inSubgraph
+  v.nbPtr = newNeighbour (nil, v, nil, false)
+  v.nextV, v.prevV = x.vAnchor, x.vAnchor.prevV
+  v.prevV.nextV = v
+  x.vAnchor.prevV = v
+  return v
 }
 
 func (x *graph) Ins (a Any) {
+  x.insSub (a, false)
+}
+
+func (x *graph) insSub (a Any, inSubgraph bool) {
   if x.vAnchor.content == nil { ker.Oops() }
   CheckTypeEq (a, x.vAnchor.content)
   if x.Ex (a) { // local is set
     return
   }
-  n := x.insertedNode (a)
+  v := x.insertedVertex (a, inSubgraph)
   x.nVertices++
   if x.nVertices == 1 {
-    x.colocal = n
+    x.colocal = v
   } else {
     x.colocal = x.local
   }
-  x.local = n
+  x.local = v
 }
 
-func (x *graph) Edge() {
-  if x.eAnchor.attrib != nil {
-    ker.Panic ("cannot 'Edge' vertices with edges with an edgetype - use 'Edge1' ! ")
-  }
-  x.Edge1 (nil)
-}
-
-// Pre: n and n1 are vertices in the same graph.
 // Returns nil, iff there is no edge from n to n1;
 // returns otherwise the corresponding pointer.
-func connection (n, n1 *vertex) *edge {
-  for nb := n.nbPtr.nextNb; nb != n.nbPtr; nb = nb.nextNb {
-    if nb.forward && nb.to == n1 {
-      return nb.edgePtr
+func (x *graph) connection (v, v1 *vertex) *edge {
+  for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
+    if n.outgoing && n.to == v1 {
+      return n.edgePtr
     }
   }
   return nil
@@ -493,102 +480,86 @@ func connection (n, n1 *vertex) *edge {
 
 // Pre: nb.from == e.
 // nb is appended in n.nbPtr
-func insertNeighbour (nb *neighbour, n *vertex) {
-  nb.nextNb, nb.prevNb = n.nbPtr, n.nbPtr.prevNb
-  nb.prevNb.nextNb = nb
-  n.nbPtr.prevNb = nb
+func insertNeighbour (n *neighbour, v *vertex) {
+  n.nextNb, n.prevNb = v.nbPtr, v.nbPtr.prevNb
+  n.prevNb.nextNb = n
+  v.nbPtr.prevNb = n
 }
 
 // TODO Spec
-func (x *graph) insertEdge (a Any) {
-  if ! TypeEq (a, x.eAnchor.attrib) {
-    ker.Panic ("gra.insertEdge: ! TypeEq")
-  }
-  e := newEdge()
-  if a == nil {
-    e.attrib = nil
-  } else {
-    e.attrib = Clone (a)
-  }
+func (x *graph) insertedEdge (a Any, inSubgraph bool) *edge {
+  CheckTypeEq (a, x.eAnchor.attrib)
+//  if ! TypeEq (a, x.eAnchor.content) { ker.Panic ("gra.insertedEdge: ! TypeEq") }
+  e := newEdge (a)
+  e.inSubgraph = inSubgraph
+//  e.inSubgraph = inSubgraph
   e.nbPtr0 = newNeighbour (e, x.colocal, x.local, true)
   insertNeighbour (e.nbPtr0, x.colocal)
   e.nbPtr1 = newNeighbour (e, x.local, x.colocal, ! x.directed)
   insertNeighbour (e.nbPtr1, x.local)
-  if e.nbPtr1 == nil { ker.Panic ("gra.insertEdge: e.nbPtr1 == nil") }
+  if e.nbPtr1 == nil { ker.Panic ("gra.insertedEdge: e.nbPtr1 == nil") }
   e.nextE, e.prevE = x.eAnchor, x.eAnchor.prevE
   e.prevE.nextE = e
   x.eAnchor.prevE = e
+  return e
 }
 
-func (x *graph) Edge1 (a Any) {
+func (x *graph) Edge (a Any) {
+  x.edgeSub (a, false)
+}
+
+func (x *graph) edgeSub (a Any, inSubgraph bool) {
   if x.Empty() { return }
-  if x.colocal == x.local {
-//    ker.Panic ("gra.Edge1: colocal == local")
-    return
-  }
-  if a != nil {
-    CheckTypeEq (a, x.eAnchor.attrib)
-  }
-  // simple case: local and colocal are not yet adjacent:
-  if connection (x.colocal, x.local) == nil &&
-    connection (x.local, x.colocal) == nil {
-    x.insertEdge (a)
+  if x.colocal == x.local { ker.Panic ("gra.Edge: colocal == local") }
+  if a == nil { a = uint(1) }
+  CheckTypeEq (a, x.eAnchor.attrib)
+// simple case: local and colocal are not yet adjacent:
+  e := x.connection (x.colocal, x.local)
+  e1 := x.connection (x.local, x.colocal)
+  if e == nil && e1 == nil {
+    e = x.insertedEdge (a, inSubgraph)
     x.nEdges++
     return
   }
-  // otherwise: an existing edge must not be cleared:
-  if a == nil {
-    return
-  }
+// otherwise: an existing edge must not be cleared:
 // if there is an edge from colocal to local, it is looked for:
-  nb := x.colocal.nbPtr.nextNb
-  for nb.to != x.local {
-    nb = nb.nextNb
-    if nb == x.colocal.nbPtr { ker.Stop (pack, 1) } // not found, contradiction
+  n := x.colocal.nbPtr
+  n.outgoing = true
+  n = n.nextNb
+  for n.to != x.local {
+    n = n.nextNb
+//    if n == x.colocal.nbPtr { ker.Oops() }
   }
-// and its attrib is replaced:
-  nb.edgePtr.attrib = Clone (a)
-  nb.forward = true
-// in the directed case the edge goes from colocal to local,
-// but not the other way:
-  if x.directed {
-    nb = x.local.nbPtr.nextNb
-    for nb.to != x.colocal {
-      nb = nb.nextNb
-      if nb == x.local.nbPtr { ker.Stop (pack, 2) }
-    }
-    nb.forward = false
+  if n.to != x.local { ker.Oops() }
+// and its content is replaced:
+  if ! x.directed {
+    n.to.nbPtr.outgoing = true
   }
+  n.edgePtr.attrib = Clone(a)
+  n.edgePtr.inSubgraph = inSubgraph
   x.nEdges++
 }
 
-func (x *graph) Edge2 (a, a1 Any) {
-  x.edge3 (a, a1, nil)
-}
-
-func (x *graph) edge3 (a, a1, b Any) {
-  if x.Empty() || // x.eAnchor.attrib == nil ||
-    Eq (a, a1) ||
-    ! TypeEq (a, a1) ||
-    ! TypeEq (a, x.vAnchor.content) ||
-    ! TypeEq (b, x.eAnchor.attrib) {
+func (x *graph) Edge2 (v, v1, e Any) {
+  if x.Empty() || Eq (v, v1) ||
+    ! TypeEq (v, v1) || ! TypeEq (v, x.vAnchor.content) {
     return
   }
-  if n, ok := x.found (a); ! ok {
+  if n, ok := x.found (v); ! ok {
     return
   } else {
     x.colocal = n
   }
-  if n1, ok := x.found (a1); ! ok {
+  if n1, ok := x.found (v1); ! ok {
     return
   } else {
     x.local = n1
   }
   if x.colocal == x.local ||
-    connection (x.colocal, x.local) != nil {
+    x.connection (x.colocal, x.local) != nil {
     return
   }
-  x.Edge1 (b)
+  x.Edge (e)
 }
 
 func (x *graph) Matrix() adj.AdjacencyMatrix {
@@ -599,17 +570,17 @@ func (x *graph) Matrix() adj.AdjacencyMatrix {
     n.time0 = i
   }
   matrix := adj.New (m, x.eAnchor.attrib)
-  for n, i := x.vAnchor.nextV, 0; n != x.vAnchor; n, i = n.nextV, i + 1 {
-    for nb := n.nbPtr.nextNb; nb != n.nbPtr; nb = nb.nextNb {
-      if nb.forward {
-        matrix.Set (uint(i), uint(nb.to.time0), nb.edgePtr.attrib)
+  for v, i := x.vAnchor.nextV, 0; v != x.vAnchor; v, i = v.nextV, i + 1 {
+    for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
+      if n.outgoing {
+        matrix.Set (uint(i), uint(n.to.time0), n.edgePtr.attrib)
       }
     }
   }
   return matrix
 }
 
-func (x *graph) Set (n []Any, mat adj.AdjacencyMatrix) {
+func (x *graph) SetMatrix (n []Any, mat adj.AdjacencyMatrix) {
   if x.directed == mat.Symmetric() { ker.Panic ("gra.Set: x directed, matrix not") }
   m := mat.Num()
   for i := uint(0); i < m; i++ {
@@ -620,27 +591,7 @@ func (x *graph) Set (n []Any, mat adj.AdjacencyMatrix) {
       if mat.Edged (i, k) && (x.directed || i < k) {
         if x.ExPred2 (func (a Any) bool { return Eq (a, n[i]) },
                       func (a Any) bool { return Eq (a, n[k]) }) {
-          x.Edge1 (mat.Val (i, k)) // XXX --> not uint, but Any (Valuator)
-        }
-      }
-    }
-  }
-}
-
-func (x *graph) Define (as []Any, ns[][]uint) {
-  n := uint(len(as))
-  if n != uint(len(ns)) {
-    return
-  }
-  for _, a := range as {
-    CheckTypeEq (a, x.vAnchor.content)
-    x.Ins (a)
-  }
-  for i := uint(0); i < n; i++ {
-    for _, k := range ns[i] {
-      if x.directed || ! x.directed && i < k {
-        if x.Ex2 (as[i], as[k]) {
-          x.Edge() // as[i] is content of colocal, as[k] of local vertex
+          x.Edge (mat.Val (i, k)) // XXX --> not uint, but Any (Valuator)
         }
       }
     }
@@ -648,11 +599,11 @@ func (x *graph) Define (as []Any, ns[][]uint) {
 }
 
 func (x *graph) Edged() bool {
-  return connection (x.colocal, x.local) != nil
+  return x.connection (x.colocal, x.local) != nil
 }
 
 func (x *graph) CoEdged() bool {
-  return connection (x.local, x.colocal) != nil
+  return x.connection (x.local, x.colocal) != nil
 }
 
 // Returns (nil, false), iff a there is no vertex in x with content a;
@@ -681,8 +632,7 @@ func (x *graph) Ex2 (a, a1 Any) bool {
   }
   if v, ok := x.found (a); ok {
     if v1, ok1 := x.found (a1); ok1 {
-      x.colocal = v
-      x.local = v1
+      x.colocal, x.local = v, v1
       return true
     }
   }
@@ -716,7 +666,7 @@ func (x *graph) Ex1 (e Any) bool {
 func (x *graph) ExPred1 (p Pred) bool {
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
     if p (e.attrib) {
-      if e.nbPtr0.forward && e.nbPtr1.forward {
+      if e.nbPtr0.outgoing && e.nbPtr1.outgoing {
         x.colocal = e.nbPtr0.from
         x.local = e.nbPtr1.from
       } else {
@@ -749,59 +699,101 @@ func (x *graph) ExPred2 (p, p1 Pred) bool {
 }
 
 func (x *graph) Get() Any {
-  if x.local == x.vAnchor { return nil }
   return Clone (x.local.content)
 }
 
 func (x *graph) Get2() (Any, Any) {
-  if x.local == x.vAnchor { return nil, nil }
   return Clone (x.colocal.content), Clone (x.local.content)
 }
 
 func (x *graph) Get1() Any {
-  if x.local == x.vAnchor { ker.Panic ("gra.Get1: local == vAnchor"); return nil }
-  if x.local == x.colocal { ker.Panic ("gra.Get1: colocal == vAnchor"); return nil }
-  nb := x.colocal.nbPtr.nextNb
-  for {
-    if nb == x.colocal.nbPtr { break }
-    if nb.forward && nb.to == x.local {
-      break
-    }
-    nb = nb.nextNb
+  if x.local == x.vAnchor || x.local == x.colocal {
+    return Clone (x.eAnchor.attrib) // XXX
   }
-  return Clone (nb.edgePtr.attrib)
+  e := x.connection (x.colocal, x.local)
+  if e == nil {
+    e = x.connection (x.local, x.colocal)
+  }
+  if e == nil || e.attrib == nil {
+    return Clone (x.eAnchor.attrib) // XXX
+  }
+  return Clone (e.attrib)
 }
 
-func (x *graph) Put (a Any) {
+func (x *graph) Put (v Any) {
   if x.vAnchor == x.vAnchor.nextV { return }
-  x.local.content = Clone (a)
+  x.local.content = Clone (v)
 }
 
-func (x *graph) Put1 (a Any) {
+func (x *graph) Put1 (e Any) {
   if x.vAnchor == x.vAnchor.nextV { return }
   if x.colocal == x.local { return }
-  x.colocal.nbPtr.edgePtr.attrib = Clone (a)
+  x.colocal.nbPtr.edgePtr.attrib = Clone (e)
 }
 
-func (x *graph) Put2 (a, a1 Any) {
+func (x *graph) Put2 (v, v1 Any) {
   if x.vAnchor == x.vAnchor.nextV { return }
   if x.colocal == x.local { return }
-  x.colocal.content = Clone (a)
-  x.local.content = Clone (a1)
+  x.colocal.content = Clone (v)
+  x.local.content = Clone (v1)
+}
+
+func (x *graph) ClrSub() {
+  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
+    v.inSubgraph = false
+  }
+  for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
+    e.inSubgraph = false
+  }
+}
+
+func (x *graph) Sub() {
+  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
+    v.inSubgraph = true
+  }
+  for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
+    e.inSubgraph = true
+  }
+}
+
+func (x *graph) SubLocal() {
+  if x.local == x.vAnchor { return }
+  x.ClrSub()
+  x.local.inSubgraph = true
+}
+
+func (x *graph) Sub2() {
+  if x.local == x.vAnchor { return }
+  x.local.inSubgraph = true
+  x.colocal.inSubgraph = true
+  e := x.connection (x.colocal, x.local)
+  if e != nil {
+    e.inSubgraph = true
+  }
+}
+
+func (x *graph) EqSub() bool {
+  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
+    if ! v.inSubgraph { return false }
+  }
+  for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
+    if ! e.inSubgraph { return false }
+  }
+  return true
 }
 
 func (x *graph) Del() {
   if x.vAnchor == x.vAnchor.nextV { return }
   if x.local == x.vAnchor { return }
 //  delete all edges and their neighbour lists
-  for nb := x.local.nbPtr.nextNb; nb != x.local.nbPtr; nb = nb.nextNb {
-    delEdge (nb.edgePtr)
+  for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
+    delEdge (n.edgePtr)
     x.nEdges--
   }
   x.path = nil
-  x.clearSubgraph()
+//  x.ClrSub() // XXX
   v := x.local
-  delNode (x.local)
+  delVertex (x.local)
   x.nVertices--
   x.local = v.prevV
   if x.local == x.vAnchor {
@@ -814,187 +806,21 @@ func (x *graph) Del1() {
   if x.colocal == x.vAnchor || x.colocal == x.local {
     return
   }
-  nb := x.colocal.nbPtr.nextNb
-  for nb.to != x.local {
-    if nb == x.colocal.nbPtr {
+  n := x.colocal.nbPtr.nextNb
+  for n.to != x.local {
+    if n == x.colocal.nbPtr {
       return // local no neighbour of colocal
     } else {
-      nb = nb.nextNb
+      n = n.nextNb
     }
   }
-  delEdge (nb.edgePtr)
+  delEdge (n.edgePtr)
   x.nEdges--
 }
 
 func wait() {
   return
   kbd.Wait (true)
-}
-
-func (x *graph) preDepth() {
-  x.vAnchor.time0 = 0
-/*
-  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    v.time0, v.time1 = 0, 0
-    v.predecessor = nil
-    v.repr = v
-  }
-*/
-  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    v.time0, v.time1 = 0, 0
-    v.predecessor, v.repr = nil, v
-  }
-}
-
-func (x *graph) w3 (n *neighbour, a bool) {
-  x.write3 (n.from.content, n.edgePtr.attrib, n.to.content, a)
-}
-
-// For all vertices n, that are accessible from n0 by a path, n.repr == n0.
-// vAnchor.marked == true, if x has no cycles.
-func (x *graph) search (v0, v *vertex, p Pred) {
-  x.vAnchor.time0++
-  v.time0 = x.vAnchor.time0
-  v.repr = v0
-  if x.demo [Depth] {
-    x.write (v.content, true)
-    wait()
-  }
-  for nb := v.nbPtr.nextNb; nb != v.nbPtr; nb = nb.nextNb {
-    if nb.forward && nb.to != v.predecessor && p (nb.to.content) {
-      if nb.to.time0 == 0 {
-        if x.demo [Depth] {
-          x.w3 (nb, true)
-        }
-        nb.to.predecessor = v
-        x.search (v0, nb.to, p)
-        if x.demo [Depth] {
-          x.w3 (nb, false)
-          wait()
-        }
-      } else if nb.to.time1 == 0 {
-        x.vAnchor.marked = false // found cycle
-        if x.demo [Cycle] { // also x.demo [Depth], see Set
-          x.w3 (nb, true)
-//          errh.Error0("Kreis gefunden")
-          x.w3 (nb, false)
-          wait()
-        }
-      }
-    }
-  }
-  x.vAnchor.time0++
-  v.time1 = x.vAnchor.time0
-  if x.demo [Depth] {
-    x.write (v.content, false)
-  }
-}
-
-func (x *graph) Conn() bool {
-  return x.ConnCond (AllTrue)
-}
-
-func (x *graph) ConnCond (p Pred) bool {
-  if x.vAnchor == x.vAnchor.nextV { return true }
-  if x.colocal == x.local { return true }
-  x.preDepth()
-  x.search (x.colocal, x.colocal, p)
-  return x.local.repr == x.colocal
-  return x.local.time0 > 0 // Alternative
-}
-
-func (x *graph) preBreadth() {
-  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    v.dist = inf
-    v.predecessor = nil
-  }
-  x.colocal.dist = 0
-}
-
-// Lit.: CLR 23.2, CLRS 22.2
-// TODO spec
-func (x *graph) bfs (p Pred) {
-  var qu []*vertex
-  qu = append (qu, x.colocal)
-  for len (qu) > 0 {
-    v := qu[0]
-    if len (qu) == 1 {
-      qu = nil
-    } else {
-      qu = qu [1:]
-    }
-    for nb := v.nbPtr.nextNb; nb != v.nbPtr; nb = nb.nextNb {
-      if nb.forward && nb.to.dist == inf && p (nb.to.content) {
-        if x.demo [Breadth] {
-          var nb1 *neighbour
-          if nb.to.predecessor == nil {
-            // TODO then what ?
-          } else {
-            nb1 = nb.to.predecessor.nbPtr.nextNb
-            for nb1.from != nb.to.predecessor {
-              nb1 = nb1.nextNb
-              if nb1.nextNb == nb1 { ker.Stop (pack, 3) }
-            }
-            x.w3 (nb1, false)
-            x.write (nb1.from.content, true)
-            wait()
-          }
-        }
-        nb.to.dist = v.dist + 1
-        nb.to.predecessor = v
-        qu = append (qu, nb.to)
-      }
-    }
-  }
-}
-
-// Algorithm of Dijkstra, Lit.: CLR 25.1-2, CLRS 24.2-3
-// Pre: dist == inf, predecessor == nil for all vertices.
-// TODO spec
-func (x *graph) searchShortestPath (p Pred) {
-  v := x.vAnchor.nextV
-  set := make (vSet, x.nVertices)
-  for i, v := 0, x.vAnchor.nextV; v != x.vAnchor; i, v = i + 1, v.nextV {
-    set[i] = v
-  }
-  sort.Sort (set)
-  for len (set) > 0 {
-    v = set[0]
-    if len (set) == 1 {
-      set = nil
-    } else {
-      set = set[1:]
-    }
-    var d uint32
-    for nb := v.nbPtr.nextNb; nb != v.nbPtr; nb = nb.nextNb {
-      if nb.forward && nb.to != v.predecessor && p (nb.to.content) {
-        if v.dist == inf {
-          d = inf
-        } else {
-          d = v.dist + uint32(Val(nb.edgePtr.attrib))
-        }
-        if d < nb.to.dist {
-          if x.demo [Breadth] {
-            if nb.to.predecessor != nil {
-              nb1 := nb.to.predecessor.nbPtr.nextNb
-              for nb1.from != nb.to.predecessor {
-                nb1 = nb1.nextNb
-                if nb1.nextNb == nb1 { ker.Stop (pack, 4) }
-              }
-              x.w3 (nb1, false)
-              x.write (nb.to.content, false)
-            }
-            x.w3 (nb, true)
-            x.write (nb.to.content, true)
-            wait()
-          }
-          nb.to.dist, nb.to.predecessor = d, v
-// put the changed nb.to into the right position in set:
-          sort.Sort (set)
-        }
-      }
-    }
-  }
 }
 
 func (x *graph) defineSubgraph (v *vertex) {
@@ -1006,12 +832,12 @@ func (x *graph) defineSubgraph (v *vertex) {
   for {
     v.inSubgraph = true
     if v == x.colocal { return }
-    nb := v.nbPtr.nextNb
-    for nb.to != v.predecessor {
-      nb = nb.nextNb
-      if nb == v.nbPtr { ker.Stop (pack, 5) }
+    n := v.nbPtr.nextNb
+    for n.to != v.predecessor {
+      n = n.nextNb
+      if n == v.nbPtr { ker.Oops() }
     }
-    nb.edgePtr.inSubgraph = true
+    n.edgePtr.inSubgraph = true
     v = v.predecessor
   }
 }
@@ -1020,27 +846,12 @@ func (x *graph) Act() {
   x.ActPred (AllTrue)
 }
 
-func (x *graph) clearSubgraph() {
-  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    v.inSubgraph = false
-  }
-  for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    e.inSubgraph = false
-  }
-}
-
 func (x *graph) ActPred (p Pred) {
   v := x.vAnchor.nextV
-  if v == x.vAnchor { errh.Error ("gra ###", 10123); return }
-  if ! p (x.local.content) {
-// errh.Error ("#", 11)
-    return
-  }
-  x.clearSubgraph()
-  if ! x.ConnCond (p) {
-// errh.Error ("#", 12)
-    return
-  }
+  if v == x.vAnchor { return }
+  if ! p (x.local.content) { return }
+  x.ClrSub()
+  if ! x.ConnCond (p) { return }
   x.preBreadth()
   if x.eAnchor.attrib == nil {
     x.bfs (p)
@@ -1049,7 +860,7 @@ func (x *graph) ActPred (p Pred) {
   }
   x.path = nil
   for v := x.local; v != nil; v = v.predecessor {
-    x.path = insert (x.path, v, 0)
+   x.path = insert (x.path, v, 0)
   }
   x.defineSubgraph (x.local)
 }
@@ -1065,7 +876,7 @@ func (x *graph) Len() uint {
   return l
 }
 
-func (x *graph) LenAct() uint {
+func (x *graph) LenSub() uint {
   l := uint(0)
   if x.vAnchor == x.vAnchor.nextV {
     return l
@@ -1078,31 +889,58 @@ func (x *graph) LenAct() uint {
   return l
 }
 
-func (x *graph) NumLoc() uint {
+func (x *graph) NumNeighboursOut() uint {
   c := uint(0)
-  for nb := x.local.nbPtr.nextNb; nb != x.local.nbPtr; nb = nb.nextNb {
-    if nb.forward {
+  for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
+    if n.outgoing {
       c++
     }
   }
   return c
 }
 
-func (x *graph) NumLocInv() uint {
+func (x *graph) NumNeighboursIn() uint {
   c := uint(0)
-  for nb := x.local.nbPtr.nextNb; nb != x.local.nbPtr; nb = nb.nextNb {
-    if ! nb.forward {
+  for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
+    if ! n.outgoing {
       c++
     }
   }
   return c
 }
+
+func (x *graph) NumNeighbours() uint {
+  c := uint(0)
+  for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
+    c++
+  }
+  return c
+}
+
+/* func (x *graph) Leaf() {
+  if ! x.directed || x.Empty() || ! x.Acyclic() {
+    return
+  }
+  v := x.vAnchor.nextV
+  for {
+    x.local = v
+    if x.NumNeighboursOut() == 0 {
+      break
+    }
+    for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
+      if n.outgoing {
+        v = n.to
+        break
+      }
+    }
+  }
+} */
 
 func (x *graph) Inv() {
   if x.directed {
     for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-      e.nbPtr0.forward = ! e.nbPtr0.forward
-      e.nbPtr1.forward = ! e.nbPtr1.forward
+      e.nbPtr0.outgoing = ! e.nbPtr0.outgoing
+      e.nbPtr1.outgoing = ! e.nbPtr1.outgoing
     }
   }
 }
@@ -1110,16 +948,16 @@ func (x *graph) Inv() {
 func (x *graph) InvLoc() {
   if x.local != x.vAnchor {
     if x.directed {
-      for nb := x.local.nbPtr.nextNb; nb != x.local.nbPtr; nb = nb.nextNb {
-        nb.edgePtr.nbPtr0.forward = ! nb.edgePtr.nbPtr0.forward
-        nb.edgePtr.nbPtr1.forward = ! nb.edgePtr.nbPtr1.forward
+      for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
+        n.edgePtr.nbPtr0.outgoing = ! n.edgePtr.nbPtr0.outgoing
+        n.edgePtr.nbPtr1.outgoing = ! n.edgePtr.nbPtr1.outgoing
       }
     }
   }
 }
 
 func (x *graph) Relocate() {
-  x.clearSubgraph()
+  x.ClrSub() // XXX
   x.local, x.colocal = x.colocal, x.local
   x.colocal.inSubgraph = true
   x.path = nil
@@ -1127,7 +965,7 @@ func (x *graph) Relocate() {
 }
 
 func (x *graph) locate (colocal2local bool) {
-  x.clearSubgraph()
+  x.ClrSub() // XXX
   if colocal2local {
     x.colocal = x.local
   } else {
@@ -1164,28 +1002,25 @@ func (x *graph) InvertPath() {
   x.local, x.colocal = x.colocal, x.local
 }
 
-func (x *graph) Step (i uint, forward bool) {
+func (x *graph) Step (i uint, outgoing bool) {
   if x.vAnchor == x.vAnchor.nextV {
     return
   }
-  if forward {
-    if i >= x.NumLoc() { return }
+  if outgoing {
+    if i >= x.NumNeighboursOut() { return }
     if x.path == nil {
       x.colocal.inSubgraph = true
       x.path = append (x.path, x.colocal)
       x.local = x.colocal
     } else {
-      if x.path[0] != x.colocal { ker.Stop (pack, 6) }
+      if x.path[0] != x.colocal { ker.Oops() }
     }
     c := uint(len (x.path))
     n := x.path[c - 1]
-    if x.local != n {
-//      fmt.Println (x.local.content); fmt.Println (n.content)
-      ker.Stop (pack, 7) // shit happens
-    }
+    if x.local != n { ker.Shit() }
     nb := x.local.nbPtr.nextNb
     for {
-      if nb.forward {
+      if nb.outgoing {
         if i == 0 {
           break
         } else {
@@ -1208,15 +1043,15 @@ func (x *graph) Step (i uint, forward bool) {
     if ! contains (x.path, v) {
       v.inSubgraph = false
     }
-    e := connection (x.local, v)
-    if e == nil { ker.Stop (pack, 8) }
+    e := x.connection (x.local, v)
+    if e == nil { ker.Oops() }
     e.inSubgraph = false
     i = uint(0)
     for {
       if i + 1 == c { break }
       v = x.path[i]
       v1 := x.path[i+1]
-      if e == connection (v, v1) {
+      if e == x.connection (v, v1) {
         e.inSubgraph = true
         break
       } else {
@@ -1226,14 +1061,14 @@ func (x *graph) Step (i uint, forward bool) {
   }
 }
 
-func (x *graph) Neighbour (i uint) Any {
-  if i >= x.NumLoc() || x.vAnchor.nextV == x.vAnchor {
+func (x *graph) NeighbourOut (i uint) Any {
+  if x.vAnchor.nextV == x.vAnchor {
     return nil
   }
-  for nb := x.local.nbPtr.nextNb; nb != x.local.nbPtr; nb = nb.nextNb {
-    if nb.forward {
+  for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
+    if n.outgoing {
       if i == 0 {
-        return Clone (nb.to.content)
+        return Clone (n.to.content)
       } else {
         i--
       }
@@ -1242,37 +1077,121 @@ func (x *graph) Neighbour (i uint) Any {
   return nil
 }
 
-func (x *graph) CoNeighbour (i uint) Any {
-  if i >= x.NumLocInv() || x.vAnchor.nextV == x.vAnchor {
+func (x *graph) Outgoing (i uint) bool {
+  if x.vAnchor.nextV == x.vAnchor {
+    return false
+  }
+  if ! x.directed {
+    return true
+  }
+  for n, j := x.local.nbPtr.nextNb, uint(0); n != x.local.nbPtr; n, j = n.nextNb, j + 1 {
+    if j == i {
+      return n.outgoing
+    }
+  }
+  return false
+}
+
+func (x *graph) NeighbourIn (i uint) Any {
+  if x.vAnchor.nextV == x.vAnchor {
     return nil
   }
-  for nb := x.local.nbPtr.nextNb; nb != x.local.nbPtr; nb = nb.nextNb {
-    if ! nb.forward {
+  for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
+    if ! n.outgoing {
       if i == 0 {
-        return Clone (nb.to.content)
+        return Clone (n.to.content)
       } else {
         i--
       }
     }
   }
   return nil
+}
+
+func (x *graph) Incoming (i uint) bool {
+  if x.vAnchor.nextV == x.vAnchor {
+    return false
+  }
+  if ! x.directed {
+    return true
+  }
+  for n, j := x.local.nbPtr.nextNb, uint(0); n != x.local.nbPtr; n, j = n.nextNb, j + 1 {
+    if j == i {
+      return ! n.outgoing
+    }
+  }
+  return false
+}
+
+func (x *graph) Neighbour (i uint) Any {
+  if x.vAnchor.nextV == x.vAnchor {
+    return nil
+  }
+  for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
+    if i == 0 {
+      return Clone (n.to.content)
+    } else {
+      i--
+    }
+  }
+  return nil
+}
+
+/*
+func (x *graph) ValOut (i uint) uint {
+  if x.vAnchor.nextV == x.vAnchor {
+    return 0
+  }
+  for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
+    if n.outgoing {
+      if i == 0 {
+        return Val (n.edgePtr.content)
+      } else {
+        i--
+      }
+    }
+  }
+  return 0
+}
+
+func (x *graph) ValIn (i uint) uint {
+  if x.vAnchor.nextV == x.vAnchor {
+    return 0
+  }
+  for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
+    if ! n.outgoing {
+      if i == 0 {
+        return Val (n.edgePtr.content)
+      } else {
+        i--
+      }
+    }
+  }
+  return 0
 }
 
 func (x *graph) Val (i uint) uint {
-  if i >= x.NumLoc() || x.vAnchor.nextV == x.vAnchor {
+  if x.vAnchor.nextV == x.vAnchor {
     return 0
   }
-  for nb := x.local.nbPtr.nextNb; nb != x.local.nbPtr; nb = nb.nextNb {
-    if nb.forward {
-      if i == 0 {
-        return Val (nb.edgePtr.attrib)
-      } else {
-        i--
-      }
+  for n, j := x.local.nbPtr.nextNb, uint(0); n != x.local.nbPtr; n, j = n.nextNb, j + 1 {
+    if j == i {
+      return Val (n.edgePtr.content)
     }
   }
-  ker.Stop (pack, 9)
   return 0
+}
+*/
+
+func (x *graph) LenStack() uint {
+  c := uint(0)
+  affe := x.nlocPtr // XXX
+  for affe != nil {
+    affe = affe.next
+print ("lenstack  c++")
+    c++
+  }
+  return c
 }
 
 func (x *graph) Save() {
@@ -1313,6 +1232,7 @@ func (x *graph) Marked() bool {
   return x.local.marked
 }
 
+/*
 func (x *graph) A() {
   x.local.dist = 0
 }
@@ -1325,6 +1245,7 @@ func (x *graph) C() {
   x.local.dist = x.colocal.dist + 1
   x.local.predecessor = x.colocal
 }
+*/
 
 func (x *graph) True (p Pred) bool {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
@@ -1335,7 +1256,7 @@ func (x *graph) True (p Pred) bool {
   return true
 }
 
-func (x *graph) TrueAct (p Pred) bool {
+func (x *graph) TrueSub (p Pred) bool {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     if v.inSubgraph {
       if ! p (v.content) {
@@ -1349,14 +1270,6 @@ func (x *graph) TrueAct (p Pred) bool {
 func (x *graph) Trav (o Op) {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     o (v.content)
-  }
-}
-
-func (x *graph) TravPred (p Pred, o Op) {
-  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    if p (v.content) {
-      o (v.content)
-    }
   }
 }
 
@@ -1379,118 +1292,93 @@ func (x *graph) Trav1Cond (o CondOp) {
 }
 
 func (x *graph) Trav1Loc (o Op) {
-  for v := x.local.nbPtr.nextNb; v != x.local.nbPtr; v = v.nextNb {
-//    if v.forward { // TODO
-      o (v.edgePtr.attrib)
-//    }
+  for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
+    o (n.edgePtr.attrib)
   }
 }
 
-/* func (x *graph) Trav1Coloc (op Op) {
-  for v := x.colocal.nbPtr.nextNb; v != x.colocal.nbPtr; v = v.nextNb {
-    if v.forward {
-      op (v.edgePtr.attrib)
-    }
-  }
-} */
-
-func (x *graph) Trav3 (o Op, o3 Op3) {
-  for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    o3 (e.nbPtr0.from.content, e.attrib, e.nbPtr1.from.content)
-  }
-  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    o (v.content)
+func (x *graph) Trav1Coloc (o Op) {
+  for n := x.colocal.nbPtr.nextNb; n != x.colocal.nbPtr; n = n.nextNb {
+    o (n.edgePtr.attrib)
   }
 }
 
-func (x *graph) Trav3Cond (o CondOp, o3 CondOp3) {
-  for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    o3 (e.nbPtr0.from.content, e.attrib, e.nbPtr1.from.content, e.inSubgraph)
-  }
-  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    o (v.content, v.inSubgraph)
-  }
-}
-
-func (x *graph) Trav3CondDir (o CondOp, o3 CondOp3bool) {
-  for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    if ! e.nbPtr0.forward { ker.Oops() }
-    if e.nbPtr1.forward == x.directed { ker.Oops() }
-    o3 (e.nbPtr0.from.content, e.attrib, x.directed, e.nbPtr1.from.content, e.inSubgraph)
-  }
-  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    o (v.content, v.inSubgraph)
-  }
-}
-
-func (x *graph) Star (a Any) Graph {
-  CheckTypeEq (a, x.vAnchor.content)
-  y := newGra (x.directed, x.vAnchor.content, x.eAnchor.attrib).(*graph)
-  if x.Ex (a) { // vertex with content a is local in x
-    xlocal := x.local
-    y.Ins (a) // vertex with content a is local and colocal in Star
-    if y.local != y.colocal { ker.Oops() }
-    k, k1 := x.NumLoc(), x.NumLocInv()
-    b := make ([]Any, k + k1)
+func (x *graph) Star() Graph {
+  y := new_(x.directed, x.vAnchor.content, x.eAnchor.attrib).(*graph)
+  y.Ins (x.local.content)
+  local := y.local
+  if y.local != y.colocal { ker.Oops() }
+  if ! x.directed {
     for n, i := x.local.nbPtr.nextNb, uint(0); n != x.local.nbPtr; n, i = n.nextNb, i + 1 {
-      if n.forward {
-        b[i] = Clone(n.to.content)
-        y.Ins (b[i])
-      } else { // ! n.forward
-        b[i] = Clone(n.to.content)
-        y.Ins (b[i])
-      }
+      y.Ins (Clone(n.to.content)) // a now colocal
+      y.Edge (Clone(n.edgePtr.attrib)) // edge from a to local inserted vertex with same content as in x
+      y.local = local // a now again local in y
     }
-    if xlocal != x.local { ker.Oops() }
+  } else { // x.directed
     for n, i := x.local.nbPtr.nextNb, uint(0); n != x.local.nbPtr; n, i = n.nextNb, i + 1 {
-      if n.forward {
-        if x.Ex2 (a, b[i]) { // a colocal, b[i] local in x
-          if y.Ex2 (a, b[i]) { // a colocal, b[i] local in Star
-            y.Edge1 (x.Get1())
-          }
-        }
-        x.local = xlocal // a again local in x
-      } else { // ! n.forward
-        if x.Ex2 (b[i], a) { // b[i] colocal, a local in x
-          if y.Ex2 (b[i], a) { // b[i] colocal, a local in Star
-            y.Edge1 (x.Get1())
-          }
-        }
+      y.Ins (Clone(n.to.content)) // a colocal, new inserted local
+      if n.outgoing { // want edge from a to new inserted
+      } else { // ! n.outgoing: want edge from new inserted to a
+        y.local, y.colocal = y.colocal, y.local
       }
+      y.Edge (Clone(n.edgePtr.attrib)) // edge in y from colocal to local
+      y.local = local
     }
-    if ! y.Ex (a) { ker.Oops() } // a local in Star
   }
   return y
 }
 
-func (x *graph) StarLoc() Graph {
-  return x.Star (x.local.content)
+// For all vertices n, that are accessible from n0 by a path, n.repr == n0.
+// vAnchor.acyclic == true, if x has no cycles.
+func (x *graph) search (v0, v *vertex, p Pred) {
+  x.vAnchor.time0++
+  v.time0 = x.vAnchor.time0
+  v.repr = v0
+  if x.demo [Depth] {
+    x.writeV (v.content, true)
+    wait()
+  }
+  for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
+    if n.outgoing && n.to != v.predecessor && p (n.to.content) {
+      if n.to.time0 == 0 {
+        if x.demo [Depth] {
+          x.writeE (n.edgePtr.attrib, true)
+        }
+        n.to.predecessor = v
+        x.search (v0, n.to, p)
+        if x.demo [Depth] {
+          x.writeE (n.edgePtr.attrib, false)
+          wait()
+        }
+      } else if n.to.time1 == 0 {
+        x.vAnchor.acyclic = false // found cycle
+        if x.demo [Cycle] { // also x.demo [Depth], see Set
+          x.writeE (n.edgePtr.attrib, true)
+//          errh.Error0("Kreis gefunden")
+          x.writeE (n.edgePtr.attrib, false)
+          wait()
+        }
+      }
+    }
+  }
+  x.vAnchor.time0++
+  v.time1 = x.vAnchor.time0
+  if x.demo [Depth] {
+    x.writeV (v.content, false)
+  }
 }
 
-// Returns true, iff every vertex of x is accessible from every other one by a path.
-func (x *graph) TotallyConnected() bool {
-  if x.nVertices <= 1 {
-    return true
+func (x *graph) preDfs() {
+  x.vAnchor.time0 = 0
+  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
+    v.time0, v.time1 = 0, 0
+    v.predecessor, v.repr = nil, v
   }
-  if x.directed {
-    x.Isolate()
-  } else {
-    x.dfs()
-  }
-  v := x.vAnchor.nextV
-  e0 := v.repr
-  for v != x.vAnchor {
-    if v.repr != e0 {
-      return false
-    }
-    v = v.nextV
-  }
-  return true
 }
 
 // CLR 23.3, CLRS 22.3
 func (x *graph) dfs() {
-  x.preDepth()
+  x.preDfs()
   if x.demo [Depth] {
     errh.Hint ("weiter mit Eingabetaste")
   }
@@ -1504,171 +1392,128 @@ func (x *graph) dfs() {
   }
 }
 
-func (x *graph) Acyclic() bool {
-  if x.vAnchor.nextV == x.vAnchor { return true }
-  x.vAnchor.marked = true
-  x.dfs()
-  return x.vAnchor.marked
-}
-
-func notTraversedNeighbour (n *vertex) *neighbour {
-  for nb := n.nbPtr.nextNb; nb != n.nbPtr; nb = nb.nextNb {
-    if nb.forward && ! nb.edgePtr.inSubgraph {
-      return nb
-    }
-  }
-  return nil
-}
-
-func notTraversed (a Any) bool {
-  return notTraversedNeighbour (a.(*neighbour).from) != nil
-}
-
-func (x *graph) Euler() bool {
-  if ! x.TotallyConnected() {
-    return false // TODO Fleury's algorithm
-  }
-  p := x.colocal
-  a := x.local
-  x.colocal = x.vAnchor
-  x.local = x.vAnchor
-  e := uint(0)
+func (x *graph) preBreadth() {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-// check for existence of Euler cycles (iff graph
-// not directed:
-//   if each vertex has an even number of neighbours,
-// directed:
-//   if at any vertex the number of outgoing edges is equal to the number of incoming ones)
-// or of Euler paths (iff graph
-// not directed:
-//   if there are exactly two vertices with odd number of neighbours,
-// directed:
-//   if exactly one vertex has one more outgoing than incoming edges
-//   and exactly one vertex has one more incoming than outgoint edges)
-    z := uint(0)
-    z1 := uint(0)
-    nb := v.nbPtr.nextNb
-    for nb != v.nbPtr {
-      if nb.forward {
-        z++
-      } else {
-        z1++
-      }
-      nb = nb.nextNb
+    v.dist = inf
+    v.predecessor = nil
+  }
+  x.colocal.dist = 0
+}
+
+// Lit.: CLR 23.2, CLRS 22.2
+// TODO spec
+func (x *graph) bfs (p Pred) {
+  var qu []*vertex
+  qu = append (qu, x.colocal)
+  for len (qu) > 0 {
+    v := qu[0]
+    if len (qu) == 1 {
+      qu = nil
+    } else {
+      qu = qu [1:]
     }
-    if x.directed {
-      if z == z1 + 1 {
-        if x.colocal == x.vAnchor {
-          x.colocal = v
-          e++
-        } else {
-          x.colocal = p
-          x.local = a
-          return false
+    for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
+      if n.outgoing && n.to.dist == inf && p (n.to.content) {
+        if x.demo [Breadth] {
+          var n1 *neighbour
+          if n.to.predecessor == nil {
+            // TODO then what ?
+          } else {
+            n1 = n.to.predecessor.nbPtr.nextNb
+            for n1.from != n.to.predecessor {
+              n1 = n1.nextNb
+              if n1.nextNb == n1 { ker.Oops() }
+            }
+            x.writeE (n1.edgePtr.attrib, false)
+            x.writeV (n1.from.content, true)
+            wait()
+          }
         }
-      } else if z1 == z + 1 {
-        if x.local == x.vAnchor {
-          x.local = v
-          e++
+        n.to.dist = v.dist + 1
+        n.to.predecessor = v
+        qu = append (qu, n.to)
+      }
+    }
+  }
+}
+
+type vSeq []*vertex
+
+func (vs vSeq) Less (i, j int) bool {
+  if vs[i].dist == vs[j].dist {
+    if vs[i] == vs[j] { return false }
+    return i < j
+  }
+  return vs[i].dist < vs[j].dist
+}
+
+// Algorithm of Dijkstra, Lit.: CLR 25.1-2, CLRS 24.2-3
+// Pre: dist == inf, predecessor == nil for all vertices.
+// TODO spec
+func (x *graph) searchShortestPath (p Pred) {
+  v := x.vAnchor.nextV
+  vs := make (vSeq, x.nVertices)
+  for i, v := 0, x.vAnchor.nextV; v != x.vAnchor; i, v = i + 1, v.nextV {
+    vs[i] = v
+  }
+  sort.Slice (vs, vs.Less)
+  for len (vs) > 0 {
+    v = vs[0]
+    if len (vs) == 1 {
+      vs = nil
+    } else {
+      vs = vs[1:]
+    }
+    var d uint32
+    for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
+      if n.outgoing && n.to != v.predecessor && p (n.to.content) {
+        if v.dist == inf {
+          d = inf
         } else {
-          x.colocal = p
-          x.local = a
-          return false
+          d = v.dist + uint32(Val(n.edgePtr.attrib))
+        }
+        if d < n.to.dist {
+          if x.demo [Breadth] {
+            if n.to.predecessor != nil {
+              n1 := n.to.predecessor.nbPtr.nextNb
+              for n1.from != n.to.predecessor {
+                n1 = n1.nextNb
+                if n1.nextNb == n1 { ker.Oops() }
+              }
+              x.writeE (n1.edgePtr.attrib, false)
+              x.writeV (n.to.content, false)
+            }
+            x.writeE (n.edgePtr.attrib, true)
+            x.writeV (n.to.content, true)
+            wait()
+          }
+          n.to.dist, n.to.predecessor = d, v
+// put the changed nb.to into the right position in vs:
+          sort.Slice (vs, vs.Less)
         }
       }
-    } else { // ! x.directed
-      if z % 2 == 1 {
-        if x.colocal == x.vAnchor {
-          x.colocal = v
-        } else if x.local == x.vAnchor {
-          x.local = v
-        } else {
-          x.colocal = p
-          x.local = a
-          return false
-        }
-        e++
-      }
     }
   }
-  switch e {
-  case 0: // Euler cycle with random starting vertex
-    x.colocal = x.vAnchor.nextV
-    n := rand.Natural (uint(x.nVertices))
-    for n > 0 {
-      x.colocal = x.colocal.nextV
-      n--
-    }
-    x.local = x.colocal
-  case 1:
-    x.colocal = p
-    x.local = a
-    return false
-  case 2: // Euler path from colocal to local vertex
-    ;
-  default:
-    ker.Stop (pack, 100 + e)
-  }
-  x.clearSubgraph()
-  x.eulerPath = nil
-  x.colocal.inSubgraph = true
-  v := x.colocal
-  v.inSubgraph = true
-//  for j := 0; j <= 9; j** { for a := false TO true { write (E.content, a); ker.Msleep (100) } }
-// attempt, to find an Euler path/cycle "by good luck":
-  var nb *neighbour
-  for {
-    nb = notTraversedNeighbour (v)
-    if nb == nil { ker.Stop (pack, 11) }
-    // write1 (N.edgePtr.attrib, true)
-    //  for j := 0; j <= 9; j++ { for a := false; a <= true; a++ { write (N.to.content, a); ker.Msleep (100) } } };
-    nb.edgePtr.inSubgraph = true
-    v = nb.to
-    v.inSubgraph = true
-    x.eulerPath = append (x.eulerPath, nb)
-    if v == x.local { break }
-  }
-// errh.Error0("erster Wegabschnitt gefunden");
-// as long there are edges not yet traversed,
-// look for vertices in the Euler path, from which such edges go out,
-// and find more cycles starting there and insert them into the Euler path:
-  for {
-    nb, ok := existsnb (x.eulerPath, notTraversed)
-    if ! ok { break }
-    // for j := 0; j <= 9; j++ { for a := false; a <= true; a++ { // nonsense
-    //   x.write1 (nb.edgePtr.attrib, a); ker.Msleep (100) } }
-    v = nb.from
-    v1 := v
-    for {
-      nb = notTraversedNeighbour (v)
-      if nb == nil { ker.Stop (pack, 12) }
-    // write1 (N.edgePtr.attrib, true)
-    // for j := 0 TO 9 { for a := false TO true { write (N.to.content, a); ker.Msleep (100) } }
-      nb.edgePtr.inSubgraph = true
-      v = nb.to
-      v.inSubgraph = true
-      x.eulerPath = append (x.eulerPath, nb)
-      if v == v1 { break } // found one mor cycle
-    // errh.Error0("weiterer Teil eines Eulerwegs gefunden")
-    }
-  }
-  if x.demo [Euler] {
-    x.write (x.colocal.content, true)
-    wait()
-    for i := uint(0); i < uint(len (x.eulerPath)); i++ {
-      nb = x.eulerPath[i]
-      x.w3 (nb, true)
-      if nb.edgePtr.nbPtr0 == nb {
-        x.write (nb.edgePtr.nbPtr1.from.content, true)
-      } else {
-        x.write (nb.edgePtr.nbPtr0.from.content, true)
-      }
-      if i + 1 < uint(len (x.eulerPath)) {
-        wait()
-      }
-    }
-  }
-  return true
+}
+
+func (x *graph) Conn() bool {
+  return x.ConnCond (AllTrue)
+}
+
+func (x *graph) ConnCond (p Pred) bool {
+  if x.vAnchor == x.vAnchor.nextV { return true }
+  if x.colocal == x.local { return true }
+  x.preDfs()
+  x.search (x.colocal, x.colocal, p)
+  return x.local.repr == x.colocal
+  return x.local.time0 > 0 // Alternative
+}
+
+func (x *graph) Acyclic() bool {
+  if x.Empty() { return true }
+  x.vAnchor.acyclic = true
+  x.dfs()
+  return x.vAnchor.acyclic
 }
 
 // Kruskal's algorithm, CLR 24.1-2, CLRS 23.1-2
@@ -1689,20 +1534,20 @@ func (x *graph) MST() {
     x.local.inSubgraph = true
     return
   }
-  set := make (eSet, x.nEdges)
+  es := make ([]*edge, x.nEdges)
   for i, e := uint(0), x.eAnchor.nextE; e != x.eAnchor; i, e = i + 1, e.nextE {
-    set[i] = e
+    es[i] = e
     e.inSubgraph = false
   }
-  sort.Sort (set)
-  for len (set) > 0 {
-    e := set[0]
-    set = set [1:]
+  sort.Slice (es, func (i, j int) bool { return Val(es[i]) < Val(es[j]) })
+  for len(es) > 0 {
+    e := es[0]
+    es = es[1:]
     v, v1 := e.nbPtr0.from, e.nbPtr1.from
     if x.demo [SpanTree] {
-      x.write3 (v.content, e.attrib, v1.content, true) // TODO
-      x.write (v.content, true)
-      x.write (v1.content, true)
+      x.writeE (e.attrib, true)
+      x.writeV (v.content, true)
+      x.writeV (v1.content, true)
       wait()
     }
     if v.repr != v1.repr {
@@ -1722,7 +1567,9 @@ func (x *graph) MST() {
       v1.repr = v
     } else {
       if x.demo [SpanTree] {
-        x.write3 (v.content, e.attrib, v1.content, false) // TODO
+        x.writeE (e.attrib, false)
+        x.writeV (v.content, false)
+        x.writeV (v1.content, false)
         wait()
       }
     }
@@ -1785,7 +1632,7 @@ func (x *graph) Isolate() {
   }
 }
 
-func (x *graph) IsolateAct() {
+func (x *graph) IsolateSub() {
   x.Isolate()
 // only exactly those vertices in the actual subgraph, that
 // are contained in the strong connection component of the local vertex:
@@ -1798,6 +1645,196 @@ func (x *graph) IsolateAct() {
   }
 }
 
+// Returns true, iff every vertex of x is accessible from every other one by a path.
+func (x *graph) totallyConnected() bool {
+  if x.nVertices <= 1 {
+    return true
+  }
+  if x.directed {
+    x.Isolate()
+  } else {
+    x.dfs()
+  }
+  v := x.vAnchor.nextV
+  e0 := v.repr
+  for v != x.vAnchor {
+    if v.repr != e0 {
+      return false
+    }
+    v = v.nextV
+  }
+  return true
+}
+
+func existsnb (s []*neighbour, p Pred) (*neighbour, bool) {
+  for _, a := range s {
+    if p (a) {
+      return a, true
+    }
+  }
+  return nil, false
+}
+
+func notTraversedNeighbour (v *vertex) *neighbour {
+  for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
+    if n.outgoing && ! n.edgePtr.inSubgraph {
+      return n
+    }
+  }
+  return nil
+}
+
+func notTraversed (a Any) bool {
+  return notTraversedNeighbour (a.(*neighbour).from) != nil
+}
+
+func (x *graph) Euler() bool {
+  if ! x.totallyConnected() {
+    return false // TODO Fleury's algorithm
+  }
+  p := x.colocal
+  a := x.local
+  x.colocal = x.vAnchor
+  x.local = x.vAnchor
+  e := uint(0)
+  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
+// check for existence of Euler cycles (iff graph
+// not directed:
+//   if each vertex has an even number of neighbours,
+// directed:
+//   if at any vertex the number of outgoing edges is equal to the number of incoming ones)
+// or of Euler paths (iff graph
+// not directed:
+//   if there are exactly two vertices with odd number of neighbours,
+// directed:
+//   if exactly one vertex has one more outgoing than incoming edges
+//   and exactly one vertex has one more incoming than outgoint edges)
+    z := uint(0)
+    z1 := uint(0)
+    nb := v.nbPtr.nextNb
+    for nb != v.nbPtr {
+      if nb.outgoing {
+        z++
+      } else {
+        z1++
+      }
+      nb = nb.nextNb
+    }
+    if x.directed {
+      if z == z1 + 1 {
+        if x.colocal == x.vAnchor {
+          x.colocal = v
+          e++
+        } else {
+          x.colocal = p
+          x.local = a
+          return false
+        }
+      } else if z1 == z + 1 {
+        if x.local == x.vAnchor {
+          x.local = v
+          e++
+        } else {
+          x.colocal = p
+          x.local = a
+          return false
+        }
+      }
+    } else { // ! x.directed
+      if z % 2 == 1 {
+        if x.colocal == x.vAnchor {
+          x.colocal = v
+        } else if x.local == x.vAnchor {
+          x.local = v
+        } else {
+          x.colocal = p
+          x.local = a
+          return false
+        }
+        e++
+      }
+    }
+  }
+  switch e {
+  case 0: // Euler cycle with random starting vertex
+    x.colocal = x.vAnchor.nextV
+    n := rand.Natural (uint(x.nVertices))
+    for n > 0 {
+      x.colocal = x.colocal.nextV
+      n--
+    }
+    x.local = x.colocal
+  case 1:
+    x.colocal = p
+    x.local = a
+    return false
+  case 2: // Euler path from colocal to local vertex
+    ;
+  default:
+    ker.Shit()
+  }
+  x.ClrSub()
+  x.eulerPath = nil
+  x.colocal.inSubgraph = true
+  v := x.colocal
+  v.inSubgraph = true
+//  for j := 0; j <= 9; j** { for a := false TO true { writeE (E.content, a); ker.Msleep (100) } }
+// attempt, to find an Euler path/cycle "by good luck":
+  var nb *neighbour
+  for {
+    nb = notTraversedNeighbour (v)
+    if nb == nil { ker.Oops() }
+    // writeE (N.edgePtr.content, true)
+    //  for j := 0; j <= 9; j++ { for a := false; a <= true; a++ { writVe (N.to.content, a); ker.Msleep (100) } } };
+    nb.edgePtr.inSubgraph = true
+    v = nb.to
+    v.inSubgraph = true
+    x.eulerPath = append (x.eulerPath, nb)
+    if v == x.local { break }
+  }
+// errh.Error0("erster Wegabschnitt gefunden");
+// as long there are edges not yet traversed,
+// look for vertices in the Euler path, from which such edges go out,
+// and find more cycles starting there and insert them into the Euler path:
+  for {
+    nb, ok := existsnb (x.eulerPath, notTraversed)
+    if ! ok { break }
+    // for j := 0; j <= 9; j++ { for a := false; a <= true; a++ { // nonsense
+    //   x.writeE (nb.edgePtr.content, a); ker.Msleep (100) } }
+    v = nb.from
+    v1 := v
+    for {
+      nb = notTraversedNeighbour (v)
+      if nb == nil { ker.Oops() }
+    // writeE (N.edgePtr.content, true)
+    // for j := 0 TO 9 { for a := false TO true { writeV (N.to.content, a); ker.Msleep (100) } }
+      nb.edgePtr.inSubgraph = true
+      v = nb.to
+      v.inSubgraph = true
+      x.eulerPath = append (x.eulerPath, nb)
+      if v == v1 { break } // found one mor cycle
+    // errh.Error0("weiterer Teil eines Eulerwegs gefunden")
+    }
+  }
+  if x.demo [Euler] {
+    x.writeV (x.colocal.content, true)
+    wait()
+    for i := uint(0); i < uint(len (x.eulerPath)); i++ {
+      nb = x.eulerPath[i]
+      x.writeE (nb.edgePtr.attrib, true)
+      if nb.edgePtr.nbPtr0 == nb {
+        x.writeV (nb.edgePtr.nbPtr1.from.content, true)
+      } else {
+        x.writeV (nb.edgePtr.nbPtr0.from.content, true)
+      }
+      if i + 1 < uint(len (x.eulerPath)) {
+        wait()
+      }
+    }
+  }
+  return true
+}
+
 func (x *graph) Equiv() bool {
   if x.Empty() {
     return false
@@ -1807,19 +1844,15 @@ func (x *graph) Equiv() bool {
 }
 
 func (x *graph) Codelen() uint {
-  c := uint(1)
-  c += 4
+  c := uint(1) + 4
   if x.nVertices > 0 {
     for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-      c += 4 + Codelen (v.content)
+      c += 4 + Codelen(v.content) + 1
     }
     c += 3 * 4
     if x.nEdges > 0 {
       for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-        if x.eAnchor.attrib != nil {
-          c += 4 + Codelen (e.attrib)
-        }
-        c += 2 * (4 + Codelen (true))
+        c += 4 + Codelen(e.attrib) + 1 + 2 * (4 + 1)
       }
     }
   }
@@ -1828,18 +1861,18 @@ func (x *graph) Codelen() uint {
 
 func (x *graph) Encode() []byte {
   bs := make ([]byte, x.Codelen())
-  i, a := uint32(0), uint32(1)
-  bs[i] = 0; if x.directed { bs[i] = 1}
-  i += a
-  a = 4
+  bs[0] = 0; if x.directed { bs[0] = 1 }
+  i, a := uint32(1), uint32(4)
   copy (bs[i:i+a], Encode (x.nVertices))
-  i += a
   if x.nVertices == 0 { return bs }
+  i += a
   z := uint32(0)
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     k := uint32(Codelen (v.content))
     copy (bs[i:i+a], Encode (k))
     i += a
+    bs[i] = 0; if v.inSubgraph { bs[i] = 1 }
+    i++
     copy (bs[i:i+k], Encode (v.content))
     i += k
     v.dist = z
@@ -1850,44 +1883,58 @@ func (x *graph) Encode() []byte {
   copy (bs[i:i+a], Encode (x.local.dist))
   i += a
   copy (bs[i:i+a], Encode (x.nEdges))
-  i += a
   if x.nEdges == 0 { return bs }
-  b := uint32(Codelen (true))
+  i += a
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    if x.eAnchor.attrib != nil {
-      k := uint32(Codelen (e.attrib))
-      copy (bs[i:i+a], Encode (k))
-      i += a
-      copy (bs[i:i+k], Encode (e.attrib))
-      i += k
-    }
+    if x.eAnchor.attrib == nil { ker.Oops() }
+    k := uint32(Codelen (e.attrib))
+    copy (bs[i:i+a], Encode (k))
+    i += a
+    copy (bs[i:i+k], Encode (e.attrib))
+    i += k
+    bs[i] = 0; if e.inSubgraph { bs[i] = 1 }
+    i++
     copy (bs[i:i+a], Encode (e.nbPtr0.from.dist))
     i += a
-    copy (bs[i:i+b], Encode (e.nbPtr0.forward))
-    i += b
+    bs[i] = 0; if e.nbPtr0.outgoing { bs[i] = 1 }
+    i++
     copy (bs[i:i+a], Encode (e.nbPtr1.from.dist))
     i += a
-    copy (bs[i:i+b], Encode (e.nbPtr1.forward))
-    i += b
+    bs[i] = 0; if e.nbPtr1.outgoing { bs[i] = 1 }
+    i++
   }
   return bs
 }
 
+func (x *graph) check (s string, i, a uint32, bs []byte) {
+  n := uint32(len(bs))
+  if i >= n {
+    errh.Error2(s + ": i =", uint(i), ">= len(bs) =", uint(n))
+    as := bs[i:i+a]
+    m := uint32(len(as))
+    if m != a {
+      errh.Error2("a =", uint(a), "!= len =", uint(m))
+    }
+  }
+}
+
 func (x *graph) Decode (bs []byte) {
-  i, a := uint32(0), uint32(1)
+  if len(bs) == 0 { panic("gra.Decode: len(bs) == 0") }
+  x.Clr()
   x.directed = bs[0] == 1
-  i += a
-  a = 4
+  i, a := uint32(1), uint32(4)
   x.nVertices = Decode (uint32(0), bs[i:i+a]).(uint32)
-  i += a
   if x.nVertices == 0 {
     return
   }
+  i += a
   for n := uint32(0); n < x.nVertices; n++ {
     k := Decode (uint32(0), bs[i:i+a]).(uint32)
     i += a
-    cont := Decode (Clone (x.vAnchor.content), bs[i:i+k])
-    x.insertedNode (cont)
+    inSubgraph := bs[i] == 1
+    i++
+    content := Decode (x.vAnchor.content, bs[i:i+k])
+    x.insertedVertex (content, inSubgraph)
     i += k
   }
   p := Decode (uint32(0), bs[i:i+a]).(uint32)
@@ -1901,57 +1948,46 @@ func (x *graph) Decode (bs []byte) {
     if z == c {
       x.local = v
     }
-    v.inSubgraph = false
   }
   x.nEdges = Decode (uint32(0), bs[i:i+a]).(uint32)
+  if x.nEdges == 0 {
+    return
+  }
   i += a
-  if x.nEdges == 0 { return }
-  b := uint32(Codelen (true))
   for z := uint32(0); z < x.nEdges; z++ {
-    e := newEdge()
-    if x.eAnchor.attrib == nil {
-      e.attrib = nil
-    } else {
-      k := Decode (uint32(0), bs[i:i+a]).(uint32)
-      i += a
-      e.attrib = Decode (Clone (x.eAnchor.attrib), bs[i:i+k])
-      i += k
-    }
-    z1 := Decode (uint32(0), bs[i:i+a]).(uint32)
-    if z1 > x.nVertices { ker.Stop (pack, 13) }
+    k := Decode (uint32(0), bs[i:i+a]).(uint32)
+    i += a
+    attrib := Decode (x.eAnchor.attrib, bs[i:i+k])
+    e := newEdge (attrib)
+    i += k
+    e.inSubgraph = bs[i] == 1
+    i++
+    fromdist := Decode (uint32(0), bs[i:i+a]).(uint32)
     i += a
     v0 := x.vAnchor.nextV
-    for z1 > 0 {
+    for fromdist > 0 {
       v0 = v0.nextV
-      z1--
+      fromdist--
     }
-    bo := Decode (true, bs[i:i+b]).(bool)
-    i += b
-    e.nbPtr0 = newNeighbour (e, v0, nil, bo) // e.nbPtr0.to see below
+    e.nbPtr0 = newNeighbour (e, v0, nil, bs[i] == 1) // e.nbPtr0.to see below
+    i++
     insertNeighbour (e.nbPtr0, v0)
-    z1 = Decode (uint32(0), bs[i:i+a]).(uint32)
-/*
-    if z1 > x.nVertices { ker.Panic ("nVertices == " + strconv.Itoa(int(x.nVertices)) +
-                                  " but z1 ==" + strconv.Itoa(int(z1))) }
-*/
+    fromdist = Decode (uint32(0), bs[i:i+a]).(uint32)
     i += a
     v0 = x.vAnchor.nextV
-    for z1 > 0 {
+    for fromdist > 0 {
       v0 = v0.nextV
-      z1--
+      fromdist--
     }
     e.nbPtr0.to = v0
-    bo = Decode (true, bs[i:i+b]).(bool)
-    i += b
-    d := e.nbPtr0.forward != bo
+    dir := bs[i] == 1
+    i++
+    d := e.nbPtr0.outgoing != dir
     if d != x.directed {
-      s0, s1 := "decoded Graph is", " directed"
-      s := s0 + s1; if x.directed { s = s0 + "not " + s1 }
-      ker.Panic (s)
+      s := "decoded Graph is "; if x.directed { s += "not " }; ker.Panic(s + "directed")
     }
-    e.nbPtr1 = newNeighbour (e, v0, e.nbPtr0.from, bo)
+    e.nbPtr1 = newNeighbour (e, v0, e.nbPtr0.from, dir)
     insertNeighbour (e.nbPtr1, v0)
-    e.inSubgraph = false
     e.nextE = x.eAnchor
     e.prevE = x.eAnchor.prevE
     e.prevE.nextE = e
@@ -1964,12 +2000,24 @@ func (x *graph) Decode (bs []byte) {
 func (x *graph) Add (Ys ...Graph) {
   for _, Y := range Ys {
     y := x.imp(Y)
-    y.Trav (func (n Any) { if ! x.Ex(n) { x.Ins (n) } })
+    if y.directed != x.directed { ker.Oops() }
+    for v := y.vAnchor.nextV; v != y.vAnchor; v = v.nextV {
+      if x.Ex (v.content) && ! x.local.inSubgraph {
+        x.local.inSubgraph = v.inSubgraph
+      } else {
+        x.insSub (v.content, v.inSubgraph)
+      }
+    }
     for e := y.eAnchor.nextE; e != y.eAnchor; e = e.nextE {
       if x.Ex2 (e.nbPtr0.from.content, e.nbPtr1.from.content) {
-//        if ! x.Ex1 (e.attrib) {
-        if connection (x.local, x.colocal) == nil {
-          x.Edge1 (e.attrib)
+        e1 := x.connection (x.colocal, x.local)
+        e2 := x.connection (x.local, x.colocal)
+        if e1 == nil && e1 == nil {
+          x.edgeSub (e.attrib, e.inSubgraph)
+        } else if e1 != nil && ! e1.inSubgraph { // x.colacal already connected with x.local
+          e1.inSubgraph = e.inSubgraph
+        } else if e2 != nil && ! e2.inSubgraph {
+          e2.inSubgraph = e.inSubgraph
         }
       }
     }
@@ -1981,6 +2029,15 @@ func (x *graph) SetDemo (d Demo) {
   if d == Cycle { x.demo[Depth] = true } // Cycle without Depth is pointless
 }
 
-func (x *graph) Install (o CondOp, o3 CondOp3) {
-  x.write, x.write3 = o, o3
+func (x *graph) SetWrite (wv, we CondOp) {
+  x.writeV, x.writeE = wv, we
+}
+
+func (x *graph) Writes() (CondOp, CondOp) {
+  return x.writeV, x.writeE
+}
+
+func (x *graph) Write() {
+  x.Trav1Cond (x.writeE)
+  x.TravCond (x.writeV)
 }

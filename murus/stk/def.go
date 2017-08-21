@@ -1,6 +1,6 @@
 package stk
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170316 - license see murus.go
 
 import
   . "murus/obj"
@@ -25,6 +25,6 @@ type
 // on top of x. x is not changed.
   Top() Any
 }
-// Pre:
+
 // Returns a new empty stack for objects of type a.
-func New(a Any) Stack { return newStk(a) }
+func New(a Any) Stack { return new_(a) }

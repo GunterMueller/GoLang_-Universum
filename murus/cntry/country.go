@@ -1,12 +1,18 @@
 package cntry
 
-// (c) murus.org  v. 170107 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/str"
+  . "murus/obj"
+  "murus/str"
   "murus/kbd"
-  "murus/col"; "murus/scr"; "murus/box"; "murus/errh"; "murus/nat"
-  "murus/font"; "murus/pbox"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/errh"
+  "murus/nat"
+  "murus/font"
+  "murus/pbox"
   "murus/sel"
 )
 const
@@ -76,18 +82,18 @@ var (
   list []attribut
 )
 
+func new_() Country {
+  x := new(country)
+  x.Clr()
+  x.Format = Long
+  x.cF, x.cB = scr.StartCols()
+  return x
+}
+
 func (x *country) imp (Y Any) *country {
   y, ok := Y.(*country)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
-}
-
-func newCntry() Country {
-  x := new(country)
-  x.Clr()
-  x.Format = Long
-  x.cF, x.cB = col.StartCols()
-  return x
 }
 
 func (x *country) InContinent (c Continent) bool {
@@ -139,7 +145,7 @@ func (x *country) Copy (Y Any) {
 }
 
 func (x *country) Clone() Any {
-  y := newCntry()
+  y := new_()
   y.Copy(x)
   return y
 }

@@ -5,6 +5,6 @@ package ker
 import
   . "runtime"
 
-func init () {
+func init() {
   GOMAXPROCS (NumCPU())
 }

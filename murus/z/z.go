@@ -1,28 +1,40 @@
 package z
 
-// (c) murus.org  v. 150121 - license see murus.go
+// (c) murus.org  v. 170204 - license see murus.go
 
-const (
-  _b = byte('b'); _B = byte('B')
-  _e = byte('e'); _E = byte('E')
-  _i = byte('i'); _I = byte('I')
-  _o = byte('o'); _O = byte('O')
-  _u = byte('u'); _U = byte('U')
-  delta = _a - _A
-)
+const
+  delta = 'a' - 'A'
+
+func init() {
+  ord := []byte(" 0123456789Aa  BbCcDdEeFfGgHhIiJjKkLlMmNnOo  PpQqRrSs TtUu  VvWwXxYyZz")
+//                           ÄAe                            ÖOe        ß    ÜUe
+//              0         1         2         3         4         5         6
+//              0123456789012345678901234567890123456789012345678901234567890123456789
+  ord[13] = Ä
+  ord[14] = Ae
+  ord[43] = Ö
+  ord[44] = Oe
+  ord[53] = Sz
+  ord[58] = Ü
+  ord[59] = Ue
+  for b := byte(0); b < byte(len (ord)); b++ {
+    nr[b] = b
+    in[b] = true
+  }
+}
 
 func isLatin1 (b byte) bool {
   switch b {
   case
-    AE, OE, UE, Ae, Oe, Ue, Sz, Euro, Para, Degree, ToThe2, ToThe3, Mue, Copyright: // ,
-    // Registered, Pound, Female, Male, PlusMinus, Times, Division, Negate:
+    Ä, Ö, Ü, Ae, Oe, Ue, Sz, Euro, Cent, Pound, Paragraph, Degree, Copyright, Registered,
+    Mue, PlusMinus, Times, Division, Dot, Negate, ToThe1, ToThe2, ToThe3, Female, Male:
     return true
   }
   return false
 }
 
-func string_(b byte) string {
-  s:= make ([]byte, 1)
+func str (b byte) string {
+  s := make ([]byte, 1)
   s[0] = b
   return string(s)
 }
@@ -37,25 +49,25 @@ func isLowerUmlaut (b byte) bool {
 
 func isCapUmlaut (b byte) bool {
   switch b {
-  case AE, OE, UE:
+  case Ä, Ö, Ü:
     return true
   }
   return false
 }
 
 func opensHell (b byte) bool {
-  return b == byte(194) ||
-         b == byte(195)
+  return b == byte(0xc2) ||
+         b == byte(0xc3)
 }
 
 func devilsDung (s *string) bool {
-  n:= len (*s)
+  n := len (*s)
   if n == 0 {
     return false
   }
-  for i:= 0; i < n; i++ {
+  for i := 0; i < n; i++ {
     switch (*s)[i] {
-    case 194, 195:
+    case 0xc2, 0xc3:
       return true
     }
   }
@@ -63,17 +75,18 @@ func devilsDung (s *string) bool {
 }
 
 func toHellWithUTF8 (s *string) {
-  n:= len (*s)
+  n := len (*s)
   if n == 0 { return }
-  bs:= []byte(*s)
-  i, k:= 0, 0
+  bs := []byte(*s)
+  i, k := 0, 0
   var b byte
   for i < n {
     b = bs[i]
-    switch b { case 194:
+    switch b {
+    case 0xc2:
       i++
       b = bs[i]
-    case 195:
+    case 0xc3:
       i++
       b = bs[i] + 64
     }
@@ -89,9 +102,10 @@ func toHellWithUTF8 (s *string) {
 }
 
 func Equiv (a, b byte) bool {
-  switch { case a < _A:
+  switch {
+  case a < 'A':
     return a == b
-  case a <= _Z, _a <= a && a <= _z, a == AE, a == OE, a == UE, a == Ae, a == Oe, a == Ue:
+  case a <= 'Z', 'a' <= a && a <= 'z', a == Ä, a == Ö, a == Ü, a == Ae, a == Oe, a == Ue:
     // see below
   default:
     return a == b
@@ -101,29 +115,37 @@ func Equiv (a, b byte) bool {
 
 func cap (b byte) byte {
   switch b {
-  case Ae:
-    return AE
-  case Oe:
-    return OE
-  case Ue:
-    return UE
+  case Ae, Oe, Ue:
+    return b - 32
   }
-  if _a <= b && b <= _z {
+  if 'a' <= b && b <= 'z' {
     return b - delta
   }
   return b
 }
 
+func isCapLetter (b byte) bool {
+  return 'A' <= b && b <= 'Z' || isCapUmlaut(b)
+}
+
+func isLowerLetter (b byte) bool {
+  return 'a' <= b && b <= 'z' || isLowerUmlaut(b)
+}
+
+func isLetter (b byte) bool {
+  return isCapLetter(b) || IsLowerLetter(b)
+}
+
+func isDigit (b byte) bool {
+  return '0' <= b && b <= '9'
+}
+
 func lower (b byte) byte {
   switch b {
-  case AE:
-    return Ae
-  case OE:
-    return Oe
-  case UE:
-    return Ue
+  case Ä, Ö, Ü:
+    return b + 32
   }
-  if _A <= b && b <= _Z {
+  if 'A' <= b && b <= 'Z' {
     return b + delta
   }
   return b
@@ -154,7 +176,7 @@ func Less (a, b byte) bool {
 
 func isVowel (b byte) bool {
   switch b {
-  case _A, _E, _I, _O, _U, _a, _e, _i, _o, _u, AE, OE, UE, Ae, Oe, Ue:
+  case 'A', 'E', 'I', 'O', 'U', 'a', 'e', 'i', 'o', 'u', Ä, Ö, Ü, Ae, Oe, Ue:
     return true
   }
   return false
@@ -164,7 +186,7 @@ func isConsonant (b byte) bool {
   if isVowel (b) {
     return false
   }
-  if _B <= b && b <= _Z || _b <= b && b <= _z || b == Sz {
+  if 'B' <= b && b <= 'Z' || 'b' <= b && b <= 'z' || b == Sz {
     return true
   }
   return false
@@ -172,11 +194,11 @@ func isConsonant (b byte) bool {
 
 func postscript (b byte) string {
   switch b {
-  case AE:
+  case Ä:
     return "Adieresis"
-  case OE:
+  case Ö:
     return "Odieresis"
-  case UE:
+  case Ü:
     return "Udieresis"
   case Ae:
     return "adieresis"
@@ -187,15 +209,11 @@ func postscript (b byte) string {
   case Sz:
     return "germandbls"
   case Euro:
-    return "Euro"
-  case Para:
-    return "section"
-  case Degree:
-    return "degree"
+    return "euro"
 /*
-  case ToThe2:
+  case toThe2:
     return ""
-  case ToThe3:
+  case toThe3:
     return ""
 */
   case Mue:
@@ -203,41 +221,23 @@ func postscript (b byte) string {
   case Copyright:
     return "copyright"
 /*
-  case Registered:
+  case registered:
     return "registered"
-  case Pound:
+  case pound:
     return "sterling"
-  case Female:
+  case female:
     return ""
-  case Male:
+  case male:
     return ""
-  case PlusMinus:
+  case plusMinus:
     return "plusminus"
-  case Times:
+  case times:
     return "multiply"
-  case Division:
+  case division:
     return ""
-  case Negate:
+  case negate:
     return ""
 */
   }
   return ""
-}
-
-func init() {
-  ord:= []byte(" 0123456789Aa  BbCcDdEeFfGgHhIiJjKkLlMmNnOo  PpQqRrSs TtUu  VvWwXxYyZz")
-//                           Ää                            Öö        ß    Üü
-//              0         1         2         3         4         5         6
-//              0123456789012345678901234567890123456789012345678901234567890123456789
-  ord[13] = AE
-  ord[14] = Ae
-  ord[43] = OE
-  ord[44] = Oe
-  ord[53] = Sz
-  ord[58] = UE
-  ord[59] = Ue
-  for b:= byte(0); b < byte(len (ord)); b++ {
-    nr[b] = b
-    in[b] = true
-  }
 }

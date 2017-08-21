@@ -1,6 +1,6 @@
 package barr
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170410 - license see murus.go
 
 // >>> implementation with semaphores
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 102
@@ -9,18 +9,16 @@ import
   "murus/sem"
 type
   barrier struct {
-        involved,
+                 uint "number of involved processes"
          waiting uint
            mutex,
                s sem.Semaphore
                  }
 
-func New (n uint) Barrier {
-  if n < 2 {
-    return nil
-  }
-  x:= new (barrier)
-  x.involved = n
+func new_(m uint) Barrier {
+  if m < 2 { return nil } // panic ?
+  x := new(barrier)
+  x.uint = m
   x.mutex = sem.New(1)
   x.s = sem.New(0)
   return x
@@ -29,7 +27,7 @@ func New (n uint) Barrier {
 func (x *barrier) Wait() {
   x.mutex.P()
   x.waiting++
-  if x.waiting < x.involved {
+  if x.waiting < x.uint {
     x.mutex.V()
     x.s.P()
     // x.mutex ist übernommen

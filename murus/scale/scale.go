@@ -4,7 +4,8 @@ package scale
 
 import (
   "math"
-  "murus/kbd"; "murus/scr"
+  "murus/kbd"
+  "murus/scr"
 )
 const (
   minInt = int(math.MinInt32)

@@ -5,7 +5,8 @@ package pos
 import (
   "math"
   . "murus/obj"
-  "murus/col"; "murus/scr"
+  "murus/col"
+  "murus/scr"
 //  "murus/errh"
 //  "murus/str"
 //  "murus/integ"
@@ -19,7 +20,7 @@ type
              f, b col.Colour
                   }
 
-func newPos (w, h uint) Position {
+func new_(w, h uint) Position {
   x := new(position)
   x.x, x.y = inf, inf
   x.w, x.h = uint8 (w % (1<<8)), uint8(h % (1<<8))
@@ -80,7 +81,7 @@ func (x *position) Less (Y Any) bool {
 }
 
 func (x *position) Clone() Any {
-  y := newPos (uint(x.w), uint(x.h))
+  y := new_(uint(x.w), uint(x.h))
   y.Copy (x)
   return y
 }

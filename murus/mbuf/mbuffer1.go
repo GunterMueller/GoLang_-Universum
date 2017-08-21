@@ -1,10 +1,12 @@
 package mbuf
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170218 - license see murus.go
 
 import (
   "sync"
-  . "murus/obj"; "murus/buf"
+  "murus/ker"
+  . "murus/obj"
+  "murus/buf"
 )
 type
   mbuffer1 struct {
@@ -12,9 +14,9 @@ type
                   sync.Mutex
                   }
 
-func New1 (a Any, n uint) MBuffer {
-  if a == nil || n == 0 { panic ("mbuf.New with param nil or 0") }
-  x:= new (mbuffer1)
+func new1 (a Any, n uint) MBuffer {
+  if a == nil || n == 0 { ker.Panic ("mbuf.New1 with param nil or 0") }
+  x := new (mbuffer1)
   x.Buffer = buf.New (a, n)
   return x
 }

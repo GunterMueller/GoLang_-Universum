@@ -1,10 +1,14 @@
 package piset
 
-// (c) murus.org  v. 150514 - license see murus.go
+// (c) murus.org  v. 170424 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/ker"; "murus/str"
-  "murus/pseq"; "murus/qu"; "murus/set"
+  . "murus/obj"
+  "murus/ker"
+  "murus/str"
+  "murus/pseq"
+  "murus/qu"
+  "murus/set"
   "murus/piset/internal"
 )
 const
@@ -19,7 +23,7 @@ type
                               qu.Queue "position pool"
                               }
 
-func newPiset(o Object, f Func) PersistentIndexedSet {
+func new_(o Object, f Func) PersistentIndexedSet {
   x:= new (persistentIndexedSet)
   x.Object = o.Clone().(Object)
   x.PersistentSequence = pseq.New (x.Object)
@@ -101,7 +105,7 @@ func (x *persistentIndexedSet) Num() uint {
 
 func (x *persistentIndexedSet) NumPred (p Pred) uint {
   n:= uint(0)
-  x.TravPred (p, func (a Any) { n++ })
+  x.Trav (PredOp2Op(p, func (a Any) { n++ }))
   return n
 }
 
@@ -272,46 +276,6 @@ func (x *persistentIndexedSet) Trav (op Op) {
       first = false
     } else {
       if ! x.leq (former, x.Object) { ker.Panic ("Pre of Trav not met: op is not monotone") }
-    }
-    former = x.Object.Clone().(Object)
-  })
-  x.Jump (false)
-}
-
-func (x *persistentIndexedSet) TravPred (p Pred, op Op) {
-  if x.Set.Empty() { return }
-  first:= true
-  var former Object
-  x.Set.Trav (func (a Any) {
-    x.PersistentSequence.Seek (a.(internal.Index).Pos())
-    x.Object = x.PersistentSequence.Get().(Object)
-    old:= x.Object.Clone().(Object)
-    if p (x.Object) { op (x.Object) }
-    if ! x.Object.Eq (old) { x.PersistentSequence.Put (x.Object) }
-    if first {
-      first = false
-    } else {
-      if ! x.leq (former, x.Object) { ker.Panic ("Pre of TravPred not met: op is not monotone") }
-    }
-    former = x.Object.Clone().(Object)
-  })
-  x.Jump (false)
-}
-
-func (x *persistentIndexedSet) TravCond (p Pred, op CondOp) {
-  if x.Set.Empty() { return }
-  first:= true
-  var former Object
-  x.Set.Trav (func (a Any) {
-    x.PersistentSequence.Seek (a.(internal.Index).Pos())
-    x.Object = x.PersistentSequence.Get().(Object)
-    old:= x.Object.Clone().(Object)
-    op (x.Object, p (x.Object))
-    if ! x.Object.Eq (old) { x.PersistentSequence.Put (x.Object) }
-    if first {
-      first = false
-    } else {
-      if ! x.leq (former, x.Object) { ker.Panic ("Pre of TravCond not met: op is not monotone") }
     }
     former = x.Object.Clone().(Object)
   })

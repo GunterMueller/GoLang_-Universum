@@ -3,8 +3,13 @@ package audio
 // (c) murus.org  v. 161216 - license see murus.go
 
 import (
-  . "murus/obj"; "murus/col"; "murus/enum"; "murus/text";
-  "murus/masks"; "murus/atom"; "murus/mol"
+  . "murus/obj"
+  "murus/col"
+  "murus/enum"
+  "murus/text"
+  "murus/masks"
+  "murus/atom"
+  "murus/mol"
 )
 const (
   lenWerk = 25
@@ -22,7 +27,7 @@ func (x *audio) imp (Y Any) mol.Molecule {
   return y.Molecule
 }
 
-func newAudio() Audio {
+func new_() Audio {
   x := new (audio)
   x.Molecule = mol.New()
   a := atom.New (enum.New (enum.Composer))
@@ -74,7 +79,7 @@ func (x *audio) Copy (Y Any) {
 }
 
 func (x *audio) Clone() Any {
-  y := newAudio()
+  y := new_()
   y.Copy (x)
   return y
 }

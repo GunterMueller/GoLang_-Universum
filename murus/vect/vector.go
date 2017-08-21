@@ -1,12 +1,18 @@
 package vect
 
-// (c) murus.org  v. 170107 - license see murus.go
+// (c) murus.org  v. 170418 - license see murus.go
 
 import (
-  "math"; "strconv"
-  . "murus/spc"; . "murus/obj"; "murus/str"
-  "murus/col"; "murus/box"; "murus/errh"
-  "murus/font"; "murus/pbox"
+  "math"
+  "strconv"
+  . "murus/spc"
+  . "murus/obj"
+  "murus/str"
+  "murus/col"
+  "murus/box"
+  "murus/errh"
+  "murus/font"
+  "murus/pbox"
 )
 const (
   um = math.Pi / 180.0
@@ -17,12 +23,12 @@ type
               x [NDirs]float64
                 }
 var (
-  temp, temp1 = New().(*vector), New().(*vector)
+  temp, temp1 = new_().(*vector), new_().(*vector)
   bx = box.New()
   pbx = pbox.New()
 )
 
-func newVect() Vector {
+func new_() Vector {
   return new(vector)
 }
 
@@ -32,26 +38,26 @@ func (x *vector) imp (Y Any) *vector {
   return y
 }
 
-func New3 (x0, x1, x2 float64) Vector {
+func new3 (x0, x1, x2 float64) Vector {
   return &vector { Coord { x0, x1, x2 } }
 }
 
-func (x *vector) Set3 (x0, x1, x2 float64) {
-  x.x[Right], x.x[Front], x.x[Top] = x0, x1, x2
+func (v *vector) Set3 (x0, x1, x2 float64) {
+  v.x = [NDirs]float64 {x0, x1, x2}
 }
 
-func (x *vector) Set (c Coord) {
+func (v *vector) Set (c Coord) {
   for d := D0; d < NDirs; d++ {
-    x.x[d] = c[d]
+    v.x[d] = c[d]
   }
 }
 
-func (x *vector) Coord3() (float64, float64, float64) {
-  return x.x[Right], x.x[Front], x.x[Top]
+func (v *vector) Coord3() (float64, float64, float64) {
+  return v.x[Right], v.x[Front], v.x[Top]
 }
 
-func (x *vector) Coord (d Direction) float64 {
-  return x.x[d]
+func (v *vector) Coord (d Direction) float64 {
+  return v.x[d]
 }
 
 func (v *vector) SetPolar (x, y, z, r, phi, theta float64) {
@@ -60,35 +66,35 @@ func (v *vector) SetPolar (x, y, z, r, phi, theta float64) {
   v.x[Top]   = z + r                       * math.Cos (theta * um)
 }
 
-func (x *vector) Project (A, B, C Vector) {
-  a, b, c := x.imp (A), x.imp (B), x.imp (C)
+func (v *vector) Project (A, B, C Vector) {
+  a, b, c := v.imp(A), v.imp(B), v.imp(C)
   for d := D0; d < NDirs; d++ {
     a.x[d], b.x[d], c.x[d] = null, null, null
   }
-  a.x[Right], b.x[Front], c.x[Top] = x.x[Right], x.x[Front], x.x[Top]
+  a.x[Right], b.x[Front], c.x[Top] = v.x[Right], v.x[Front], v.x[Top]
 }
 
-func (x *vector) Empty() bool {
+func (v *vector) Empty() bool {
   a := null
   for d := D0; d < NDirs; d++ {
-    a += math.Abs (x.x[d])
+    a += math.Abs (v.x[d])
   }
   return a < epsilon
 }
 
-func (x *vector) Clr() {
-  x.Set3 (null, null, null)
+func (v *vector) Clr() {
+  v.Set3 (null, null, null)
 }
 
 func (x *vector) Copy (Y Any) {
-  y := x.imp (Y)
+  y := x.imp(Y)
   for d := D0; d < NDirs; d++ {
     x.x[d] = y.x[d]
   }
 }
 
 func (x *vector) Clone() Any {
-  y := newVect()
+  y := new_()
   y.Copy (x)
   return y
 }
@@ -145,12 +151,17 @@ func (x *vector) Collinear (Y Vector) bool {
 
 // >>> deprecated !!!
 func (x *vector) Scale (a float64, Y Vector) {
-  y := Y.(*vector)
+  y := x.imp (Y)
   for d := D0; d < NDirs; d++ {
     x.x[d] = a * y.x[d]
   }
 }
 
+func (x *vector) Translate (a float64) {
+  for d := D0; d < NDirs; d++ {
+    x.x[d] += a
+  }
+}
 func (x *vector) Dilate (a float64) { // TODO name ?
   for d := D0; d < NDirs; d++ {
     x.x[d] *= a
@@ -161,22 +172,30 @@ func (x *vector) Null() bool {
   return x.Empty()
 }
 
-func (x *vector) Add (Y ...Adder) Adder {
+func (x *vector) Sum (Y, Z Adder) {
+  x.Copy (Y)
+  x.Add (Z)
+}
+
+func (x *vector) Add (Y ...Adder) {
   for _, y := range Y {
     for d := D0; d < NDirs; d++ {
       x.x[d] += x.imp(y).x[d]
     }
   }
-  return x.Clone().(Adder)
 }
 
-func (x *vector) Sub (Y ...Adder) Adder {
+func (x *vector) Diff (Y, Z Adder) {
+  x.Copy (Y)
+  x.Sub (Z)
+}
+
+func (x *vector) Sub (Y ...Adder) {
   for _, y := range Y {
     for d := D0; d < NDirs; d++ {
       x.x[d] -= x.imp(y).x[d]
     }
   }
-  return x.Clone().(Adder)
 }
 
 func (x *vector) Parametrize (Y, Z Vector, t float64) {

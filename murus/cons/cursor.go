@@ -37,7 +37,7 @@ func (x *console) doBlink() {
 }
 
 func (X *console) cursor (x, y uint, s Shape) {
-  y0, y1:= Cursor (x, y, X.ht1, X.cursorShape, s)
+  y0, y1 := Cursor (x, y, X.ht1, X.cursorShape, s)
   if y0 + y1 == 0 { return }
   X.cursorShape = s
 //  Lock() // weg ?

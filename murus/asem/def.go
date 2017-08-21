@@ -1,11 +1,14 @@
 package asem
 
-// (c) murus.org  v. 120909 - license see murus.go
+// (c) murus.org  v. 170410 - license see murus.go
 
 type
-  AddSemaphore interface { // Spec see my book, p. 99
+  AddSemaphore interface { // Specs: see my book, p. 99
 
   P (n uint)
-
   V (n uint)
 }
+
+func New (n uint) AddSemaphore { return new_(n) }
+
+func NewNaive (n uint) AddSemaphore { return newNaive (n) }

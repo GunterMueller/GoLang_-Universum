@@ -16,5 +16,6 @@ type
   SetByte (b byte)
   ByteVal() byte
 }
+
 // Returns a new empty character (= space).
-func New() Character { return newChar() }
+func New() Character { return new_() }

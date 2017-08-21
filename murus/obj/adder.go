@@ -1,29 +1,22 @@
 package obj
 
-// (c) murus.org  v. 140509 - license see murus.go
+// (c) murus.org  v. 170817 - license see murus.go
 
 type
   Adder interface {
 
-// Returns true, iff x is neutral w.r.t. addtion.
+// Returns true, iff x is neutral w.r.t. addition.
   Null() bool
 
-// x is now the sum of x before and all y's. Returns x.
-  Add (y ...Adder) Adder
+// x is now the sum of x before and all y's.
+  Add (y ...Adder)
 
-// x is now the difference of x before and the sum of all y's. Returns x.
-  Sub (y ...Adder) Adder
+// x is the sum of y and z.
+  Sum (y, z Adder)
+
+// x is now the difference of x before and the sum of all y's.
+  Sub (y ...Adder)
+
+// x is the difference of y and z.
+  Diff (y, z Adder)
 }
-
-/* TODO
-Six = Three.Sum (Four, Two)
-Six = Sum (Four, Two)
-
-Three.Mult (Four, Two) // Eight ?  or Twentyfour ?
-Three.Mult (Four) // Twelve
-Three.Times (Four, Two) // s.o.
-Three.Times (Four) // Twelve // in Go: Mult
-Three.Prod (Four, Two) Eight
-Eight = Three.Prod (Four, Two)
-Eight = Prod (Four, Two)
-*/

@@ -1,46 +1,26 @@
 package rw
 
-// (c) murus.org  v. 140615 - license see murus.go
+// (c) murus.org  v. 170731 - license see murus.go
 
 //     readers/writers problem, solution with client-server-paradigma
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 182
 
 type
   channel struct {
-         rI, rO, wI, wO,
-                   done chan int
-                        }
+  rI, rO, wI, wO,
+            done chan int
+                 }
 
-func NewChannel() ReaderWriter {
-  x:= new (channel)
+func newChan() ReaderWriter {
+  x := new (channel)
   x.rI, x.rO = make (chan int), make (chan int)
   x.wI, x.wO = make (chan int), make (chan int)
   x.done = make (chan int)
   go func() {
     var nR, nW uint // active readers, writers
+    loop:
     for {
-// if _, ok:= <-x.done; ok { break }
-/*
-      if nR == 0 {
-        if nW == 0 {
-          select { case <-x.rI:
-            nR++
-          case <-x.wI:
-            nW = 1
-          }
-        } else { // nW == 1
-          select { case <-x.wO:
-            nW = 0
-          }
-        }
-      } else { // nR > 0
-        select { case <-x.rI:
-          nR++
-        case <-x.rO:
-          nR--
-        }
-      }
-*/
+      if _, ok := <-x.done; ok { break loop }
       if nW == 0 {
         if nR == 0 {
           select {
@@ -58,7 +38,8 @@ func NewChannel() ReaderWriter {
           }
         }
       } else { // nW == 1
-        select { case <-x.wO:
+        select {
+        case <-x.wO:
           nW = 0
         }
       }

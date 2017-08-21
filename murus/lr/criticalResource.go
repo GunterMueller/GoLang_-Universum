@@ -1,6 +1,6 @@
 package lr
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 174011 - license see murus.go
 
 // >>> left/right problem: implementation with critical resources
 
@@ -11,7 +11,7 @@ type
                           cr.CriticalResource
                           }
 
-func NewCriticalResource() LeftRight {
+func newCR() LeftRight {
   const nc = 2
   x:= &criticalResource { cr.New (nc, 1) }
   m:= make ([][]uint, nc)
@@ -35,4 +35,7 @@ func (x *criticalResource) RightIn() {
 
 func (x *criticalResource) RightOut() {
   x.Leave (right)
+}
+
+func (x *criticalResource) Fin() {
 }

@@ -1,19 +1,28 @@
 package ego
 
-// (c) murus.org  v. 151110 - license see murus.go
+// (c) murus.org  v. 170424 - license see murus.go
 
 import (
-  "murus/ker"; "murus/env"
+  "murus/ker"
+  "murus/env"
   "murus/nat"
 )
 
 func ego (n uint) uint {
-  e, ok := nat.Natural (env.Par(1))
+  i, ok := nat.Natural (env.Par(1))
   if ! ok {
-    ker.Panic ("falsches Argument")
+    ker.Panic("falsches Argument")
   }
-  if e >= n {
-    ker.Panic ("zu großes Argument")
+  if i >= n {
+    ker.Panic("zu großes Argument")
   }
-  return e
+  return i
+}
+
+func me() uint {
+  i, ok := nat.Natural (env.Par(1))
+  if ! ok {
+    return uint(1 << 16)
+  }
+  return i
 }

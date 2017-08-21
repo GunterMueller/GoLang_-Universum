@@ -1,14 +1,12 @@
 package cr
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170423 - license see murus.go
 
 import (
   "murus/ker"
   . "murus/obj"
   "murus/cs"
 )
-const
-  pack = "cr"
 type (
   status struct {
             max []uint // indexed over process classes
@@ -22,7 +20,7 @@ type (
                           }
 )
 
-func newCr (nc, nr uint) CriticalResource {
+func new_(nc, nr uint) CriticalResource {
   x := new (criticalResource)
   x.nC, x.nR = nc, nr
   x.stat = make ([]status, x.nC)
@@ -62,7 +60,7 @@ func newCr (nc, nr uint) CriticalResource {
             return
           }
         }
-        ker.Panic (pack + ".New() error")
+        ker.Oops()
       }
   l := func (a Any, k uint) {
         for r := uint(0); r < x.nR; r++ {

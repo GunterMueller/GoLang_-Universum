@@ -1,6 +1,6 @@
 package lr
 
-// (c) murus.org  v. 150304 - license see murus.go
+// (c) murus.org  v. 170731 - license see murus.go
 
 // >>> left/right problem: implementation with critical sections
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 85 ff.
@@ -15,12 +15,18 @@ type
                          cs.CriticalSection
                          }
 
-func NewCriticalSection() LeftRight {
-  x:= new (criticalSection)
-  c:= func (i uint) bool { return x.n[1 - i] == 0 }
-  e:= func (a Any, i uint) { x.n[i]++ }
-  l:= func (a Any, i uint) { x.n[i]-- }
-  x.CriticalSection = cs.New (2, c, e, l)
+func newCS() LeftRight {
+  x := new (criticalSection)
+  c := func (i uint) bool { return x.n[1 - i] == 0 }
+  es := func (a Any, i uint) {
+          x.n[i]++
+          if i == left { writeL (x.n[i]) } else { writeR (x.n[i]) }
+        }
+  ls := func (a Any, i uint) {
+          x.n[i]--
+          if i == left { writeL (x.n[i]) } else { writeR (x.n[i]) }
+        }
+  x.CriticalSection = cs.New (2, c, es, ls)
   return x
 }
 
@@ -38,4 +44,7 @@ func (x *criticalSection) RightIn() {
 
 func (x *criticalSection) RightOut() {
   x.Leave (right, nil)
+}
+
+func (x *criticalSection) Fin() {
 }

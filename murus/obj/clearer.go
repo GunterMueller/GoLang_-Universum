@@ -9,8 +9,8 @@ type
 // depends on the very semantics of the type of the objects considered.
 // If that type is e.g. a collector, empty means "containing no objects"; otherwise it is
 // normally an object with undefined value, represented by strings consisting only of spaces. 
-  Empty () bool
+  Empty() bool
 
 // The calling object is empty.
-  Clr ()
+  Clr()
 }

@@ -4,7 +4,9 @@ package kbd
 
 import (
   "os"
-  "murus/ker"; "murus/mouse"; "murus/navi"
+  "murus/ker"
+  "murus/mouse"
+  "murus/navi"
 )
 var (
   keypipe chan byte
@@ -20,7 +22,7 @@ func catch() {
   for {
     ker.ReadTerminal (&b)
     switch b { // case 0:
-      // ker.Stop (pack, 1) // Fn-key combination !
+      // ker.Oops() // Fn-key combination !
     case shiftL, shiftR, shiftLock:
       shiftC = true
     case ctrlL, doofL, ctrlR:
@@ -52,7 +54,8 @@ func catch() {
           ker.Console (b - f1 + 1)
         case f11, f12:
           ker.Console (b - f11 + 11)
-        case escape, backspace, tab, enter, roll, numEnter, pos1, up, pageUp, end, down, pageDown, insert, delete:
+        case escape, backspace, tab, enter, roll, numEnter, pos1,
+             up, pageUp, end, down, pageDown, insert, delete:
           keypipe <- b
         }
       } else {
@@ -87,10 +90,10 @@ func input (b *byte, c *Comm, d *uint) {
       if ok {
         k = uint(b0)
       } else {
-        ker.Stop (pack, 1)
+        ker.Shit()
       }
     }
-//    if k == 0 { ker.Stop (pack, 3) }
+//    if k == 0 { ker.Shit() }
     k1 = k
     k = k % off
     if shiftC || ctrlC { *d ++ }
@@ -128,7 +131,7 @@ func input (b *byte, c *Comm, d *uint) {
       if k == 0 {
         // ignore
       } else {
-        ker.Stop (pack, 10000 + k)
+        ker.Panic1 ("kbd.console", 10000 + k)
       }
     }
     if k1 < off { // key pressed, not released

@@ -1,12 +1,16 @@
 package host
 
-// (c) murus.org  v. 170107 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
   "os"; "net"
-  . "murus/ker"; . "murus/obj"
+  . "murus/ker"
+  . "murus/obj"
   "murus/str"
-  "murus/col"; "murus/box"; "murus/errh"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/errh"
 )
 type
   host struct {
@@ -36,7 +40,7 @@ func new_() Host {
   x := new(host)
   x.Clr()
   x.Format = Hostname
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   return x
 }
 
@@ -98,9 +102,9 @@ func (x *host) Copy (Y Any) {
 // println (">" + x.name[i] + "<")
   }
 // println ("len x.name ==", n, "x.name[0] =", x.name[0])
-//  for i, b := range y.ip.To4() { x.ip[i] = b } // changes ip of fucking h0 - WHY THE HELL ???
+//  for i, b := range y.ip.To4() { x.ip[i] = b } // changes ip of h0 - WHY THE HELL ???
   if n > 0 {
-    if ! x.Defined(x.name[0]) { Panic("bullshit: x.name[0] = " + x.name[0] + "!") } // so geht's
+    if ! x.Defined(x.name[0]) { Panic("shit: x.name[0] = " + x.name[0] + "!") } // so geht's
   }
 }
 
@@ -171,19 +175,22 @@ func (x *host) String() string {
   return x.ip.String()
 }
 
+const
+  providerIP = "81.223.238.231" // www2.sprit.org
+
 func (x *host) Defined (s string) bool {
   str.OffSpc(&s)
   x.Clr()
   x.ip = net.ParseIP(s) // s daraufhin prüfen, ob es eine IP-Nummer ist
   if x.ip != nil {
-//    println ("host.Defined: s ist IP-Nummer mit x.ip =", x.ip.String())
+    println ("host.Defined: s ist IP-Nummer mit x.ip =", x.ip.String())
     // s ist eine IP-Nummer in der Form "a.b.c.d"
   } else { // s ist keine IP-Nummer, sondern muss auf hostname getestet werden
 //    println ("host.Defined: x.ip == nil")
     addr, err := net.LookupHost(s) // schau'mer moi, ob's oana is
     if err == nil { // mir hoam's, is oana
       s = addr[0] // ist die IP-Nummer
-//      println("host.Defined: LookupHost(s): s = addr[0] =", addr[0])
+      if s == providerIP { return false } // chock out Scheißprovider
       if s == nullIP.String() { // s == "0.0.0.0"
         x.Clr()
         return true

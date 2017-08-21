@@ -1,6 +1,6 @@
 package stk
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170316 - license see murus.go
 
 import (
   . "murus/obj"
@@ -11,7 +11,7 @@ type
                seq.Sequence
                }
 
-func newStk (a Any) Stack {
+func new_ (a Any) Stack {
   return &stack { seq.New(a) }
 }
 
@@ -19,12 +19,6 @@ func (x *stack) Push (a Any) {
   x.Sequence.Seek (0)
   x.Sequence.Ins (a)
 }
-
-/*
-func (x *stack) Empty() bool {
-  return x.Sequence.Empty ()
-}
-*/
 
 func (x *stack) Pop() {
   if x.Sequence.Empty() { return }

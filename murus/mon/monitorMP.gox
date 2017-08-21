@@ -1,0 +1,79 @@
+package mon
+
+// (c) murus.org  v. 170629 - license see murus.go
+
+// >>> diese Implementierung durch Botschaftenaustausch mit Auftragsvormerkung
+//     ist bisher noch völlig unausgegoren, aber durchaus näherer Überlegungen wert
+
+import (
+  . "murus/obj"
+  "murus/perm"
+  "murus/qu"
+)
+type (
+  pair struct {
+    c chan Any
+    a Any
+  }
+  monitorMP struct {
+    cs chan chan Any
+  }
+)
+
+func newMP (n uint, f FuncSpectrum, p PredSpectrum) Monitor {
+  q := make([]qu.Queue, n)
+  var pa pair
+  for i := uint(0); i < n; i++ {
+    q[i] = qu.New (pa)
+  }
+  x := new(monitorMP)
+  x.cs = make(chan chan Any)
+  pm := perm.New(n)
+  go func() {
+    for {
+      c := <-x.cs
+      i := (<-c).(uint)
+      a := <-c
+      if p(a, i) {
+        c <- f(a, i)
+        for j := uint(0); j < n; j++ {
+          pm.Permute()
+          k := pm.F(j)
+          if ! q[k].Empty() {
+            head := q[k].Get().(pair)
+            pa = head
+            if p(pa.a, k) {
+              pa = head
+              pa.c <- f(pa.a, k)
+            }
+          }
+        }
+      } else {
+        q[i].Ins (pair { c, a })
+      }
+    }
+  }()
+  return x
+}
+
+func (x *monitorMP) F (a Any, i uint) Any {
+  c := make(chan Any)
+  x.cs <- c
+  c <- i
+  c <- a
+  defer close(c)
+  return <-c
+}
+
+func (x *monitorMP) Wait (i uint) {
+}
+
+func (x *monitorMP) Awaited (i uint) bool {
+  return false
+}
+
+func (x *monitorMP) Signal (i uint) {
+}
+
+func (x *monitorMP) SignalAll (i uint) {
+}

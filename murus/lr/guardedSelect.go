@@ -1,6 +1,6 @@
 package lr
 
-// (c) murus.org  v. 140650 - license see murus.go
+// (c) murus.org  v. 170731 - license see murus.go
 
 // >>> left/right problem: implementation with "guarded selective waiting"
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 185 analog
@@ -13,25 +13,30 @@ type
                   done chan int
                        }
 
-func NewGuardedSelect() LeftRight {
+func newGSel() LeftRight {
   x:= new (guardedSelect)
   x.iL, x.oL = make (chan Any), make (chan Any)
   x.iR, x.oR = make (chan Any), make (chan Any)
   x.done = make (chan int)
   go func() {
     var nL, nR uint // active lefts, rights
-//    loop:
+    loop:
     for {
       select {
-//      case <-x.done: break loop
+      case <-x.done:
+        break loop
       case <-When (nR == 0, x.iL):
         nL++
+        writeL (nL)
       case <-When (nL > 0, x.oL):
         nL--
+        writeL (nL)
       case <-When (nL == 0, x.iR):
         nR++
+        writeR (nR)
       case <-When (nR > 0, x.oR):
         nR--
+        writeR (nR)
       }
     }
   }()

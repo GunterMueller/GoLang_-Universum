@@ -1,13 +1,17 @@
 package cons
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170818 - license see murus.go
 
 // >>> This package only serves the implementations of murus/mouse, 
 //     murus/kbd and murus/cons; it must not no be used elsewhere.
 
 import (
-  . "murus/linewd"; . "murus/shape"; . "murus/ptr"; . "murus/mode"
-  "murus/col"; "murus/font"
+  . "murus/linewd"
+  . "murus/shape"
+  . "murus/ptr"
+  . "murus/mode"
+  "murus/col"
+  "murus/font"
 )
 
 func MaxMode() Mode { return maxMode() }
@@ -23,6 +27,9 @@ func New (x, y uint, m Mode) Console { return newCons(x,y,m) }
 
 func NewMax() Console { return newMax() }
 
+// func StartCols() (col.Colour, col.Colour) { return startCols() }
+// func StartColsA() (col.Colour, col.Colour) { return startColsA() }
+
 type
   Console interface {
 
@@ -32,19 +39,12 @@ type
 
   Moved (x, y int) bool
 
-// modes and sizes /////////////////////////////////////////////////////
-
-  X() uint; Y() uint
-  Wd() uint; Ht() uint
-  Wd1() uint; Ht1() uint
-  NLines() uint; NColumns() uint
-
 // colours /////////////////////////////////////////////////////////////
 
-  ScrColours (f, b col.Colour); ScrColourF (f col.Colour); ScrColourB (b col.Colour)
   ScrCols() (col.Colour, col.Colour); ScrColF() col.Colour; ScrColB() col.Colour
-  Colours (f, b col.Colour); ColourF (f col.Colour); ColourB (b col.Colour)
   Cols() (col.Colour, col.Colour); ColF() col.Colour; ColB() col.Colour
+  ScrColours (f, b col.Colour); ScrColourF (f col.Colour); ScrColourB (b col.Colour)
+  Colours (f, b col.Colour); ColourF (f col.Colour); ColourB (b col.Colour)
   Colour (x, y uint) col.Colour
 
 // ranges //////////////////////////////////////////////////////////////
@@ -63,6 +63,8 @@ type
 // font ////////////////////////////////////////////////////////////////
 
   ActFontsize() font.Size; SetFontsize (f font.Size)
+  Wd1() uint; Ht1() uint
+  NLines() uint; NColumns() uint
 
 // text ////////////////////////////////////////////////////////////////
 
@@ -79,30 +81,31 @@ type
 
   Point (x, y int); PointInv (x, y int)
   Points (xs, ys []int); PointsInv (xs, ys []int)
+  OnPoint (x, y, a, b int, d uint) bool
 
   Line (x, y, x1, y1 int); LineInv (x, y, x1, y1 int)
-  OnLine (x, y, x1, y1, a, b int, t uint) bool
+  OnLine (x, y, x1, y1, a, b int, d uint) bool
 
   Lines (xs, ys, xs1, ys1 []int); LinesInv (xs, ys, xs1, ys1 []int)
-  OnLines (xs, ys, xs1, ys1 []int, a, b int, t uint) bool
+  OnLines (xs, ys, xs1, ys1 []int, a, b int, d uint) bool
 
   Segments (xs, ys []int); SegmentsInv (xs, ys []int)
-  OnSegments (xs, ys []int, a, b int, t uint) bool
+  OnSegments (xs, ys []int, a, b int, d uint) bool
 
   InfLine (x, y, x1, y1 int); InfLineInv (x, y, x1, y1 int)
-  OnInfLine (x, y, x1, y1, a, b int, t uint) bool
+  OnInfLine (x, y, x1, y1, a, b int, d uint) bool
 
   Rectangle (x, y, x1, y1 int); RectangleInv (x, y, x1, y1 int)
   RectangleFull (x, y, x1, y1 int); RectangleFullInv (x, y, x1, y1 int)
-  OnRectangle (x, y, x1, y1, a, b int, t uint) bool; InRectangle (x, y, x1, y1, a, b int, t uint) bool
+  OnRectangle (x, y, x1, y1, a, b int, d uint) bool; InRectangle (x, y, x1, y1, a, b int, d uint) bool
 
   Polygon (xs, ys []int); PolygonInv (xs, ys []int)
   PolygonFull (xs, ys []int); PolygonFullInv (xs, ys []int)
-  OnPolygon (xs, ys []int, a, b int, t uint) bool
+  OnPolygon (xs, ys []int, a, b int, d uint) bool
 
   Circle (x, y int, r uint); CircleInv (x, y int, r uint)
   CircleFull (x, y int, r uint); CircleFullInv (x, y int, r uint)
-  OnCircle (x, y int, r uint, a, b int, t uint) bool // ; InCircle (x, y int, r uint, a, b int, t uint) bool
+  OnCircle (x, y int, r uint, a, b int, d uint) bool // ; InCircle (x, y int, r uint, a, b int, d uint) bool
 
 // not yet implemented TODO
   Arc (x, y int, r uint, a, b float64); ArcInv (x, y int, r uint, a, b float64)
@@ -111,10 +114,10 @@ type
 
   Ellipse (x, y int, a, b uint); EllipseInv (x, y int, a, b uint)
   EllipseFull (x, y int, a, b uint); EllipseFullInv (x, y int, a, b uint)
-  OnEllipse (x, y int, a, b uint, A, B int, t uint) bool // ; InEllipse (x, y int, a, b uint, A, B int, t uint) bool
+  OnEllipse (x, y int, a, b uint, A, B int, d uint) bool // ; InEllipse (x, y int, a, b uint, A, B int, d uint) bool
 
   Curve (xs, ys []int); CurveInv (xs, ys []int)
-  OnCurve (xs, ys []int, a, b int, t uint) bool
+  OnCurve (xs, ys []int, a, b int, d uint) bool
 
 // mouse ///////////////////////////////////////////////////////////////
 
@@ -131,10 +134,6 @@ type
 
   Codelen (w, h uint) uint
   Encode (x, y, w, h uint) []byte; Decode (bs []byte)
-
-// openGL //////////////////////////////////////////////////////////////
-
-  WriteGlx()
 
 // cut buffer //////////////////////////////////////////////////////////
 

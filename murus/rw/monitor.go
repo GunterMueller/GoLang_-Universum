@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 150304 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 // >>> readers/writers problem: implementation with monitors
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 161
@@ -16,47 +16,51 @@ type
                  }
 
 
-func NewMonitor() ReaderWriter {
-  x:= new (monitor)
-  f:= func (a Any, k uint) Any {
-        switch k { case rIn:
-          for x.nW > 0 { x.Wait (rIn) }
-          x.nR ++
-          x.Signal (rIn)
-        case rOut:
-          x.nR --
-          if x.nR == 0 {
-            x.Signal (wIn)
+func newMon() ReaderWriter {
+  x := new (monitor)
+  fs := func (a Any, k uint) Any {
+          switch k {
+          case readerIn:
+            for x.nW > 0 { x.Wait (readerIn) }
+            x.nR++
+            x.Signal (readerIn)
+          case readerOut:
+            x.nR--
+            if x.nR == 0 {
+              x.Signal (writerIn)
+            }
+          case writerIn:
+            for x.nR > 0 || x.nW > 0 { x.Wait (writerIn) }
+            x.nW = 1
+          case writerOut:
+            x.nW = 0
+            if x.Awaited (readerIn) {
+              x.Signal (readerIn)
+            } else {
+              x.Signal (writerIn)
+            }
           }
-        case wIn:
-          for x.nR > 0 || x.nW > 0 { x.Wait (wIn) }
-          x.nW = 1
-        case wOut:
-          x.nW = 0
-          if x.Awaited (rIn) {
-            x.Signal (rIn)
-          } else {
-            x.Signal (wIn)
-          }
+          return nil
         }
-        return nil
-      }
-  x.Monitor = mon.New (nFuncs, f, nil)
+  x.Monitor = mon.New (nFuncs, fs, nil)
   return x
 }
 
 func (x *monitor) ReaderIn() {
-  x.F (nil, rIn)
+  x.F (nil, readerIn)
 }
 
 func (x *monitor) ReaderOut() {
-  x.F (nil, rOut)
+  x.F (nil, readerOut)
 }
 
 func (x *monitor) WriterIn() {
-  x.F (nil, wIn)
+  x.F (nil, writerIn)
 }
 
 func (x *monitor) WriterOut() {
-  x.F (nil, wOut)
+  x.F (nil, writerOut)
+}
+
+func (x *monitor) Fin() {
 }

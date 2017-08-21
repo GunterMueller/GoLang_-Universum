@@ -1,6 +1,6 @@
 package sem
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 // >>> Implementation with asynchronous message passing
 //     (the most elegant solution, I think)
@@ -10,7 +10,7 @@ type
                  c chan int
                    }
 
-func New (n uint) Semaphore {
+func new_(n uint) Semaphore {
   x:= new (semaphore)
   x.c = make(chan int, n)
   for i:= uint(0); i < n; i++ {

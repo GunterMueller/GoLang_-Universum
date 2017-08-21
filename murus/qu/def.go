@@ -7,6 +7,9 @@ import
 type
   Queue interface { // Fifo-Queues
 
+// Returns true, if there are no objects in x.
+  Empty() bool
+
 // Returns the number of objects in x.
   Num() uint
 
@@ -17,6 +20,8 @@ type
 // and that object is removed from x.
   Get() Any
 }
+
 // Pre: a is atomic or of a type implementing Object.
 // Returns a new empty queue for objects of type a.
-func New(a Any) Queue { return newQu(a) }
+func New(a Any) Queue { return new_(a) }
+func NewS(a Any) Queue { return news(a) }

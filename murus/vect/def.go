@@ -1,6 +1,6 @@
 package vect
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170820 - license see murus.go
 
 import (
   . "murus/obj"
@@ -49,9 +49,11 @@ type
 // Returns true, if x and y are quasi linearly dependent.
   Collinear (y Vector) bool
 
-// >>> deprecated !!!
 // x = a * y.
   Scale (a float64, y Vector)
+
+// x = (x0[0] + a, x0[1] + a, x0[2] + a), where x0 denotes x before.
+  Translate (a float64)
 
 // x = a * x0, where x0 denotes x before.
   Dilate (a float64) // name ?
@@ -87,5 +89,9 @@ type
 // Spec TODO
   Minimax (Min, Max Vector)
 }
+
 // Returns a new vector with coords (0, 0, 0).
-func New() Vector { return newVect() }
+func New() Vector { return new_() }
+
+// Returns a new vector with coords (x1, x2, x3).
+func New3 (x0, x1, x2 float64) Vector { return new3 (x0, x1, x2) }

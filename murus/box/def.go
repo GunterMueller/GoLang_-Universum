@@ -64,6 +64,7 @@ type
 // Like Write, starting at pixelpos (column, line) == (x, y).
   EditGr (s *string, x, y int) // bug
 }
+
 // Returns an new box of width 0,
 // the colours of the screen and the default editor mode.
-func New() Box { return newBox() }
+func New() Box { return new_() }

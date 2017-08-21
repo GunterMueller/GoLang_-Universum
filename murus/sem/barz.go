@@ -1,6 +1,6 @@
 package sem
 
-// (c) murus.org  v. 140803 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 // >>> Algorithm of Barz
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 73
@@ -13,7 +13,7 @@ type
               int "value"
               }
 
-func NewBarz (n uint) Semaphore {
+func newBarz (n uint) Semaphore {
   x:= new (barz)
   x.int = int(n)
   if x.int == 0 {

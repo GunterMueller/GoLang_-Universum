@@ -1,17 +1,22 @@
 package scr
 
-// (c) murus.org  v. 140615 - license see murus.go
+// (c) murus.org  v. 170817 - license see murus.go
 
 import (
-  "strconv"; "sync"
+  "strconv"
+  "sync"
   "murus/ker"
-  . "murus/linewd"; "murus/mode"; . "murus/shape"
-  "murus/col"; "murus/font"
-  "murus/xker"; "murus/cons"
+  . "murus/linewd"
+  "murus/mode"
+  . "murus/shape"
+  "murus/font"
+  "murus/col"
+  "murus/xwin"
+  "murus/cons"
 )
 type
   screen struct {
-                xker.Window
+                xwin.XWindow
                 cons.Console
                 mode.Mode
            x, y int
@@ -24,40 +29,65 @@ type
        blinking bool
                 }
 var (
-  underX = xker.UnderX()
+  underX = xwin.UnderX()
   actual *screen
   scrList []*screen
   modeMax mode.Mode
   width, height = uint(0), uint(0)
 )
 
+func newMax() Screen {
+  return newScr (0, 0, mode.Mode(maxMode()))
+}
+
 func newScr (x, y uint, m mode.Mode) Screen {
-  X:= new(screen)
+  if m == mode.WH { ker.Panic ("use newWH !") }
+  X := new(screen)
   actual = X
   scrList = append (scrList, X)
   X.Mode = m
   X.x, X.y = int(x), int(y)
   X.wd, X.ht = mode.Wd(m), mode.Ht(m)
   if underX {
-    X.Window = xker.New (x, y, m)
-    width, height = xker.MaxRes()
+    X.XWindow = xwin.New (x, y, m)
+    width, height = xwin.MaxRes()
   } else {
     X.Console = cons.New (x, y, m)
     width, height = cons.MaxRes()
   }
-//  X.Colours (col.White, col.Black)
   X.Colours (col.StartCols())
-//  X.ScrColours (col.White, col.Black)
   X.ScrColours (col.StartCols())
-//  X.Cls()
+  X.Cls()
+
   X.SetFontsize (font.Normal)
   X.SetLinewidth (Thin)
   X.Transparence (false)
   return X
 }
 
-func newMax() Screen {
-  return newScr (0, 0, mode.Mode(maxMode()))
+func newWH (x, y, w, h uint) Screen {
+  X := new(screen)
+  actual = X
+  scrList = append (scrList, X)
+  X.Mode = mode.WH
+  mode.WdHt (w, h)
+  X.x, X.y = int(x), int(y)
+  X.wd, X.ht = w, h
+  if underX {
+    X.XWindow = xwin.New (x, y, mode.WH)
+    width, height = xwin.MaxRes()
+  } else {
+//    X.Console = cons.NewWH (x, y, w, h)
+//    width, height = cons.MaxRes()
+    ker.Panic ("newWH is not yet implemented for tty-concoles")
+  }
+  X.Colours (col.StartCols())
+  X.ScrColours (col.StartCols())
+  X.Cls()
+  X.SetFontsize (font.Normal)
+  X.SetLinewidth (Thin)
+  X.Transparence (false)
+  return X
 }
 
 func (x *screen) fin() {
@@ -70,7 +100,7 @@ func (x *screen) fin() {
 
 func (x *screen) Name (n string) {
   if underX {
-    x.Window.Name (n)
+    x.XWindow.Name (n)
   } else {
 // TODO
   }
@@ -78,7 +108,7 @@ func (x *screen) Name (n string) {
 
 func (x *screen) Flush() {
   if underX {
-    x.Window.Flush()
+    x.XWindow.Flush()
   } else {
     // stellt sich das Problem nicht
   }
@@ -89,11 +119,11 @@ func n() uint {
 }
 
 func act() Screen {
-  n:= len (scrList)
-  a:= n
+  n := len (scrList)
+  a := n
   if underX {
-    for i, s:= range scrList {
-      if s.Window == xker.Act() {
+    for i, s := range scrList {
+      if s.XWindow == xwin.Act() {
         a = i
         break
       }
@@ -103,7 +133,7 @@ func act() Screen {
     a = cons.ActIndex()
   }
   actual = scrList[a]
-  for i:= a; i < n - 1; i++ {
+  for i := a; i < n - 1; i++ {
     scrList[i] = scrList[i + 1]
   }
   scrList[n - 1] = actual
@@ -123,7 +153,7 @@ func (x *screen) Fin() {
 
 func maxMode() mode.Mode {
   if underX {
-    width, height = xker.MaxRes()
+    width, height = xwin.MaxRes()
   } else {
     width, height = cons.MaxRes()
   }
@@ -146,7 +176,7 @@ func maxY() uint {
 }
 
 func modeOf (x, y uint) mode.Mode {
-  for m:= mode.Mode(0); m < mode.NModes; m++ {
+  for m := mode.Mode(0); m < mode.NModes; m++ {
     if mode.Wd(m) == width && mode.Ht(m) == height {
       return m
     }
@@ -165,11 +195,11 @@ func ok (m mode.Mode) bool {
 func (X *screen) Move (x, y int) {
   if underX { return } // da stellt sich das Problem nicht
 /*
-  ok:= 0 <= X.x + x                          && 0 <= X.y + y                           &&
-            X.x + x + int(X.wd) < int(width) &&      X.y + y + int(X.ht) < int(height)
+  ok := 0 <= X.x + x                          && 0 <= X.y + y                           &&
+             X.x + x + int(X.wd) < int(width) &&      X.y + y + int(X.ht) < int(height)
 
-  ok:= 0 <= x                          && 0 <= y                           &&
-            x + int(X.wd) < int(width) &&      y + int(X.ht) < int(height)
+  ok := 0 <= x                          && 0 <= y                           &&
+             x + int(X.wd) < int(width) &&      y + int(X.ht) < int(height)
 
   if ! ok { return }
 */

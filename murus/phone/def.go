@@ -11,5 +11,6 @@ type
   Stringer
   Printer
 }
+
 // Returns a new empty phone number.
-func New() PhoneNumber { return newPhone() }
+func New() PhoneNumber { return new_() }

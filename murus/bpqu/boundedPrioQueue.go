@@ -1,6 +1,6 @@
 package bpqu
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170218 - license see murus.go
 
 import (
   "sync"
@@ -14,7 +14,7 @@ type
 var
   mutex sync.Mutex
 
-func newBpqu(a Any, m uint) BoundedPrioQueue {
+func new_(a Any, m uint) BoundedPrioQueue {
   x := new(boundedPrioQueue)
   x.heap = make([]Any, m + 1)
   x.heap[0] = Clone(a)

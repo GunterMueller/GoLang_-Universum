@@ -1,18 +1,20 @@
 package mbuf
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170218 - license see murus.go
 
 // >>> buffer implementation with asynchronous message passing
 
-import
+import (
+  "murus/ker"
   . "murus/obj"
+)
 type
   channel struct {
                c chan Any
                  }
 
-func NewChannel (a Any, n uint) MBuffer {
-  if a == nil || n == 0 { return nil } // panic
+func newch (a Any, n uint) MBuffer {
+  if a == nil || n == 0 { ker.Panic ("mbuf.NewCh with param nil or 0") }
   return &channel { make (chan Any, n) }
 }
 

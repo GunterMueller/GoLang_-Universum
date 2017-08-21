@@ -1,6 +1,6 @@
 package macc
 
-// (c) murus.org  v. 140509 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 import (
   "sync"
@@ -13,7 +13,7 @@ type
                   *sync.Cond
                   }
 
-func New() MAccount {
+func new_() MAccount {
   x:= new (mAccount)
   x.Euro = euro.New()
   x.Euro.Set2 (0, 0)
@@ -38,4 +38,8 @@ func (x *mAccount) Draw (e euro.Euro) euro.Euro {
   x.Cond.Signal()
   x.Mutex.Unlock()
   return x.Euro.Clone().(euro.Euro)
+}
+
+func (m *mAccount) Write (x, y uint) {
+  m.Euro.Write (x, y)
 }

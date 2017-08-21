@@ -1,6 +1,6 @@
 package sem
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 // >>> Implementation with guarded select
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 185
@@ -12,7 +12,7 @@ type
                   p, v chan Any
                        }
 
-func NewGSel (n uint) Semaphore {
+func newGSel (n uint) Semaphore {
   x:= new (guardedSelect)
   x.p, x.v = make (chan Any), make (chan Any)
   go func() {

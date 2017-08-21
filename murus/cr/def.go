@@ -42,5 +42,6 @@ type
 // It now does not have the access any more.
   Leave (k uint)
 }
+
 // Returns a new critical resource with c classes and r resources.
-func New (c, r uint) CriticalResource { return newCr(c,r) }
+func New (c, r uint) CriticalResource { return new_(c,r) }

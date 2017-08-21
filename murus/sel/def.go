@@ -3,7 +3,8 @@ package sel
 // (c) murus.org  v. 130127 - license see murus.go
 
 import (
-  "murus/col"; "murus/font"
+  "murus/col"
+  "murus/font"
 )
 type // TODO description of semantics !
   WritingCol func (uint, uint, uint, col.Colour, col.Colour)

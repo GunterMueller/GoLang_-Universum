@@ -1,6 +1,6 @@
 package pt
 
-// (c) murus.org  v. 140615 - license see murus.go
+// (c) murus.org  v. 170820 - license see murus.go
 
 import (
   . "murus/obj"
@@ -9,24 +9,25 @@ import (
 )
 type
   Class byte; const (
-  None = Class(iota)
-  Start; Light
-  Points; Lines; LineStrip; LineLoop
-  Triangles; TriangleStrip; TriangleFan
-  Quads; QuadStrip
+  Undef = Class(iota)
+  Points
+  Lines
+  LineLoop
+  LineStrip
+  Triangles
+  TriangleStrip
+  TriangleFan
+  Quads
+  QuadStrip
   Polygon
-  NClasses
+  Light
+  Start
+  nClasses
 )
 type // Coloured points in 3-space with a class, a current number and a normal vector.
   Point interface {
 
-// Returns an new point of class None with number 1, coordinates (0, 0, 0),
-// normal (0, 0, 0) in the colour scr.StdColourF.
-// New ()
-
   Object
-
-//  Fin()
 
 // x is the endpoint of v with class c, number a, colour f and normal n.
   Set (c Class, a uint, f col.Colour, v, n vect.Vector)
@@ -35,14 +36,18 @@ type // Coloured points in 3-space with a class, a current number and a normal v
   Class() Class
 
 // Returns the current number of x.
-  Number () uint
+  Number() uint
 
 // Returns the colour of x.
-  Colour () col.Colour
+  Colour() col.Colour
 
 // Returns the vector with the endpoint x.
-  Read () vect.Vector
+  Read() vect.Vector
 
 // Returns the vector with the endpoint x and the normal of x.
-  Read2 () (vect.Vector, vect.Vector)
+  Read2() (vect.Vector, vect.Vector)
 }
+
+// Returns an new point of class None with number 1, coordinates (0, 0, 0),
+// normal (0, 0, 0) in the colour scr.ScrColsF.
+func New() Point { return new_() }

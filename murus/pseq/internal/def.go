@@ -20,3 +20,5 @@ type
 
 func DirectLength (n string) uint64 { return directLength(n) }
 func Erase (n string) { erase(n) }
+
+func New() File { return new_() }

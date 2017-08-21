@@ -1,9 +1,14 @@
 package scr
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170814 - license see murus.go
 
 import (
-  "murus/mode"; . "murus/shape"; . "murus/linewd"; "murus/ptr"; "murus/font"; "murus/col"
+  "murus/mode"
+  . "murus/shape"
+  . "murus/linewd"
+  "murus/ptr"
+  "murus/font"
+  "murus/col"
 )
 
 func Fin() { actual.Fin() }
@@ -72,6 +77,7 @@ func Point (x, y int) { actual.Point(x,y) }
 func PointInv (x, y int) { actual.PointInv(x,y) }
 func Points (xs, ys []int) { actual.Points (xs,ys) }
 func PointsInv (xs, ys []int) { actual.PointsInv(xs,ys) }
+func OnPoint (x, y, a, b int, d uint) bool { return actual.OnPoint(x,y,a,b,d) }
 func Line (x, y, x1, y1 int) { actual.Line(x,y,x1,y1) }
 func LineInv (x, y, x1, y1 int) { actual.LineInv(x,y,x1,y1) }
 func OnLine (x, y, x1, y1, a, b int, t uint) bool { return actual.OnLine(x,y,x1,y1,a,b,t) }

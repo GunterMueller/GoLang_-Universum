@@ -1,17 +1,29 @@
 package psp
 
-// (c) murus.org  v. 140803 - license see murus.go
+// (c) murus.org  v. 170121 - license see murus.go
 
 import (
-  "os"; "strconv"; "math"
-  "murus/ker"; "murus/z"
-  "murus/col"; "murus/scr"; "murus/font"
+  "os"
+  "strconv"
+  "math"
+  "murus/ker"
+  "murus/z"
+  "murus/col"
+  "murus/scr"
+  "murus/font"
 )
 type
   postscriptPage struct {
                    file *os.File
                         float64 "linewidth"
                         }
+
+func new_() PostscriptPage {
+  x:= new (postscriptPage)
+  x.float64 = 0.4
+  const ppi = ker.PointsPerInch
+  return x
+}
 
 func (x *postscriptPage) S (pt int) float64 {
   return float64(pt) / float64(scr.Wd()) * ker.A4wdPt
@@ -67,13 +79,6 @@ func (x *postscriptPage) arc (x0, x1, r, a, b float64) {
 
 func (x *postscriptPage) scale (s float64) {
   x.write ("1 " + strconv.FormatFloat (s, 'f', 4, 64) + " scale\n")
-}
-
-func New() PostscriptPage {
-  x:= new (postscriptPage)
-  x.float64 = 0.4
-  const ppi = ker.PointsPerInch
-  return x
 }
 
 func (x *postscriptPage) Name (n string) {

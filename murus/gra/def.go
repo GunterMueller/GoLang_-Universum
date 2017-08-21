@@ -1,6 +1,6 @@
 package gra
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170506 - license see murus.go
 
 import (
   . "murus/obj"
@@ -47,30 +47,19 @@ type
 // Paths and cycles are subgraphs.
 //
 // A graph G is (strongly) connected, if for any two vertices
-// n, n1 of G there is a path from n to n1 or (and) vice versa;
+// v, v1 of G there is a path from v to v1 or (and) vice versa;
 // so for undirected graphs this is the same.
 //
 // In any nonempty graph exactly one vertex is distinguished as colocal
-// and one as local vertex (those two vertices must not be identical).
-// Each graph has an actual subgraph, an actual path and a verticestack.
-
-// Pre: n is atomic or imlements Object.
-//      e == nil or e is of type uint or implements Valuator;
-// x is Empty (with undefined local and colocal vertex,
-// empty actual subgraph, empty actual path and empty verticestack).
-// x is directed, if g, otherwise undirected.
-// x has the type of n as vertextype.
-// If e == nil, then x has no edgetype and all edges of x have value 1;
-// otherwise, x has the type of e as edgetype,
-// which defines the values of the edges of x.
-func New (d bool, n, e Any) Graph { return newGra(d,n,e) }
+// and exactly one as local vertex.
+// Each graph has an actual subgraph, an actual path and a vertexstack.
 
 type
   Graph interface {
 
   Object
 
-// marks the colocal vertex, if x is not empty.
+// marks the local vertex, if x is not empty.
   Marker
 
   Persistor
@@ -82,7 +71,7 @@ type
   Num() uint
 
 // Returns the number of vertices in the actual subgraph of x.
-  NumAct() uint
+  NumSub() uint
 
 // Pre: p is defined on vertices.
 // Returns the number of vertices of x, for which p returns true.
@@ -92,45 +81,39 @@ type
   Num1() uint
 
 // Returns the number of edges in the actual subgraph of x.
-  Num1Act() uint
+  NumSub1() uint
 
-// If n is not of the vertextype of x or if n is already contained
+// If v is not of the vertextype of x or if v is already contained
 // as vertex in x, nothing has happend. Otherwise:
-// n is inserted as vertex in x.
+// v is inserted as vertex in x.
 // If x was empty, then n is now the colocal and local vertex of x,
-// otherwise, n is now the local vertex and the former local vertex
+// otherwise, v is now the local vertex and the former local vertex
 // is now the colocal vertex of x.
-  Ins (n Any)
+  Ins (v Any)
 
-// If x is empty or has an edgetype or
-// if the colocal vertex of x coincides with the local vertex of x,
-// then nothing has happened. Otherwise:
-// An edge is inserted from the colocal to the local vertex of x
-// (if these two vertices were already connected by an edge,
-// then its direction might have been changed.)
-  Edge()
-
-// If x is empty or has no edgetype or
-// if the colocal vertex of x coincides with the local vertex or
-// if e is not of the edgetype of x,
-// nothing has happened. Otherwise:
+// If x is empty or if the colocal vertex of x coincides with the local vertex or
+// if e is not of the edgetype of x, nothing has happened. Otherwise:
 // e is inserted in x as edge from the colocal to the local vertex of x
 // (if these two vertices were already connected by an edge,
 // that edge is replaced by e).
-  Edge1 (e Any)
+// For e == nil e is replaced by uint(1).
+  Edge (e Any)
 
 // If x is empty or has an edgetype or
-// if n or n1 is not of the vertextype of x or
-// if n or n1 is not contained in x or
-// if n and n1 coincide or
-// if there is already an edge from n to n1,
+// if v or v1 is not of the vertextype of x or
+// if v or v1 is not contained in x or
+// if v and v1 coincide or
+// if a is not of the type of the reference edge of x or
+// if there is already an edge from v to v1,
 // nothing has happened. Otherwise:
-// n is now the colocal and n1 the local vertex of x
-// and there is an edge from n to n1.
-  Edge2 (n, n1 Any)
+// v is now the colocal and v1 the local vertex of x
+// and e is inserted is an edge from v to v1.
+  Edge2 (v, v1, e Any)
 
-// TODO Spec
-  Define (a []Any, n[][]uint)
+// If x is empty of if the vertices of x do not implement Valuator,
+// nothing has happened. Otherwise,
+// the set of vertices of x is sorted due to their value.
+  SortNeighbours()
 
 // Returns the representation of x as adjacency matrix with
 // an arbitrary order of the vertices (their content gets lost).
@@ -139,7 +122,7 @@ type
 // Pre: uint(len(n)) == a.Num().
 // x is the graph with the vertices n[i] (i = 0, ..., len(n) - 1). 
 // The edges between the vertices are exactly those, which are defined by m.
-  Set (n []Any, m adj.AdjacencyMatrix)
+  SetMatrix (n []Any, m adj.AdjacencyMatrix)
 
 // Returns true, iff
 // the colocal vertex does not coincide with the local vertex of x and
@@ -151,14 +134,14 @@ type
 // and there is an edge from the local to the colocal vertex in x.
   CoEdged() bool
 
-// Returns true, iff n is contained as vertex in x.
-// In this case n is now the local vertex of x.
+// Returns true, iff v is contained as vertex in x.
+// In this case v is now the local vertex of x.
 // The colocal vertex of x is the same as before.
-  Ex (n Any) bool
+  Ex (v Any) bool
 
-// Returns true, if n and n1 are contained as vertices in x and do not coincide.
-// In this case n now is the colocal and n1 the local vertex of x.
-  Ex2 (n, n1 Any) bool
+// Returns true, if v and v1 are contained as vertices in x and do not coincide.
+// In this case v now is the colocal and v1 the local vertex of x.
+  Ex2 (v, v1 Any) bool
 
 // Pre: p is defined on vertices.
 // Returns true, if there is a vertex in x, for which p returns true.
@@ -181,30 +164,28 @@ type
 
 // Pre: p and p1 are defined on vertices.
 // Returns true,
-// iff there are two different vertices n and n1 with p(n) and p(n1).
-// In this case now some vertex n with p(n) is the colocal vertex
-// and some vertex n1 with p1(n1) is the local vertex of x.
+// iff there are two different vertices v and v1 with p(v) and p(v1).
+// In this case now some vertex v with p(v) is the colocal vertex
+// and some vertex v1 with p1(v1) is the local vertex of x.
   ExPred2 (p, p1 Pred) bool
 
-// Returns nil, if x is empty.
-// Returns otherwise a copy of the local vertex of x.
+// Returns a clone of the local vertex of x.
   Get() Any
 
-// Returns nil, if x is empty or has no edgetype or
+// Returns a clone of the reference edge of x, if x is empty or
 // if there is no edge from the colocal to the local vertex of x or
 // if the colocal vertex of x coincides with the local vertex.
-// Returns otherwise a copy of the edge
+// Returns otherwise a clone of the edge
 // from the colocal to the local vertex of x.
   Get1() Any
 
-// Returns (nil, nil), if x is empty. Returns otherwise
-// copies of the colocal and of the local vertex of x.
+// Returns clones of the colocal and of the local vertex of x.
   Get2() (Any, Any)
 
 // If x is empty or
-// if n is not of the vertextype of x, nothing has happened. Otherwise:
-// The local vertex of x is replaced by n.
-  Put (n Any)
+// if v is not of the vertextype of x, nothing has happened. Otherwise:
+// The local vertex of x is replaced by v.
+  Put (v Any)
 
 // If x is empty or if e has no edgetype or
 // if e is not of the edgetype of x or
@@ -214,12 +195,30 @@ type
   Put1 (e Any)
 
 // If x is empty or
-// if n or n1 is not of the vertextype of x or
+// if v or v1 is not of the vertextype of x or
 // if the colocal vertex of x coincides with the local vertex,
 // nothing had happened. Otherwise:
-// The colocal vertex of x is replaced by n
-// and the local vertex of x is replaced by n1.
-  Put2 (n, n1 Any)
+// The colocal vertex of x is replaced by v
+// and the local vertex of x is replaced by v1.
+  Put2 (v, v1 Any)
+
+// The subgraph of x is empty.
+  ClrSub()
+
+// The subgraph of x equals x.
+  Sub()
+
+// If x is empty, nothing had happened. Otherwise,
+// the subgraph of x consists only of the local vertex.
+  SubLocal()
+
+// If x is empty, nothing had happened. Otherwise,
+// the subgraph of x consists of the local and the colocal vertex
+// and the edge between them.
+  Sub2()
+
+// Returns true, if x equals its subgraph.
+  EqSub() bool
 
 // If x is empty, nothing has happened. Otherwise:
 // The former local vertex of x and
@@ -274,15 +273,19 @@ type
 
 // Returns the sum of the values of all edges in the actual subgraph of x
 // (hence, if x has no edgetype, the number of the edges in the subgraph).
-  LenAct() uint
+  LenSub() uint
 
 // Returns 0, if x is empty.
 // Returns otherwise the number of the outgoing edges of the local vertex of x.
-  NumLoc() uint
+  NumNeighboursOut() uint
 
 // Returns 0, if x is empty.
 // Returns otherwise the number of the incoming edges to the local vertex of x.
-  NumLocInv() uint
+  NumNeighboursIn() uint
+
+// Returns 0, if x is empty.
+// Returns otherwise the number of all edges to the local vertex of x.
+  NumNeighbours() uint
 
 // If x is not directed, nothing had happened. Otherwise:
 // The directions of all edges of x are reversed.
@@ -332,76 +335,88 @@ type
 // the actual subgraph of x is its actual path.
   Step (i uint, f bool)
 
-// Returns nil, if x is empty or if i >= NumLoc();
-// returns otherwise a copy of its i-th outgoing neighbour vertex.
+// Returns false, if x is empty or if i >= NumNeighbourOut();
+// returns otherwise true, iff the edge to its i-th neighbour is an outgoing one.
+  Outgoing (i uint) bool
+
+// Returns nil, if x is empty or if i >= NumNeighbourOut();
+// returns otherwise a copy of its i-th outgoing neighbour.
+  NeighbourOut (i uint) Any
+
+// Returns false, if x is empty or if i >= NumNeighboursIn();
+// returns otherwise true, iff the edge to its i-th neighbour is an incoming one.
+  Incoming (i uint) bool
+
+// Returns nil, if x is empty or if i >= NumNeighboursIn();
+// returns otherwise a copy of the its i-th incoming neighbour.
+  NeighbourIn (i uint) Any
+
+// Returns nil, if x is empty or if i >= NumNeighbours();
+// returns otherwise a copy of its i-th neighbour vertex.
   Neighbour (i uint) Any
 
-// Returns nil, if x is empty or if i >= NumLocIn();
-// returns otherwise a copy of its i-th incoming neighbour vertex.
-  CoNeighbour (i uint) Any
+// Returns 0, if x is empty or if i >= number of outgoing neighbours of the local vertex;
+// returns otherwise the value of the edge to the i-th outgoing neighbour vertex.
+// experimental ///////////////////////////////////////////////////  ValOut (i uint) uint
 
-// Returns 0, if x is empty or if i >= number of vertices outgoing from
-// the local vertex; returns otherwise the value of the edge to the i-th neighbour vertex.
-  Val (i uint) uint
+// Returns 0, if x is empty or if i >= number of incoming neighbours of the local vertex;
+// returns otherwise the value of the edge to the i-th incoming neighbour vertex.
+// experimental ///////////////////////////////////////////////////  ValIn (i uint) uint
 
-// The local vertex of x is pushed on the verticestack of x.
+// Returns 0, if x is empty or if i >= number of all neighbours of the local vertex;
+// returns otherwise the value of the edge to the i-th neighbour vertex.
+// experimental ///////////////////////////////////////////////////  Val (i uint) uint
+
+// The local vertex of x is pushed on the vertexstack of x.
   Save()
+  CoSave()
+  LenStack() uint
 
-// If the verticestack of x is empty, nothing had happened. Otherwise:
-// The local vertex is now the top of the verticestack
-// and this vertex is pulled from the verticestack of x.
+// If the vertexstack of x is empty, nothing had happened. Otherwise:
+// The local vertex is now the top of the vertexstack
+// and this vertex is pulled from the vertexstack of x.
   Restore()
-
-////////////////////////////////////////////////////////////////////////////////
-// experimental stuff:
+  CoRestore()
 
 // localvertex.dist = 0.
-// A()
+// experimental //////////////////////// A()
 
 // Returns true, iff localvertex.dist = infinite.
-// B() bool
+// experimental //////////////////////// B() bool
 
 // localvertex.dist = colocalvertex.dist + 1
 // localvertex.hinten = colocalvertex.
-// C()
-////////////////////////////////////////////////////////////////////////////////
+// experimental //////////////////////// C()
 
 // Pre: p is defined on vertices.
 // Returns true, if x is empty or
-// if o returns true for all vertices of x.
+// if p returns true for all vertices of x.
   True (p Pred) bool
 
 // Pre: p is defined on vertices.
 // Returns true, iff x is empty or
 // if p returns true for all vertices in the actual subgraph of x.
-  TrueAct (p Pred) bool
+  TrueSub (p Pred) bool
 
 // Pre: o is defined on vertices.
-// o was applied to all vertices of x.
+// o is applied to all vertices of x.
 // Colocal and local vertex of x are the same as before;
-// subgraph and verticestack of x are not changed.
+// subgraph and vertexstack of x are not changed.
   Trav (o Op)
 
-// Pre: p and o are defined on vertices.
-// a was applied to all vertices in x,
-// for which p returns true.
-// Colocal and local vertex of x are the same as before;
-// subgraph and verticestack of x are not changed.
-  TravPred (p Pred, o Op)
-
 // Pre: o is defined on vertices.
-// o was applied to all vertices of x, where
-// o was called with 2nd parameter "true", iff
+// o is applied to all vertices of x, where
+// o is called with 2nd parameter "true", iff
 // the corresponding vertex is contained in the actual subgraph of x.
 // Colocal and local vertex of x are the same as before;
-// subgraph and verticestack of x are not changed.
+// subgraph and vertexstack of x are not changed.
   TravCond (o CondOp)
 
 // Pre: o is defined on edges.
 // If x has no edgetype, nothing had happened. Otherwise:
 // o is applied to all edges of x.
 // Colocal and local vertex of x are the same as before;
-// subgraph and verticestack of x are not changed.
+// subgraph and vertexstack of x are not changed.
   Trav1 (o Op)
 
 // Pre: o is defined on edges.
@@ -409,57 +424,48 @@ type
 // o is applied to all edges of x with 2nd parameter "true", iff
 // the correspoding edge is contained in the actual subgraph of x.
 // Colocal and local vertex of x are the same as before;
-// subgraph and verticestack of x are not changed.
+// subgraph and vertexstack of x are not changed.
   Trav1Cond (o CondOp)
 
 // Pre: o is defined on edges.
 // If x has no edgetype, nothing had happened. Otherwise:
-// o is applied to all outgoing edges of the local vertex of x.
+// o is applied to all edges of the local vertex of x.
   Trav1Loc (o Op)
 
-// Pre: o is defined on vertices, o3 on edges in the first argument
-//      and on vertices in the 2nd and 3rd argument.
-// o is applied to all vertices of x and o3 is applied to all edges
-// of x, where the 2nd and 3rd argument of o3 is applied to
-// the source and the sink of e.
-  Trav3 (o Op, o3 Op3)
+// Pre: o is defined on edges.
+// If x has no edgetype, nothing had happened. Otherwise:
+// o is applied to all edges of the colocal vertex of x.
+  Trav1Coloc (o Op)
 
-// TODO Spec
-  Trav3Cond (o CondOp, o3 CondOp3)
-  Trav3CondDir (o CondOp, o3 CondOp3bool)
-
-// Returns an empty graph, is x does not contain the vertex n.
-// Returns otherwise the Graph consisting of n as only vertex
-// and of all edges outgoing from and incoming to n.
-// n is the local vertex in Star.
-  Star (n Any) Graph
-
-// Returns the Star of the local vertex in x.
-  StarLoc() Graph
+// Returns nil, if x does not contain a vertex for which p is true.
+// Returns otherwise the Graph consisting with the first such vertex found
+// als only vertex and of all edges outgoing from and incoming to this vertex.
+// This vertex is the local vertex in Star.
+  Star (/* p Pred */) Graph
 
 // Returns true, iff there are no cycles in x.
   Acyclic() bool
 
-// Returns false, if x is not totally connected.
-// Returns otherwise true, iff there is an Euler path or cycle in x.
-  Euler() bool
-
 // If x is empty, nothing has happened. Otherwise:
 // The following equivalence relation is defined on x:
-// Two vertices n and n1 of x are equivalent, iff there is
-// a path in x from n to n1 and vice versa (hence the set of
+// Two vertices v and v1 of x are equivalent, iff there is
+// a path in x from v to v1 and vice versa (hence the set of
 // equivalence classes is a directed graph without cycles).
   Isolate() // TODO name
 
 // The actual subgraph of x consists of exactly those vertices, that are
 // equivalent to the local vertex and of exactly all edges between them.
 // The actual path of x is now empty.
-  IsolateAct() // TODO name
+  IsolateSub() // TODO name
 
 // Returns true, iff x is not empty and
 // if the local and the colocal vertex of x are equivalent,
 // i.e. for both of them there is a path in x to the other one.
   Equiv() bool
+
+// Returns false, if x is not totally connected.
+// Returns otherwise true, iff there is an Euler path or cycle in x.
+  Euler() bool
 
 // If x is directed, nothing has happened. Otherwise:
 // The actual subgraph of x is a minimal spanning tree in
@@ -476,14 +482,31 @@ type
 // at which those edges come in.
   Sort()
 
-// TODO Spec
+// Pre: x is directed iff all graphs y are.
+// x consists of all vertices and edges of x and all graphs y.
   Add (y ...Graph)
 
 // The demofunction for d is switched on, iff s[d] == true.
   SetDemo (d Demo)
 
-// Pre: o is defined on vertices and o3 on edges.
-// o and o3 are the demofunctions for the Writing of vertices and edges of x
-// (arguments of o3 in the order vertex, edge, vertex).
-  Install (o CondOp, o3 CondOp3)
+// Pre: v is defined on vertices and e on edges.
+// wv and we are the actual write functions for the vertices and edges of x.
+  SetWrite (wv, we CondOp)
+
+// Returns the write functions for the vertices and edges of x.
+  Writes() (CondOp, CondOp)
+
+// x is written on the screen // into a rectangle the top left corner (x, y)
+// by means of the actual write functions.
+  Write()
 }
+
+// Pre: n is atomic or imlements Object.
+//      e == nil or e is of type uint or implements Valuator;
+// x is Empty (with undefined local and colocal vertex,
+// empty actual subgraph, empty actual path and empty vertexstack).
+// x is directed, iff d (i.e. otherwise undirected).
+// x has v as reference vertex defining the vertextype of x.
+// For e == nil, e is replaced by uint(1) and all edges of x have value 1.
+// x has e as reference edge defining the edgetype of x.
+func New (d bool, v, e Any) Graph { return new_(d,v,e) }

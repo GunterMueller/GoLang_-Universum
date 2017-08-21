@@ -3,11 +3,25 @@ package atom
 // (c) murus.org  v. 161216 - license see murus.go
 
 import (
-  "reflect"; "murus/str"
-  . "murus/obj"; "murus/ker"; "murus/font"; "murus/col"
-  "murus/enum"; "murus/tval"; "murus/char"; "murus/text"; "murus/bnat"; "murus/breal"
-  "murus/clk"; "murus/day"; "murus/euro"; "murus/cntry";
-  "murus/pers"; "murus/phone"; "murus/addr"
+  "reflect"
+  "murus/str"
+  . "murus/obj"
+  "murus/ker"
+  "murus/font"
+  "murus/col"
+  "murus/enum"
+  "murus/tval"
+  "murus/char"
+  "murus/text"
+  "murus/bnat"
+  "murus/breal"
+  "murus/clk"
+  "murus/day"
+  "murus/euro"
+  "murus/cntry"
+  "murus/pers"
+  "murus/phone"
+  "murus/addr"
 )
 type
   atom struct {
@@ -15,7 +29,7 @@ type
               uint
               }
 
-func newAtom(o Object) Atom {
+func new_(o Object) Atom {
   x := new(atom)
   s := reflect.TypeOf (o).String()
   if p, ok := str.Pos (s, '.'); ok { s = s[1:p] }
@@ -81,7 +95,7 @@ func (x *atom) Copy (Y Any) {
 }
 
 func (x *atom) Clone() Any {
-  y := newAtom(x.Object)
+  y := new_(x.Object)
   y.Copy(x)
   return y
 }

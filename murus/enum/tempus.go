@@ -17,7 +17,6 @@ var
   []string { "", "Präsens", "Imperfekt", "Futur I", "Perfekt", "Plusquamp.", "Futur II" },
   []string { "", "Präs.", "Impf.", "Fut.I", "Perf.", "Plusq.", "Fut.II" }
 
-
 func init() {
   l[Tempus], s[Tempus] = lTempus, sTempus
 }

@@ -1,6 +1,6 @@
 package mstk
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170320 - license see murus.go
 
 import (
   "sync"
@@ -14,12 +14,18 @@ type
           mutex sync.Mutex
                 }
 
-func newMstk (a Any) MStack {
+func new_(a Any) MStack {
   if a == nil { return nil } // XXX
-  x:= new(mStack)
+  x := new(mStack)
   x.Stack = stk.New(a)
   x.notEmpty.Lock()
   return x
+}
+
+func (x *mStack) Empty() bool {
+  x.mutex.Lock()
+  defer x.mutex.Unlock()
+  return x.Stack.Empty()
 }
 
 func (x *mStack) Push (a Any) {

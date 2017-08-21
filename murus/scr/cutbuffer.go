@@ -1,11 +1,11 @@
 package scr
 
-// (c) murus.org  v. 150124 - license see murus.go
+// (c) murus.org  v. 170814 - license see murus.go
 
 func (X *screen) Cut (s string) {
   if len (s) == 0 { return }
   if underX {
-    X.Window.Cut (s)
+    X.XWindow.Cut (s)
   } else {
     X.Console.Cut (s)
   }
@@ -13,7 +13,7 @@ func (X *screen) Cut (s string) {
 
 func (X *screen) Paste() string {
   if underX {
-    return X.Window.Paste()
+    return X.XWindow.Paste()
   }
   return X.Console.Paste()
 }

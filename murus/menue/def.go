@@ -27,5 +27,6 @@ type
 // a node or leaf from the level below x.
   Exec ()
 }
+
 // Returns an node with name s without a level below.
-func New (s string) Menue { return newMenue(s) }
+func New (s string) Menue { return new_(s) }

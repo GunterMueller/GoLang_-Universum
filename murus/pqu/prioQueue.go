@@ -1,60 +1,62 @@
 package pqu
 
-// (c) murus.org  v. 150122 - license see murus.go
+// (c) murus.org  v. 170316 - license see murus.go
 
 import (
   . "murus/obj"
   "murus/pqu/internal"
 )
-const
-  pack = "pqu"
 type
   prioQueue struct {
-            object Any
-            anchor internal.Heap
-               num uint
+                   Any "to maintain the type of objects in the queue"
+                   internal.Heap "classical structure"
+                   uint "number of objects in the queue"
                    }
 
-func New (a Any) PrioQueue {
-  x:= new (prioQueue)
-  x.object = Clone (a)
-  x.anchor = internal.New()
+func new_(a Any) PrioQueue {
+  x := new(prioQueue)
+  x.Any = Clone(a)
+  x.Heap = internal.New()
   return x
 }
 
+func (x *prioQueue) Empty() bool {
+  return x.uint == 0
+}
+
 func (x *prioQueue) Num() uint {
-  return x.num
+  return x.uint
 }
 
 func (x *prioQueue) Ins (a Any) {
-  CheckTypeEq (a, x.object)
-  x.num ++
-  x.anchor = x.anchor.Ins (a, x.num).(internal.Heap)
-  x.anchor.Lift (x.num)
+  CheckTypeEq (a, x.Any)
+  x.uint++
+  x.Heap = x.Heap.Ins (a, x.uint).(internal.Heap)
+  x.Heap.Lift (x.uint)
 }
 
 func (x *prioQueue) Get() Any {
-  if x.num == 0 {
+  if x.uint == 0 {
     return nil
   }
-  return x.anchor.Get()
+  return x.Heap.Get()
 }
 
 func (x *prioQueue) Del() Any {
-  if x.num == 0 {
+  if x.uint == 0 {
     return nil
   }
-  if x.num == 1 {
-    a:= x.anchor.Get()
-    x.anchor = internal.New()
-    x.num = 0
+  if x.uint == 1 {
+    a := x.Heap.Get()
+    x.Heap = internal.New()
+    x.uint = 0
     return a
   }
-  y, a:= x.anchor.Del (x.num)
-  x.anchor = y.(internal.Heap)
-  x.num --
-  if x.num > 0 {
-    x.anchor.Sift (x.num)
+  y, a := x.Heap.Del (x.uint)
+  x.Heap = y.(internal.Heap)
+  x.uint--
+  if x.uint > 0 {
+    x.Heap.Sift (x.uint)
   }
   return a
 }

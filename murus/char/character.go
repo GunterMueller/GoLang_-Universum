@@ -1,14 +1,16 @@
 package char
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
   . "murus/obj"
   . "murus/shape"
   "murus/z"
   "murus/kbd"
-  "murus/col"; "murus/scr"
-  "murus/font"; "murus/pbox"
+  "murus/col"
+  "murus/scr"
+  "murus/font"
+  "murus/pbox"
 )
 type
   character struct {
@@ -19,10 +21,10 @@ type
 var
   pbx = pbox.New()
 
-func newChar() Character {
+func new_() Character {
   x := new (character)
   x.byte = ' '
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   return x
 }
 
@@ -58,7 +60,7 @@ func (x *character) Copy (Y Any) {
 }
 
 func (x *character) Clone() Any {
-  y := newChar()
+  y := new_()
   y.Copy (x)
   return y
 }

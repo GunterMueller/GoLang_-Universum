@@ -54,6 +54,7 @@ type
 // In this case x is that element, otherwise x is empty.
   Set (n uint8) bool
 }
+
 // Pre: e < NEnums.
 // Returns a new empty enumerator for objects of Title e.
-func New (e uint8) Enumerator { return newEnum(e) }
+func New (e uint8) Enumerator { return new_(e) }

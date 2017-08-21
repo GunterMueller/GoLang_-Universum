@@ -1,16 +1,22 @@
 package day
 
-// (c) murus.org  v. 170108 - license see murus.go
+// (c) murus.org  v. 170810 - license see murus.go
 
 import (
-  . "murus/ker"; . "murus/obj"; "murus/rand"; "murus/str"
+  . "murus/ker"
+  . "murus/obj"
+  "murus/rand"
+  "murus/str"
   "murus/kbd"
-  "murus/col"; "murus/scr"; "murus/box"; "murus/errh"
-  "murus/font"; "murus/pbox"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/errh"
+  "murus/font"
+  "murus/pbox"
   "murus/nat"
 )
 const (
-  pack = "day"
   emptyYear = uint(1879)
   startYear = emptyYear + 1
   limitYear = uint(2020) // Yy: 0..20 -> 2000..2020; 21..99 -> 1921..1999
@@ -73,23 +79,35 @@ var (
 //  carnival *calendarday
 )
 
+func init() {
+  WeekdayF, WeekdayB = scr.StartCols()
+  HolidayF, HolidayB = scr.StartColsA()
+  YearnumberF, YearnumberB = col.LightWhite, col.Magenta
+  WeekdayNameF, WeekdayNameB = col.Magenta, WeekdayB
+  MonthF, MonthB = YearnumberF, YearnumberB
+  today.Actualize()
+  currentCentury = 100 * (today.(*calendarday).year / 100)
+  todayCode = today.(*calendarday).internalCode()
+//  carnival = new_()
+}
+
 func (x *calendarday) imp (Y Any) *calendarday {
-  y, ok:= Y.(*calendarday)
+  y, ok := Y.(*calendarday)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
 }
 
-func New() Calendarday {
-  x:= new (calendarday)
+func new_() Calendarday {
+  x := new (calendarday)
   x.day, x.month, x.year = maxday, maxmonth, emptyYear
   x.Format = Dd_mm_yy
-  x.cF, x.cB = col.StartCols()
+  x.cF, x.cB = scr.StartCols()
   x.Font = font.Roman
   return x
 }
 
-func New3 (d, m, y uint) Calendarday {
-  x:= New().(*calendarday)
+func new3 (d, m, y uint) Calendarday {
+  x := new_().(*calendarday)
   x.Set (d, m, y)
   return x
 }
@@ -128,27 +146,27 @@ func (x *calendarday) Set (Tag, Monat, Jahr uint) bool {
 }
 
 func (x *calendarday) Copy (Y Any) {
-  y:= x.imp (Y)
+  y := x.imp (Y)
   x.day, x.month, x.year = y.day, y.month, y.year
   x.Format = y.Format
   x.cF, x.cB = y.cF, y.cB
 }
 
 func (x *calendarday) Clone() Any {
-  y:= New().(*calendarday)
+  y := new_().(*calendarday)
   y.Copy (x)
   return y
 }
 
 func (x *calendarday) Eq (Y Any) bool {
-  y:= x.imp (Y)
+  y := x.imp (Y)
   if x.year == emptyYear { return y.year == emptyYear }
   if y.year == emptyYear { return false }
   return x.day == y.day && x.month == y.month && x.year == y.year
 }
 
 func (x *calendarday) Less (Y Any) bool {
-  y:= x.imp (Y)
+  y := x.imp (Y)
   if x.year == emptyYear {
     return y.year != emptyYear
   }
@@ -164,7 +182,7 @@ func (x *calendarday) Less (Y Any) bool {
 }
 
 func (x *calendarday) LessInYear (Y Calendarday) bool {
-  y:= x.imp (Y)
+  y := x.imp (Y)
   if x.year == emptyYear {
     return x.year != emptyYear
   }
@@ -180,7 +198,7 @@ func (x *calendarday) LessInYear (Y Calendarday) bool {
 }
 
 func (x *calendarday) Equiv (Y Calendarday, p Period) bool {
-  y:= x.imp (Y)
+  y := x.imp (Y)
   if x.year == emptyYear {
     return y.year == emptyYear
   }
@@ -188,10 +206,10 @@ func (x *calendarday) Equiv (Y Calendarday, p Period) bool {
   switch p { case Daily:
     return x.Eq (y)
   case Weekly:
-    c:= x.internalCode()
-    w:= (c + 2) % 7
-    c1:= y.internalCode()
-    w1:= (c1 + 2) % 7
+    c := x.internalCode()
+    w := (c + 2) % 7
+    c1 := y.internalCode()
+    w1 := (c1 + 2) % 7
     if c <= c1 {
       if c1 - c < 7 {
         return w <= w1
@@ -238,7 +256,7 @@ func (x *calendarday) SetBeginning (p Period) {
   switch p { case Daily:
     return
   case Weekly:
-    for w:= x.Weekday (Daily); w > Monday; w-- {
+    for w := x.Weekday (Daily); w > Monday; w-- {
       x.Dec (Daily)
     }
   case Monthly:
@@ -261,7 +279,7 @@ func (x *calendarday) SetEnd (p Period) {
   switch p { case Daily:
     return
   case Weekly:
-    for w:= x.Weekday (Daily); w < Sunday; w++ {
+    for w := x.Weekday (Daily); w < Sunday; w++ {
       x.Inc (Daily)
     }
   case Monthly:
@@ -319,7 +337,7 @@ func (x *calendarday) daysInMonth() uint {
 }
 
 func daysInYear (y uint) uint16 {
-  d:= uint16(365)
+  d := uint16(365)
   if isLeapYear (y) {
     d ++
   }
@@ -328,8 +346,8 @@ func daysInYear (y uint) uint16 {
 
 func (x *calendarday) internalCode() uint16 {
   if x.year == emptyYear { return 0 }
-  code:= uint16(x.day)
-  m:= x.month
+  code := uint16(x.day)
+  m := x.month
   for x.month > 1 {
     x.month --
     code += uint16(x.daysInMonth())
@@ -338,7 +356,7 @@ func (x *calendarday) internalCode() uint16 {
   if x.year != Codeyear {
     Codeyear = x.year
     yearcode = 0
-    y:= x.year
+    y := x.year
     for x.year > startYear {
       x.year --
       yearcode += daysInYear (x.year)
@@ -361,9 +379,9 @@ func (x *calendarday) Elapsed() bool {
 }
 
 func (x *calendarday) Distance (Y Calendarday) uint {
-  y:= x.imp (Y)
+  y := x.imp (Y)
   if x.year == emptyYear || y.year == emptyYear { return MaxNat() }
-  c, c1:= x.internalCode(), y.internalCode()
+  c, c1 := x.internalCode(), y.internalCode()
   if c < c1 {
     return uint(c1 - c)
   }
@@ -376,9 +394,9 @@ func (x *calendarday) NumberOfDays() uint {
 }
 
 func (x *calendarday) OrdDay() uint {
-  n:= uint(0)
+  n := uint(0)
   if x.year != emptyYear {
-    y:= new (calendarday)
+    y := new (calendarday)
     y.day, y.month, y.year = 1, 1, x.year
     for y.month < x.month {
       n += uint(y.daysInMonth())
@@ -391,8 +409,8 @@ func (x *calendarday) OrdDay() uint {
 
 func (x *calendarday) Inc (p Period) {
   if x.year == emptyYear { return }
-  t:= x.daysInMonth()
-  d, m, y:= x.day, x.month, x.year
+  t := x.daysInMonth()
+  d, m, y := x.day, x.month, x.year
   switch p { case Daily:
     if d < t {
       d ++
@@ -467,7 +485,7 @@ func (x *calendarday) Inc (p Period) {
 
 func (x *calendarday) Inc1 (n uint) {
   if x.year == emptyYear { return }
-  d, m, y:= x.day, x.month, x.year
+  d, m, y := x.day, x.month, x.year
   for n > 0 {
     x.Inc (Daily)
     if x.Empty() {
@@ -480,8 +498,8 @@ func (x *calendarday) Inc1 (n uint) {
 
 func (x *calendarday) Dec (p Period) {
   if x.year == emptyYear { return }
-  t:= x.daysInMonth()
-  d, m, y:= x.day, x.month, x.year
+  t := x.daysInMonth()
+  d, m, y := x.day, x.month, x.year
   switch p { case Daily:
     if d > 1 {
       d --
@@ -555,7 +573,7 @@ func (x *calendarday) Dec (p Period) {
 func (x *calendarday) Change (c kbd.Comm, d uint) {
   if x.year == emptyYear { return }
   if Period(d) >= NPeriods { d = uint(NPeriods) - 1 }
-  p:= NPeriods
+  p := NPeriods
   if Period(d) < p { p = Period(d) }
   switch c { case kbd.Enter, kbd.Esc:
     return
@@ -573,13 +591,26 @@ func (x *calendarday) Change (c kbd.Comm, d uint) {
   }
 }
 
+func ggg (m uint) uint {
+  if m <= 2 { return 1 }
+  return 0
+}
+
+func (x *calendarday) wochentag() uint { // I have no idea about the sources, but this algorithm seems to be ok
+  d, m, y := x.day, x.month, x.year
+  y -= ggg(m)
+  return (d + y + y / 4 - y / 100 + y / 400 + (31 * (m + 12 * ggg(m) - 2)) / 12 + 6) % 7
+}
+
 func (x *calendarday) weekday() Weekday {
-  return Weekday((x.internalCode() + uint16(Wednesday)) % 7)
+  w := Weekday((x.internalCode() + uint16(Wednesday)) % 7)
+  if uint(w) != x.wochentag() { panic("bug in day/wochentag") }
+  return w
  // The day with code 0, 31.12.1879, was a Wednesday
 }
 
 func (x *calendarday) Weekday (p Period) Weekday {
-  d:= x.Clone().(*calendarday)
+  d := x.Clone().(*calendarday)
   switch p { case Daily:
     ;
   case Weekly:
@@ -601,13 +632,13 @@ func (x *calendarday) Weekday (p Period) Weekday {
 }
 
 func computeHolidays() { // Quelle: S. Deschauer, Die Osterfestberechnung. DdM 14 (1986), 68-84
-  x:= New().(*calendarday)
+  x := new_().(*calendarday)
   x.day, x.month, x.year = 1, 1, actualHolidayYear
-  Wochentag:= x.weekday()
-  for m:= uint(1); m <= maxmonth; m++ {
+  Wochentag := x.weekday()
+  for m := uint(1); m <= maxmonth; m++ {
     x.month = uint(m)
-    t1:= x.daysInMonth()
-    for t:= 1; uint(t) <= t1; t++ {
+    t1 := x.daysInMonth()
+    for t := 1; uint(t) <= t1; t++ {
       holiday [t][m] = Wochentag == Sunday
       if Wochentag == Sunday {
         Wochentag = Monday
@@ -639,15 +670,15 @@ func computeHolidays() { // Quelle: S. Deschauer, Die Osterfestberechnung. DdM 1
   N = (6 + s) % 7
     für 1900..2099: 5, 1800..1899: 4
 >>> für 1800..2099 reicht also: */
-  mm:= uint(24)
-  nn:= uint(5)
+  mm := uint(24)
+  nn := uint(5)
   if actualHolidayYear < 1900 {
     mm--
     nn--
   }
-  d:= (mm + 19 * (actualHolidayYear % 19)) % 30
-  e:= (nn + 2 * (actualHolidayYear % 4) + 4 * (actualHolidayYear % 7) + 6 * d) % 7
-  t:= 22 + d + e
+  d := (mm + 19 * (actualHolidayYear % 19)) % 30
+  e := (nn + 2 * (actualHolidayYear % 4) + 4 * (actualHolidayYear % 7) + 6 * d) % 7
+  t := 22 + d + e
   if e == 6 { // Sonntag
     if d == 29 || actualHolidayYear % 19 >= 11 && d == 28 {
       t -= 7
@@ -722,7 +753,7 @@ func (x *calendarday) SetEaster() {
   }
   x.day = 24
   x.month = 3 // earliest possible Eastermonday
-  w:= x.Weekday (Daily)
+  w := x.Weekday (Daily)
   if w != Monday {
     x.day += 7 - uint(w)
   } // the first monday after
@@ -734,15 +765,23 @@ func (x *calendarday) SetEaster() {
     }
   } // Eastermonday
   if x.day > 1 {
-    x.day --
+    x.day--
   } else {
     x.day = maxday
     x.month = 3
   }
 }
 
+func (x *calendarday) SetCasetta() {
+  x.SetEaster()
+  for i := 0; i < 9; i++ {
+    x.Inc (Weekly)
+  }
+  x.Dec (Daily)
+}
+
 func (x *calendarday) LastSunday (a bool) Calendarday {
-  y:= New().(*calendarday)
+  y := new_().(*calendarday)
   if x.year == emptyYear {
     return y
   }
@@ -753,7 +792,7 @@ func (x *calendarday) LastSunday (a bool) Calendarday {
     y.month = 3
   }
   y.day = maxday
-  wd:= y.weekday()
+  wd := y.weekday()
   if wd != Sunday {
     y.day -= 1 + uint(wd)
   }
@@ -762,13 +801,13 @@ func (x *calendarday) LastSunday (a bool) Calendarday {
 
 func (x *calendarday) Normal() bool {
   if x.year == emptyYear { return false }
-  oct, mar:= x.LastSunday (true), x.LastSunday (false)
+  oct, mar := x.LastSunday (true), x.LastSunday (false)
   return x.Less (mar) || oct.Eq (x) || oct.Less (x)
 }
 
 func (x *calendarday) Normal1() bool {
   if x.year == emptyYear { return false }
-  oct, mar:= x.LastSunday (true), x.LastSunday (false)
+  oct, mar := x.LastSunday (true), x.LastSunday (false)
   if x.Normal() {
     return x.Eq (oct)
   }
@@ -783,11 +822,11 @@ func (x *calendarday) IsWorkday() bool {
 }
 
 func (x *calendarday) NWorkdays (Y Calendarday) uint {
-  y:= x.imp (Y)
+  y := x.imp (Y)
   if x.Empty() || y.Empty() { return 0 } // MaxNat ?
-  a:= uint(0)
+  a := uint(0)
   if x.Less (y) {
-    z:= x.Clone().(*calendarday)
+    z := x.Clone().(*calendarday)
     for {
       if z.IsWorkday() {
         a++
@@ -796,7 +835,7 @@ func (x *calendarday) NWorkdays (Y Calendarday) uint {
       if y.Less (z) { break }
     }
   } else {
-    z:= y.Clone().(*calendarday)
+    z := y.Clone().(*calendarday)
     for {
       if z.IsWorkday() {
         a++
@@ -825,10 +864,10 @@ func (x *calendarday) Colours (f, b col.Colour) {
 func (x *calendarday) Weeknumber() uint {
   if x.year == emptyYear { return 0 }
   const Stichtag = Thursday // DIN 8601 (1975), entspricht ISO-Entwurf
-  y:= x.Clone().(*calendarday)
+  y := x.Clone().(*calendarday)
   y.day, y.month = 1, 1
-  n:= uint(x.internalCode() - y.internalCode())
-  wd:= y.weekday()
+  n := uint(x.internalCode() - y.internalCode())
+  wd := y.weekday()
   n += uint(wd)
   if wd <= Stichtag { n += 7 }
   return n / 7
@@ -839,7 +878,7 @@ func (x *calendarday) String() string {
     return str.Clr (wd[x.Format])
   }
   const mitNullen = true
-  s:= ""
+  s := ""
   switch x.Format {
   case Dd, Dd_mm_, Dd_mm_yy, Dd_mm_yyyy, Dd_M, Dd_M_yyyy:
     if x.day == 0 { Panic ("day.String: x.day == 0") }
@@ -933,7 +972,8 @@ func (x *calendarday) SetVal (n uint) bool {
 }
 
 func (X *calendarday) WriteGr (x, y int) {
-//  switch x.Format { case W, M, Dd_M_yyyy:
+//  switch x.Format {
+//  case W, M, Dd_M_yyyy:
 //    var e calendarday; e.day, e.month, e.year = maxday, maxmonth, emptyYear
 //    e.Format = x.Format
 //    e.cF, e.cB = x.cF, x.cB
@@ -946,10 +986,6 @@ func (X *calendarday) WriteGr (x, y int) {
 }
 
 func (x *calendarday) Write (l, c uint) {
-/*
-  x1, y1:= scr.Wd1(), scr.Ht1()
-  x.WriteGr (int(x1 * c), int(y1 * l))
-*/
   bx.Wd (wd[x.Format])
   bx.Colours (x.cF, x.cB)
   bx.Write (x.String(), l, c)
@@ -957,24 +993,24 @@ func (x *calendarday) Write (l, c uint) {
 
 func (x *calendarday) PosInWeek (vertical bool, a uint) (uint, uint) {
   if x.year == emptyYear { return 0, 0 }
-  l:= uint(0)
-  S:= a * uint(x.weekday())
+  l := uint(0)
+  S := a * uint(x.weekday())
   if vertical { l = S; S = 0 }
   return l, S
 }
 
 func (x *calendarday) WriteWeek (vertical bool, a, l, c uint) {
   if x.year == emptyYear { return }
-// oldF, oldB:= x.cF, x.cB
+// oldF, oldB := x.cF, x.cB
   if vertical {
     if a == 0 { a = 1 }
   } else {
     if a == 0 { a = wd[x.Format] + 1 }
   }
-  y:= x.Clone().(*calendarday)
+  y := x.Clone().(*calendarday)
   y.SetBeginning (Weekly)
-  l1, c1:= uint(0), uint(0)
-  for i:= 0; i <= 6; i++ {
+  l1, c1 := uint(0), uint(0)
+  for i := 0; i <= 6; i++ {
     if vertical {
       l1 = a * uint(i)
     } else {
@@ -1001,9 +1037,9 @@ func (x *calendarday) PosInMonth (vertical bool, n, z, s uint) (uint, uint) {
   } else {
     if s == 0 { s = wd[x.Format] + 1 }
   }
-  d:= x.Clone().(*calendarday)
+  d := x.Clone().(*calendarday)
   d.day = 1
-  i:= uint (d.weekday()) + x.day - 1
+  i := uint (d.weekday()) + x.day - 1
   if vertical {
     return z * (i % n), s * (i / n)
   }
@@ -1012,7 +1048,7 @@ func (x *calendarday) PosInMonth (vertical bool, n, z, s uint) (uint, uint) {
 
 func (x *calendarday) WriteMonth (vertical bool, n, l0, c0, l, c uint) {
   if x.year == emptyYear { return }
-  t:= x.daysInMonth()
+  t := x.daysInMonth()
   if n == 0 { n = 1 }
   n = 7 * n
   if vertical {
@@ -1020,17 +1056,17 @@ func (x *calendarday) WriteMonth (vertical bool, n, l0, c0, l, c uint) {
   } else {
     if c0 == 0 { c0 = wd[x.Format] + 1 }
   }
-  max:= int((maxday - 2) / n + 2)
+  max := int((maxday - 2) / n + 2)
   max *= int(n)
-  y:= x.Clone().(*calendarday)
+  y := x.Clone().(*calendarday)
   y.day = 1
-  w:= int(y.weekday())
+  w := int(y.weekday())
   var e calendarday
   e.day, e.month, e.year = maxday, maxmonth, emptyYear
   e.Format = x.Format
   e.Colours (col.Blue, WeekdayB)
   var l1, c1 uint
-  for i:= 0; i < max; i++ {
+  for i := 0; i < max; i++ {
     if vertical {
       l1, c1 = l0 * (uint(i) % n), c0 * (uint(i) / n)
     } else {
@@ -1063,14 +1099,14 @@ func (x *calendarday) PrintMonth (vertical bool, n, z, s, l, S uint) {
   } else {
     if s == 0 { s = wd[x.Format] + 1 }
   }
-  max:= (maxday - 2) / n + 2
+  max := (maxday - 2) / n + 2
   max = n * max
-  y:= x.Clone().(*calendarday)
+  y := x.Clone().(*calendarday)
   y.SetFormat (Dd)
   y.day = 1
-  W:= uint(y.weekday())
-  t:= x.daysInMonth()
-  for i:= uint(0); i < max; i++ {
+  W := uint(y.weekday())
+  t := x.daysInMonth()
+  for i := uint(0); i < max; i++ {
     var l1, S1 uint
     if vertical {
       l1 = z * (i % n)
@@ -1106,7 +1142,7 @@ func (x *calendarday) shift (l, c *uint) {
 }
 
 func (x *calendarday) PosInYear() (uint, uint) {
-  l, c:= x.PosInMonth (true, 1, 1, 3)
+  l, c := x.PosInMonth (true, 1, 1, 3)
   x.shift (&l, &c)
   l ++
   c += leftMargin
@@ -1116,13 +1152,13 @@ func (x *calendarday) PosInYear() (uint, uint) {
 func (x *calendarday) changeWithMouse (p Period, vertical bool, a, l, c, l0, c0 uint) {
   if ! scr.MouseEx() { return }
   switch p { case Daily, Decadic: return; default: }
-  lm, cm:= scr.MousePos()
+  lm, cm := scr.MousePos()
 //  if p == Yearly { SM += leftMargin }
-  y:= x.Clone().(*calendarday)
+  y := x.Clone().(*calendarday)
   y.SetBeginning (p)
-  A:= y.Clone().(*calendarday)
+  A := y.Clone().(*calendarday)
   y.SetFormat (Dd_mm_yy)
-  n:= wd[x.Format]
+  n := wd[x.Format]
   var lpos, cpos uint
   for {
     n = wd[x.Format]
@@ -1136,10 +1172,10 @@ func (x *calendarday) changeWithMouse (p Period, vertical bool, a, l, c, l0, c0 
       lpos, cpos = y.PosInMonth (vertical, a, l, c)
       lpos += l0; cpos += c0
     case Quarterly:
-      errh.Error ("in " + pack + " not yet implemented", 3)
+      errh.Error ("in day not yet implemented", 3)
       return
     case HalfYearly:
-      errh.Error ("in " + pack + " not yet implemented", 6)
+      errh.Error ("in day not yet implemented", 6)
       return
     case Yearly:
       n = 2
@@ -1158,14 +1194,14 @@ func (x *calendarday) changeWithMouse (p Period, vertical bool, a, l, c, l0, c0 
 func (x *calendarday) writeYearMask (l, c uint) {
   const X = 80
   scr.Clr (l, c, X, 25 - 1)
-  y:= x.Clone().(*calendarday)
+  y := x.Clone().(*calendarday)
   y.Format = Yyyy
   y.Colours (YearnumberF, YearnumberB)
   y.Write (l, c)
   y.Write (l, c + 80 - 4)
   bx.Colours (MonthF, MonthB)
   bx.Wd (X - 4 /* - c */)
-  T1:= str.Clr (X - 4 /* - c */)
+  T1 := str.Clr (X - 4 /* - c */)
   bx.Write (T1, l, c + 4)
   bx.Wd (X /* - c */)
   T1 = str.Clr (X /* - c */)
@@ -1173,7 +1209,7 @@ func (x *calendarday) writeYearMask (l, c uint) {
   bx.Write (T1, l + 16, c)
   y.Format = M
   var l1, c1 uint
-  for m:= uint(1); m <= maxmonth; m++ {
+  for m := uint(1); m <= maxmonth; m++ {
     y.month = m
     l1, c1 = 0, leftMargin
     y.shift (&l1, &c1)
@@ -1182,11 +1218,11 @@ func (x *calendarday) writeYearMask (l, c uint) {
   }
   bx.Colours (WeekdayNameF, WeekdayNameB)
   y.Format = Wd
-  c2:= leftMargin + monthsHorizontally * 6 * 3 // 6: Spalten pro Monat, 3: tt-Format + 1 Zwischenraum
+  c2 := leftMargin + monthsHorizontally * 6 * 3 // 6: Spalten pro Monat, 3: tt-Format + 1 Zwischenraum
   bx.Wd (2) // len (WdShorttext)
-  for m:= uint(1); m <= maxmonth; m += monthsHorizontally {
-    for w:= Monday; w <= Sunday; w++ {
-      for i:= uint(0); i <= 2; i++ {
+  for m := uint(1); m <= maxmonth; m += monthsHorizontally {
+    for w := Monday; w <= Sunday; w++ {
+      for i := uint(0); i <= 2; i++ {
         l1 = 1 + 8 * i + uint(w)
         bx.Write (WdShorttext [w], l + l1, c + 1)
         bx.Write (WdShorttext [w], l + l1, c + c2)
@@ -1199,9 +1235,9 @@ func (x *calendarday) WriteYear (l, c uint) {
   if x.year == emptyYear { return }
   var l1, c1 uint
   x.writeYearMask (l, c)
-  y:= x.Clone().(*calendarday)
+  y := x.Clone().(*calendarday)
   y.Format = Dd
-  for m:= uint(1); m <= maxmonth; m++ {
+  for m := uint(1); m <= maxmonth; m++ {
     y.day, y.month = 1, uint(m)
     l1, c1 = 1, leftMargin
     y.shift (&l1, &c1)
@@ -1211,7 +1247,7 @@ func (x *calendarday) WriteYear (l, c uint) {
 
 func (x *calendarday) EditInYear (l, c uint) {
   for {
-    c, _:= kbd.Command()
+    c, _ := kbd.Command()
     if c == kbd.Here {
       x.changeWithMouse (Yearly, false, 0, 0, 0, 0, 0)
       break
@@ -1221,7 +1257,7 @@ func (x *calendarday) EditInYear (l, c uint) {
 
 func (x *calendarday) printYearMask (l, c uint) {
   const X = 80
-  y:= x.Clone().(*calendarday)
+  y := x.Clone().(*calendarday)
   y.Format, y.Font = Yyyy, font.Bold
   y.Print (l, c)
   y.Print (l, X - 4)
@@ -1230,19 +1266,19 @@ func (x *calendarday) printYearMask (l, c uint) {
   pbx.Print (str.Clr (X - c), l + 16, c)
   y.Format, y.Font = M, font.Italic
   var l1, c1 uint
-  for m:= uint(1); m <= maxmonth; m++ {
+  for m := uint(1); m <= maxmonth; m++ {
     y.month = m
     l1, c1 = 0, leftMargin
     y.shift (&l1, &c1)
     y.Print (l + l1, c + c1 + 3)
   }
   y.Format = Wd
-  c2:= leftMargin + monthsHorizontally * 6 * 3
+  c2 := leftMargin + monthsHorizontally * 6 * 3
                 // 6 Spalten pro Monat     tt-Format + 1 Zwischenraum
   pbx.SetFont (font.Italic)
-  for m:= uint(1); m <= maxmonth; m += monthsHorizontally {
-    for w:= Monday; w <= Sunday; w++ {
-      for i:= uint(0); i <= 2; i++ {
+  for m := uint(1); m <= maxmonth; m += monthsHorizontally {
+    for w := Monday; w <= Sunday; w++ {
+      for i := uint(0); i <= 2; i++ {
         l1 = 1 + 8 * i + uint(w)
         pbx.Print (WdShorttext [w], l + l1, c + 1)
         pbx.Print (WdShorttext [w], l + l1, c + c2)
@@ -1254,12 +1290,12 @@ func (x *calendarday) printYearMask (l, c uint) {
 func (x *calendarday) PrintYear (l, c uint) {
   if x.year == emptyYear { return }
   x.printYearMask (l, c)
-  y:= New().(*calendarday)
+  y := new_().(*calendarday)
   y.Format = Dd
-  for m:= uint(1); m <= maxmonth; m++ {
+  for m := uint(1); m <= maxmonth; m++ {
     y.day, y.month, y.year = 1, m, x.year
     y.year = x.year
-    dl, dc:= uint(1), leftMargin
+    dl, dc := uint(1), leftMargin
     y.shift (&dl, &dc)
     y.PrintMonth (true, 1, 1, 3, l + dl, c + dc)
   }
@@ -1277,9 +1313,9 @@ func isYear (y *uint) bool {
 
 func isMonth (Monat *uint, Wort string) bool {
   var T string
-  n:= str.ProperLen (Wort)
+  n := str.ProperLen (Wort)
   if n > 0 {
-    for m:= uint(1); m <= maxmonth; m++ {
+    for m := uint(1); m <= maxmonth; m++ {
       T = str.Part (nameMonth [m], 0, n)
       if Wort == T { // str.QuasiEq (Wort, T) {
         *Monat = uint(m)
@@ -1300,11 +1336,11 @@ func (x *calendarday) defined (d, m, y uint) bool {
 
 func (x *calendarday) Defined (s string) bool {
   if str.Empty (s) { x.Clr(); return true }
-  d:= x.Clone().(*calendarday)
+  d := x.Clone().(*calendarday)
   var T string
   var l, p uint
-  n, ss, P, L:= nat.DigitSequences (s)
-  ok:= false
+  n, ss, P, L := nat.DigitSequences (s)
+  ok := false
   switch x.Format {
   case Dd, // e.g. " 8"
        Dd_mm_, // e.g. " 8.10."
@@ -1325,7 +1361,7 @@ func (x *calendarday) Defined (s string) bool {
     } else {
       if n != 2 { return false }
     }
-    if _, ok:= str.Pos (s, '.'); ! ok { return false }
+    if _, ok := str.Pos (s, '.'); ! ok { return false }
     if x.Format == Dd_M_yyyy {
 //      l = str.ProperLen (s)
 //      T = str.Part (s, p, l - p)
@@ -1367,7 +1403,7 @@ func (x *calendarday) Defined (s string) bool {
   case Myyyy: // e.g. "Oktober 2007"
     if n != 1 { return false }
     if d.year, ok = nat.Natural (ss[0]); ! ok { return false }
-    if _, ok:= str.Pos (s, ' '); ! ok { return false }
+    if _, ok := str.Pos (s, ' '); ! ok { return false }
     if ! isMonth (&d.month, str.Part (s, 0, p)) { return false }
     return x.defined (d.day, d.month, d.year)
   case Wn, // e.g. "1" (.Woche)
@@ -1377,8 +1413,8 @@ func (x *calendarday) Defined (s string) bool {
     if ok {
       if 0 < n && n <= 3 {
         d.day, d.month, d.year = 1, 1, x.year
-        c:= d.internalCode()
-        w:= d.weekday()
+        c := d.internalCode()
+        w := d.weekday()
         if w > Thursday { c += 7 } // see Weeknumber
         if c < uint16(w) { return false }
         c -= uint16(w) // so c is a Monday
@@ -1395,7 +1431,7 @@ func (x *calendarday) Defined (s string) bool {
     return false // not yet implemented
   case Qu: // e.g. "  I/06"
     if n != 1 { return false }
-    if _, ok:= str.Pos (s, '/'); ! ok { return false }
+    if _, ok := str.Pos (s, '/'); ! ok { return false }
     if d.year, ok = nat.Natural (ss[0]); ! ok { return false }
     T = str.Part (s, 0, p)
     str.Move (&T, true)
@@ -1441,7 +1477,7 @@ func (x *calendarday) Defined (s string) bool {
 
 /*
 func Date (m, d, y int) *calendarday {
-  y:= New()
+  y := new_()
   if y.Defined3 (m, d, y) { }
   return y
 } */
@@ -1449,7 +1485,7 @@ func Date (m, d, y int) *calendarday {
 func (x *calendarday) Selected (cop CondOp) bool {
   loop: for {
     cop (x, true) // colour auffallend
-    c, t:= kbd.Command()
+    c, t := kbd.Command()
     cop (x, false) // colour normal
     switch c { case kbd.Enter:
       return true
@@ -1468,8 +1504,8 @@ func (x *calendarday) Selected (cop CondOp) bool {
 func (X *calendarday) EditGr (x, y int) {
   bx.Wd (wd[X.Format])
   bx.Colours (X.cF, X.cB)
-  s:= X.String()
-  nErr:= 0
+  s := X.String()
+  nErr := 0
   for {
     bx.EditGr (&s, x, y)
     if X.Defined (s) {
@@ -1481,7 +1517,7 @@ func (X *calendarday) EditGr (x, y int) {
         if x.year == emptyYear { x.Copy (today) }
         errh.Hint ("Datum ändern: Kursortasten, Datum auswählen: Enter, Eingabe stornieren: Esc")
         loop: for {
-          cm, _:= kbd.Command()
+          cm, _ := kbd.Command()
           x.Change (cm, t)
           x.Write (l, c)
           switch cm { case kbd.Enter, kbd.Here:
@@ -1496,7 +1532,7 @@ func (X *calendarday) EditGr (x, y int) {
       }
 */
     } else {
-      l, c:= 16 * uint(y), 8 * uint(x)
+      l, c := 16 * uint(y), 8 * uint(x)
       nErr ++
       switch nErr { case 1:
         errh.Error0Pos ("Die Eingabe stellt kein Datum dar!", l + 1, c)
@@ -1516,7 +1552,7 @@ func (X *calendarday) EditGr (x, y int) {
 }
 
 func (x *calendarday) Edit (l, c uint) {
-  x1, y1:= scr.Wd1(), scr.Ht1()
+  x1, y1 := scr.Wd1(), scr.Ht1()
   x.EditGr (int(x1 * c), int(y1 * l))
 }
 
@@ -1525,7 +1561,7 @@ func (x *calendarday) Codelen() uint {
 }
 
 func (x *calendarday) Encode() []byte {
-  B:= make ([]byte, Codelen(uint16(0)))
+  B := make ([]byte, Codelen(uint16(0)))
   copy (B, Encode (uint16(x.internalCode())))
   return B
 }
@@ -1560,7 +1596,7 @@ func (x *calendarday) decode (n uint16) {
 }
 
 func (x *calendarday) Decode (B []byte) {
-  c:= Decode (uint16(0), B).(uint16)
+  c := Decode (uint16(0), B).(uint16)
   if c <= uint16(maxCode) {
     x.decode (c)
   } else {
@@ -1570,8 +1606,8 @@ func (x *calendarday) Decode (B []byte) {
 
 /*
 func decode (B []byte) Calendarday {
-  x := New().(*calendarday)
-  c:= Decode (uint16(0), B).(uint16)
+  x  := new_().(*calendarday)
+  c := Decode (uint16(0), B).(uint16)
   if c <= uint16(maxCode) {
     x.decode (c)
   } else {
@@ -1605,7 +1641,7 @@ func (x *calendarday) SetAttribute (p Op) {
 }
 
 func attribute (a Any) {
-  x, ok:= a.(*calendarday)
+  x, ok := a.(*calendarday)
   if ! ok { TypeNotEqPanic (x, a) }
   switch x.Format { case Dd, Dd_mm_, Dd_mm_yy, Yymmdd, Yyyymmdd, Dd_mm_yyyy, Dd_M, Dd_M_yyyy:
     if x.IsHoliday() {
@@ -1629,16 +1665,4 @@ func attribute (a Any) {
     x.Colours (WeekdayF, MonthB)
     x.SetFont (font.Slanted)
   }
-}
-
-func init() {
-  WeekdayF, WeekdayB = col.StartCols()
-  HolidayF, HolidayB = col.Red, WeekdayB
-  YearnumberF, YearnumberB = col.LightWhite, col.Magenta
-  WeekdayNameF, WeekdayNameB = col.Magenta, WeekdayB
-  MonthF, MonthB = YearnumberF, YearnumberB
-  today.Actualize()
-  currentCentury = 100 * (today.(*calendarday).year / 100)
-  todayCode = today.(*calendarday).internalCode()
-//  carnival = New()
 }

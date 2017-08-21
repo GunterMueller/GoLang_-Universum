@@ -1,10 +1,11 @@
 package col
 
-// (c) murus.org  v. 150425 - license see murus.go
+// (c) murus.org  v. 170813 - license see murus.go
 
 import (
   "strconv"
-  "murus/ker"; "murus/rand"
+  "murus/ker"
+  "murus/rand"
 )
 const (
   m = 1 << 8
@@ -14,6 +15,22 @@ const (
 )
 var
   bitDepth uint
+
+func init() {
+  HeadF, HeadB = LightWhite, Blue
+  HintF, HintB = LightWhite, Magenta
+  ErrorF, ErrorB = FlashYellow, Red
+  MenuF, MenuB = LightWhite, Red
+  MurusF, MurusB = colour3 (0, 16, 64), colour3 (231, 238, 255)
+}
+
+func startCols() (Colour, Colour) {
+  return White, Black
+}
+
+func startColsA() (Colour, Colour) {
+  return Red, Black
+}
 
 func colour3 (r, g, b uint) Colour {
   var c Colour
@@ -25,8 +42,8 @@ func ansiEncode (c Colour) uint { // 0..15 // doch vielleicht Mist
   const (black = 1 << iota / 2; red; green; blue; light)
   const m3 = m1 / 3
   const m2 = 2 * m3
-  r, g, b:= c.R, c.G, c.B
-  n:= uint(black)
+  r, g, b := c.R, c.G, c.B
+  n := uint(black)
   if r >= m2 { r -= m2; n += red }
   if g >= m2 { g -= m2; n += green }
   if b >= m2 { b -= m2; n += blue }
@@ -40,7 +57,7 @@ func float (c Colour) (float32, float32, float32) {
 }
 
 func longFloat (c Colour) (float64, float64, float64) {
-  const f = float64(m1)
+  const f = m1
   return float64(c.R) / f, float64(c.G) / f, float64(c.B) / f
 }
 
@@ -52,7 +69,7 @@ func colourRand() Colour {
 
 func changeRand (c *Colour) {
   const (N = 32; N2 = N / 2)
-  n:= byte(rand.Natural (N))
+  n := byte(rand.Natural (N))
   if n < N2 {
     if c.R >= n {
       c.R -= n
@@ -154,7 +171,7 @@ func value (b byte) uint{
 
 func set (c *Colour, s string) bool {
   if len (s) != 6 { return false }
-  for i:= 0; i < 6; i++ {
+  for i := 0; i < 6; i++ {
     if ! ok (s[i]) { return false }
   }
   c.R = byte(16 * value (s[0]) + value (s[1]))
@@ -209,7 +226,7 @@ func string_ (c Colour) string {
 }
 
 func encode (c Colour) []byte {
-  b:= make ([]byte, 3)
+  b := make ([]byte, 3)
   b[0], b[1], b[2] = c.R, c.G, c.B
   return b
 }
@@ -266,8 +283,8 @@ func code (c Colour) uint {
 }
 
 func cc (c Colour) []byte {
-  n, bs:= Code(c), make([]byte, Depth)
-  for i:= uint(0); i < Depth; i++ {
+  n, bs := Code(c), make([]byte, Depth)
+  for i := uint(0); i < Depth; i++ {
     bs[i] = byte(n)
     n >>= 8
   }
@@ -276,19 +293,11 @@ func cc (c Colour) []byte {
 
 /* // Pre: len(bs) == int(Depth)
 func cd (bs[]byte) uint { // inverse of cc
-  n:= uint(0)
+  n := uint(0)
   if len(bs) == int(Depth) {
-    for i:= int(Depth) - 1; i >= 0; i-- {
+    for i := int(Depth) - 1; i >= 0; i-- {
       n = n * 1<<8 + uint(bs[i])
     }
   }
   return n
 } */
-
-func init() {
-  HeadF, HeadB = LightWhite, Blue
-  HintF, HintB = LightWhite, Magenta
-  ErrorF, ErrorB = FlashYellow, Red
-  MenuF, MenuB = LightWhite, Red
-  MurusF, MurusB = colour3 (0, 16, 64), colour3 (231, 238, 255)
-}

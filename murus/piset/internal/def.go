@@ -1,6 +1,6 @@
 package internal
 
-// (c) murus.org  v. 150123 - license see murus.go
+// (c) murus.org  v. 170316 - license see murus.go
 
 import
   . "murus/obj"
@@ -19,3 +19,5 @@ type
 // Returns the position of x.
   Pos() uint
 }
+
+func New (a Any) Index { return new_(a) }

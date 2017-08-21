@@ -1,21 +1,26 @@
 package sel
 
-// (c) murus.org  v. 141212 - license see murus.go
+// (c) murus.org  v. 170423 - license see murus.go
 
 import (
-  "murus/ker"; . "murus/obj"; "murus/env"; "murus/str"; "murus/kbd"
-  "murus/col"; "murus/scr"; "murus/box"; "murus/errh"
+  "murus/ker"
+  . "murus/obj"
+  "murus/env"
+  "murus/str"
+  "murus/kbd"
+  "murus/col"
+  "murus/scr"
+  "murus/box"
+  "murus/errh"
   "murus/files"
 )
-const
-  pack = "sel"
 var
   bx, mbx = box.New(), box.New()
 
 func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colour) {
-  if n == 0 { ker.Stop (pack, 1) }
+  if n == 0 { ker.Oops() }
   if n == 1 { *i = 0; return }
-  if h == 0 { ker.Stop (pack, 2) }
+  if h == 0 { ker.Oops() }
   if h > n { h = n }
   if w == 0 { w = scr.NColumns() }
   if w > scr.NColumns() { w = scr.NColumns() }
