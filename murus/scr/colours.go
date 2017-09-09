@@ -1,6 +1,6 @@
 package scr
 
-// (c) murus.org  v. 170814 - license see murus.go
+// (c) Christian Maurer   v. 170814 - license see murus.go
 
 import
   "murus/col"
@@ -27,13 +27,6 @@ func cd (bs[]byte) uint { // inverse of cc
     }
   }
   return n
-}
-
-func (X *screen) ScrCols() (col.Colour, col.Colour) {
-  if underX {
-    return X.Window.ScrCols()
-  }
-  return X.Console.ScrCols()
 }
 */
 

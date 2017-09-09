@@ -1,6 +1,6 @@
 package phil
 
-// (c) murus.org  v. 170627 - license see murus.go
+// (c) Christian Maurer   v. 170627 - license see murus.go
 
 // >>> Fair solution with Monitor due to Dijkstra
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 163

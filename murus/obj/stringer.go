@@ -1,6 +1,6 @@
 package obj
 
-// (c) murus.org  v. 150418 - license see murus.go
+// (c) Christian Maurer   v. 150418 - license see murus.go
 
 type
   Stringer interface {

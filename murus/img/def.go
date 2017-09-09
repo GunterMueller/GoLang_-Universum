@@ -1,6 +1,6 @@
 package img
 
-// (c) murus.org  v. 140130 - license see murus.go
+// (c) Christian Maurer   v. 140130 - license see murus.go
 
 // The pixels in the rectangle on the screen with top left
 // corner (x,y) of width w and height h are written to files

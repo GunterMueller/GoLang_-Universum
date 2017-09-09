@@ -1,6 +1,6 @@
 package lr
 
-// (c) murus.org  v. 174011 - license see murus.go
+// (c) Christian Maurer   v. 174011 - license see murus.go
 
 // >>> left/right problem: implementation with critical resources
 

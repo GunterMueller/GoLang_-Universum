@@ -1,6 +1,6 @@
 package pset
 
-// (c) murus.org  v. 170520 - license see murus.go
+// (c) Christian Maurer   v. 170520 - license see murus.go
 
 // TODO nearly all Iterator methods
 // BUG  still some subtle bugs in Del

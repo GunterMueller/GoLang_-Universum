@@ -1,6 +1,6 @@
 package scr
 
-// (c) murus.org  v. 170814 - license see murus.go
+// (c) Christian Maurer   v. 170814 - license see murus.go
 
 import (
   "murus/xwin"

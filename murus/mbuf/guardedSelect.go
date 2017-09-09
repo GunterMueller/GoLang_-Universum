@@ -1,6 +1,6 @@
 package mbuf
 
-// (c) murus.org  v. 170218 - license see murus.go
+// (c) Christian Maurer   v. 170218 - license see murus.go
 
 // >>> implementation with synchronous message passing and guarded selective waiting
 

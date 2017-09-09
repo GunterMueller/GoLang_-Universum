@@ -1,6 +1,6 @@
 package ker
 
-// (c) murus.org  v. 170424 - license see murus.go
+// (c) Christian Maurer  v. 170424 - license see murus.go
 
 import (
   "os"

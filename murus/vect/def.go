@@ -1,6 +1,6 @@
 package vect
 
-// (c) murus.org  v. 170820 - license see murus.go
+// (c) Christian Maurer   v. 170822 - license see murus.go
 
 import (
   . "murus/obj"
@@ -52,8 +52,8 @@ type
 // x = a * y.
   Scale (a float64, y Vector)
 
-// x = (x0[0] + a, x0[1] + a, x0[2] + a), where x0 denotes x before.
-  Translate (a float64)
+// x is translated by y.
+  Translate (y Vector)
 
 // x = a * x0, where x0 denotes x before.
   Dilate (a float64) // name ?

@@ -1,6 +1,6 @@
 package vect
 
-// (c) murus.org  v. 170418 - license see murus.go
+// (c) Christian Maurer   v. 170822 - license see murus.go
 
 import (
   "math"
@@ -149,19 +149,20 @@ func (x *vector) Collinear (Y Vector) bool {
   return temp.Empty()
 }
 
-// >>> deprecated !!!
 func (x *vector) Scale (a float64, Y Vector) {
-  y := x.imp (Y)
+  y := x.imp(Y)
   for d := D0; d < NDirs; d++ {
     x.x[d] = a * y.x[d]
   }
 }
 
-func (x *vector) Translate (a float64) {
+func (x *vector) Translate (Y Vector) {
+  y := x.imp(Y)
   for d := D0; d < NDirs; d++ {
-    x.x[d] += a
+    x.x[d] += y.x[d]
   }
 }
+
 func (x *vector) Dilate (a float64) { // TODO name ?
   for d := D0; d < NDirs; d++ {
     x.x[d] *= a
@@ -370,4 +371,16 @@ func (V *vector) Minimax (N, X Vector) {
       Max.x[d] = V.x[d]
     }
   }
+}
+
+func (x *vector) Parallelogram (y, z Vector) []Vector {
+  x1, x2, x3 := New(), New(), New()
+  x1.Sum (x, y)
+  x2.Sum (x1, z)
+  x3.Sum (x, z)
+  return []Vector {x1, x2, x3}
+}
+
+func (x *vector) Cuboid (y, z Vector) []Vector {
+  return []Vector {x}
 }

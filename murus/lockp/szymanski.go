@@ -1,6 +1,6 @@
 package lockp
 
-// (c) murus.org  v. 170624 - license see murus.org
+// (c) Christian Maurer   v. 170624 - license see murus.go
 
 // Szymanski, B. K: A Simple Solution to Lamport's Concurrent Programming Problem with Linear Wait.
 // In: Lenfant, J. (ed.): ICS '88, New York. ACM Press (1988) 621-626

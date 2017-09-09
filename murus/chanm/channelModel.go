@@ -1,6 +1,6 @@
 package chanm
 
-// (c) murus.org  v. 161223 - license see murus.go
+// (c) Christian Maurer   v. 161223 - license see murus.go
 
 import (
   "sync"

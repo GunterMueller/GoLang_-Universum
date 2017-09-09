@@ -1,6 +1,6 @@
 package psp
 
-// (c) murus.org  v. 170121 - license see murus.go
+// (c) Christian Maurer   v. 170121 - license see murus.go
 
 import (
   "os"
@@ -86,7 +86,7 @@ func (x *postscriptPage) Name (n string) {
   x.file, err = os.Create (n + ".ps")
   if err != nil { panic ("open error") }
   x.write ("%!PS-Adobe-2.0\n")
-  x.write ("%%Creator murus/psp.go (c) murus.org\n")
+  x.write ("%%Creator murus/psp.go (c) Christian Maurer \n")
 //  x.write ("%%BoundingBox: 0 0 596 842 \n") // A4
   x.write ("%%DocumentPaperSize: a4\n")
   x.write ("%%EndComments\n")

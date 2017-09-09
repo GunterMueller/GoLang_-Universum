@@ -1,6 +1,6 @@
 package integ
 
-// (c) murus.org  v. 170107 - license see murus.go
+// (c) Christian Maurer   v. 170107 - license see murus.go
 
 import (
   . "murus/ker"

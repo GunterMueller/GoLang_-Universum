@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170403 - license see murus.go
+// (c) Christian Maurer   v. 170403 - license see murus.go
 //
 // >>> D.S. Hirschberg, J. B. Sinclair: Decentralized Extrema-Finding in
 //     Circular Configuations of Processes. CACM 23 (1980), 627 - 628

@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 170411 - license see murus.go
+// (c) Christian Maurer   v. 170411 - license see murus.go
 
 // >>> 3rd readers/writers problem (number of concurrent readers bounded)
 

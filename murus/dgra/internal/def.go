@@ -1,6 +1,6 @@
 package internal
 
-// (c) murus.org  v. 170209 - license see murus.go
+// (c) Christian Maurer   v. 170209 - license see murus.go
 
 import
   . "murus/obj"

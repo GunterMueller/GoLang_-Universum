@@ -1,6 +1,6 @@
 package font
 
-// (c) murus.org  v. 170328 - license see murus.go
+// (c) Christian Maurer   v. 170328 - license see murus.go
 
 var (
   sign = []string { "r", "b", "s", "i" }

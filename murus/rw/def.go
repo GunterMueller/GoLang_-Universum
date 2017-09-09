@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 170411 - license see murus.go
+// (c) Christian Maurer   v. 170411 - license see murus.go
 //
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 75 ff., 85 ff., 137 ff. u.v.a.
 

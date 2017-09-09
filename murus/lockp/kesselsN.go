@@ -1,6 +1,6 @@
 package lockp
 
-// (c) murus.org  v. 161212 - license see murus.go
+// (c) Christian Maurer   v. 161212 - license see murus.go
 
 // >>> Tournament-Algorithm of Kessels due to Taubenfeld, p. 41
 

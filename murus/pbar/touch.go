@@ -1,5 +1,5 @@
 package pbar
 
-// (c) murus.org  v. 140126 - license see murus.go
+// (c) Christian Maurer   v. 140126 - license see murus.go
 
 func Touch() { }

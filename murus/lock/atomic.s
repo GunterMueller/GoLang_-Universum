@@ -1,6 +1,6 @@
 // package lock
 
-// (c) murus.org  v. 111111 - license see murus.go
+// (c) Christian Maurer   v. 111111 - license see murus.go
 
 
 TEXT ·TestAndSet(SB),7,$0

@@ -1,6 +1,6 @@
 package fmon
 
-// (c) murus.org  v. 170508 - license see murus.go
+// (c) Christian Maurer   v. 170508 - license see murus.go
 
 //     Nichtsequentielle Programmierung mit Go 1 kompakt,
 //     Kapitel 8, insbesondere Abschnitt 8.3

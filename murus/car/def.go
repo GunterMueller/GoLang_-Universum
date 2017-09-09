@@ -1,6 +1,6 @@
 package car
 
-// (c) murus.org  v. 120715 - license see murus.go
+// (c) Christian Maurer   v. 120715 - license see murus.go
 
 import
   "murus/col"

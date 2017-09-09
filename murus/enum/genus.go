@@ -1,6 +1,6 @@
 package enum
 
-// (c) murus.org  v. 140527 - license see murus.go
+// (c) Christian Maurer   v. 140527 - license see murus.go
 
 const (
   UndefGenus = uint8(iota)

@@ -1,6 +1,6 @@
 package sel
 
-// (c) murus.org  v. 120909 - license see murus.go
+// (c) Christian Maurer   v. 120909 - license see murus.go
 
 import (
   "murus/font"

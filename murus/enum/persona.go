@@ -1,6 +1,6 @@
 package enum
 
-// (c) murus.org  v. 170419 - license see murus.go
+// (c) Christian Maurer   v. 170419 - license see murus.go
 
 const (
   UndefPersona = uint8(iota)

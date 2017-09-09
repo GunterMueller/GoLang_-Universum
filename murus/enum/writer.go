@@ -1,6 +1,6 @@
 package enum
 
-// (c) murus.org  v. 170r19 - license see murus.go
+// (c) Christian Maurer   v. 170r19 - license see murus.go
 
 import
   "murus/str"

@@ -1,6 +1,6 @@
 package smok
 
-// (c) murus.org  v. 170627 - license see murus.go
+// (c) Christian Maurer   v. 170627 - license see murus.go
 
 type
   Smokers interface {

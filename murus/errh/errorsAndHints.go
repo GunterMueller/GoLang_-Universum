@@ -1,6 +1,6 @@
 package errh
 
-// (c) murus.org  v. 170814 - license see murus.go
+// (c) Christian Maurer   v. 170814 - license see murus.go
 
 import (
 //  "murus/env"
@@ -27,9 +27,9 @@ var (
   " Für Lehrzwecke in Universitäten und Schulen  sind die Quellen uneingeschränkt verwendbar; ",
   " jegliche weitergehende - insbesondere kommerzielle - Nutzung ist jedoch strikt untersagt. ",
   "                                                                                           ",
-  " THIS SOFTWARE  IS PROVIDED BY  murus.org  \"AS IS\"  AND ANY EXPRESS OR IMPLIED WARRANTIES, ",
+  " THIS SOFTWARE IS PROVIDED BY the authors  \"AS IS\"   AND ANY EXPRESS OR IMPLIED WARRANTIES, ",
   " INCLUDING,  BUT NOT LIMITED TO,  THE IMPLIED WARRANTIES  OF MERCHANTABILITY  AND  FITNESS ",
-  " FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL  murus.org  BE LIABLE FOR ANY ",
+  " FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL the authors BE LIABLE FOR ANY ",
   " DIRECT, INDIRECT,  INCIDENTAL, SPECIAL,  EXEMPLARY, OR CONSEQUENTIAL DAMAGES  (INCLUDING, ",
   " BUT NOT LIMITED TO,  PROCUREMENT OF SUBSTITUTE GOODS  OR SERVICES;  LOSS OF USE, DATA, OR ",
   " PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER ",

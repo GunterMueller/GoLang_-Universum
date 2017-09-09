@@ -1,6 +1,6 @@
 package dlock
 
-// (c) murus.org  v. 161222 - license see murus.go
+// (c) Christian Maurer   v. 161222 - license see murus.go
 
 import (
   . "murus/lock"

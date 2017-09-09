@@ -1,6 +1,6 @@
 package mcorn
 
-// (c) murus.org  v. 170320
+// (c) Christian Maurer   v. 170320
 
 import (
   "sync"

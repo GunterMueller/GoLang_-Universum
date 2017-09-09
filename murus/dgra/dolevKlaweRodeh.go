@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170423 - license see murus.go
+// (c) Christian Maurer   v. 170423 - license see murus.go
 
 // >>> D. Dolev, M. Klawe, M. Rodeh: An O(n log n) Unidirectional Algorithm
 //     for Extrema Finding in a Circle. J. Algorithms 3 (1982), 245-260

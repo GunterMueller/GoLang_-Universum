@@ -1,6 +1,6 @@
 package phil
 
-// (c) murus.org  v. 170627 - license see murus.go
+// (c) Christian Maurer   v. 170627 - license see murus.go
 
 // >>> Unfair solution with semaphores, aushungerungsgefährdet
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 95 ff.

@@ -1,6 +1,6 @@
 package sem
 
-// (c) murus.org  v. 170121 - license see murus.go
+// (c) Christian Maurer   v. 170121 - license see murus.go
 
 // >>> Implementation with asynchronous message passing
 //     (the most elegant solution, I think)

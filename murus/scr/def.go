@@ -1,6 +1,6 @@
 package scr
 
-// (c) murus.org  v. 170817 - license see murus.go
+// (c) Christian Maurer   v. 170908 - license see murus.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -484,3 +484,6 @@ type
   Paste() string
 }
 
+func Start (x, y, z, xf, yf, zf float64) { start (x,y,z,xf,yf,zf) }
+
+func Look (f func()) { look(f) }

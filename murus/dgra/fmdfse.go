@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170508 - license see murus.go
+// (c) Christian Maurer   v. 170508 - license see murus.go
 
 // Find the leader by depth-first-search:
 // Compare the own identity with the received value and return the appropriate value.

@@ -1,6 +1,6 @@
 package barr
 
-// (c) murus.org  v. 170410 - license see murus.go
+// (c) Christian Maurer   v. 170410 - license see murus.go
 
 // >>> implementation with semaphores
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 102

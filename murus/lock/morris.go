@@ -1,6 +1,6 @@
 package lock
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) Christian Maurer   v. 161216 - license see murus.go
 
 // >>> Algorithm of Morris: A starvation-free Solution to the Mutual Exclusion Problem
 //     Inf. Proc. Letters 8 (1979), 76-80

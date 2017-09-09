@@ -1,6 +1,6 @@
 package obj
 
-// (c) murus.org  v. 170701 - license see murus.go
+// (c) Christian Maurer   v. 170701 - license see murus.go
 
 import (
   "reflect"

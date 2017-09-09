@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170810 - license see murus.go
+// (c) Christian Maurer   v. 170810 - license see murus.go
 
 // XXX uncompleted - different hosts missing, load missing, embedding missing !
 

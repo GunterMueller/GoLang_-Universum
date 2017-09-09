@@ -1,6 +1,6 @@
 package tval
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) Christian Maurer  v. 161216 - license see murus.go
 
 // >>> TODO logical operations
 

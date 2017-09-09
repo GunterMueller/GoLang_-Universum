@@ -1,6 +1,6 @@
 package gram
 
-// (c) murus.org  v. 170121 - license see murus.go
+// (c) Christian Maurer   v. 170121 - license see murus.go
 
 import (
   . "murus/obj"

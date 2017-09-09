@@ -1,6 +1,6 @@
 package scale
 
-// (c) murus.org  v. 150425 - license see murus.go
+// (c) Christian Maurer   v. 150425 - license see murus.go
 
 // "Virtual points" denote those points, whose coordinates (X, Y)
 // can be mapped to the screen (w.r.t. the actual screen mode).

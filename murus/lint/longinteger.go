@@ -1,6 +1,6 @@
 package lint
 
-// (c) murus.org  v. 170817 - license see murus.go
+// (c) Christian Maurer   v. 170817 - license see murus.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 

@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170506 - license see murus.go
+// (c) Christian Maurer   v. 170506 - license see murus.go
 
 import (
   "sync"

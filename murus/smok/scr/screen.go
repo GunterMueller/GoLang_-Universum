@@ -1,6 +1,6 @@
 package scr
 
-// (c) murus.org  v. 150726 - license see murus.go
+// (c) Christian Maurer   v. 150726 - license see murus.go
 
 import (
   "murus/ker"; "murus/mode"; "murus/col"; "murus/scr"

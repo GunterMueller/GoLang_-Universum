@@ -1,6 +1,6 @@
 package mon
 
-// (c) murus.org  v. 170411 - license see murus.go
+// (c) Christian Maurer   v. 170411 - license see murus.go
 
 //     Nichtsequentielle Programmierung mit Go 1 kompakt,
 //     Kap. 6, insbesondere Abschnitt 6.15

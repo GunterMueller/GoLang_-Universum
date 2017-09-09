@@ -1,6 +1,6 @@
 package sem
 
-//     murus.org  v. 140803
+//     Christian Maurer   v. 140803
 //
 // (c) Go-Authors
 

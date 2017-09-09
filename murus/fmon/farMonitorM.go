@@ -1,6 +1,6 @@
 package fmon
 
-// (c) murus.org  v. 170508 - license see murus.
+// (c) Christian Maurer   v. 170508 - license see murus.
 
 import (
   . "murus/ker"

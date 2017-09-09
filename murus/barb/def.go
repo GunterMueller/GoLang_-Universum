@@ -1,6 +1,6 @@
 package barb
 
-// (c) murus.org  v. 170731 - license see murus.go
+// (c) Christian Maurer   v. 170731 - license see murus.go
 
 type
   Barber interface {

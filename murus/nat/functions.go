@@ -1,6 +1,6 @@
 package nat
 
-// (c) murus.org  v. 121119 - license see murus.go
+// (c) Christian Maurer  v. 121119 - license see murus.go
 
 func sumDigits (n uint) uint {
   s:= uint(0)

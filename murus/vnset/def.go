@@ -1,6 +1,6 @@
 package vnset
 
-// (c) murus.org  v. 170418
+// (c) Christian Maurer   v. 170418
 
 import
   . "murus/obj"

@@ -1,6 +1,6 @@
 package xwin
 
-// (c) murus.org  v. 170814 - license see murus.go
+// (c) Christian Maurer   v. 170814 - license see murus.go
 
 // #include <stdlib.h>
 // #include <X11/X.h>

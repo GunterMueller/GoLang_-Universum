@@ -1,6 +1,6 @@
 package phil
 
-// (c) murus.org  v. 170627 - license see murus.go
+// (c) Christian Maurer   v. 170627 - license see murus.go
 
 // >>> Unsymmetric case:
 //     Störung der Symmetrie dadurch, dass manche (aber nicht alle)

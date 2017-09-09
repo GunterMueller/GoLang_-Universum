@@ -1,6 +1,6 @@
 package cons
 
-// (c) murus.org  v. 140217 - license see murus.go
+// (c) Christian Maurer   v. 140217 - license see murus.go
 
 func (X *console) Moved (x, y int) bool {
   ok := 0 <= X.x + x                          && 0 <= X.y + y                           &&

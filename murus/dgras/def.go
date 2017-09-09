@@ -1,6 +1,6 @@
 package dgras
 
-// (c) murus.org  v. 170427 - license see murus.go
+// (c) Christian Maurer   v. 170427 - license see murus.go
 //
 // >>> examples of distributed Graphs
 

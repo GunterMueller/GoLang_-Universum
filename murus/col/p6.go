@@ -1,6 +1,6 @@
 package col
 
-// (c) murus.org  v. 140527 - license see murus.go
+// (c) Christian Maurer   v. 140527 - license see murus.go
 
 func p6Encode (A, P []byte) {
   switch bitDepth {

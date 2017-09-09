@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 170411 - license see murus.go
+// (c) Christian Maurer   v. 170411 - license see murus.go
 
 // >>> 1st readers/writers problem with additive semaphores
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 75

@@ -1,6 +1,6 @@
 package kernel
 
-// (c) murus.org  v. 110405 - license see murus.go
+// (c) Christian Maurer   v. 110405 - license see murus.go
 
 // #cgo LDFLAGS: -lc
 // #include <stdlib.h>

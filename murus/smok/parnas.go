@@ -1,6 +1,6 @@
 package smok
 
-// (c) murus.org  v. 170629 - license see murus.go
+// (c) Christian Maurer   v. 170629 - license see murus.go
 
 // >>> Solution with helper processes due to D. L. Parnas:
 //     On a Solution to the Cigarette Smoker's Problem

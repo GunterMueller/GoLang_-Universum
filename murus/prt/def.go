@@ -1,6 +1,6 @@
 package prt
 
-// (c) murus.org  v. 121119 - license see murus.go
+// (c) Christian Maurer   v. 121119 - license see murus.go
 
 import
   "murus/font"

@@ -1,6 +1,6 @@
 package chanm
 
-// (c) murus.org  v. 161223 - license see murus.go
+// (c) Christian Maurer   v. 161223 - license see murus.go
 
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, 7.7, S. 185 ff.
 

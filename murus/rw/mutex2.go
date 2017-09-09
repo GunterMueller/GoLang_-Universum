@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 170411 - license see murus.go
+// (c) Christian Maurer   v. 170411 - license see murus.go
 
 // >>> 2nd readers/writers problem (Courtois, Heymans, Parnas)
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 77

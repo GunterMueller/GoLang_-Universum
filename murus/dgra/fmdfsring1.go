@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170507 - license see murus.go
+// (c) Christian Maurer   v. 170507 - license see murus.go
 //
 // >>> Construction of a directed ring using the idea of Awerbuch's DFS-algorithm
 

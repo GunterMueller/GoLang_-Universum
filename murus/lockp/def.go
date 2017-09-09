@@ -1,6 +1,6 @@
 package lockp
 
-// (c) murus.org  v. 170807 - license see murus.go
+// (c) Christian Maurer   v. 170807 - license see murus.go
 
 // Ensures the access to a critical section.
 // The functions Lock and Unlock cannot be interrupted

@@ -1,6 +1,6 @@
 package pers
 
-// (c) murus.org  v. 140217 - license see murus.go
+// (c) Christian Maurer   v. 140217 - license see murus.go
 
 import (
   "murus/rand"

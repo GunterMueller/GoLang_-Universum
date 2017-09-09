@@ -1,6 +1,6 @@
 package phil
 
-// (c) murus.org  v. 170627 - license see murus.go
+// (c) Christian Maurer   v. 170627 - license see murus.go
 
 // >>> Unsymmetric solution with message-passing
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 187

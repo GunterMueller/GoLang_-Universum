@@ -1,6 +1,6 @@
 package obj
 
-// (c) murus.org  v. 170411 - license see murus.go
+// (c) Christian Maurer   v. 170411 - license see murus.go
 
 // guarded selective waiting
 func When (b bool, c chan Any) chan Any {

@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170508 - license see murus.go
+// (c) Christian Maurer   v. 170508 - license see murus.go
 
 // see G. Andrews: Concurrent Programming (1991) p. 375
 

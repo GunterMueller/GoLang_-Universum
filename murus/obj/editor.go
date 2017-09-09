@@ -1,6 +1,6 @@
 package obj
 
-// (c) murus.org  v. 141129 - license see murus.go
+// (c) Christian Maurer   v. 141129 - license see murus.go
 
 import
   "murus/col"

@@ -1,6 +1,6 @@
 package xwin
 
-// (c) murus.org  v. 170818 - license see murus.go
+// (c) Christian Maurer   v. 170905 - license see murus.go
 
 // >>> This package only serves the implementations of murus/mouse, 
 //     murus/kbd and murus/cons; it must not be used anywhere else.
@@ -33,7 +33,7 @@ type
   Flush()
   OnFocus() bool
   OffFocus() bool
-  Name (s string)
+  Name (n string)
 
 // colours /////////////////////////////////////////////////////////////
 
@@ -182,11 +182,21 @@ type
 
   WriteGlx()
 
+  Start (a, b, c, dx, dy, dz float64)
+  Look (f func())
+
 // cut buffer //////////////////////////////////////////////////////////
 
   Cut (s string)
   Paste() string
 }
+
+type GLmode byte; const (
+  Show = GLmode(iota)
+  Walk
+)
+
+func SetMode (m GLmode) { setMode(m) }
 
 // Returns a new window with left upper Corner (x, y)
 // in the size of m (see mode/def.go).

@@ -1,744 +1,910 @@
 package fig
 
-// (c) murus.org  v. 170821 - license see murus.go
-
-// >>> still a lot of work TODO
+// (c) Christian Maurer   v. 170908 - license see murus.go
 
 import (
-  "math"
-  "murus/ker"
-  "murus/rand"
+  . "murus/obj"
+  "murus/str"
+  "murus/kbd"
+  "murus/font"
   "murus/col"
   "murus/scr"
-  "murus/vect"
-  "murus/pt"
-  "murus/pts"
+  "murus/box"
+  "murus/errh"
+  "murus/sel"
+  "murus/img"
+  "murus/psp"
 )
-
 const (
-  angle = 3 // Grad
-  N = 360 / angle
-  pi_180 = math.Pi / 180
+  lenText = 40 // maximal len of text
+  BB = 10 // length of names
 )
-var
-  sin, cos []float64
+type (
+  figure struct {
+                 Type
+          colour col.Colour
+            x, y []int
+          marked,
+//        bewegt,
+          filled bool
+                 string
+                 }
+)
+var (
+  xx, yy int
+  bx = box.New()
+  name = []string {
+           "Punktfolge", "Strecke(n)", "Polygon   ", "Kurve     ", "Gerade    ",
+           "Rechteck  ", "Kreis     ", "Ellipse   ", "Text      ", "Bild      " }
+)
 
 func init() {
-  sin, cos = make ([]float64, N + 2), make ([]float64, N + 2)
-  sin[0], cos[0] = 0, 1
-  w := 2 * math.Pi / float64 (N)
-  for i := 1; i < N; i++ {
-    sin[i] = math.Sin (float64(i) * w)
-    cos[i] = math.Cos (float64(i) * w)
+  bx.Transparence (true)
+  bx.Wd (lenText)
+}
+
+func new_() Figure {
+  xx, yy = int(scr.Wd()), int(scr.Ht())
+  f := new (figure)
+  f.Clr()
+//  f.Type = Points
+  f.Type = Segments
+  f.colour, _ = scr.StartCols()
+  return f
+}
+
+func (f *figure) imp (Y Any) *figure {
+  y, ok := Y.(*figure)
+  if ! ok { TypeNotEqPanic (f, Y) }
+  return y
+}
+
+func (f *figure) Empty() bool {
+  return len (f.x) == 0
+}
+
+func (f *figure) Clr() {
+  f.x, f.y = nil, nil
+  f.marked, f.filled = false, false
+  f.string = ""
+}
+
+func (f *figure) SetType (k Type) {
+  f.Clr()
+  f.Type = k
+}
+
+func (f *figure) Select() {
+  f.Clr()
+  Acolour := f.colour
+  Hcolour := Acolour
+  col.Contrast (&Hcolour)
+  scr.SetFontsize (font.Normal)
+  n := uint(Rectangle)
+  Z, S := scr.MousePos()
+  sel.Select1 (name, NTypes, BB, &n, Z, S, Acolour, Hcolour)
+  if n < NTypes {
+    f.Type = Type(n)
   }
-  sin[N], cos[N] = 0, 1
-  sin[N+1], cos[N+1] = sin[1], cos[1]
 }
 
-func sort (x, y, z, x1, y1, z1 *float64) {
-  if *x1 < *x { *x, *x1 = *x1, *x }
-  if *y1 < *y { *y, *y1 = *y1, *y }
-  if *z1 < *z { *z, *z1 = *z1, *z }
-}
-
-func v_(x, y, z float64) vect.Vector {
-  return vect.New3 (x, y, z)
-}
-
-func init_(v, n []vect.Vector, x ...float64) {
-  k := len(x)
-  for i := 0; i < k / 3; i++ {
-    v[i].Set3 (x[3 * i], x[3 * i + 1], x[3 * i + 2])
+func (f *figure) Eq (Y Any) bool {
+  f1 := f.imp (Y)
+  n, n1 := uint(len (f.x)), uint(len (f1.x))
+  if f.Type != f1.Type || n != n1 || f.filled != f1.filled {
+    return false
   }
-  n[0].Set3 (0, 0, 1)
-  if k > 3 {
-    n[1].Set3 (0, 0, 1)
+  if n == 0 { return true } // ?
+  if f.x[0] != f1.x[0] || f.y[0] != f1.y[0] {
+    return false
   }
-}
-
-func init_v (v, n []vect.Vector, x ...vect.Vector) {
-  k := len(v)
-  if k != len(x) { ker.Oops() }
-  for i := 0; i < k; i++ {
-    v[i].Copy (x[i])
-  }
-  n[0].Set3 (0, 0, 1)
-  if k > 3 {
-    n[1].Set3 (0, 0, 1)
-  }
-}
-
-func vectors (a uint) ([]vect.Vector, []vect.Vector) {
-  v, n := make ([]vect.Vector, a), make ([]vect.Vector, a)
-  for i := uint(0); i < a; i++ { v[i], n[i] = vect.New(), vect.New() }
-  return v, n
-}
-
-func ready (p pts.Points) {
-  v, n := vectors(1)
-  p.Ins (pt.Undef, v, n, col.Black)
-}
-
-func start (p pts.Points, x, y, z, xf, yf, zf float64) {
-  v, n := vectors(1)
-  init_(v, n, x, y, z) // Auge
-  n[0].Set3 (xf, yf, zf) // Fokus
-  p.Ins (pt.Start, v, n, col.Black)
-}
-
-// GL classes //////////////////////////////////////////////////////////////////
-
-func figure (class pt.Class, p pts.Points, c col.Colour, x ...vect.Vector) {
-  v, n := vectors(uint(len(x)))
-  switch class {
-  case pt.Points:
-    init_v (v, n, x[0])
-    p.Ins (pt.Points, v, n, c)
-  case pt.Lines:
-    init_v (v, n, x[0], x[1])
-    p.Ins (pt.Lines, v, n, c)
-//  case pt.LineLoop:
-//  case pt.LineStrip:
-  case pt.Triangles:
-    init_v (v, n, x[0], x[1], x[2])
-    n[1].Diff (v[1], v[0])
-    n[2].Diff (v[2], v[0])
-    n[0].Ext (n[1], n[2])
-    n[0].Norm()
-    for i := 1; i < 3; i++ { n[i].Copy (n[0]) }
-    p.Ins (pt.Triangles, v, n, c)
-//  case pt.TriangleStrip:
-//  case pt.TriangleFan:
-  case pt.Quads:
-    init_v (v, n, x[0], x[1], x[2], x[3])
-    n[1].Diff (v[1], v[0])
-    n[2].Diff (v[3], v[0])
-    n[0].Ext (n[1], n[2])
-    n[0].Norm()
-    for i := 1; i < 4; i++ { n[i].Copy (n[0]) }
-    p.Ins (pt.Quads, v, n, c)
-//  case pt.QuadStrip:
-//  case pt.Polygon:
+  switch f.Type {
+  case Text:
+    if f.string != f1.string {
+      return false
+    }
+  case Image:
+    if f.x[1] != f1.x[1] || f.y[1] != f1.y[1] {
+      return false
+    } else {
+      // Vergleich der Images fehlt
+      return false
+    }
   default:
-    ker.Panic ("class not yet implemented")
+    for i := uint(1); i < n; i++ {
+      if f.x[i] != f1.x[i] || f.y[i] != f1.y[i] {
+        return false
+      }
+    }
   }
-  ready (p)
+  return true
 }
 
-// light ///////////////////////////////////////////////////////////////////////
-
-func light (p pts.Points, l uint, x, y, z float64, ca, cd col.Colour) {
-  v, n := vectors(1)
-  v[0].Set3 (x, y, z)
-  n[0].Set3 (0, 0, 1)
-//  r, g, b := col.LongFloat (ca)
-  n[0].Set3 (col.LongFloat (ca)) // r, g, b // ambient colour
-  p.InsLight (l, v, n, cd)
+func (x *figure) Less (Y Any) bool {
+  return false
 }
 
-// extended figures ////////////////////////////////////////////////////////////
-
-func horRectangle (p pts.Points, x, y, z, x1, y1 float64, up bool, c col.Colour) {
-  v, n := vectors(4)
-  init_(v, n, x, y, z, x1, y, z, x1, y1, z, x, y1, z)
-  goUp := 1.; if ! up { goUp = -1 }
-  n[0].Set3 (0, 0, goUp)
-  for i := 1; i < 4; i++ {
-    n[i].Set3 (0, 0, 0)
+func (f *figure) Copy (Y Any) {
+  f1 := f.imp (Y)
+  f.Type = f1.Type
+  f.colour = f1.colour
+  n1 := uint(len (f1.x))
+  f.x, f.y = make ([]int, n1), make ([]int, n1)
+  for i := uint(0); i < n1; i++ {
+    f.x[i] = f1.x[i]
+    f.y[i] = f1.y[i]
   }
-  p.Ins (pt.Quads, v, n, c)
-  ready (p)
+  f.filled = f1.filled
+  f.string = f1.string
+  if f.Type == Image {
+    // Kopieren des Image fehlt
+  }
 }
 
-// func vertRectangle (p pts.Points, v, v1 vect.Vector, c col.Colour) { // TODO
-func vertRectangle (p pts.Points, x, y, z, x1, y1, z1 float64, c col.Colour) {
-  v, n := vectors(4)
-  if z == z1 { ker.Oops() } // horRectangle
-  init_(v, n, x, y, z, x1, y1, z, x1, y1, z1, x, y, z1)
-  n[1].Diff (v[1], v[0])
-  n[2].Diff (v[3], v[0])
-  n[0].Ext (n[1], n[2])
-  for i := 1; i < 4; i++ { n[i].Copy (n[0]) }
-  p.Ins (pt.Quads, v, n, c)
-  ready (p)
+func (x *figure) Clone() Any {
+  y := new_()
+  y.Copy (x)
+  return y
 }
 
-func parallelogram (p pts.Points, c col.Colour, v, v1, v2 vect.Vector) {
-  x, y, z := v.Coord3()
-  x1, y1, z1 := v1.Coord3()
-  x2, y2, z2 := v1.Coord3()
-  figure (pt.Quads, p, c, v_(x, y, z), v_(x1, y1, z1),
-                          v_(x1 + x2 - x, y1 + y2 - y, z1 + z2 - z), v_(x2, y2, z2))
+func (f *figure) Pos() (int, int) {
+  return f.x[0], f.y[0]
 }
 
-func cube (p pts.Points, v vect.Vector, a float64, c col.Colour) {
-  v1 := v.Clone().(vect.Vector)
-  v1.Translate (a)
-  cuboid (p, v, v1, c)
+func (f *figure) On (a, b int, t uint) bool {
+  if ! f.Empty() {
+    switch f.Type {
+    case Points, Segments:
+      return scr.OnSegments (f.x, f.y, a, b, t)
+    case Polygon:
+      return scr.OnPolygon (f.x, f.y, a, b, t)
+    case Curve:
+      return scr.OnCurve (f.x, f.y, a, b, t)
+    case InfLine:
+      return scr.OnInfLine (f.x[0], f.y[0], f.x[1], f.y[1], a, b, t)
+    case Rectangle:
+      return scr.OnRectangle (f.x[0], f.y[0], f.x[1], f.y[1], a, b, t)
+    case Circle:
+      return scr.OnCircle (f.x[0], f.y[0], uint(f.x[1]), a, b, t)
+    case Ellipse:
+      return scr.OnEllipse (f.x[0], f.y[0], uint(f.x[1]), uint(f.y[1]), a, b, t)
+    case Text:
+      if len (f.x) != 2 { errh.Error ("Incident case Text: len (f.x) ==", uint(len(f.x))) }
+      return scr.OnRectangle (f.x[0], f.y[0], f.x[1], f.y[1], a, b, t) // crash: TODO
+    case Image:
+      return scr.InRectangle (f.x[0], f.y[0], f.x[1], f.y[1], a, b, t)
+    }
+  }
+  return false
 }
 
-func cubeC (p pts.Points, v vect.Vector, a float64, c []col.Colour) {
-  v1 := vect.New3 (v.Coord(0) + a, v.Coord(1) + a, v.Coord(2) + a)
-  cuboidC (p, v, v1, c)
-}
-
-func cuboid (p pts.Points, v, v1 vect.Vector, c col.Colour) {
-  x, y, z := v.Coord3()
-  x1, y1, z1 := v1.Coord3()
-  sort (&x, &y, &z, &x1, &y1, &z1)
+func (f *figure) convex() bool {
+  n := uint(len (f.x))
+  switch f.Type {
+  case Rectangle, Circle, Ellipse, Image:
+    return true
+  case Polygon:
+    switch n { case 0, 1:
+      return false
+    case 2:
+      return true
+    }
+  default:
+    return false
+  }
+ // polygon with 3 or more nodes
 /*
-  vertRectangle (p, x,  y,  z,  x1, y,  z1, c)
-  vertRectangle (p, x1, y,  z,  x1, y1, z1, c)
-  vertRectangle (p, x1, y1, z,  x,  y1, z1, c)
-  vertRectangle (p, x,  y1, z,  x,  y,  z1, c)
+ // TODO
+  dxi := f.x[0] - f.x[n - 1]
+  dxk := f.x[1] - f.x[0]
+  dyi := f.y[0] - f.y[n - 1]
+  dyk := f.y[1] - f.y[0]
+  z := uint(0)
+  if dxi * dxk + dyi * dyk < 0 { z = 1 }
+  a := dxi * dyk
+  b := dxk * dyi
+  if a == b { // polygon reduced by a node
+    return true
+    // for n > 3 we are going to roasted in devils oven ...
+  }
+  gr := a > b
+  var k uint
+  for i := uint(1); i < n; i++ {
+    if i < n { k = i + 1 } else { k = 0 }
+    dxi = f.x[i] - f.x[i - 1]
+    dyi = f.y[i] - f.y[i - 1]
+    dxk = f.x[k] - f.x[i]
+    dyk = f.y[k] - f.y[i]
+    if dxi * dxk + dyi * dyk < 0 { // Winkel < 90 Grad
+      z++
+      if z > 3 {  // if more than 3 angles are < 90°, then
+        return false // the angle sum is < (n - 1) * 180° !
+      }
+    }
+    a = dxi * dyk
+    b = dxk * dyi
+    if a != b {
+      if (a > b) != gr { return false }
+    }
+  }
 */
-  vv, nn := vectors(2 * (4 + 1))
-  vv[0].Set3 (x,  y,  z )
-  vv[1].Set3 (x,  y,  z1)
-  vv[2].Set3 (x1, y,  z )
-  vv[3].Set3 (x1, y,  z1)
-  vv[4].Set3 (x1, y1, z )
-  vv[5].Set3 (x1, y1, z1)
-  vv[6].Set3 (x,  y1, z )
-  vv[7].Set3 (x,  y1, z1)
-  vv[8].Set3 (x,  y,  z )
-  vv[9].Set3 (x,  y,  z1)
-  nn[0].Set3 (-1, -1, 0)
-  nn[1].Set3 (-1, -1, 0)
-  nn[2].Set3 ( 1, -1, 0)
-  nn[3].Set3 ( 1, -1, 0)
-  nn[4].Set3 ( 1,  1, 0)
-  nn[5].Set3 ( 1,  1, 0)
-  nn[6].Set3 (-1,  1, 0)
-  nn[7].Set3 (-1,  1, 0)
-  nn[8].Set3 (-1, -1, 0)
-  nn[9].Set3 (-1, -1, 0)
-  p.Ins (pt.QuadStrip, vv, nn, c)
-
-  horRectangle (p, x,  y,  z1, x1, y1, true, c)
-  horRectangle (p, x,  y,  z,  x1, y1, false, c)
+  return true
 }
 
-func cuboidC (p pts.Points, v, v1 vect.Vector, c []col.Colour) {
-  x, y, z := v.Coord3()
-  x1, y1, z1 := v1.Coord3()
-  sort (&x, &y, &z, &x1, &y1, &z1)
-  vertRectangle (p, x,  y,  z,  x1, y,  z1, c[0]) // front
-  vertRectangle (p, x1, y,  z,  x1, y1, z1, c[1]) // right
-  vertRectangle (p, x1, y1, z,  x,  y1, z1, c[2]) // back
-  vertRectangle (p, x,  y1, z,  x,  y,  z1, c[3]) // left
-/*
-  vv, nn := vectors(2 * (4 + 1))
-
-  vv[0].Set3 (x,  y,  z )
-  vv[1].Set3 (x,  y,  z1)
-  vv[2].Set3 (x1, y,  z )
-  vv[3].Set3 (x1, y,  z1)
-  vv[4].Set3 (x1, y1, z )
-  vv[5].Set3 (x1, y1, z1)
-  vv[6].Set3 (x,  y1, z )
-  vv[7].Set3 (x,  y1, z1)
-  vv[8].Set3 (x,  y,  z )
-  vv[9].Set3 (x,  y,  z1)
-
-  nn[0].Set3 (-1, -1, 0)
-  nn[1].Set3 (-1, -1, 0)
-  nn[2].Set3 ( 1, -1, 0)
-  nn[3].Set3 ( 1, -1, 0)
-  nn[4].Set3 ( 1,  1, 0)
-  nn[5].Set3 ( 1,  1, 0)
-  nn[6].Set3 (-1,  1, 0)
-  nn[7].Set3 (-1,  1, 0)
-  nn[8].Set3 (-1, -1, 0)
-  nn[9].Set3 (-1, -1, 0)
-  p.Ins (pt.QuadStrip, vv, nn, c) // XXX
-*/
-  horRectangle (p, x,  y,  z1, x1, y1, true, c[4])  // top
-  horRectangle (p, x,  y,  z,  x1, y1, false, c[5]) // bottom
-}
-
-func cuboid1 (p pts.Points, f col.Colour, x, y, z, b, t, h, a float64) {
-  s, c := math.Sin (a * pi_180), math.Cos (a * pi_180)
-  x1 := x  + b * c; y1 := y  + b * s; z1 := z + h
-  x2 := x1 - t * s; y2 := y1 + t * c
-  x3 := x  - t * s; y3 := y  + t * c
-  figure (pt.Quads, p, f, v_(x, y, z1), v_(x1, y1, z1), v_(x2, y2, z1), v_(x3, y3, z1))
-  vertRectangle (p, x,  y,  z,  x1, y1, z1, f)
-  vertRectangle (p, x1, y1, z,  x2, y2, z1, f)
-  vertRectangle (p, x2, y2, z,  x3, y3, z1, f)
-  vertRectangle (p, x3, y3, z,  x,  y,  z1, f)
-  figure (pt.Quads, p, f, v_(x, y, z), v_(x3, y3, z), v_(x2, y2, z), v_(x1, y1, z))
-}
-
-func prism (p pts.Points, c col.Colour, x, y, z []float64) {
-// top missing
-  n := uint(len (x))
-  if n < 4 { ker.Oops() }
-  n-- // top !
-  for i := uint(0); i < n - 1; i++ {
-    figure (pt.Quads, p, c,
-            v_(x[i],          y[i],          z[i]),
-            v_(x[i+1],        y[i+1],        z[i+1]),
-            v_(x[i+1] + x[n], y[i+1] + y[n], z[i+1] + z[n]),
-            v_(x[i]   + x[n], y[i]   + y[n], z[i]   + z[n]))
+func (f *figure) rectangular() bool {
+  switch f.Type {
+  case Rectangle, Image:
+    return true
   }
-  i := uint(n - 1)
-    figure (pt.Quads, p, c,
-            v_(x[i],        y[i],        z[i]),
-            v_(x[0],        y[0],        z[0]),
-            v_(x[0] + x[n], y[0] + y[n], z[0] + z[n]),
-            v_(x[i] + x[n], y[i] + y[n], z[i] + z[n]))
-// bottom missing
-  ready (p)
+  if f.Type != Polygon { return false }
+  if len (f.x) != 4 { return false }
+  return f.x[1] + f.x[3] == f.x[0] + f.x[2] && f.y[1] + f.y[3] == f.y[0] + f.y[2] &&
+         f.x[1] * f.x[1] + f.x[0] * f.x[2] + f.y[1] * f.y[1] + f.y[0] * f.y[2] ==
+           f.x[1] * (f.x[0] + f.x[2]) + f.y[1] * (f.y[0] * f.y[2])
 }
 
-func parallelepiped (p pts.Points, c col.Colour, v, v1, v2, v3 vect.Vector) {
-  x, y, z := v.Coord3()
-  x1, y1, z1 := v1.Coord3()
-  x2, y2, z2 := v2.Coord3()
-  x3, y3, z3 := v3.Coord3()
-  parallelogram (p, c, v, v1, v3)
-  parallelogram (p, c, v, v2, v1)
-  parallelogram (p, c, v, v3, v2)
-  parallelogram (p, c, v1, v_(x1 + x2 - x, y1 + y2 - y, z1 + z2 - z),
-                           v_(x1 + x3 - x, y1 + y3 - y, z1 + z3 - z))
-  parallelogram (p, c, v2, v_(x2 + x3 - x, y2 + y3 - y, z2 + z3 - z),
-                           v_(x2 + x1 - x, y2 + y1 - y, z2 + z1 - z))
-  parallelogram (p, c, v3, v_(x3 + x1 - x, y3 + y1 - y, z3 + z1 - z),
-                           v_(x3 + x2 - x, y3 + y2 - y, z3 + z2 - z))
-  ready (p)
+func (f *figure) UnderMouse (t uint) bool {
+  a, b := scr.MousePosGr()
+  return f.On (a, b, t)
 }
 
-func pyramid (p pts.Points, c col.Colour, v, v1, v2 vect.Vector) {
-  x, y, z := v.Coord3()
-  x1, y1, z1 := v1.Coord3()
-  figure (pt.Triangles, p, c, v,             v_(x1, y,  z1), v2)
-  figure (pt.Triangles, p, c, v_(x1, y,  z), v_(x1, y1, z),  v2)
-  figure (pt.Triangles, p, c, v_(x1, y1, z), v_(x,  y1, z1), v2)
-  figure (pt.Triangles, p, c, v_(x,  y1, z), v_(x,  y,  z),  v2)
-  horRectangle (p, x, y, z, x1, y1, false, c)
-  ready (p)
+// Locate (a, b) = Relocate (a - x[0], b - y[0])
+func (f *figure) Move (a, b int) {
+  var n uint
+  switch f.Type {
+  case Points, Segments, Polygon, Curve, InfLine, Rectangle:
+    n = uint(len (f.x))
+  case Circle, Ellipse:
+    n = 1
+  case Text, Image:
+    n = 2
+  }
+  for i := uint(0); i < n; i++ {
+    f.x[i] += a
+    f.y[i] += b
+  }
 }
 
-func octahedron (p pts.Points, c col.Colour, x, y, z, r float64) {
-  d := r * math.Sqrt (2)
-  figure (pt.Triangles, p, c, v_(x + r, y + r, z), v_(x - r, y + r, z), v_(x, y, z + d))
-  figure (pt.Triangles, p, c, v_(x - r, y + r, z), v_(x - r, y - r, z), v_(x, y, z + d))
-  figure (pt.Triangles, p, c, v_(x - r, y - r, z), v_(x + r, y - r, z), v_(x, y, z + d))
-  figure (pt.Triangles, p, c, v_(x + r, y - r, z), v_(x + r, y + r, z), v_(x, y, z + d))
-  figure (pt.Triangles, p, c, v_(x + r, y + r, z), v_(x - r, y + r, z), v_(x, y, z - d))
-  figure (pt.Triangles, p, c, v_(x - r, y + r, z), v_(x - r, y - r, z), v_(x, y, z - d))
-  figure (pt.Triangles, p, c, v_(x - r, y - r, z), v_(x + r, y - r, z), v_(x, y, z - d))
-  figure (pt.Triangles, p, c, v_(x + r, y - r, z), v_(x + r, y + r, z), v_(x, y, z - d))
+func (f *figure) Marked() bool {
+  return f.marked
 }
 
-func multipyramid (p pts.Points, c col.Colour, x, y, z []float64) {
-  n := len (x)
-  if n < 4 { ker.Oops() }
-  n-- // top !
-  v0 := vect.New3(x[0], y[0], z[0])
-  vn := vect.New3(x[n], y[n], z[n])
-  for i := 0; i < n - 1; i++ {
-    figure (pt.Triangles, p, c, v_(x[i], y[i], z[i]), v_(x[i+1], y[i+1], z[i+1]), vn)
-  }
-  figure (pt.Triangles, p, c, v_(x[n-1], y[n-1], z[n-1]), v0, vn)
-// bottom missing, because it need not be even
+func (f *figure) Mark (m bool) {
+  f.marked = m
 }
 
-func circle (p pts.Points, x, y, z, r float64, c col.Colour) {
-  circleSegment (p, x, y, z, r, 0, 360, c)
+func (f *figure) SetColour (c col.Colour) {
+  f.colour = c
+  bx.ColourF (f.colour)
+  if f.Type == Image {
+    // what ?
+  }
 }
 
-func circleSegment (p pts.Points, x, y, z, r, a, b float64, c col.Colour) {
-  if r == 0 {
-    figure (pt.Points, p, c, v_(x, y, z))
-    return
-  }
-  A := uint(math.Floor (a / float64 (angle) + 0.5))
-  B := uint(math.Floor (b / float64 (angle) + 0.5))
-  C := B - A + 2
-  v, n := vectors(C)
-  v[0].Set3 (x, y, z)
-  n[0].Set3 (0, 0, 1)
-  if r < 0. {
-    r = -r
-    n[0].Dilate (-1)
-  }
-  for i := A; i <= B; i++ {
-    v[1 + i-A].Set3 (x + r * cos[i], y + r * sin[i], z)
-    n[1 + i-A].Copy (n[0])
-  }
-  p.Ins (pt.TriangleFan, v, n, c)
-  ready (p)
+func (f *figure) Colour() col.Colour {
+  return f.colour
 }
 
-func vertCircle (p pts.Points, x, y, z, r, a float64, f col.Colour) {
-  if r == 0 {
-    figure (pt.Points, p, f, v_(x, y, z))
-    return
+func (f *figure) Erase() {
+  switch f.Type {
+  case Image:
+    scr.ClrGr (f.x[0], f.y[0], f.x[1], f.y[1])
+  default:
+    c := f.colour
+    f.SetColour (scr.ScrColB())
+    f.Write()
+    f.SetColour (c)
   }
-  s, c := math.Sin (a * pi_180), math.Cos (a * pi_180)
-  C := uint(N) + 2
-  v, n := vectors(C)
-  v[0].Set3 (x, y, z)
-  n[0].Set3 (c, s, 0)
-  if r < 0 {
-    r = -r
-    n[0].Dilate (-1)
-  }
-  for i := 0; i <= N; i++ {
-    v[i+1].Set3 (x - r * s * cos[i], y + r * c * cos[i], z + r * sin[i])
-    n[i+1].Copy (n[0])
-  }
-  p.Ins (pt.TriangleFan, v, n, f)
-  ready (p)
 }
 
-func sphere (p pts.Points, x, y, z, r float64, f col.Colour) {
-  v, n := vectors(N + 2)
-  v[0].Set3 (x, y, z + r)
-  n[0].Set3 (0, 0, 1)
-  r0, z0 := r * sin[1], z + r * cos[1]
-  for l := 0; l <= N; l++ {
-    v[1 + l].Set3 (x + r0 * cos[l], y + r0 * sin[l], z0)
-    n[1 + l].Set3 (sin[1] * cos[l], sin[1] * sin[l], cos[1])
-  }
-  p.Ins (pt.TriangleFan, v, n, f)
-
-  v, n = vectors(2 * (N + 1))
-  for b := 1; b <= N / 2 - 2; b++ {
-    r0, z0 =     r * sin[b], z + r * cos[b]
-    r1, z1 :=     r * sin[b+1], z + r * cos[b+1]
-    for l := 0; l <= N; l++ {
-      s, c := sin[l], cos[l]
-      v[2*l].Set3 (x + r0 * c, y + r0 * s, z0)
-      n[2*l].Set3 (sin[b] * c, sin[b] * s, cos[b])
-      v[1 + 2*l].Set3 (x + r1 * c, y + r1 * s, z1)
-      n[1 + 2*l].Set3 (sin[b+1] * c, sin[b+1] * s, cos[b+1])
+func (f *figure) Write() {
+  if f.Empty() { return }
+  scr.ColourF (f.colour)
+  switch f.Type {
+  case Points:
+    scr.Points (f.x, f.y)
+  case Segments:
+    scr.Segments (f.x, f.y)
+  case Polygon:
+    scr.Polygon (f.x, f.y)
+    if f.filled {
+//      scr.PolygonFull (f.x, f.y) // not yet implemented
     }
-    p.Ins (pt.QuadStrip, v, n, f)
-  }
-  v, n = vectors(N + 2)
-  v[0].Set3 (x, y, z - r)
-  n[0].Set3 (0, 0, -1)
-  b := N / 2 - 1
-  r0, z0 = r * sin[b], z + r * cos[b]
-  for l := N; l >= 0; l -= 1 {
-    v[1 + N-l].Set3 (x + r0 * cos[l], y + r0 * sin[l], z0)
-    n[1 + N-l].Set3 (sin[b] * cos[l], sin[b] * sin[l], cos[b])
-  }
-  p.Ins (pt.TriangleFan, v, n, f)
-  ready (p)
-}
-
-func cone (p pts.Points, x, y, z, r, h float64, c col.Colour) {
-  v, n := vectors(N + 2)
-  v[0].Set3 (x, y, z + h)
-  n[0].Set3 (0, 0, 1)
-  for l := 0; l <= N; l++ {
-    v[l+1].Set3 (x + r * cos[l], y + r * sin[l], z)
-    n[l+1].Set3 (cos[l], sin[l], r / (h - z))
-    n[l+1].Norm()
-  }
-  p.Ins (pt.TriangleFan, v, n, c)
-  ready (p)
-  circle (p, x, y, z, -r, c)
-}
-
-func frustum (p pts.Points, x, y, z, r, h, h1 float64, c col.Colour) {
-  if h1 > h { ker.Oops() }
-  v, n := vectors(N + 2)
-  v[0].Set3 (x, y, h)
-  n[0].Set3 (0, 0, 1)
-  for l := 0; l <= N; l++ {
-    v[l+1].Set3 (x + r * cos[l], y + r * sin[l], z)
-    n[l+1].Set3 (cos[l], sin[l], r / (h - z))
-    n[l+1].Norm()
-  }
-  p.Ins (pt.TriangleFan, v, n, c)
-  ready (p)
-  circle (p, x, y, z, -r, c)
-}
-
-func doubleCone (p pts.Points, x, y, z, r, h float64, c col.Colour) {
-  cone (p, x, y, z - h, r, h, c)
-  cone (p, x, y, z + h, r, -h, c)
-}
-
-func cylinder (p pts.Points, x, y, z, r, h float64, c col.Colour) {
-  cylinderSegment (p, x, y, z, r, h, 0, 360, c)
-}
-
-func cylinderSegment (p pts.Points, x, y, z, r, h, a, b float64, c col.Colour) {
-  circleSegment (p, x, y, z, -r, a, b, c)
-  circleSegment (p, x, y, z + h, r, a, b, c)
-  A := uint(math.Floor (a / float64 (angle) + 0.5))
-  B := uint(math.Floor (b / float64 (angle) + 0.5))
-  C := 2 * (B - A) + 2
-  v, n := vectors(C)
-  for l := A; l <= B; l++ {
-    v[2*(l-A)].Set3 (x + r * cos[l], y + r * sin[l], z)
-    n[2*(l-A)].Set3 (cos[l], sin[l], 0)
-    v[2*(l-A)+1].Set3 (x + r * cos[l], y + r * sin[l], z + h)
-    n[2*(l-A)+1].Set3 (cos[l], sin[l], 0)
-  }
-  p.Ins (pt.QuadStrip, v, n, c)
-  ready (p)
-}
-
-func horCylinder (p pts.Points, x, y, z, r, l, a float64, f col.Colour) {
-  if r == 0 {
-    vertCircle (p, x, y, z, r, a, f)
-    return
-  }
-  s, c := math.Sin (a * pi_180), math.Cos (a * pi_180)
-  dx, dy := l * c, l * s
-  vertCircle (p, x, y, z, -r, a, f)
-  vertCircle (p, x + dx, y + dy, z, r, a, f)
-  C := 2 * (uint(N) + 1)
-  v, n := vectors(C)
-  for i := 0; i <= 2 * N; i += 2 {
-    si, ci := sin[i / 2], cos[i / 2]
-    sci, cci := s * ci, c * ci
-    x0, y0, z0 := x - r * sci, y + r * cci, z + r * si
-    v[i].Set3 (x0, y0, z0)
-    n[i].Set3 (- sci, cci, si)
-    v[i+1].Set3 (x0 + dx, y0 + dy, z0)
-    n[i+1].Copy (n[i])
-  }
-  p.Ins (pt.QuadStrip, v, n, f)
-  ready (p)
-}
-
-func torus (p pts.Points, x, y, z, R, r float64, c col.Colour) {
-  if r <= 0 || R <= 0 { ker.Oops() }
-  for b := 0; b < N; b++ {
-    s0, s1 := R + r * cos[b], R + r * cos[b+1]
-    z0, z1 := z + r * sin[b], z + r * sin[b+1]
-//    v, n := vectors(2 * N)
-    for l := 0; l < N; l++ {
-      figure (pt.Quads, p, c,
-              v_(x + s0 * cos[l],   y + s0 * sin[l],   z0),
-              v_(x + s0 * cos[l+1], y + s0 * sin[l+1], z0),
-              v_(x + s1 * cos[l+1], y + s1 * sin[l+1], z1),
-              v_(x + s1 * cos[l],   y + s1 * sin[l],   z1))
-//      v[2*l].Set3 (x + s0 * cos[l], y + s0 * sin[l], z0)
-//      n[2*l].Set3 (1., 1., 1.)
-//      v[2*l+1].Set3 (x + s0 * cos[l+1], y + s0 * sin[l+1], z0)
-//      n[2*l+1].Set3 (1, 1, 1)
+  case Curve:
+    scr.Curve (f.x, f.y)
+    if f.filled {
+      n := len (f.x) - 1
+      scr.CircleFull (f.x[n], f.y[n], 4) // ?
     }
-//    p.Ins (pt.QuadStrip, 2 * N, v, n, c)
-  }
-  ready (p)
-}
-
-func horTorus (p pts.Points, x, y, z, R, r, a float64, f col.Colour) {
-  if r <= 0 || R <= 0 { ker.Oops() }
-  for a <= -180 { a += 180 }
-  for a >=  180 { a -= 180 }
-  s, c := math.Sin (a * pi_180), math.Cos (a * pi_180)
-  for b := 0; b < N; b++ {
-    s0, s1 := R + r * cos[b], R + r * cos[b+1]
-    x0, x1 := r * sin[b], r * sin[b+1]
-    for l := 0; l < N; l++ { //  x -> x * c - y * s, y -> x * s + y * c
-      y00, y01 := s0 * cos[l], s0 * cos[l+1]
-      y10, y11 := s1 * cos[l], s1 * cos[l+1]
-      figure (pt.Quads, p, f,
-              v_(x + x0 * c - y00 * s, y + x0 * s + y00 * c, z + s0 * sin[l]),
-              v_(x + x0 * c - y01 * s, y + x0 * s + y01 * c, z + s0 * sin[l+1]),
-              v_(x + x1 * c - y11 * s, y + x1 * s + y11 * c, z + s1 * sin[l+1]),
-              v_(x + x1 * c - y10 * s, y + x1 * s + y10 * c, z + s1 * sin[l]))
+  case InfLine:
+    scr.InfLine (f.x[0], f.y[0], f.x[1], f.y[1])
+  case Rectangle:
+    if f.filled {
+      scr.RectangleFull (f.x[0], f.y[0], f.x[1], f.y[1])
+    } else {
+      scr.Rectangle (f.x[0], f.y[0], f.x[1], f.y[1])
     }
-  }
-  ready (p)
-}
-
-// func paraboloid (p pts.Points, x, y, z, p float64, c col.Colour)
-
-// func horParaboloid (p pts.Points, x, y, z, p, a float64, c col.Colour)
-
-func ok (x float64) bool {
-  return ! math.IsNaN (x)
-}
-
-const grain = 8 // reasonable compromise between fine grained
-                // versus lots of data w.r.t. output efficiency
-
-func curve (p pts.Points, f1, f2, f3 RealFunc, t0, t1 float64, c col.Colour) {
-  mX := float64 (scr.Wd() / grain)
-  dt := (t1 - t0) / mX
-  for a := t0; a <= t1; a += dt {
-    x, y, z := f1 (a), f2 (a), f3 (a)
-    a1 := a + dt
-    x1, y1, z1 := f1 (a1), f2 (a1), f3 (a1)
-    if ok (x) && ok (y) && ok (z) && ok (x1) && ok (y1) && ok (z1) {
-      figure (pt.Lines, p, c, v_(x, y, z), v_(x1, y1, z1))
+  case Circle:
+    if f.filled {
+      scr.CircleFull (f.x[0], f.y[0], uint(f.x[1]))
+    } else {
+      scr.Circle (f.x[0], f.y[0], uint(f.x[1]))
     }
-  }
-}
-
-func surface (p pts.Points, f RealFunc2, X, Y, Z, X1, Y1, Z1 float64, c col.Colour) {
-// XXX
-  if X == X1 || Y == Y1 || Z == Z1 { return }
-  if X1 < X { X, X1 = X1, X }
-  if Y1 < Y { Y, Y1 = Y1, Y }
-  if Z1 < Z { Z, Z1 = Z1, Z }
-  dx, dy := (X1 - X) / float64 (scr.Wd() / grain), (Y1 - Y) / float64 (scr.Ht() / grain)
-  for x := X; x <= X1; x += dx {
-//    y := Y
-//    n := uint(0)
-//    for y <= Y1 {
-//      n ++
-//      y += dy
+  case Ellipse:
+    if f.filled {
+      scr.EllipseFull (f.x[0], f.y[0], uint(f.x[1]), uint(f.y[1]))
+    } else {
+      scr.Ellipse (f.x[0], f.y[0], uint(f.x[1]), uint(f.y[1]))
+    }
+  case Text:
+    bx.Wd (str.ProperLen (f.string))
+    bx.ColourF (f.colour)
+    bx.WriteGr (f.string, f.x[0], f.y[0])
+  case Image:
+//    if bewegt {
+//      scr.RectangleFullInv (...)
+//    } else {
+//      copy from Imageptr in Framebuffer
 //    }
-// die Anwendung der OpenGL-Ausgabe in gl von TriangleFan ist noch fehlerhaft
-    x1, x0 := x + dx, x + dx / 2
-//    temp, temp1 := vect.New(), vect.New()
-//    v, n := vectors(2 * n) // (2 * n + 1)                 ? ? ? ? ? ? ? ? ? ? ? ? ?
-    for y := Y; y <= Y1; y += dy {
-//    for i := uint(0); i < n; i++ { // oder i <= n            ? ? ? ? ? ? ? ? ? ? ? ? ?
-//      v[2 * i].Set3 (x, y,  z)
-//      v[2 * i + 1].Set3 (x, y1, z1)
-//      if i == 0 { // ?
-//        n[0].Set3 (1, 1, 1)
-//        n[0].Norm()
-//      } else {
-//        temp.Diff (v[2 * i - 2], v[2 * i - 1])
-//        temp1.Diff (v[2 * i], v[2 * i - 1])
-//        n[2 * i - 1].Ext (temp, temp1)
-//        n[2 * i - 1].Norm()
-//        temp.Diff (v[2 * i + 1], v[2 * i])
-//        temp1.Diff (v[2 * i - 1], v[2 * i])
-//        n[2 * i].Cross (temp, temp1)
-//        n[2 * i].Dilate (-1)
-//        n[2 * i].Norm()
-//      }
-//      i ++
-      y1, y0 := y + dy, y + dy / 2
-      z, z1, z2, z3 := f (x, y), f (x1, y), f (x1, y1), f (x, y1)
-      z0 := f (x0, y0)
-      b0 := true // ok (z)
-      b1, b2, b3 := true, true, true // ok (z1), ok (z2), ok (z3)
-      c0 := Z < z && z < Z1
-      c1, c2, c3 := Z < z1 && z1 < Z1, Z < z2 && z2 < Z1, Z < z3 && z3 < Z1
-      if ok (z0) && Z < z0 && z0 < Z1 {
-        if b0 && b1 && c0 && c1 {
-          figure (pt.Triangles, p, c, v_(x,  y,  z), v_(x1, y,  z1), v_(x0, y0, z0))
-        }
-        if b1 && b2 && c1 && c2 {
-          figure (pt.Triangles, p, c, v_(x1, y,  z1), v_(x1, y1, z2), v_(x0, y0, z0))
-        }
-        if b2 && b3 && c2 && c3 {
-          figure (pt.Triangles, p, c, v_(x1, y1, z2), v_(x,  y1, z3), v_(x0, y0, z0))
-        }
-        if b3 && b0 && c3 && c0 {
-          figure (pt.Triangles, p, c, v_(x,  y1, z3), v_(x,  y,  z),  v_(x0, y0, z0))
-        }
-      }
-    }
-//    p.Ins (pt.TriangleFan, v, n, c)
+    img.Get (f.string, uint(f.x[0]), uint(f.y[0]))
   }
 }
 
-func CoSy (p pts.Points, X, Y, Z float64, mit bool) {
-  const N = 0.
-  cX, cY, cZ := col.LightRed, col.LightGreen, col.LightBlue
-  if mit {
-    parallelogram (p, cX, v_(N,-Y,-Z), v_(N, Y,-Z), v_(N,-Y, Z))
-  }
-  R := X / 128
-  R1 := X / 16
-  G := X
-  G1 := G + 2
-  var x float64
-  fein := X <= 10
-  y := -Y
-//  var c0 col.Colour
-  for y < Y {
-    z := -Z
-    for z < Z {
-//      if y = 0 {
-//        c0 = cY
-//      } else if z = 0 {
-//        c0 = cZ
-//      } else {
-//        c0 = cX
-//      }
-      if fein {
-        figure (pt.Points, p, cX, v_(N, y, z))
-      } else {
-        Octahedron (p, cX, N, y, z, R)
-      }
-      z += 1 // muß gekörnt werden
+func (f *figure) Print (p psp.PostscriptPage) {
+  if f.Empty() { return }
+  n := uint(len (f.x))
+  p.SetColour (f.colour)
+  switch f.Type {
+  case Points:
+    x, y := make ([]float64, n), make ([]float64, n)
+    for i := uint(0); i < n; i++ {
+      x[i], y[i] = p.S (f.x[i]), p.Sy (f.y[i])
     }
-    y += 1
-  }
-  figure (pt.Lines, p, cX, v_(-G1, N, N), v_(G1, N, N))
-  sphere (p, G1, N, N, R1, cX)
-  if mit {
-    parallelogram (p, cY, v_(-X, N,-Z), v_(X, N,-Z), v_(-X, N, Z))
-  }
-  x = -X
-  for x < X {
-    z := - Z
-    for z < Z {
-//      if x = 0 {
-//        c0 = cX
-//      } else if z = 0 {
-//        c0 = cZ
-//      } else {
-//        c0 = cY
-//      }
-      if fein {
-        figure (pt.Points, p, cY, v_(x, N, z))
-      } else {
-        octahedron (p, cY, x, N, z, R)
-      }
-      z += 1
+    p.Points (x, y)
+  case Segments:
+    x, y := make ([]float64, n), make ([]float64, n)
+    for i := uint(0); i < n; i++ {
+      x[i], y[i] = p.S (f.x[i]), p.Sy (f.y[i])
     }
-    x += 1
-  }
-  figure (pt.Lines, p, cY, v_(N,-G1, N), v_(N, G1, N))
-  sphere (p, N, G1, N, R1, cY)
-  if mit {
-    parallelogram (p, cZ, v_(-X,-Y, N), v_(X,-Y, N), v_(-X, Y, N))
-  }
-  x = -X
-  for x < X {
-    y := -Y
-    for y < Y {
-//      if x = 0 {
-//        c0 = cX
-//      } else if y = 0 {
-//        c0 = cY
-//      } else {
-//        c0 = cZ
-//      }
-      if fein {
-        figure (pt.Points, p, cZ, v_(x, y, N))
-      } else {
-        octahedron (p, cZ, x, y, N, R)
-      }
-      y += 1
+    p.Segments (x, y)
+  case Polygon:
+    x, y := make ([]float64, n), make ([]float64, n)
+    for i := uint(0); i < n; i++ {
+      x[i], y[i] = p.S (f.x[i]), p.Sy (f.y[i])
     }
-    x += 1
+    p.Polygon (x, y, f.filled)
+  case Curve:
+    x, y := make ([]float64, n), make ([]float64, n)
+    for i := uint(0); i < n; i++ {
+      x[i], y[i] = p.S (f.x[i]), p.Sy (f.y[i])
+    }
+    p.Curve (x, y)
+  case InfLine:
+    x, y, x1, y1 := p.S (f.x[0]), p.Sy (f.y[0]), p.S (f.x[1]), p.Sy (f.y[1])
+    p.Line (x, y, x1, y1)
+  case Rectangle:
+    x, y, x1, y1 := p.S (f.x[0]), p.Sy (f.y[0]), p.S(f.x[1]), p.Sy (f.y[1])
+    p.Rectangle (x, y, x1 - x, y1 - y, f.filled)
+  case Circle:
+    x, y, r := p.S (f.x[0]), p.Sy (f.y[0]), p.S (f.x[1])
+    p.Circle (x, y, r, f.filled)
+  case Ellipse:
+    x, y, a, b := p.S (f.x[0]), p.Sy (f.y[0]), p.S (f.x[1]), p.S (f.y[1])
+    p.Ellipse (x, y, a, b, f.filled)
+  case Text:
+    x, y := p.S (f.x[0]), p.Sy (f.y[0])
+    p.Write (f.string, x, y)
+  case Image:
+// TODO
   }
-  figure (pt.Lines, p, cZ, v_(N, N,-G1), v_(N, N, G1))
-  sphere (p, N, N, G1, R1, cZ)
 }
 
-func Tree (p pts.Points, x, y, z, r float64, c col.Colour) {
-  v, _ := vectors(2)
-  v[0].Set3 (x, y, z)
-  for b := 1; b < N / 2; b++ {
-    for l := 0; l < N; l++ {
-//      rz := r * rand.LongFloat()
-//      r0 :=     rz * sin[b]
-//      z0 := z + rz * cos[b]
-      v[1].SetPolar (x, y, z, r * rand.Real(), float64 (b * angle), float64 (l * angle))
-//      v[1].Set3 (x + r0 * cos[l], y + r0 * sin[l], z0)
-//      v[1].Inc (v[0])
-      p.Ins1 (pt.LineStrip, v, c)
+func (f *figure) Invert() {
+  if f.Empty() { return }
+  switch f.Type {
+  case Points:
+    scr.PointsInv (f.x, f.y)
+  case Segments:
+    scr.SegmentsInv (f.x, f.y)
+  case Polygon:
+    if f.filled {
+      scr.PolygonFullInv (f.x, f.y)
+    } else {
+      scr.PolygonInv (f.x, f.y)
+    }
+  case Curve:
+    scr.CurveInv (f.x, f.y)
+    if f.filled {
+      n := len (f.x) - 1
+      scr.CircleInv (f.x[n], f.y[n], 4) // TODO ?
+    }
+  case InfLine:
+    scr.InfLineInv (f.x[0], f.y[0], f.x[1], f.y[1])
+  case Rectangle:
+    if f.filled {
+      scr.RectangleFullInv (f.x[0], f.y[0], f.x[1], f.y[1])
+    } else {
+      scr.RectangleInv (f.x[0], f.y[0], f.x[1], f.y[1])
+    }
+  case Circle:
+    if f.filled {
+      scr.CircleFullInv (f.x[0], f.y[0], uint(f.x[1]))
+    } else {
+      scr.CircleInv (f.x[0], f.y[0], uint(f.x[1]))
+    }
+  case Ellipse:
+    if f.filled {
+      scr.EllipseFullInv (f.x[0], f.y[0], uint(f.x[1]), uint(f.y[1]))
+    } else {
+      scr.EllipseInv (f.x[0], f.y[0], uint(f.x[1]), uint(f.y[1]))
+    }
+  case Text:
+// >>>  sollte in bx integriert werden:
+//  bx.WriteInvGr (string, x[0], y[0])
+    scr.Transparence (true)
+    scr.WriteInvGr (f.string, f.x[0], f.y[0])
+  case Image:
+    scr.RectangleInv (f.x[0], f.y[0], f.x[1], f.y[1])
+  }
+}
+
+func (f *figure) invertN() {
+  switch f.Type {
+  case Points:
+    scr.PointsInv (f.x, f.y)
+  case Segments:
+    scr.SegmentsInv (f.x, f.y)
+  case Polygon:
+    scr.PolygonInv (f.x, f.y)
+  case Curve:
+    scr.CurveInv (f.x, f.y)
+    if f.filled {
+      n := len (f.x) - 1
+      scr.CircleInv (f.x[n], f.y[n], 4) // TODO ?
     }
   }
+}
+
+func (f *figure) editN() {
+  switch f.Type {
+  case Points, Segments, Polygon, Curve: default: return }
+  x0 := make ([]int, 2); x0[0] = f.x[0]; f.x = x0
+  y0 := make ([]int, 2); y0[0] = f.y[0]; f.y = y0
+  f.x[1], f.y[1] = scr.MousePosGr()
+  f.invertN()
+  var ( K kbd.Comm; T uint )
+  loop: for {
+    K, T = kbd.Command()
+    scr.MousePointer (true)
+    n := uint(len (f.x))
+    switch K { case kbd.Esc:
+      break loop
+    case kbd.Go,
+         kbd.Here, kbd.Pull, kbd.Hither,
+         kbd.There, kbd.Push, kbd.Thither,
+         kbd.This: // kbd.ToThis:
+      f.invertN()
+//      if f.Type == Curve {
+//        if n == scr.MaxBezierdegree { break loop }
+//      }
+      if f.Type == Points {
+        if K != kbd.Go {
+          n++
+        }
+      } else {
+        if K == kbd.Here { // TODO Curve: missing
+          n++
+        }
+      }
+      if K == kbd.This {
+        n := len (f.x)
+        if n == 0 {
+          break loop
+        } else { // TODO
+          n--
+          if n == 0 {
+            break loop
+//          } else {
+//            x0 = make ([]int, n); copy (x0, f.x[:n]); f.x = x0
+//            y0 = make ([]int, n); copy (y0, f.y[:n]); f.y = y0
+            }
+        }
+      }
+      if n > uint(len (f.x)) {
+        x0 = make ([]int, n); copy (x0, f.x); f.x = x0
+        y0 = make ([]int, n); copy (y0, f.y); f.y = y0
+      }
+      f.x[n-1], f.y[n-1] = scr.MousePosGr()
+      f.invertN()
+      if f.Type == Points {
+        if K == kbd.Hither { break loop }
+      } else {
+        if K == kbd.Thither { break loop }
+      }
+    }
+  }
+  if f.x == nil {
+    f.Clr()
+    return
+  }
+  scr.ColourF (f.colour)
+  switch f.Type {
+  case Points:
+    scr.Points (f.x, f.y)
+  case Segments:
+    scr.Segments (f.x, f.y)
+  case Polygon:
+    scr.Polygon (f.x, f.y)
+    f.filled = T > 0 && f.convex()
+    if f.filled {
+      scr.PolygonFull (f.x, f.y) // not yet implemented
+    }
+  case Curve:
+    scr.Curve (f.x, f.y)
+    f.filled = T > 0
+    if f.filled {
+      n := len (f.x) - 1
+      scr.CircleFull (f.x[n], f.y[n], 4)
+    }
+  }
+}
+
+func (f *figure) invert1() {
+  switch f.Type {
+  case InfLine:
+    scr.InfLineInv (f.x[0], f.y[0], f.x[1], f.y[1])
+  case Rectangle:
+    scr.RectangleInv (f.x[0], f.y[0], f.x[1], f.y[1])
+  default:
+    scr.EllipseInv (f.x[0], f.y[0], uint(f.x[1]), uint(f.y[1]))
+  }
+}
+
+func (f *figure) edit1() {
+  x0 := make ([]int, 2); x0[0] = f.x[0]; f.x = x0
+  y0 := make ([]int, 2); y0[0] = f.y[0]; f.y = y0
+  switch f.Type {
+  case InfLine:
+    if f.x[0] == 0 {
+      f.x[1] = 1
+    } else {
+      f.x[1] = f.x[0] - 1
+    }
+    f.y[1] = f.y[0]
+  case Rectangle:
+    f.x[1] = f.x[0]
+    f.y[1] = f.y[0]
+  case Circle, Ellipse:
+    f.x[1] = 0
+    f.y[1] = 0
+  default:
+    return
+  }
+//    scr.PointInv (f.x[0], f.y[0])
+  f.invert1()
+  loop: for {
+    K, T := kbd.Command()
+    switch K { case kbd.Pull, kbd.Hither:
+      f.invert1()
+      f.x[1], f.y[1] = scr.MousePosGr()
+      switch f.Type {
+      case InfLine:
+        if f.x[1] == f.x[0] && f.y[1] == f.y[0] {
+          if f.x[0] == 0 {
+            f.x[1] = 1
+          } else {
+            f.x[1] = f.x[0] - 1
+          }
+        }
+      case Rectangle:
+        ;
+      case Circle, Ellipse:
+        if f.x[1] > f.x[0] {
+          f.x[1] -= f.x[0]
+        } else {
+          f.x[1] = f.x[0] - f.x[1]
+        }
+        if f.y[1] > f.y[0] {
+          f.y[1] -= f.y[0]
+        } else {
+          f.y[1] = f.y[0] - f.y[1]
+        }
+        if f.Type == Circle {
+          if f.x[1] > f.y[1] {
+            f.y[1] = f.x[1]
+          } else {
+            f.x[1] = f.y[1]
+          }
+        }
+      default:
+        // stop (Modul, 1)
+      }
+      f.invert1()
+      if K == kbd.Hither {
+        f.filled = T > 0
+        break loop
+      }
+    }
+  }
+  switch f.Type {
+  case InfLine:
+    scr.InfLine (f.x[0], f.y[0], f.x[1], f.y[1])
+  case Rectangle:
+    if f.filled {
+      scr.RectangleFull (f.x[0], f.y[0], f.x[1], f.y[1])
+    } else {
+      scr.Rectangle (f.x[0], f.y[0], f.x[1], f.y[1])
+    }
+  case Circle, Ellipse:
+    if f.filled {
+      scr.EllipseFull (f.x[0], f.y[0], uint(f.x[1]), uint(f.y[1]))
+    } else {
+      scr.Ellipse (f.x[0], f.y[0], uint(f.x[1]), uint(f.y[1]))
+    }
+  }
+}
+
+func (f *figure) editText() {
+  if f.Type != Text { return }
+  scr.MousePointer (false)
+  bx.Wd (lenText)
+  bx.ColourF (f.colour)
+  x1 := f.x[0] + int(lenText * scr.Wd1()) - 1
+  if x1 >= xx { x1 = xx - 1 }
+  y1 := f.y[0] + int(scr.Ht1()) - 1
+  if y1 >= yy { y1 = yy - 1 }
+  scr.SaveGr (f.x[0], f.y[0], x1, y1)
+  bx.Transparence (false)
+  f.string = str.Clr (lenText) // wörkeraunt
+  bx.EditGr (&f.string, f.x[0], f.y[0])
+  bx.Transparence (true)
+  scr.RestoreGr (f.x[0], f.y[0], x1, y1)
+  if C, _ := kbd.LastCommand(); C == kbd.Enter {
+    bx.Transparence (true)
+//    scr.RestoreGr (f.x[0], f.y[0], x1, y1)
+    bx.WriteGr (f.string, f.x[0], f.y[0])
+    k := str.ProperLen (f.string)
+    x0 := make ([]int, 2); x0[0] = f.x[0]; f.x = x0
+    y0 := make ([]int, 2); y0[0] = f.y[0]; f.y = y0
+    f.x[1] = f.x[0] + int(scr.Wd1() * k) - 1
+    f.y[1] = f.y[0] + int(scr.Ht1()) - 1
+    scr.WarpMouseGr (f.x[0], f.y[1])
+  } else {
+//    f.string = str.Clr (lenText)
+//    bx.WriteGr (f.string, f.x[0], f.y[0])
+//    f.string = ""
+//    f.x, f.y = nil, nil
+  }
+  scr.MousePointer (true)
+}
+
+func (f *figure) editImage() {
+  if f.Type != Image { return }
+  scr.MousePointer (false)
+  errh.Hint ("Name des Bildes eingeben")
+  bx.Wd (32) // reine Willkür
+  bx.Colours (f.colour, scr.ScrColB())
+  f.string = str.Clr (BB)
+  bx.EditGr (&f.string, f.x[0], f.y[0])
+  str.OffSpc (&f.string)
+  W, H := img.Size (f.string)
+  w, h := int(W), int(H)
+  if w <= xx && h <= yy {
+    x0 := make ([]int, 2); x0[0] = f.x[0]; f.x = x0
+    y0 := make ([]int, 2); y0[0] = f.y[0]; f.y = y0
+    f.x[1] = f.x[0] + w - 1
+    f.y[1] = f.y[0] + h - 1
+    if f.x[1] >= xx {
+      f.x[0] = xx - w
+      f.x[1] = xx - 1
+    }
+    if f.y[1] >= yy {
+      f.y[0] = yy - h
+      f.y[1] = yy - 1
+    }
+    errh.DelHint()
+//  besser:
+//    img.Get ...
+//    NEW (Imagespeicher)
+//    img.Get ( ... dort rein ...)
+//    img.Get (string, x[0], y[0])
+  } else {
+    errh.DelHint()
+  }
+  scr.MousePointer (true)
+}
+
+func (f *figure) uM() uint {
+  const ( r = 4; t = 4 )
+  a, b := scr.MousePosGr()
+  n := uint(len (f.x))
+  for i := uint(0); i < n; i++ {
+    if scr.OnCircle (f.x[i], f.y[i], r, a, b, t) {
+      return uint(i)
+    }
+  }
+  return n + 1 // ?
+}
+
+func (f *figure) mark (i uint) {
+//  if f.Type != Curve { return }
+  for r := uint(3); r <= 4; r++ {
+    scr.CircleInv (f.x[i], f.y[i], r)
+  }
+}
+
+func (f *figure) Edit() {
+  if f.Empty() {
+    scr.ColourF (f.colour)
+    f.x, f.y = make ([]int, 1), make ([]int, 1)
+    f.x[0], f.y[0] = scr.MousePosGr()
+    switch f.Type {
+    case Points, Segments, Polygon, Curve:
+      f.editN()
+    case InfLine, Rectangle, Circle, Ellipse:
+      f.edit1()
+    case Text:
+      f.editText()
+    case Image:
+//      ALLOCATE (Imageptr, Groesse())
+//      img.Get (string [...], Imageptr)
+      f.editImage()
+    }
+    if f.x == nil {
+      f.Clr()
+    }
+  } else {
+    n := uint(len (f.x))
+errh.Error ("Figur hat Länge", n)
+    switch f.Type { case Text:
+      f.editText()
+    case Image:
+      f.editImage()
+    default:
+      f.Erase()
+      f.Invert()
+      if true { // f.Type == Curve {
+        for i := uint(0); i < n; i++ { f.mark (i) }
+      }
+      i := f.uM()
+      f.x[i], f.y[i] = scr.MousePosGr()
+      loop: for {
+        scr.MousePointer (true)
+        c, _ := kbd.Command()
+        switch c { case kbd.Esc:
+          break loop
+        case kbd.Enter, kbd.Tab, kbd.Search:
+          f.colour = sel.Colour()
+        case kbd.Here:
+          break loop
+        case kbd.There:
+          i = f.uM()
+        case kbd.Push, kbd.Thither:
+          if i < n {
+            f.Invert()
+            f.mark (i)
+            f.x[i], f.y[i] = scr.MousePosGr()
+            f.mark (i)
+            f.Invert()
+            if c == kbd.Thither { i = n } // ? ? ?
+          }
+        case kbd.This:
+          switch f.Type {
+          case Points, Segments, Polygon, Curve:
+            if f.x == nil {
+              f.Clr()
+            } else {
+              for i := uint(0); i < n; i++ { f.mark (i) }
+              f.Erase()
+              n-- // ? ? ?
+              f.Invert()
+              for i := uint(0); i < n; i++ { f.mark (i) }
+            }
+          }
+        }
+        errh.Hint (c.String())
+      }
+      f.Invert()
+      if true { // kind != Text {
+        for i := uint(0); i < n; i++ { f.mark (i) }
+      }
+      f.Write()
+    }
+  }
+}
+
+func (f *figure) Codelen() uint {
+  n := 1 + uint32(col.Codelen()) + 4
+  switch f.Type {
+  case Text:
+    n += 2 * 4 + 1 + uint32(len (f.string)) // 4 = Codelen (uint32(0))
+  case Image:
+    n += 4 * 4 + 1 + uint32(len (f.string))
+  default:
+    n += 2 * uint32(len (f.x)) * 4
+  }
+  n += 2 * 4 // Reserve
+  return uint(n)
+}
+
+func (f *figure) Encode() []byte {
+  bs := make ([]byte, f.Codelen())
+  a := uint32(0)
+  bs[a] = byte(f.Type)
+  a++
+  copy (bs[a:a+3], col.Encode (f.colour))
+  a += 3
+  var n uint32
+  if f.Type < Text {
+    n = uint32(len (f.x))
+  } else {
+    n = uint32(len (f.string))
+  }
+  copy (bs[a:a+4], Encode (n))
+  a += 4
+  if f.Type < Text {
+    for i := uint32(0); i < n; i++ {
+      copy (bs[a:a+4], Encode (int32(f.x[i])))
+      a += 4
+      copy (bs[a:a+4], Encode (int32(f.y[i])))
+      a += 4
+    }
+  } else { // Text, Image
+    copy (bs[a:a+4], Encode (int32(f.x[0])))
+    a += 4
+    copy (bs[a:a+4], Encode (int32(f.y[0])))
+    a += 4
+    if f.Type == Image {
+      copy (bs[a:a+4], Encode (int32(f.x[1])))
+      a += 4
+      copy (bs[a:a+4], Encode (int32(f.y[1])))
+      a += 4
+    }
+    copy (bs[a:a+n], []byte(f.string))
+    a += n
+  }
+  bs[a] = 0
+  if f.filled { bs[a] ++ }
+  if f.marked { bs[a] += 2 }
+  return bs
+}
+
+func (f *figure) Decode (bs []byte) {
+  a := uint32(0)
+  f.Type = Type(bs[a])
+  a ++
+  col.Decode (&f.colour, bs[a:a+3])
+  a += 3
+  n := uint32(0)
+  n = uint32(Decode (uint32(0), bs[a:a+4]).(uint32))
+  a += 4
+  if f.Type < Text {
+    f.x, f.y = make ([]int, n), make ([]int, n)
+    for i := uint32(0); i < n; i++ {
+      f.x[i] = int(Decode (int32(f.x[i]), bs[a:a+4]).(int32))
+      a += 4
+      f.y[i] = int(Decode (int32(f.y[i]), bs[a:a+4]).(int32))
+      a += 4
+    }
+  } else { // kind == Text, Image
+    f.x, f.y = make ([]int, 2), make ([]int, 2)
+    f.x[0] = int(Decode (int32(f.x[0]), bs[a:a+4]).(int32))
+    a += 4
+    f.y[0] = int(Decode (int32(f.y[0]), bs[a:a+4]).(int32))
+    a += 4
+    if f.Type == Image {
+      f.x[1] = int(Decode (int32(f.x[1]), bs[a:a+4]).(int32))
+      a += 4
+      f.y[1] = int(Decode (int32(f.y[1]), bs[a:a+4]).(int32))
+      a += 4
+    }
+    f.string = string(bs[a:a+n])
+    a += n
+    if f.Type == Text {
+      f.x[1] = f.x[0] + int(scr.Wd1()) * int(n) - 1
+      f.y[1] = f.y[0] + int(scr.Ht1()) - 1
+    }
+  }
+  f.filled = bs[a] % 2 == 1
+  f.marked = (bs[a] / 2) % 2 == 1
 }

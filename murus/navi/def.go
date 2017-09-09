@@ -1,6 +1,6 @@
 package navi
 
-// (c) murus.org  v. 120909 - license see murus.go
+// (c) Christian Maurer  v. 120909 - license see murus.go
 
 // Pre: /dev/input/navi is readable for world.
 // If there is e.g. a rule in /etc/udev/rules.d with the line:

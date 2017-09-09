@@ -1,6 +1,6 @@
 package obj
 
-// (c) murus.org  v. 140102 - license see murus.go
+// (c) Christian Maurer   v. 140102 - license see murus.go
 
 type
   Seeker interface { // makes sense only for objects of type Collector

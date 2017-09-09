@@ -1,6 +1,6 @@
 package scr
 
-// (c) murus.org  v. 170814 - license see murus.go
+// (c) Christian Maurer   v. 170814 - license see murus.go
 
 func (X *screen) Cut (s string) {
   if len (s) == 0 { return }

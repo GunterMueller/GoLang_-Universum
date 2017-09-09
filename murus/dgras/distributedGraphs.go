@@ -1,6 +1,6 @@
 package dgras
 
-// (c) murus.org  v. 170508 - license see murus.go
+// (c) Christian Maurer   v. 170508 - license see murus.go
 //
 // >>> Modify and/or extend according to your needs !
 

@@ -1,6 +1,6 @@
 package dlock
 
-// (c) murus.org  v. 150505 - license see murus.go
+// (c) Christian Maurer   v. 150505 - license see murus.go
 //
 /* >>> Distributed mutual exclusion due to
        Ricart, G., Agrawala, A. K.:

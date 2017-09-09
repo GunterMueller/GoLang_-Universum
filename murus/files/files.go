@@ -1,6 +1,6 @@
 package files
 
-// (c) murus.org  v. 170814 - license see murus.go
+// (c) Christian Maurer   v. 170814 - license see murus.go
 
 // >>> alpha-version - still a lot TODO, also some bugs there
 

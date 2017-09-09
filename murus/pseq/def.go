@@ -1,6 +1,6 @@
 package pseq
 
-// (c) murus.org  v. 170509 - license see murus.go
+// (c) Christian Maurer   v. 170509 - license see murus.go
 
 import
   . "murus/obj"

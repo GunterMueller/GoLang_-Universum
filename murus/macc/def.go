@@ -1,6 +1,6 @@
 package macc
 
-// (c) murus.org  v. 170520 - license see murus.go
+// (c) Christian Maurer   v. 170520 - license see murus.go
 
 import (
   "murus/euro"

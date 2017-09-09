@@ -1,6 +1,6 @@
 package errh
 
-// (c) murus.org  v. 170319 - license see murus.go
+// (c) Christian Maurer   v. 170319 - license see murus.go
 
 import
   "murus/col"

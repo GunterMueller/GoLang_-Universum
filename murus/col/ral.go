@@ -1,6 +1,6 @@
 package col
 
-// (c) murus.org  v. 140101 - license see murus.go
+// (c) Christian Maurer   v. 140101 - license see murus.go
 
 var ( // RAL-Farben
   Grünbeige =        colour3 (214, 199, 148)

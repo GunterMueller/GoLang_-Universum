@@ -1,6 +1,6 @@
 package mon
 
-// (c) murus.org  v. 170629 - license see murus.go
+// (c) Christian Maurer   v. 170629 - license see murus.go
 
 // >>> Synchronization with Locker - what happens behind the scene, depends
 //     on the choice of the implementation of Locker by the call of the

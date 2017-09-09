@@ -1,6 +1,6 @@
 package z
 
-// (c) murus.org  v. 170204 - license see murus.go
+// (c) Christian Maurer  v. 170204 - license see murus.go
 
 const
   delta = 'a' - 'A'

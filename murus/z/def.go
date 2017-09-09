@@ -1,6 +1,6 @@
 package z
 
-// (c) murus.org  v. 170781 - license see murus.go
+// (c) Christian Maurer  v. 170781 - license see murus.go
 
 const (
   Ä = byte(196)

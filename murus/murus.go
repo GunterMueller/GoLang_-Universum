@@ -1,6 +1,6 @@
 package main
 
-/* (c) 1986-2017  murus.org
+/* (c) 1986-2017  Christian Maurer
        dr.maurer-berlin.eu proprietary - all rights reserved
 
   Die Quellen von murus sind nur zum Einsatz in der Lehre konstruiert  und haben demzufolge
@@ -9,9 +9,9 @@ package main
   Für Lehrzwecke in Universitäten und Schulen  sind die Quellen uneingeschränkt verwendbar;
   jegliche weitergehende - insbesondere kommerzielle - Nutzung ist jedoch strikt untersagt.
 
-  THIS SOFTWARE  IS PROVIDED BY  murus.org  "AS IS"  AND ANY EXPRESS OR IMPLIED WARRANTIES,
+  THIS SOFTWARE IS PROVIDED BY the authors  "AS IS"  AND ANY EXPRESS OR IMPLIED WARRANTIES,
   INCLUDING,  BUT NOT LIMITED TO,  THE IMPLIED WARRANTIES  OF MERCHANTABILITY  AND  FITNESS
-  FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL  murus.org  BE LIABLE FOR ANY
+  FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL the authors BE LIABLE FOR ANY
   DIRECT, INDIRECT,  INCIDENTAL, SPECIAL,  EXEMPLARY, OR CONSEQUENTIAL DAMAGES  (INCLUDING,
   BUT NOT LIMITED TO,  PROCUREMENT OF SUBSTITUTE GOODS  OR SERVICES;  LOSS OF USE, DATA, OR
   PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
@@ -31,34 +31,52 @@ package main
 
 import (
   "murus/env"
-  "murus/ker"; . "murus/obj"; "murus/sort"; "murus/cdrom";
+  "murus/ker"
+  . "murus/obj"
+  "murus/sort"
+  "murus/cdrom";
   . "murus/mode"
   "murus/kbd"
-  "murus/col"; "murus/scr"; "murus/errh"; "murus/scale"; "murus/pbar"
+  "murus/col"
+  "murus/scr"
+  "murus/gl"
+  "murus/errh"
+  "murus/scale"
+  "murus/pbar"
   "murus/files"
-  "murus/integ"; "murus/lint"; "murus/brat"; "murus/real"
-  "murus/stk"; "murus/buf"; "murus/bpqu"
+  "murus/integ"
+  "murus/lint"
+  "murus/brat"
+  "murus/real"
+  "murus/stk"
+  "murus/buf"
+  "murus/bpqu"
   "murus/menue"
-  "murus/date"; "murus/fuday"
+  "murus/date"
+  "murus/fuday"
   "murus/img"
-  "murus/fig2"
+  "murus/fig"
   "murus/piset"
   "murus/persaddr"
   "murus/pset"
   "murus/schol"
   "murus/gram"
-  "murus/fig"
-  "murus/eye"
   "murus/audio"
   "murus/v"
   "murus/car"
   "murus/chanm"
   "murus/lock"
-  "murus/asem"; "murus/barr"
-  "murus/rw"; "murus/lr"
+  "murus/asem"
+  "murus/barr"
+  "murus/rw"
+  "murus/lr"
   "murus/lockp"
-  "murus/phil"; "murus/smok"; "murus/barb"
-  "murus/mstk"; "murus/mqu"; "murus/mbuf"
+  "murus/phil"
+  "murus/smok"
+  "murus/barb"
+  "murus/mstk"
+  "murus/mqu"
+  "murus/mbuf"
   "murus/macc"
   "murus/nchan"
   "murus/naddr"
@@ -155,9 +173,10 @@ func main() { // just to get all stuff compiled
     screen = scr.NewMax()
   }
   defer screen.Fin()
-  files.Cd(env.Val("GOSRC"))
+  env.Call()
   files.Cd(ker.Murus)
   sort.Sort(make([]Any, 0))
+  gl.Touch()
   if cdrom.MaxVol == 0 {}
   scale.Lim(0,0,0,0,0)
   pbar.Touch()
@@ -171,13 +190,11 @@ func main() { // just to get all stuff compiled
   menue.Touch()
   date.New()
   fuday.New()
-  fig2.Touch()
+  fig.Touch()
   piset.Touch()
   pset.New(persaddr.New())
   schol.New()
   gram.Touch()
-  fig.Touch()
-  eye.New()
   audio.New()
   chanm.New()
   lock.NewMutex()
@@ -202,9 +219,10 @@ func main() { // just to get all stuff compiled
   x, y := int(screen.Wd()), int(screen.Ht()) / 2
   cf, cl, cb := v.Colours()
   circ (cb, x / 2, y); circ (cl, x - y, y); circ (cf, y, y)
-  errh.MurusLicense ("murus", v.String(), "1986-2017  Christian Maurer   https://murus.org", cf, cl, cb)
+  errh.MurusLicense ("murus", v.String(),
+                     "1986-2017  Christian Maurer   https://maurer-berlin.eu/murus", cf, cl, cb)
   screen.ScrColourB (cb)
-  done := make (chan bool)
+  done := make(chan bool)
   go drive (cf, cl, cb, done)
   <-done
 }

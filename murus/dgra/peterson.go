@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170423 - license see murus.go
+// (c) Christian Maurer   v. 170423 - license see murus.go
 
 // >>> Gary L. Peterson: An O(n log n) Unidirectional Algorithm
 //     for the Circular Extrema Problem. ACM TOPLAS (1982), 758-762

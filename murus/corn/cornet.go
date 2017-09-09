@@ -1,6 +1,6 @@
 package corn
 
-// (c) murus.org  v. 170318
+// (c) Christian Maurer   v. 170318
 
 import (
   . "murus/obj"

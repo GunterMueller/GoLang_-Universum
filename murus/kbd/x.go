@@ -1,6 +1,6 @@
 package kbd
 
-// (c) murus.org  v. 170814 - license see murus.go
+// (c) Christian Maurer  v. 170903 - license see murus.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -72,7 +72,7 @@ func inputX (B *byte, C *Comm, T *uint) {
       } else {
         e.C -= 8
         switch {
-        case e.C == escape:
+        case e.C == esc:
           *C = Esc
         case e.C == shiftL || e.C == shiftR:
           shiftX = true
@@ -104,12 +104,12 @@ func inputX (B *byte, C *Comm, T *uint) {
           }
         case isCmd (e.C):
           *C = kK[e.C]
-          if e.C == pageUp || e.C == pageDown {
-//          if e.C == pageUp + 8 || e.C == pageDown + 8 { // 112/117 -> 104/109
+          if e.C == pgUp || e.C == pgDown {
+//          if e.C == pgUp + 8 || e.C == pgDown + 8 { // 112/117 -> 104/109
             *T += 2
           }
           if (e.C == left || e.C == right) && e.S == 64 { *T += 2 }
-          if e.C == backspace && *T > 2 { *C = None; *T = 0 } // doesn't help: wm crashes
+          if e.C == back && *T > 2 { *C = None; *T = 0 } // doesn't help: wm crashes
 //        case k == numOnOff:
 //          ; // TODO
         case isKeypad (e.C):

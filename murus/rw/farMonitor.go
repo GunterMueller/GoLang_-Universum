@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 170520 - license see murus.go
+// (c) Christian Maurer   v. 170520 - license see murus.go
 
 // >>> readers/writers problem: implementation with far monitors
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, Abschnitt 8.3

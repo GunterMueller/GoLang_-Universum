@@ -1,6 +1,6 @@
 package mbuf
 
-// (c) murus.org  v. 150304 - license see murus.go
+// (c) Christian Maurer   v. 150304 - license see murus.go
 
 const (
   ins = uint(iota)

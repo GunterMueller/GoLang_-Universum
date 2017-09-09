@@ -1,6 +1,6 @@
 package lock
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) Christian Maurer   v. 161216 - license see murus.go
 
 // Secures the access to a critical section.
 // The functions Lock and Unlock cannot be interrupted

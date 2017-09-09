@@ -1,6 +1,6 @@
 package ego
 
-// (c) murus.org  v. 170424 - license see murus.go
+// (c) Christian Maurer   v. 170424 - license see murus.go
 
 // Returns the value of the first argument of the programm call,
 // that uses this function, if that is a natural number < n.

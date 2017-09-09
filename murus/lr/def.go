@@ -1,6 +1,6 @@
 package lr
 
-// (c) murus.org  v. 170411 - license see murus.go
+// (c) Christian Maurer   v. 170411 - license see murus.go
 
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 79 ff., 93 ff., 183
 

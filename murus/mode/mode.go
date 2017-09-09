@@ -1,6 +1,6 @@
 package mode
 
-// (c) murus.org  v. 170812 - license see murus.go
+// (c) Christian Maurer   v. 170812 - license see murus.go
 
 import (
   "strconv"

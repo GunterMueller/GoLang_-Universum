@@ -1,6 +1,6 @@
 package atom
 
-// (c) murus.org  v. 170410 - license see murus.go
+// (c) Christian Maurer   v. 170410 - license see murus.go
 
 import (
   "murus/col"

@@ -1,6 +1,6 @@
 package ker
 
-// (c) murus.org  v. 140202 - license see murus.go
+// (c) Christian Maurer  v. 140202 - license see murus.go
 
 import
   "math"

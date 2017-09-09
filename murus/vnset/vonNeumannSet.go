@@ -1,6 +1,6 @@
 package vnset
 
-// (c) murus.org  v. 170817 - license see murus.org
+// (c) Christian Maurer   v. 170817 - license see murus.go
 
 import (
   . "murus/obj"

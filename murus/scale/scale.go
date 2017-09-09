@@ -1,6 +1,6 @@
 package scale
 
-// (c) murus.org  v. 150425 - license see murus.go
+// (c) Christian Maurer   v. 150425 - license see murus.go
 
 import (
   "math"

@@ -1,6 +1,6 @@
 package lr
 
-// (c) murus.org  v. 170411 - license see murus.go
+// (c) Christian Maurer   v. 170411 - license see murus.go
 
 // >>> left/right problem: implementation with far monitors
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 209

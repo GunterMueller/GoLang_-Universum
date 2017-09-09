@@ -1,6 +1,6 @@
 package phone
 
-// (c) murus.org  v. 170810 - license see murus.go
+// (c) Christian Maurer   v. 170810 - license see murus.go
 
 import (
   . "murus/obj"

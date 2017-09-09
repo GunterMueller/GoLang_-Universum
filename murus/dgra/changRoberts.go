@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170423 - license see murus.go
+// (c) Christian Maurer   v. 170423 - license see murus.go
 //
 // >>> Algorithm of Chang and Roberts: An Improved Algorithm for Decentralized Extrema-
 //     Finding in Circular Configurations of Processes. Comm. ACM 22 (1979), 281 - 283

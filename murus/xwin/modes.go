@@ -1,6 +1,6 @@
 package xwin
 
-// (c) murus.org  v. 170818 - license see murus.go
+// (c) Christian Maurer   v. 170818 - license see murus.go
 
 import
   . "murus/mode"

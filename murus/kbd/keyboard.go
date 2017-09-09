@@ -1,6 +1,6 @@
 package kbd
 
-// (c) murus.org  v. 170817 - license see murus.go
+// (c) Christian Maurer  v. 170903 - license see murus.go
 
 import (
   "murus/spc"
@@ -13,34 +13,53 @@ const (
 // PIPE_BUF = 256
 // raw key codes
 // alphanumeric keyboard: control keys
-  shiftL = 42; shiftR = 54; shiftLock = 58
-  ctrlL = 29; ctrlR = 97
-  altL = 56; altR = 100
-  escape = 1; backspace = 14; tab = 15;
-  enter = 28;
+  shiftL    =  42
+  shiftR    =  54
+  shiftLock =  58
+  ctrlL     =  29
+  ctrlR     =  97
+  altL      =  56
+  altR      = 100
+  esc       =   1
+  back      =  14
+  tab       =  15
+  enter     =  28
 // alphanumeric keyboard:
-  f1 = 59; f2 = 60; f3 = 61; f4 = 62; f5 = 63; f6 = 64; f7 = 65; f8 = 66; f9 = 67; f10 = 68
-  f11 = 87; f12 = 88
+  f1        =  59; f2  = 60; f3 = 61; f4 = 62
+  f5        =  63; f6  = 64; f7 = 65; f8 = 66
+  f9        =  67; f10 = 68
+  f11       =  87; f12 = 88
 // numeric keypad:
-  numEnter = 96
-  num0 = 82; num1 = 79; num2 = 80; num3 = 81; num4 = 75; num5 = 76; num6 = 77; num7 = 71; num8 = 72; num9 = 73; numSep = 83
-  numMinus = 74; numPlus = 78; numTimes = 55; numDiv = 98
-  left = 105; right = 106; up = 103; down = 108
+  numEnter  =  96
+  num0      =  82; num1 = 79; num2 = 80; num3 = 81; num4 = 75
+  num5      =  76; num6 = 77; num7 = 71; num8 = 72; num9 = 73
+  numSep    =  83
+  numMinus  =  74; numPlus = 78; numTimes = 55; numDiv = 98
+  left      = 105
+  right     = 106
+  up        = 103
+  down      = 108
 // ? = 101; ? = 112
 // ? = 117; ? = 118
 // ? = 120; ? = 121; ? = 122; ? = 123; ? = 124
 // special keypad:
-  pageUp = 104; pageDown = 109; pos1 = 102; end = 107;
-  insert = 110; delete = 111
+  pgUp      = 104
+  pgDown    = 109
+  pos1      = 102
+  end       = 107
+  ins       = 110
+  del       = 111 // XXX
 // ? = 89; ? = 90; ? = 91; ? = 92; ? = 93; ? = 94; ? = 95
-  print_ = 99; roll = 70; pause = 119
-  numOnOff = 69;
-  onOff = 113; lower = 114; louder = 115
-  doofL = 125; doofM = 126; doofR = 127
+  prt       =  99
+  roll      =  70
+  pause     = 119
+  numOnOff  =  69
+  onOff     = 113; lower = 114; louder = 115
+  doofL     = 125; doofM = 126; doofR = 127
   noKeycodes = 128
 //  toolbox   = 501 // 501 % 256 = 245, % 128 = 117
-  pageRight = 158 // only under X
-  pageLeft  = 159 // only under X
+  pgRight   = 158 // only under X
+  pgLeft    = 159 // only under X
   off       = 128
 // combinations:
   shiftLoff = shiftL + off
@@ -117,48 +136,48 @@ func init() {
   aA[83] = z.Times
 
   for b:= 0; b < noKeycodes; b++ { kK[b] = Esc }
-  kK[escape] = Esc
-  kK[f1] = Help
-  kK[f2] = Search
-  kK[f3] = Act
-  kK[f4] = Cfg
-  kK[f5] = Mark
-  kK[f6] = Demark
-  kK[f7] = Cut
-  kK[f8] = Copy
-  kK[f9] = Paste
-  kK[f10] = Red
-  kK[f11] = Green
-  kK[f12] = Blue
-  kK[backspace] = Back
-  kK[tab] = Tab
-  kK[enter] = Enter
-  kK[print_] = Print
-  kK[pos1] = Pos1
-  kK[up] = Up
-  kK[pageUp] = Up
-  kK[left] = Left
-  kK[right] = Right
-  kK[end] = End
-  kK[down] = Down
-  kK[pageDown] = Down
-  kK[insert] = Ins
-  kK[delete] = Del
-  kK[roll] = Roll
-  kK[num7] = kK[pos1]
-  kK[num8] = kK[up]
-  kK[num9] = kK[pageUp]
-  kK[num4] = kK[left]
-  kK[num6] = kK[right]
-  kK[num7] = kK[end]
-  kK[num8] = kK[down]
-  kK[num9] = kK[pageDown]
-  kK[num0] = kK[insert]
-  kK[numSep] = kK[delete]
+  kK[esc]    = Esc
+  kK[f1]     = Help
+  kK[f2]     = Search
+  kK[f3]     = Act
+  kK[f4]     = Cfg
+  kK[f5]     = Mark
+  kK[f6]     = Demark
+  kK[f7]     = Cut
+  kK[f8]     = Copy
+  kK[f9]     = Paste
+  kK[f10]    = Red
+  kK[f11]    = Green
+  kK[f12]    = Blue
+  kK[back]   = Back
+  kK[tab]    = Tab
+  kK[enter]  = Enter
+  kK[prt]    = Print
+  kK[pos1]   = Pos1
+  kK[up]     = Up
+  kK[pgUp]   = Up
+  kK[left]   = Left
+  kK[right]  = Right
+  kK[end]    = End
+  kK[down]   = Down
+  kK[pgDown] = Down
+  kK[ins]    = Ins
+  kK[del]    = Del
+  kK[roll]   = Roll
+  kK[num7]   = kK[pos1]
+  kK[num8]   = kK[up]
+  kK[num9]   = kK[pgUp]
+  kK[num4]   = kK[left]
+  kK[num6]   = kK[right]
+  kK[num7]   = kK[end]
+  kK[num8]   = kK[down]
+  kK[num9]   = kK[pgDown]
+  kK[num0]   = kK[ins]
+  kK[numSep] = kK[del]
   kK[numEnter] = kK[enter]
-  kK[pause] = Pause
-  kK[onOff] = OnOff
-  kK[lower] = Lower
+  kK[pause]  = Pause
+  kK[onOff]  = OnOff
+  kK[lower]  = Lower
   kK[louder] = Louder
   lastbyte, lastcommand, lastdepth = 0, None, 0
   underX = xwin.UnderX()
@@ -190,10 +209,10 @@ func isF (n uint) bool {
 }
 
 func isCmd (n uint) bool {
-  switch n { case escape, backspace, tab, enter,
-                  left, right, up, down, pageUp, pageDown, pos1, end,
-                  insert, delete,
-                  print_, roll, pause,
+  switch n { case esc, back, tab, enter,
+                  left, right, up, down, pgUp, pgDown, pos1, end,
+                  ins, del,
+                  prt, roll, pause,
                   onOff, lower, louder,
                   numEnter:
     return true

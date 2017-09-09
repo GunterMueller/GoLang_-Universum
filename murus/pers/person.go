@@ -1,6 +1,6 @@
 package pers
 
-// (c) murus.org  v. 170218 - license see murus.go
+// (c) Christian Maurer   v. 170218 - license see murus.go
 
 import (
   . "murus/obj"

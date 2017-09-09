@@ -1,6 +1,6 @@
 package col
 
-// (c) murus.org  v. 140101 - license see murus.go
+// (c) Christian Maurer   v. 140101 - license see murus.go
 
 // >>> XConsortium: rgb.txt,v 10.41 94/02/20 18:39:36 rws Exp
 

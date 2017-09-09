@@ -1,6 +1,6 @@
 package cons
 
-// (c) murus.org  v. 140203 - license see murus.go
+// (c) Christian Maurer   v. 140203 - license see murus.go
 
 import
   "sync"

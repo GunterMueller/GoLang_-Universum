@@ -1,6 +1,6 @@
 package shape
 
-// (c) murus.org  v. 140204 - license see murus.go
+// (c) Christian Maurer   v. 140204 - license see murus.go
 
 func cursor (x, y, h uint, c, s Shape) (uint, uint) {
   if c == s { return 0, 0 }

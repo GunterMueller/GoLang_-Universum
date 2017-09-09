@@ -1,6 +1,6 @@
 package obj
 
-// (c) murus.org  v. 170116 - license see murus.go
+// (c) Christian Maurer   v. 170116 - license see murus.go
 
 // Collections of elements of type object or of variables of
 // a concrete atomic type (bool, [u]int.., float.., string, ...).

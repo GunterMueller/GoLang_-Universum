@@ -1,6 +1,6 @@
 package kbd
 
-// (c) murus.org  v. 161221 - license see murus.go
+// (c) Christian Maurer  v. 170903 - license see murus.go
 
 import (
   "os"
@@ -48,14 +48,15 @@ func catch() {
         ker.Fin()
         os.Exit (1)
       } else if b < off && ctrlC && (altC || altGrC) {
-        switch b { case left, right:
+        switch b {
+        case left, right:
           ker.Console1 (b == right)
         case f1, f2, f3, f4, f5, f6, f7, f8, f9, f10:
           ker.Console (b - f1 + 1)
         case f11, f12:
           ker.Console (b - f11 + 11)
-        case escape, backspace, tab, enter, roll, numEnter, pos1,
-             up, pageUp, end, down, pageDown, insert, delete:
+        case esc, back, tab, enter, roll, numEnter, pos1,
+             up, pgUp, end, down, pgDown, ins, del:
           keypipe <- b
         }
       } else {
@@ -98,7 +99,10 @@ func input (b *byte, c *Comm, d *uint) {
     k = k % off
     if shiftC || ctrlC { *d ++ }
     if altC || altGrC { *d += 2 }
-    switch b0 { case pageUp, pageDown: *d += 2 }
+    switch b0 {
+    case pgUp, pgDown:
+      *d += 2
+    }
     switch {
     case isAlpha (k):
       switch *d { case 0:
@@ -114,14 +118,17 @@ func input (b *byte, c *Comm, d *uint) {
         *b = aa[k]
 //        }
       }
-    case k == escape || k == numEnter || isCmd (k):
+    case k == esc || k == numEnter || isCmd (k):
       *c = kK[k]
     case k == shiftLock:
       shiftC = true
     case isKeypad (k):
       if shiftC {
         *c = kK[k]
-        switch k { case num9, num3: *d = 2 }
+        switch k {
+        case num9, num3:
+          *d = 2
+        }
       } else {
         *b = bb[k]
       }

@@ -1,6 +1,6 @@
 package rand
 
-// (c) murus.org  v. 170327 - license see murus.go
+// (c) Christian Maurer   v. 170327 - license see murus.go
 
 // see D. E. Knuth, The Art of Computer Programming, 3.2.1.1-2, 3.6 i)-vi)
 

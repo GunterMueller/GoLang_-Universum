@@ -1,6 +1,6 @@
 package sel
 
-// (c) murus.org  v. 140210 - license see murus.go
+// (c) Christian Maurer   v. 140210 - license see murus.go
 
 import (
   "murus/kbd"

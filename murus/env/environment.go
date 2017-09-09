@@ -1,6 +1,6 @@
 package env
 
-// (c) murus.org  v. 170814 - license see murus.go
+// (c) Christian Maurer   v. 170903 - license see murus.go
 
 import
   "os"
@@ -44,7 +44,7 @@ func par2() byte {
 }
 
 func nPars() uint {
-  return uint(len (os.Args))
+  return uint(len (os.Args)) - 1
 }
 
 func par (i uint) string {
@@ -55,5 +55,5 @@ func par (i uint) string {
 }
 
 func call() string {
-  return par(0)
+  return os.Args[0]
 }

@@ -1,6 +1,6 @@
 package kbd
 
-// (c) murus.org  v. 170817 - license see murus.go
+// (c) Christian Maurer  v. 170817 - license see murus.go
 
 var
   text = [NComms]string {
@@ -23,7 +23,3 @@ var
     "There  ", "Push   ", "Thither",
     "This   ", "Move   ", "Thus   ",
     "Nav    " }
-
-func string_ (c Comm) string {
-  return text[c]
-}

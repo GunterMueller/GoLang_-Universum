@@ -1,6 +1,6 @@
 package str
 
-// (c) murus.org  v. 170417 - license see murus.go
+// (c) Christian Maurer   v. 170417 - license see murus.go
 
 //     latin-1-strings (without any bloody UTF-8-stuff)
 

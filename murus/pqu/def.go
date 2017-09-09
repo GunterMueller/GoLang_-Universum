@@ -1,6 +1,6 @@
 package pqu
 
-// (c) murus.org  v. 130316 - license see murus.go
+// (c) Christian Maurer   v. 130316 - license see murus.go
 
 import (
   . "murus/obj"

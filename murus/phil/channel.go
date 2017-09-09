@@ -1,6 +1,6 @@
 package phil
 
-// (c) murus.org  v. 170627 - license see murus.go
+// (c) Christian Maurer   v. 170627 - license see murus.go
 
 // >>> Solution with message-passing
 //     Ben-Ari: Principles of Concurrent and Distributed Programming 2nd edition, p. 188

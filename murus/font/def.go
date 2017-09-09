@@ -1,6 +1,6 @@
 package font
 
-// (c) murus.org  v. 140110 - license see murus.go
+// (c) Christian Maurer   v. 140110 - license see murus.go
 
 type
   Font byte; const (

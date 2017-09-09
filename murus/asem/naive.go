@@ -1,6 +1,6 @@
 package asem
 
-// (c) murus.org  v. 170410 - license see murus.go
+// (c) Christian Maurer   v. 170410 - license see murus.go
 
 // >>> incorrect naive representation
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 100

@@ -1,6 +1,6 @@
 package ker
 
-// (c) murus.org  v. 150915 - license see murus.go
+// (c) Christian Maurer  v. 150915 - license see murus.go
 
 import (
   "unsafe"

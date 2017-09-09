@@ -1,6 +1,6 @@
 package col
 
-// (c) murus.org  v. 170813 - license see murus.go
+// (c) Christian Maurer   v. 170813 - license see murus.go
 
 import
   "C"

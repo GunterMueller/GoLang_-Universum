@@ -1,6 +1,6 @@
 package cdrom
 
-// (c) murus.org  v. 150622 - license see murus.go
+// (c) Christian Maurer   v. 150622 - license see murus.go
 
 //#include <stdlib.h>
 //#include <stdio.h>

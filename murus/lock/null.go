@@ -1,6 +1,6 @@
 package lock
 
-// (c) murus.org  v. 111125 - license see murus.go
+// (c) Christian Maurer   v. 111125 - license see murus.go
 
 func null() {
   for {

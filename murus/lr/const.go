@@ -1,6 +1,6 @@
 package lr
 
-// (c) murus.org  v. 170411 - license see murus.go
+// (c) Christian Maurer   v. 170411 - license see murus.go
 
 const (
   left = uint(iota)

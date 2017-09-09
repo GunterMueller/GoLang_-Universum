@@ -1,6 +1,6 @@
 package mouse
 
-// (c) murus.org  170814 - license see murus.go
+// (c) Christian Maurer   170814 - license see murus.go
 
 import
 (

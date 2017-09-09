@@ -1,6 +1,6 @@
 package ker
 
-// (c) murus.org  v. 130217 - license see murus.go
+// (c) Christian Maurer  v. 130217 - license see murus.go
 
 //#include <stdlib.h>
 //#include <fcntl.h>

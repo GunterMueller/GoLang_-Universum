@@ -1,6 +1,6 @@
 package real
 
-// (c) murus.org  v. 140214 - license see murus.go
+// (c) Christian Maurer   v. 140214 - license see murus.go
 
 // >>> alpha-version !
 

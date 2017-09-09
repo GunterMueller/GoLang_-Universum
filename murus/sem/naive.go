@@ -1,6 +1,6 @@
 package sem
 
-// (c) murus.org  v. 170121 - license see murus.go
+// (c) Christian Maurer   v. 170121 - license see murus.go
 
 // >>> naive incorrect solution
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 70

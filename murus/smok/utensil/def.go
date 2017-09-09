@@ -1,6 +1,6 @@
 package utensil
 
-// (c) murus.org  v. 150513 - license see murus.go
+// (c) Christian Maurer   v. 150513 - license see murus.go
 
 import
   "murus/col"

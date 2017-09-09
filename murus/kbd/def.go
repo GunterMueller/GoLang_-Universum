@@ -1,6 +1,6 @@
 package kbd
 
-// (c) murus.org  v. 150812 - license see murus.go
+// (c) Christian Maurer  v. 170903 - license see murus.go
 
 // >>> implements only a german keyboard !
 
@@ -103,7 +103,7 @@ func Byte() byte { return byte_() }
 func Command() (Comm, uint) { return command() }
 
 // Returns a string, describing the calling Command.
-func (c Comm) String() string { return string_(c) }
+func (c Comm) String() string { return text[c] }
 
 // Returns the movement- and rotationvalues of the last command Navigate.
 // The velues are all 0, if there is no 3d-mouse or this command was not given,.

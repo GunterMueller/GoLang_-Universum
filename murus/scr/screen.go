@@ -1,6 +1,6 @@
 package scr
 
-// (c) murus.org  v. 170817 - license see murus.go
+// (c) Christian Maurer   v. 170905 - license see murus.go
 
 import (
   "strconv"
@@ -216,4 +216,21 @@ func (X *screen) Move (x, y int) {
 func init() {
 //  var _ Window = newMax()
 //  visible = true // TODO -> only in initConsole()
+}
+
+func start (x, y, z, xf, yf, zf float64) {
+  if underX {
+//    gl.Name()
+    actual.Start (x, y, z, xf, yf, zf)
+  } else {
+    ker.Panic ("no GUI")
+  }
+}
+
+func look (f func()) {
+  if underX {
+    actual.Look (f)
+  } else {
+    ker.Panic ("no GUI")
+  }
 }

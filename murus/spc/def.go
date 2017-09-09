@@ -1,6 +1,6 @@
 package spc
 
-// (c) murus.org  v. 121204 - license see murus.go
+// (c) Christian Maurer   v. 121204 - license see murus.go
 
 type
   Direction byte

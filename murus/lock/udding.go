@@ -1,6 +1,6 @@
 package lock
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) Christian Maurer   v. 161216 - license see murus.go
 
 // >>> Algorithm of Udding: Absence of Individual Starvation using Weak Semaphores.
 //     Inf. Proc. Letters 23 (1986), 159-

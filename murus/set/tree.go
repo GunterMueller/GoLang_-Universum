@@ -1,6 +1,6 @@
 package set
 
-// (c) murus.org  v. 140101 - license see murus.go
+// (c) Christian Maurer   v. 140101 - license see murus.go
 
 import (
   . "murus/obj"

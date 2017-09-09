@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170802 - license see murus.go
+// (c) Christian Maurer   v. 170802 - license see murus.go
 
 import (
   "murus/ker"

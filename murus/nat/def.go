@@ -1,6 +1,6 @@
 package nat
 
-// (c) murus.org  v. 150215 - license see murus.go
+// (c) Christian Maurer  v. 150215 - license see murus.go
 
 import (
 //  . "murus/obj" // Experimente, Experimente, ...

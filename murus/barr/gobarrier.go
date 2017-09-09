@@ -1,6 +1,6 @@
 package barr
 
-// (c) murus.org  v. 170628 - license see murus.go
+// (c) Christian Maurer   v. 170628 - license see murus.go
 //
 // >>> implementation with Go-monitor
 

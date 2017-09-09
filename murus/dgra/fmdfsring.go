@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170507 - license see murus.go
+// (c) Christian Maurer   v. 170507 - license see murus.go
 //
 // >>> Construction of a directed ring using the idea pf Awerbuch's DFS-algorithm
 //     The sequence of the vertices in the ring is given by the discover-times x.time.

@@ -1,6 +1,6 @@
 package rand
 
-// (c) murus.org  v. 170327 - license see murus.go
+// (c) Christian Maurer   v. 170327 - license see murus.go
 
 // The random generator is initialized.
 func Init() { _init() }

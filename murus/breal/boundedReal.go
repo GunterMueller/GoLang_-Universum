@@ -1,6 +1,6 @@
 package breal
 
-// (c) murus.org  v. 170810 - license see murus.go
+// (c) Christian Maurer   v. 170810 - license see murus.go
 
 // TODO: more than 2 digits after the decimal point
 

@@ -1,6 +1,6 @@
 package lock
 
-// (c) murus.org  v. 111111 - license see murus.go
+// (c) Christian Maurer   v. 111111 - license see murus.go
 
 // Tools for the construction of locking algorithms for n goroutines.
 // The Ablauf of each of the functions cannot be interrupted

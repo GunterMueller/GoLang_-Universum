@@ -1,6 +1,6 @@
 package cs
 
-// (c) murus.org  v. 130808 - license see murus.go
+// (c) Christian Maurer   v. 130808 - license see murus.go
 
 //     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 85 ff.
 

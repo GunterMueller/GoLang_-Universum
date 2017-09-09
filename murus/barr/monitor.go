@@ -1,6 +1,6 @@
 package barr
 
-// (c) murus.org  v. 140330 - license see murus.go
+// (c) Christian Maurer   v. 140330 - license see murus.go
 
 // >>> barrierlementation with a monitor
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 162

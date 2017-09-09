@@ -1,6 +1,6 @@
 package real
 
-// (c) murus.org  v. 140803 - license see murus.go
+// (c) Christian Maurer   v. 140803 - license see murus.go
 
 // >>> lots of things TODO, particularly format
 

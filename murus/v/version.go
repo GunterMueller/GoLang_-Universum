@@ -1,6 +1,6 @@
 package v
 
-// (c) murus.org - license see murus.go
+// (c) Christian Maurer - license see murus.go
 
 import (
   "murus/ker"
@@ -10,8 +10,8 @@ import (
 )
 const ( // v.
   yy = 17
-  mm =  8
-  dd = 21
+  mm =  9
+  dd =  8
 )
 var
   v day.Calendarday = day.New()

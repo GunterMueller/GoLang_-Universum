@@ -1,6 +1,6 @@
 package cr
 
-// (c) murus.org  v. 161216 - license see murus.go
+// (c) Christian Maurer   v. 161216 - license see murus.go
 
 /* Objects, that synchronize the access to critical sections
    (e.g. operating resources or shared data) for p process classes

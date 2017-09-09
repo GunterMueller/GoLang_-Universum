@@ -1,6 +1,6 @@
 package mstk
 
-// (c) murus.org  v. 161226 - license see murus.go
+// (c) Christian Maurer   v. 161226 - license see murus.go
 
 import (
   . "murus/obj"

@@ -1,6 +1,6 @@
 package col
 
-// (c) murus.org  v. 170813 - license see murus.go
+// (c) Christian Maurer   v. 170813 - license see murus.go
 
 import (
   "strconv"
@@ -240,7 +240,8 @@ func decode (c *Colour, b []byte) {
 }
 
 func setDepth (bits uint) {
-  switch bits { case 4, 8, 15, 16, 24, 32:
+  switch bits {
+  case 4, 8, 15, 16, 24, 32:
     bitDepth = bits
     Depth = (bitDepth + 4) / 8
   default:

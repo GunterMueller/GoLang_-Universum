@@ -1,6 +1,6 @@
 package enum
 
-// (c) murus.org  v. 140525 - license see murus.go
+// (c) Christian Maurer   v. 140525 - license see murus.go
 
 const (
   UndefComparatio = uint8(iota)

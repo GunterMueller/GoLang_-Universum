@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 170411 - license see murus.go
+// (c) Christian Maurer   v. 170411 - license see murus.go
 
 // >>> readers/writers problem: implementation with critical sections
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 92

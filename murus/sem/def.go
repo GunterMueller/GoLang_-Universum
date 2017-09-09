@@ -1,6 +1,6 @@
 package sem
 
-// (c) murus.org  v. 170411 - license see murus.go
+// (c) Christian Maurer   v. 170411 - license see murus.go
 //
 // >>> Nichtsequentielle Programmierung mit Go 1 kompakt, S. 53ff., 70 ff., 149, 170, 185
 

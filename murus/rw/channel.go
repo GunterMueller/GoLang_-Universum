@@ -1,6 +1,6 @@
 package rw
 
-// (c) murus.org  v. 170731 - license see murus.go
+// (c) Christian Maurer   v. 170731 - license see murus.go
 
 //     readers/writers problem, solution with client-server-paradigma
 //     s. Nichtsequentielle Programmierung mit Go 1 kompakt, S. 182

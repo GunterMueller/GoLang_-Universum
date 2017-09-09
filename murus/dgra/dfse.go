@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170422 - license see murus.go
+// (c) Christian Maurer   v. 170422 - license see murus.go
 
 func (x *distributedGraph) dfse() {
   x.connect (x.leader)

@@ -1,6 +1,6 @@
 package lockp
 
-// (c) murus.org  v. 170807 - license see murus.go
+// (c) Christian Maurer   v. 170807 - license see murus.go
 
 // >>> fast algorithm
 // see Lamport, L.: A fast mutual exclusion algorithm. ACM TOCS 5 (1987), 1-11

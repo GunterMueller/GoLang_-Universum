@@ -1,6 +1,6 @@
 package cons
 
-// (c) murus.org  v. 170818 - license see murus.go
+// (c) Christian Maurer   v. 170818 - license see murus.go
 
 // >>> This package only serves the implementations of murus/mouse, 
 //     murus/kbd and murus/cons; it must not no be used elsewhere.

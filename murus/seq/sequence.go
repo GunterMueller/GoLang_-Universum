@@ -1,6 +1,6 @@
 package seq
 
-// (c) murus.org  v. 170501 - license see murus.go
+// (c) Christian Maurer   v. 170501 - license see murus.go
 
 import
   . "murus/obj"

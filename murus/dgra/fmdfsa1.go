@@ -1,6 +1,6 @@
 package dgra
 
-// (c) murus.org  v. 170510 - license see murus.go
+// (c) Christian Maurer   v. 170510 - license see murus.go
 //
 // >>> simplified version of the algorithm of B. Awerbuch:
 //     A New Distributed Depth-First-Search Algorithm, Inf, Proc. Letters 28 (1985) 147-160 
