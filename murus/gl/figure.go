@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 170908 - license see murus.go
+// (c) Christian Maurer   v. 170909 - license see murus.go
 
 import (
   "math"
@@ -50,15 +50,19 @@ func light (l uint, x, y, z float64, ca, cd col.Colour) {
 
 // extended figures ////////////////////////////////////////////////////////////
 
+func fail() {
+  panic("wrong number of float64's")
+}
+
 func point (c col.Colour, x []float64) {
-  if len(x) != 3 { panic("oops") }
+  if len(x) != 3 { fail() }
   begin (POINTS)
   vertexC (x[0], x[1], x[2], c)
   end()
 }
 
 func line (c col.Colour, x []float64) {
-  if len(x) != 6 { panic("oops") }
+  if len(x) != 6 { fail() }
   begin (LINES)
   colour (c.R, c.G, c.B)
   vertex (x[0], x[1], x[2])
@@ -68,7 +72,7 @@ func line (c col.Colour, x []float64) {
 
 func lineloop (c col.Colour, x []float64) {
   n := len(x)
-  if n % 3 != 0 || n < 3 * 3 { panic("oops") }
+  if n % 3 != 0 || n < 3 * 3 { fail() }
   begin (LINE_LOOP)
   colour (c.R, c.G, c.B)
   for i := 0; i < n / 3; i += 3 {
@@ -79,10 +83,10 @@ func lineloop (c col.Colour, x []float64) {
 
 func linestrip (c col.Colour, x []float64) {
   n := len(x)
-  if n % 3 != 0 || n < 3 * 3 { panic("oops") }
+  if n % 3 != 0 || n < 3 * 3 { fail() }
   begin (LINE_STRIP)
   colour (c.R, c.G, c.B)
-  for i := 0; i < n / 3; i += 3 {
+  for i := 0; i < n; i += 3 {
     vertex (x[i], x[i + 1], x[i + 2])
   }
   end()
@@ -90,10 +94,10 @@ func linestrip (c col.Colour, x []float64) {
 
 func triangle (c col.Colour, x []float64) {
   n := len(x)
-  if n != 9 { panic("oops") }
+  if n != 9 { fail() }
   begin (TRIANGLES)
   colour (c.R, c.G, c.B)
-  for i := 0; i < n / 3; i += 3 {
+  for i := 0; i < n; i += 3 {
     vertex (x[i], x[i + 1], x[i + 2])
   }
   end()
@@ -101,10 +105,10 @@ func triangle (c col.Colour, x []float64) {
 
 func trianglestrip (c col.Colour, x []float64) {
   n := len(x)
-  if n % 3 != 0 || n < 4 * 3 { panic("oops") }
+  if n % 3 != 0 || n < 4 * 3 { fail() }
   begin (TRIANGLE_STRIP)
   colour (c.R, c.G, c.B)
-  for i := 0; i < n / 3; i += 3 { // XXX
+  for i := 0; i < n; i += 3 {
     vertex (x[i], x[i + 1], x[i + 2])
   }
   end()
@@ -112,17 +116,17 @@ func trianglestrip (c col.Colour, x []float64) {
 
 func trianglefan (c col.Colour, x []float64) {
   n := len(x)
-  if n % 3 != 0 || n < 4 * 3 { panic("oops") }
+  if n % 3 != 0 || n < 4 * 3 { fail() }
   begin (TRIANGLE_FAN)
   colour (c.R, c.G, c.B)
-  for i := 0; i < n / 3; i += 3 { // XXX
+  for i := 0; i < n; i += 3 {
     vertex (x[i], x[i + 1], x[i + 2])
   }
   end()
 }
 
 func quad (c col.Colour, x []float64) {
-  if len(x) != 12 { panic("oops") }
+  if len(x) != 12 { fail() }
   begin (QUADS)
   colour (c.R, c.G, c.B)
   for i := 0; i < 12; i += 3 {
@@ -133,10 +137,10 @@ func quad (c col.Colour, x []float64) {
 
 func quadstrip (c col.Colour, x []float64) {
   n := len(x)
-  if n % 3 != 0 || n < 6 * 3 { panic("oops") }
+  if n % 3 != 0 || n < 6 * 3 { fail() }
   begin (QUAD_STRIP)
   colour (c.R, c.G, c.B)
-  for i := 0; i < n / 3; i += 3 { // XXX
+  for i := 0; i < n; i += 3 {
     vertex (x[i], x[i + 1], x[i + 2])
   }
   end()
@@ -144,11 +148,11 @@ func quadstrip (c col.Colour, x []float64) {
 
 func polygon (c col.Colour, x []float64) {
   n := len(x)
-  if n % 3 != 0 || n < 3 * 3 { panic("oops") }
+  if n % 3 != 0 || n < 3 * 3 { fail() }
   begin (POLYGON)
-  for i := 0; i < n / 3; i++ { // XXX
-    j := 3 * i
-    vertexC (x[j], x[j + 1], x[j + 2], c)
+  colour (c.R, c.G, c.B)
+  for i := 0; i < n; i += 3 {
+    vertex (x[i], x[i + 1], x[i + 2])
   }
   end()
 }
@@ -166,7 +170,7 @@ func horRectangleC (c col.Colour, x, y, z, x1, y1 float64, up bool) {
 }
 
 func vertRectangle (x []float64) {
-  if len(x) != 6 || x[2] == x[5] { panic("oops") } // horRectangle
+  if len(x) != 6 || x[2] == x[5] { fail() }
   vertex (x[0], x[1], x[2])
   vertex (x[3], x[4], x[2])
   vertex (x[3], x[4], x[5])
@@ -179,14 +183,14 @@ func vertRectangleC (c col.Colour, x []float64) {
 }
 
 func parallelogram (c col.Colour, x []float64) {
-/*
+  if len(x) != 9 { fail() }
   begin (QUADS)
-  x,  y,  z,
-  x1, y1, z1,
-  x1 + x2 - x, y1 + y2 - y, z1 + z2 - z,
-  x2, y2, z2,
+  colour (c.R, c.G, c.B)
+  vertex (x[0],               x[1],               x[2])
+  vertex (x[0] + x[3],        x[1] + x[4],        x[2] + x[5])
+  vertex (x[0] + x[3] + x[6], x[1] + x[4] + x[7], x[2] + x[5] + x[8])
+  vertex (x[0] + x[6],        x[1] + x[7],        x[2] + x[8])
   end()
-*/
 }
 
 func cube (c col.Colour, x, y, z, a float64) {
@@ -198,7 +202,7 @@ func cubeC (c []col.Colour, x, y, z, a float64) {
 }
 
 func cuboid (c col.Colour, x []float64) {
-  if len(x) != 6 { panic("oops") }
+  if len(x) != 6 { fail() }
 //  sort (&x, &y, &z, &x1, &y1, &z1)
   begin (QUADS)
   colour (c.R, c.G, c.B)
@@ -228,7 +232,6 @@ func cuboid1 (f col.Colour, x, y, z, b, t, h, a float64) {
   x1 := x  + b * c; y1 := y  + b * s; z1 := z + h
   x2 := x1 - t * s; y2 := y1 + t * c
   x3 := x  - t * s; y3 := y  + t * c
-//  figure (QUADS, f, x, y, z1, x1, y1, z1, x2, y2, z1, x3, y3, z1)
   begin (QUADS)
   colour (f.R, f.G, f.B)
   VertRectangle (x,  y,  z, x1, y1, z1)
@@ -246,23 +249,23 @@ func cuboid1 (f col.Colour, x, y, z, b, t, h, a float64) {
   n[0].Ext (n[1], n[2]); n[0].Norm()
   for i := 1; i < 4; i++ { n[i].Copy (n[0]) }
 */
-  Quad (f, x, y, z, x3, y3, z, x2, y2, z, x1, y1, z) // XXX
+//  Quad (f, x, y, z, x3, y3, z, x2, y2, z, x1, y1, z) // XXX
 }
 
 func prism (c col.Colour, x []float64) {
   n := len(x)
-  if n % 3 != 0 || n < 4 * 3 { panic("oops") }
+  if n % 3 != 0 || n < 4 * 3 { fail() }
   x1 := make([]float64, n)
   for i := 3; i < n; i++ {
     x1[i] = x[i] + x[i % 3]
   }
   begin (QUAD_STRIP)
   colour (c.R, c.G, c.B)
-  for i := 1; i < n / 3; i++ {
-    j := 3 * i
-    vertex (x [j], x [j + 1], x [j + 2])
-    vertex (x1[j], x1[j + 1], x1[j + 2])
+  for i := 3; i < n - 3; i += 3 {
+    vertex (x [i], x [i + 1], x [i + 2])
+    vertex (x1[i], x1[i + 1], x1[i + 2])
   }
+
   vertex (x [3], x [4], x [5])
   vertex (x1[3], x1[4], x1[5])
   end()
@@ -270,27 +273,30 @@ func prism (c col.Colour, x []float64) {
 
 func prismC (c []col.Colour, x []float64) {
   n := len(x)
-  if n % 3 != 0 || n < 4 * 3 { panic("oops") }
+  if n % 3 != 0 || n < 4 * 3 { fail() }
   x1 := make([]float64, n)
   for i := 0; i < n; i++ {
     x1[i] = x[i] + x[i % 3]
   }
-  begin (QUAD_STRIP) // BUG -> QUADS
-  vertexC (x [3], x [4], x [5], c[0])
-  vertexC (x1[3], x1[4], x1[5], c[0])
-  for i := 1; i < n / 3; i++ {
-    j := 3 * i
-    vertexC (x [j], x [j + 1], x [j + 2], c[i - 1])
-    vertexC (x1[j], x1[j + 1], x1[j + 2], c[i - 1])
+  begin (QUADS)
+  for i := 3; i < n - 3; i += 3 {
+    j := i / 3 - 1
+    vertexC ( x[i]    ,  x[i + 1],  x[i + 2], c[j])
+    vertexC ( x[i + 3],  x[i + 4],  x[i + 5], c[j])
+    vertexC (x1[i + 3], x1[i + 4], x1[i + 5], c[j])
+    vertexC (x1[i],     x1[i + 1], x1[i + 2], c[j])
   }
-  vertexC (x [3], x [4], x [5], c[n / 3])
-  vertexC (x1[3], x1[4], x1[5], c[n / 3])
+  j := n / 3 - 1
+  vertexC (x [n - 3], x [n - 2], x [n - 1], c[j])
+  vertexC (x [3],     x [4],     x [5],     c[j])
+  vertexC (x1[3],     x1[4],     x1[5],     c[j])
+  vertexC (x1[n - 3], x1[n - 2], x1[n - 1], c[j])
   end()
 }
 
-func parallelepiped (c col.Colour, x []float64) {
-  if  len(x) != 12 { panic("oops") }
-  prism (c, x) // BUG
+func parallelepiped (c col.Colour, x []float64) { // BUG
+  if  len(x) != 12 { fail() }
+  prism (c, x)
 }
 
 func pyramid (c col.Colour, x, y, z, a, b, h float64) {
@@ -339,27 +345,31 @@ func octahedron (c col.Colour, x, y, z, r float64) {
   end()
 }
 
-func octahedronC (c []col.Colour, x, y, z, r float64) {
+func octahedronC (c []col.Colour, x, y, z, r float64) { // BUG
   d := r * math.Sqrt (2)
-  begin (TRIANGLE_FAN)
-  vertexC (x,     y,     z + d, c[0])
-  vertexC (x + r, y + r, z,     c[0])
-  vertexC (x - r, y + r, z,     c[0])
-  vertexC (x - r, y - r, z,     c[1])
-  vertexC (x + r, y - r, z,     c[2])
-  vertexC (x + r, y + r, z,     c[3])
-  vertexC (x,     y,     z - d, c[4])
-  vertexC (x + r, y - r, z,     c[4])
-  vertexC (x - r, y - r, z,     c[4])
-  vertexC (x - r, y + r, z,     c[5])
-  vertexC (x + r, y + r, z,     c[6])
-  vertexC (x + r, y - r, z,     c[7])
+  begin (TRIANGLES)
+  colour (c[0].R, c[0].G, c[0].B)
+  vertex (x, y, z + d); vertex (x + r, y - r, z); vertex (x + r, y + r, z)
+  colour (c[1].R, c[1].G, c[1].B)
+  vertex (x, y, z + d); vertex (x + r, y + r, z); vertex (x - r, y + r, z)
+  colour (c[2].R, c[2].G, c[2].B)
+  vertex (x, y, z + d); vertex (x - r, y + r, z); vertex (x - r, y - r, z)
+  colour (c[3].R, c[3].G, c[3].B)
+  vertex (x, y, z + d); vertex (x - r, y - r, z); vertex (x + r, y - r, z)
+  colour (c[4].R, c[4].G, c[4].B)
+  vertex (x, y, z - d); vertex (x + r, y + r, z); vertex (x + r, y - r, z)
+  colour (c[5].R, c[5].G, c[5].B)
+  vertex (x, y, z - d); vertex (x + r, y - r, z); vertex (x - r, y - r, z)
+  colour (c[6].R, c[6].G, c[6].B)
+  vertex (x, y, z - d); vertex (x - r, y - r, z); vertex (x - r, y + r, z)
+  colour (c[7].R, c[7].G, c[7].B)
+  vertex (x, y, z - d); vertex (x - r, y + r, z); vertex (x + r, y + r, z)
   end()
 }
 
 func multipyramid (c col.Colour, x []float64) {
   n := len(x)
-  if n % 3 != 0 || n < 4 * 3 { panic("oops") }
+  if n % 3 != 0 || n < 4 * 3 { fail() }
   begin (TRIANGLE_FAN)
   colour (c.R, c.G, c.B)
   vertex (x[0], x[1], x[2])
@@ -373,14 +383,18 @@ func multipyramid (c col.Colour, x []float64) {
 
 func multipyramidC (c []col.Colour, x []float64) {
   n := len(x)
-  if n % 3 != 0 || n < 4 * 3 { panic("oops") }
-  begin (TRIANGLES)
-  for i := 1; i < n / 3; i++ { // BUG
-    vertexC (x[0], x[1], x[2], c[i])
-    j := 3 * i
-    vertexC (x[j], x[j + 1], x[j + 2], c[i])
+  if n % 3 != 0 || n < 4 * 3 { fail() }
+  for i := 1; i < n / 3 - 1; i++ {
+    j, k := 3 * i, 3 * (i + 1)
+    Triangle (c[i],
+              x[0], x[1],     x[2],
+              x[j], x[j + 1], x[j + 2],
+              x[k], x[k + 1], x[k + 2])
   }
-  end()
+  Triangle (c[n / 3 - 1],
+            x[0], x[1],         x[2],
+            x[n - 3], x[n - 2], x[n - 1],
+            x[3], x[4],         x[5])
 }
 
 func circle (c col.Colour, x, y, z, r float64) {
@@ -389,7 +403,7 @@ func circle (c col.Colour, x, y, z, r float64) {
     Point (c, x, y, z)
     return
   }
-//  if r < 0. { r = -r } // change orientation
+//  if r < 0 { r = -r } // change orientation
   begin (TRIANGLE_FAN)
   colour (c.R, c.G, c.B)
   vertex (x, y, z)
@@ -404,7 +418,7 @@ func circleSegment (c col.Colour, x, y, z, r, a, b float64) {
     Point (c, x, y, z)
     return
   }
-//  if r < 0. { r = -r } // change orientation
+//  if r < 0 { r = -r } // change orientation
   aa := uint(math.Floor (a / float64 (angle) + 0.5))
   bb := uint(math.Floor (b / float64 (angle) + 0.5))
   begin (TRIANGLE_FAN)
@@ -421,7 +435,7 @@ func vertCircle (f col.Colour, x, y, z, r, a float64) {
     Point (f, x, y, z)
     return
   }
-//  if r < 0. { r = -r } // change orientation
+//  if r < 0 { r = -r } // change orientation
   s, c := math.Sin (a * pi_180), math.Cos (a * pi_180)
   begin (TRIANGLE_FAN)
   colour (f.R, f.G, f.B)
@@ -499,8 +513,8 @@ func cone (c col.Colour, x, y, z, r, h float64) {
 }
 
 func frustum (c col.Colour, x, y, z, r, h, h1 float64) {
-/*
-  if h1 > h { panic("oops") }
+/* XXX
+  if h1 > h { fail() }
   v, n := vectors(N + 2)
   v[0] = vect.New3 (x, y, h)
   n[0] = vect.New3 (0, 0, 1)
@@ -568,7 +582,7 @@ func horCylinder (c col.Colour, x, y, z, r, l, a float64) {
 }
 
 func torus (c col.Colour, x, y, z, R, r float64) {
-  if r <= 0 || R <= 0 { panic("oops") }
+  if r <= 0 || R <= 0 { fail() }
   colour (c.R, c.G, c.B)
   begin (QUAD_STRIP)
   for i := 0; i < N; i++ {
@@ -588,9 +602,8 @@ func torus (c col.Colour, x, y, z, R, r float64) {
   end()
 }
 
-func horTorus (c col.Colour, x, y, z, R, r, a float64) {
-// XXX zum Teufel, was war a ?
-  if r <= 0 || R <= 0 { panic("oops") }
+func horTorus (c col.Colour, x, y, z, R, r, a float64) { // XXX a ?
+  if r <= 0 || R <= 0 { fail() }
   for a <= -180 { a += 180 }
   for a >=  180 { a -= 180 }
   sa, ca := math.Sin (a * pi_180), math.Cos (a * pi_180)
@@ -612,12 +625,14 @@ func horTorus (c col.Colour, x, y, z, R, r, a float64) {
 }
 
 func paraboloid (c col.Colour, x, y, z, p float64) {
-
+// XXX
 }
 
 func horParaboloid (c col.Colour, x, y, z, p, a float64) {
-
+// XXX
 }
+
+//func hyperboloid (c col.Colour, x, y, z, ___ float64) { // XXX
 
 func ok (x float64) bool {
   return ! math.IsNaN (x)
@@ -645,7 +660,7 @@ func curve (c col.Colour, w uint, f1, f2, f3 func (float64) float64,
 
 func surface (c col.Colour, f func (float64, float64) float64,
               X, Y, Z, X1, Y1, Z1 float64, wd, ht, g uint) {
-  if X == X1 || Y == Y1 || Z == Z1 { panic("oops") }
+  if X == X1 || Y == Y1 || Z == Z1 { fail() }
   if X1 < X { X, X1 = X1, X }
   if Y1 < Y { Y, Y1 = Y1, Y }
   if Z1 < Z { Z, Z1 = Z1, Z }

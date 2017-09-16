@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 170816 - license see murus.go
+// (c) Christian Maurer   v. 170909 - license see murus.go
 
 // #include <GL/glx.h>
 /*
@@ -29,9 +29,8 @@ func (X *xwindow) WriteGlx() {
   X.win2buf()
 }
 
-func (X *xwindow) Start (a, b, c, dx, dy, dz float64) {
-  X.A, X.B, X.C = C.GLfloat(a), C.GLfloat(b), C.GLfloat(c)
-  X.dx, X.dy, X.dz = C.GLfloat(dx), C.GLfloat(dy), C.GLfloat(dz)
+func (X *xwindow) Start (x, y, z, x1, y1, z1 float64) {
+  X.dx, X.dy, X.dz = C.GLfloat(x), C.GLfloat(y), C.GLfloat(y)
 }
 
 var
@@ -41,27 +40,45 @@ func setMode (m GLmode) {
   glmode = m
 }
 
+const (
+  shl = 50; shr = 62; ctll = 37; ctlr = 105; alt = 64; altgr = 108
+  doofr = 135 //  doofl eaten by window manager
+  esc = 9; enter = 36; back = 22
+  left = 113; right = 114; up = 111; down = 116
+  left1 = 166; right1 = 167; up1 = 112; down1 = 117
+  pos1 = 110; end = 115
+  ins = 118; del = 119
+  tab = 23
+  spc = 65
+  hlp = 67; look = 68
+  f3 = 69; f4 = 70; f5 = 71; f6 = 72; f7 = 73; f8 = 74; f9 = 75; f10 = 76
+  f11 = 95; f12 = 96
+  prt = 107; roll = 78; paus = 127
+)
+
 func (X *xwindow) Look (draw func()) {
   for i, s := range help { help[i] = str.Lat1 (s) }
   var xev C.XEvent
   delta := C.GLfloat(1.5)
   loop: for {
     for C.XPending (dpy) > 0 {
+// println ("wait for event")
       C.XNextEvent (dpy, &xev)
       redraw := true
       eventtype := C.etyp (&xev)
       switch eventtype {
       case C.KeyPress:
+// println ("keypress")
         code, state := uint(C.kCode (&xev)), uint(C.kState (&xev))
 // println (code, state)
         switch code {
-        case 9: // Escape
+        case esc:
           break loop
-        case 36: // Enter
+        case enter:
           X.dz--
-        case 22: // Back
+        case back:
           X.dz++
-        case 113: // Left
+        case left:
           if glmode == Show {
             if state == 0 {
               X.C += delta
@@ -75,7 +92,9 @@ func (X *xwindow) Look (draw func()) {
               X.dx -= 0.1
             }
           }
-        case 114: // Right
+        case left1:
+
+        case right:
           if glmode == Show {
             if state == 0 {
               X.C -= delta
@@ -89,7 +108,9 @@ func (X *xwindow) Look (draw func()) {
               X.dx += 0.1
             }
           }
-        case 111: // Up
+        case right1:
+
+        case up:
           if glmode == Show {
             if state == 0 {
               X.A += delta
@@ -103,7 +124,9 @@ func (X *xwindow) Look (draw func()) {
               X.dz += 0.1
             }
           }
-        case 116: // Down
+        case up1:
+
+        case down:
           if glmode == Show {
             if state == 0 {
               X.A -= delta
@@ -118,12 +141,17 @@ func (X *xwindow) Look (draw func()) {
             }
           }
         }
+        case down1:
+
       case C.ConfigureNotify:
+println ("configure")
         C.glViewport (C.GLint(0), C.GLint(0), C.GLsizei(C.confWd(&xev)),
                                               C.GLsizei(C.confHt(&xev)))
       case C.FocusIn, C.FocusOut:
         redraw = false
-      case C.Expose, C.VisibilityNotify:
+      case C.Expose :
+//         redraw = false
+      case C.VisibilityNotify:
         redraw = false
       default:
         redraw = false
