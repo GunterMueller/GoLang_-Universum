@@ -1,0 +1,7 @@
+Installation
+
+    Install Go, if not yet done, and define environment variables in an appropriate file, e.g. in » /etc/profile.d/go.sh.
+    Get mu.tgz from https://maurer-berlin.eu/mu/tgz/, then
+    go to your $GOSRC-directory and decompress mu.tgz with "tar xfzv mu.tgz" and
+    go into the subdirectory μu and execute "gi".
+
