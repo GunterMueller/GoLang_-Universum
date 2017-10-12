@@ -1,0 +1,184 @@
+package xwin
+
+// (c) Christian Maurer   v. 170917 - license see mu.go
+
+// #cgo LDFLAGS: -lGLU
+// #include <GL/gl.h>
+// #include <GL/glx.h>
+// #include <GL/glu.h>
+// int etyp (XEvent *e) { return (*e).type; }
+// unsigned int kState (XEvent *e) { return (*e).xkey.state; }
+// unsigned int kCode (XEvent *e) { return (*e).xkey.keycode; }
+import
+  "C"
+import
+  . "math"
+const (
+  um = Pi / 180
+  epsilon = 1e-6
+)
+var
+  matrix [4][4]C.GLdouble
+
+func (X *xwindow) Start (e0, e1, e2, f0, f1, f2 float64) {
+  C.glEnable (C.GL_DEPTH_TEST)
+  C.glMatrixMode (C.GL_PROJECTION)
+  C.glLoadIdentity()
+  near, far := f(0.2), f(100)
+  p := C.GLdouble(X.wd) / C.GLdouble(X.ht)
+  C.glFrustum (-near, near, -near/p, near/p, near, far)
+//  C.gluPerspective (45, p, near, far)
+
+  X.eye = [3]float64 {e0, e1, e2}
+  X.focus = [3]float64 {f0, f1, f2}
+  X.delta = X.distance (X.eye, X.focus)
+  X.vec[0] = [3]float64 {1, 0, 0}
+  X.vec[1] = [3]float64 {0, 1, 0}
+  X.vec[2] = [3]float64 {0, 0, 1}
+  X.angle[0] = Atan((f2 - e2) / (f1 - e1)) / um
+  X.angle[1] = Atan((f0 - e0) / (f2 - e2)) / um
+  X.angle[2] = Atan((f1 - e1) / (f0 - e0)) / um
+  X.angle[0], X.angle[1], X.angle[2] = 0, 0, 0
+/*
+    C.glMatrixMode (C.GL_PROJECTION)
+    C.glLoadIdentity()
+    proportion := float64(X.wd) / float64(X.ht)
+    const D = 2. // D-fold screen width
+    deg := D * Atan ((0.5 / D) / proportion)
+    deg /= 0.9 // experimental wideangle correction
+    var m [4][4]C.GLdouble
+    m[1][1] = 1 / C.GLdouble(Tan (deg)) // Cot
+    m[0][0] = m[1][1] / C.GLdouble (proportion)
+    const near = C.GLdouble(0.2)
+//    const far = ?
+//    d := C.GLdouble(far) - near
+//    m[2][2] = - (C.GLdouble(far) + near) / d
+//    m[2][3] = GLdouble(-1)
+//    m[3][2] = -2. * near * C.GLdouble(far) / d
+    m[2][2] = C.GLdouble(-1)
+    m[2][3] = C.GLdouble(-1)
+    m[3][2] = C.GLdouble(-1) * near
+    C.glMultMatrixd (&m[0][0])
+//    q := C.GLdouble(0.75)
+//    GLFrustum (-near, near, -q * near, q * near, near, C.GLdouble(far))
+    C.glMatrixMode (C.GL_MODELVIEW)
+
+    if Abs (e2 - f2) < epsilon { // e2 == f2: Blick horizontal
+// X.chk(); println ("e2 == f2")
+      X.vec[2] = [3]float64 {0, 0, 1}
+      X.vec[1] = X.diff (X.focus, X.eye); X.norm (1)
+      X.vec[0] = X.ext (X.vec[1], X.vec[2]); X.norm (0)
+X.chk(); println ("bluse")
+    } else { // e2 != f2
+X.chk(); println ("e2 != f2")
+      if Abs(e0-f0) < epsilon && Abs(e1-f1) < epsilon { // e0 == f0 und e1 == f1
+        X.vec[0] = [3]float64 {1, 0, 0}
+        X.vec[1] = [3]float64 {0, 0, 1}
+        X.vec[2] = [3]float64 {1, 0, 0}
+        if e2 > f2 { // Blick von oben, x -> rechts, y -> oben
+          X.vec[1] = [3]float64 {0, 0, -1}
+        } else { // e2 < f2, Blick von unten, x -> rechts, y -> unten
+          X.vec[2] = [3]float64 {-1, 0, 0}
+          X.vec[1] = [3]float64 { 0, 0, 1}
+        }
+      } else { // e0 != f0 oder e1 != f1
+        X.vec[1] = X.diff (X.focus, X.eye)
+        X.norm (1)
+        X.vec[2] = X.clone (X.vec[1])
+        v2 := X.vec[1][2]
+        if e2 < f2 { v2 = -v2 }
+        X.vec[2][2] -= 1 / v2
+        X.norm(2)
+        X.vec[0] = X.ext (X.vec[1], X.vec[2])
+        X.norm(0)
+      }
+    }
+*/
+}
+
+var
+  show = true
+
+func switchShow() {
+   show = ! show
+}
+
+const (
+  esc = 9; enter = 36; back = 22; tab = 23
+  left = 113; right = 114; up = 111; down = 116
+  pgUp = 112; pgDown = 117; pgLeft = 113; pgRight = 114
+  pos1 = 110; end = 115; ins = 118; del = 119; prt = 107; roll = 78; paus = 127
+  f1 = 67; f2 = 68; /* ... */ f10 = 76; f11 = 95; f12 = 96
+)
+
+/*
+func (X *xwindow) anfang() { // Anfang von write0 im alten openGL
+  C.glViewport (C.GLint(0), C.GLint(0), C.GLsizei(X.wd), C.GLsizei(X.ht))
+  C.glClear (C.GL_COLOR_BUFFER_BIT + C.GL_DEPTH_BUFFER_BIT)
+  C.glMatrixMode (C.GL_MODELVIEW)
+  C.glLoadIdentity()
+X.chk()
+/*
+  for i:= 0; i < 3; i++ {
+    matrix[i][0] = C.GLdouble(X.vec[0][i])
+    matrix[i][1] = C.GLdouble(X.vec[2][i])
+    matrix[i][2] = -C.GLdouble(X.vec[1][i])
+  }
+  C.glMultMatrixd (&matrix[0][0])
+  C.glTranslated (C.GLdouble(-X.eye[0]), C.GLdouble(-X.eye[1]), C.GLdouble(-X.eye[2]))
+* /
+  C.gluLookAt (C.GLdouble(X.eye[0]), C.GLdouble(X.eye[1]), C.GLdouble(X.eye[2]),
+               C.GLdouble(X.focus[0]), C.GLdouble(X.focus[1]), C.GLdouble(X.focus[2]),
+               C.GLdouble(X.vec[2][0]), C.GLdouble(X.vec[2][1]), C.GLdouble(X.vec[2][2]))
+}
+*/
+
+func (X *xwindow) rotate (d int, a float64) { // abenteuerliche Konstruktion
+  n, p := next(d), prev(d)
+//  X.vec[n] = X.rot (X.vec[n], X.vec[d], a)
+  X.vec[n] = X.rot (X.vec[d], X.vec[n], a)
+  X.vec[n] = X.normv (X.vec[n])
+//  X.vec[p] = X.ext (X.vec[p], X.vec[n])
+  X.vec[p] = X.ext (X.vec[d], X.vec[n])
+//  X.vec[p] = X.normv (X.vec[p])
+}
+
+func (X *xwindow) adjustEye() {
+  X.eye = X.diff (X.focus, X.dilate (X.delta, X.vec[1]))
+}
+
+func (X *xwindow) TurnAroundFocus (d int, a float64) {
+  X.angle[d] += a
+  if X.angle[d] >=  180 { X.angle[d] -= 360 }
+  if X.angle[d] <= -180 { X.angle[d] += 360 }
+  c, s := Cos(X.angle[d] * um), Sin(X.angle[d] * um)
+  n, p := next(d), prev(d)
+  X.vec[n][n], X.vec[n][p] =  c, s
+  X.vec[p][n], X.vec[p][p] = -s, c
+  X.norm(n); X.norm(p)
+  X.chk()
+}
+
+func (X *xwindow) Move (d int, a float64) {
+  X.eye[d] += a
+}
+
+func (X *xwindow) Draw (draw func()) {
+  C.glClear (C.GL_COLOR_BUFFER_BIT + C.GL_DEPTH_BUFFER_BIT)
+  C.glMatrixMode (C.GL_MODELVIEW)
+  C.glLoadIdentity()
+  C.glTranslated (C.GLdouble(X.eye[0]), C.GLdouble(X.eye[1]), C.GLdouble(X.eye[2]))
+//    C.glPushMatrix()
+  C.glRotated (C.GLdouble(X.angle[0]), C.GLdouble(X.vec[0][0]),
+                                       C.GLdouble(X.vec[0][1]),
+                                       C.GLdouble(X.vec[0][2]))
+  C.glRotated (C.GLdouble(X.angle[1]), C.GLdouble(X.vec[1][0]),
+                                       C.GLdouble(X.vec[1][1]),
+                                       C.GLdouble(X.vec[1][2]))
+  C.glRotated (C.GLdouble(X.angle[2]), C.GLdouble(X.vec[2][0]),
+                                       C.GLdouble(X.vec[2][1]),
+                                       C.GLdouble(X.vec[2][2]))
+//    C.glPushMatrix()
+  draw()
+  C.glXSwapBuffers (dpy, C.GLXDrawable(X.win))
+}
