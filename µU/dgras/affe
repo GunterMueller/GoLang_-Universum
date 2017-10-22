@@ -1,0 +1,9 @@
+/*
+    b := bnat.New(wd)
+    b.SetVal(i)
+    v[i] = vtx.New (b, wd, 1)
+*/
+    h := char.New()
+    h.SetByte ('a' + byte(i))
+    v[i] = vtx.New (h, 1, 1)
+
