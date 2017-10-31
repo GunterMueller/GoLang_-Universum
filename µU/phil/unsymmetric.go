@@ -8,14 +8,14 @@ package phil
 
 import (
   "sync"
-  . "µU/lockp"
+  . "µU/lockn"
 )
 type
   unsymmetric struct {
                 fork []sync.Mutex
                      }
 
-func newU() LockerP {
+func newU() LockerN {
   x := new(unsymmetric)
   x.fork = make([]sync.Mutex, NPhilos)
   return x

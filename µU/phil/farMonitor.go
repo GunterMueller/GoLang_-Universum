@@ -6,7 +6,7 @@ package phil
 
 import (
   . "µU/obj"
-  . "µU/lockp"
+  . "µU/lockn"
   "µU/host"
   "µU/fmon"
 )
@@ -15,7 +15,7 @@ type
                     fmon.FarMonitor
                     }
 
-func newFM (h host.Host, port uint16, s bool) LockerP {
+func newFM (h host.Host, port uint16, s bool) LockerN {
   nForks := make([]uint, NPhilos)
   for i := uint(0); i < NPhilos; i++ {
     nForks[i] = 2

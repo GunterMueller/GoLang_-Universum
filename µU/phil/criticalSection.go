@@ -5,7 +5,7 @@ package phil
 // >>> Solution with critical sections
 
 import (
-  . "µU/lockp"
+  . "µU/lockn"
   . "µU/cs"
 )
 type
@@ -13,7 +13,7 @@ type
                          CriticalSection
                          }
 
-func newCS() LockerP {
+func newCS() LockerN {
   nForks := make([]uint, NPhilos)
   for i := uint(0); i < NPhilos; i++ {
     nForks[i] = 2

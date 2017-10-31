@@ -5,13 +5,13 @@ package phil
 // >>> Unsymmetric solution with message-passing
 
 import
-  . "µU/lockp"
+  . "µU/lockn"
 type
   channelUnsymmetric struct {
            cl, cll, cu, cul []chan bool
                             }
 
-func newChU() LockerP {
+func newChU() LockerN {
   x := new(channelUnsymmetric)
   x.cl  = make([]chan bool, NPhilos)
   x.cll = make([]chan bool, NPhilos)

@@ -47,6 +47,7 @@ func NewConditionedMonitor() ReaderWriter { return newCM() }
 func NewConditionedMonitorBounded (m uint) ReaderWriter { return newCMB(m) }
 func NewChannel() ReaderWriter { return newCh() }
 func NewGuardedSelect() ReaderWriter { return newGS() }
+func NewKangLee() ReaderWriter { return newKL() }
 
 // Returns a new ReaderWriter for message passing over the net.
 // Arguments: h must be the server and p the used port.

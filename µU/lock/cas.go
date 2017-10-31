@@ -1,9 +1,11 @@
 package lock
 
-// (c) Christian Maurer   v. 171013 - license see µU.go
+// (c) Christian Maurer   v. 171021 - license see µU.go
 
-import
-  . "sync/atomic"
+import (
+  . "µU/obj"
+  . "µU/atomic"
+)
 type
   cas struct {
              uint32 "0 or 1, initially 0"
@@ -14,8 +16,8 @@ func newCAS() Locker {
 }
 
 func (x *cas) Lock() {
-  for ! CompareAndSwapUint32 (&x.uint32, 0, 1) {
-    null()
+  for ! CompareAndSwap (&x.uint32, 0, 1) {
+    Gothing()
   }
 }
 

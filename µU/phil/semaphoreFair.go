@@ -6,7 +6,7 @@ package phil
 
 import (
   "sync"
-  . "µU/lockp"
+  . "µU/lockn"
 )
 type
   semaphoreFair struct {
@@ -29,7 +29,7 @@ func (x *semaphoreFair) test (p uint) {
   }
 }
 
-func newSF() LockerP {
+func newSF() LockerN {
   x := new(semaphoreFair)
   x.plate = make([]sync.Mutex, NPhilos)
   for p := uint(0); p < NPhilos; p++ {

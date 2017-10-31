@@ -6,14 +6,14 @@ package phil
 
 import (
   "sync"
-  . "µU/lockp"
+  . "µU/lockn"
 )
 type
   naive struct {
                fork []sync.Mutex
                }
 
-func new_() LockerP {
+func new_() LockerN {
   x := new(naive)
   x.fork = make([]sync.Mutex, NPhilos)
   return x

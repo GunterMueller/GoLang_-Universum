@@ -11,7 +11,7 @@ import (
 const ( // v.
   yy = 17
   mm = 10
-  dd = 19
+  dd = 30
 )
 var
   v day.Calendarday = day.New()

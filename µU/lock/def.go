@@ -1,6 +1,6 @@
 package lock
 
-// (c) Christian Maurer   v. 161216 - license see µU.go
+// (c) Christian Maurer   v. 171020 - license see µU.go
 
 // Secures the access to a critical section.
 // The functions Lock and Unlock cannot be interrupted
@@ -23,7 +23,6 @@ type
 func NewCAS() Locker { return newCAS() }
 func NewChannel() Locker { return newChan() }
 func NewDEC() Locker { return newDEC() }
-func NewFA() Locker { return newFA() }
 func NewMorris() Locker { return newMorris() }
 func NewMutex() Locker { return newMutex() }
 func NewTAS() Locker { return newTAS() }

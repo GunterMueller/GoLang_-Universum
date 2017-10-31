@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 171011 - license see µU.go
+// (c) Christian Maurer   v. 171030 - license see µU.go
 
 import (
   . "µU/ker"
@@ -733,6 +733,9 @@ func computeHolidays() { // Quelle: S. Deschauer, Die Osterfestberechnung. DdM 1
     x.day -= uint(x.weekday())
     x.day += 2 // Spanne von Montag bis Mittwoch, s.o.
     holiday [x.day][11] = true
+  }
+  if actualHolidayYear == 2017 { // 500. Reformationstag
+    holiday [31][10] = true
   }
 }
 

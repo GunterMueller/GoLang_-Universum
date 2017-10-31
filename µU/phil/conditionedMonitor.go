@@ -5,7 +5,7 @@ package phil
 // >>> Solution with conditioned monitor
 
 import (
-  . "µU/lockp"
+  . "µU/lockn"
   "µU/cmon"
 )
 type
@@ -13,7 +13,7 @@ type
                             cmon.Monitor
                             }
 
-func newCM() LockerP {
+func newCM() LockerN {
   nForks := make([]uint, NPhilos)
   for i := uint(0); i < NPhilos; i++ {
     nForks[i] = 2

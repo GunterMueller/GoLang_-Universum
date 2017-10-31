@@ -71,14 +71,14 @@ import (
   "µU/barr"
   "µU/rw"
   "µU/lr"
-  "µU/lockp"
+  "µU/lockn"
   "µU/phil"
   "µU/smok"
   "µU/barb"
   "µU/mstk"
   "µU/mqu"
   "µU/mbuf"
-  "µU/macc"
+  "µU/acc"
   "µU/nchan"
   "µU/naddr"
   "µU/dlock"
@@ -203,14 +203,14 @@ func main() { // just to get all stuff compiled
   barr.New(2)
   rw.New1()
   lr.New1()
-  lockp.NewPeterson()
+  lockn.NewPeterson()
   phil.TouchPhil()
   smok.TouchSmok()
   barb.NewDir()
   mstk.New(0)
   mqu.New(0)
   mbuf.New(0, 1)
-  macc.New()
+  acc.New()
   naddr.New(nchan.Port0)
   dgra.Touch()
   dgras.Touch()

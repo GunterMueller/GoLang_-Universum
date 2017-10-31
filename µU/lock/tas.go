@@ -1,10 +1,14 @@
 package lock
 
-// (c) Christian Maurer   v. 171013 - license see µU.go
+// (c) Christian Maurer   v. 171024 - license see µU.go
 
+import (
+  . "µU/obj"
+  . "µU/atomic"
+)
 type
   tas struct {
-             bool "locked"
+             bool "true, iff locked"
              }
 
 func newTAS() Locker {
@@ -13,7 +17,7 @@ func newTAS() Locker {
 
 func (x *tas) Lock() {
   for TestAndSet (&x.bool) {
-    null()
+    Gothing()
   }
 }
 

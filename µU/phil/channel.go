@@ -7,13 +7,13 @@ package phil
 //     modified to be unsymmetric to avoid deadlocks
 
 import
-  . "µU/lockp"
+  . "µU/lockn"
 type
   channel struct {
               ch []chan bool
                  }
 
-func newCh() LockerP {
+func newCh() LockerN {
   x := new(channel)
   x.ch = make([]chan bool, NPhilos)
   for p := uint(0); p < NPhilos; p++ {

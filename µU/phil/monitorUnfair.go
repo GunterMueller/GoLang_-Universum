@@ -6,7 +6,7 @@ package phil
 
 import (
   . "µU/obj"
-  . "µU/lockp"
+  . "µU/lockn"
   "µU/mon"
 )
 type
@@ -14,7 +14,7 @@ type
                        mon.Monitor
                        }
 
-func newMU() LockerP {
+func newMU() LockerN {
   var m mon.Monitor
   f := func (a Any, i uint) Any {
          p := a.(uint)

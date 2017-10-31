@@ -1,6 +1,6 @@
 package lock
 
-// (c) Christian Maurer   v. 161216 - license see µU.go
+// (c) Christian Maurer   v. 171024 - license see µU.go
 
 // >>> Algorithm of Morris: A starvation-free Solution to the Mutual Exclusion Problem
 //     Inf. Proc. Letters 8 (1979), 76-80
@@ -11,9 +11,9 @@ type
   morris struct {
     door0, door,
           mutex sync.Mutex // to protect n0
-             n0, // number of processes ready to pass through gate a
-              n uint // number of processes, that have passed through
-                }    // gate a, but not yet through gate m
+             n0,     // number of processes blocked on door0
+              n uint // number of processes blocked on door
+                }
 
 func newMorris() Locker {
   x := new (morris)

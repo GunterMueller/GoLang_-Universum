@@ -6,7 +6,7 @@ package phil
 
 import (
   . "µU/obj"
-  . "µU/lockp"
+  . "µU/lockn"
   "µU/mon"
 )
 type
@@ -14,7 +14,7 @@ type
                  mon.Monitor
                  }
 
-func newM() LockerP {
+func newM() LockerN {
   var m mon.Monitor
   nForks := make([]uint, NPhilos)
   for i := uint(0); i < NPhilos; i++ {

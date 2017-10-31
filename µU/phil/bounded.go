@@ -8,7 +8,7 @@ package phil
 
 import (
   "sync"
-  . "µU/lockp"
+  . "µU/lockn"
   "µU/sem"
 )
 type
@@ -17,7 +17,7 @@ type
             fork []sync.Mutex
                  }
 
-func newB() LockerP {
+func newB() LockerN {
   x := new(bounded)
   x.Semaphore = sem.New (NPhilos - 1)
   x.fork = make([]sync.Mutex, NPhilos)
