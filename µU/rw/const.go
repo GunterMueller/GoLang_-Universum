@@ -1,6 +1,6 @@
 package rw
 
-// (c) Christian Maurer   v. 171016 - license see µU.go
+// (c) Christian Maurer   v. 171101 - license see µU.go
 
 const (
   reader = uint(iota)
@@ -11,7 +11,6 @@ const (
   readerOut
   writerIn
   writerOut
-  nFuncs
 )
 const
   inf = 1 << 31 - 1

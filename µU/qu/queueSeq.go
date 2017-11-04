@@ -1,6 +1,6 @@
 package qu
 
-// (c) Christian Maurer   v. 170620 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 import (
   . "µU/obj"
@@ -8,20 +8,27 @@ import (
 )
 type
   squeue struct {
+                Any
                 seq.Sequence
                 }
 
-func news(a Any) Queue {
-  return &squeue { seq.New(a) }
+func newS (a Any) Queue {
+  CheckAtomicOrObject (a)
+  x := new(squeue)
+  x.Any = Clone (a)
+  x.Sequence = seq.New(a)
+  return x
 }
 
 func (x *squeue) Ins (a Any) {
-  x.Seek(x.Num ())
+  x.Seek(x.Num())
   x.Sequence.Ins(a)
 }
 
 func (x *squeue) Get() Any {
-  if x.Empty() { return nil }
+  if x.Empty() {
+    return x.Any
+  }
   x.Seek(0)
   defer x.Sequence.Del()
   return x.Sequence.Get()

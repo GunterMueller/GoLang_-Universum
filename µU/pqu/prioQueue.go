@@ -1,6 +1,6 @@
 package pqu
 
-// (c) Christian Maurer   v. 170316 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 import (
   . "µU/obj"
@@ -14,6 +14,8 @@ type
                    }
 
 func new_(a Any) PrioQueue {
+  CheckAtomicOrObject (a)
+//  if a == nil { return nil }
   x := new(prioQueue)
   x.Any = Clone(a)
   x.Heap = internal.New()
@@ -44,7 +46,7 @@ func (x *prioQueue) Get() Any {
 
 func (x *prioQueue) Del() Any {
   if x.uint == 0 {
-    return nil
+    return x.Any
   }
   if x.uint == 1 {
     a := x.Heap.Get()

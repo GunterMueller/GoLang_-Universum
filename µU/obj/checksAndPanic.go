@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 170701 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 import (
   "reflect"
@@ -24,6 +24,12 @@ func CheckTypeEq (a, b Any) {
   x, y := reflect.TypeOf(a), reflect.TypeOf(b)
   if x != y {
     TypeNotEqPanic (a, b)
+  }
+}
+
+func CheckAtomicOrEqualer (a Any) {
+  if ! AtomicOrEqualer(a) {
+    PanicNotAtomicOrEqualer(a)
   }
 }
 
@@ -51,22 +57,31 @@ func DivBy0Panic() {
   ker.Panic ("division by 0")
 }
 
+func bluse (a Any) string {
+  t := "nil"
+  if a != nil {
+    t = reflect.TypeOf(a).String()
+  }
+  return t
+}
+
 func TypeNotEqPanic (a, b Any) {
-  ker.Panic ("the types " + reflect.TypeOf(a).String() +
-                  " and " + reflect.TypeOf(b).String() + " are not equal")
-//  ker.Panic ("the types " + x.String() + " and " + y.String() + " are not equal")
+  ker.Panic ("the types " + bluse(a) + " and " + bluse(b) + " are not equal")
 }
 
 func WrongUintParameterPanic (s string, a Any, n uint) {
-  ker.Panic ("method " + s +
-             " for object of type " + reflect.TypeOf(a).String() +
+  ker.Panic ("method " + s + " for object of type " + bluse(a) +
              " got wrong value for " + strconv.FormatUint(uint64(n), 10))
 }
 
+func PanicNotAtomicOrEqualer (a Any) {
+  ker.Panic ("the type " + bluse(a) + " is neither Atomic nor implements Equaler")
+}
+
 func PanicNotAtomicOrObject (a Any) {
-  ker.Panic ("the type " + reflect.TypeOf(a).String() + " is neither Atomic nor implements Object")
+  ker.Panic ("the type " + bluse(a) + " is neither Atomic nor implements Object")
 }
 
 func PanicNotUintOrValuator (a Any) {
-  ker.Panic ("the type " + reflect.TypeOf(a).String() + " is neither uint nor implements Valuator")
+  ker.Panic ("the type " + bluse(a) + " is neither uint nor implements Valuator")
 }

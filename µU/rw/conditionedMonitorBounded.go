@@ -1,6 +1,6 @@
 package rw
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171101 - license see µU.go
 
 // >>> bounded readers/writers problem
 
@@ -41,7 +41,7 @@ func newCMB (mR uint) ReaderWriter {
          }
          return nW
        }
-  x.Monitor = cmon.New (nFuncs, f, c)
+  x.Monitor = cmon.New (4, f, c)
   return x
 }
 

@@ -1,6 +1,6 @@
 package qu
 
-// (c) Christian Maurer   v. 161216 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 import
   . "µU/obj"
@@ -16,12 +16,14 @@ type
 // a is inserted as last object into x.
   Ins (a Any)
 
-// Returns nil, if x.Empty(), otherwise the first object of x
+// Returns the pattern object of x, if x.Empty().
+// Returns otherwise the first object of x
 // and that object is removed from x.
   Get() Any
 }
 
-// Pre: a is atomic or of a type implementing Object.
-// Returns a new empty queue for objects of type a.
-func New(a Any) Queue { return new_(a) }
-func NewS(a Any) Queue { return news(a) }
+// Pre: a is atomic or of a type implementing Object (a != nil).
+// Returns a new empty queue for objects of the type of a.
+// a is the pattern object of this queue.
+func New (a Any) Queue { return new_(a) }
+func NewS (a Any) Queue { return newS(a) }

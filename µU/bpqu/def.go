@@ -1,6 +1,6 @@
 package bpqu
 
-// (c) Christian Maurer   v. 170218 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 import (
   . "µU/obj"
@@ -18,5 +18,5 @@ type
 
 // Pre: a is atomic or of a type implementing Object.
 // Returns a new empty priority queue for objects of type a
-// with maximal capacity m.
+// with maximal capacity m. m > 0.
 func New (a Any, m uint) BoundedPrioQueue { return new_(a,m) }

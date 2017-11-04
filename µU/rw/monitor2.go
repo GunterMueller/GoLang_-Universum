@@ -1,6 +1,6 @@
 package rw
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171101 - license see µU.go
 
 // >>> 2nd readers/writers problem
 
@@ -48,7 +48,7 @@ func newM2() ReaderWriter {
          }
          return 0
        }
-  x.Monitor = mon.New (nFuncs, f)
+  x.Monitor = mon.New (4, f)
   return x
 }
 

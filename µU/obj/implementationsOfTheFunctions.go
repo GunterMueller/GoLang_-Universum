@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 import (
   "reflect"
@@ -11,6 +11,11 @@ import (
 )
 
 // Equaler ///////////////////////////////////////
+
+func isEqualer (a Any) bool {
+  _, e := a.(Equaler)
+  return e
+}
 
 func eq (a, b Any) bool {
   if a == nil { return b == nil }
@@ -78,37 +83,13 @@ func clone (a Any) Any {
     }
     return b
   default:
-    ker.Panic ("µU only clones atomic types and objects of type BoolStream, Stream or Equaler")
+    ker.Panic ("µU only clones atomic types and objects of type string, Stream, BoolStream or Equaler")
   }
   return nil
 }
 
 // TODO DeepClone
 
-// Object ////////////////////////////////////////
-
-func atomic (a Any) bool {
-  switch a.(type) {
-  case bool,
-       int8,  int16,  int32,  int,  int64,
-       uint8, uint16, uint32, uint, uint64,
-       float32, float64, complex64, complex128,
-       string, Stream: // we treat them also as atomic
-    return true
-  }
-  return false
-}
-
-func isObject (a Any) bool {
-  _, o := a.(Object)
-  _, e := a.(Editor) // Editor implements Object
-  return o || e
-}
-/*
-func AtomicOrObject (a Any) bool {
-  return atomic (a) || isObject (a)
-}
-*/
 // Comparer //////////////////////////////////////
 
 func less (a, b Any) bool {
@@ -143,7 +124,7 @@ func less (a, b Any) bool {
     return a.(string) < b.(string)
   case Comparer:
     switch b.(type) {
-      case Comparer:
+    case Comparer:
       return a.(Comparer).Less (b)
     }
   }
@@ -198,9 +179,13 @@ func leq (a, b Any) bool {
 
 // Coder /////////////////////////////////////////
 
+func isCoder (a Any) bool {
+  _, c := a.(Coder)
+  return c
+}
+
 func fail (a Any) {
-  ker.Panic ("µU only [en|de]codes atomic types " +
-             "and objects of type string, Stream, BoolStream or Coder !")
+  ker.Panic ("µU only [en|de]codes atomic types and objects of type string, Stream, BoolStream or Coder !")
 }
 
 func codelen (a Any) uint {
@@ -245,7 +230,9 @@ func codelen (a Any) uint {
 }
 
 func encode (a Any) Stream {
-  if a == nil { return nil }
+  if a == nil {
+    return nil
+  }
   var bs Stream
   switch a.(type) {
   case bool:
@@ -455,12 +442,10 @@ func degödel (b byte) Any {
     return float32(0)
   case 13:
     return float64(0)
-/*
-  case 14:
-    return complex64(0, 0)
-  case 15:
-    return complex128(0, 0)
-*/
+//  case 14:
+//    return complex64(0, 0)
+//  case 15:
+//    return complex128(0, 0)
   case 16:
     return ""
   }
@@ -660,6 +645,81 @@ func Decodes (bs Stream, as AnyStream, cs []uint) {
     as[i] = decode (x, bs[a:a+cs[i]])
     a += cs[i]
   }
+}
+
+// Clearer ///////////////////////////////////////
+
+func isClearer (a Any) bool {
+  _, c := a.(Clearer)
+  return c
+}
+
+/*
+func clear (a Any) Any {
+  switch a.(type) {
+  case bool:
+    return false
+  case int8:
+    return math.MaxInt8
+  case int16:
+    return math.MaxInt16
+  case int32:
+    return math.MaxInt32
+  case int:
+    return 0
+  case int64:
+    return math.MaxInt64
+  case uint8:
+    return math.MaxInt8
+  case uint16:
+    return math.MaxUint16
+  case uint32:
+    return math.MaxUint32
+  case uint:
+    return 0
+  case uint64:
+    return math.MaxUint64
+  case float32:
+    return math.MaxFloat32
+  case float64:
+    return math.MaxFloat64
+  case complex64:
+    return 0 // TODO
+  case complex128:
+    return 0 // TODO
+  case string:
+    return ""
+  case Stream:
+    return make(Stream, 0)
+  case Clearer:
+    a.(Clearer).Clr()
+    return a
+  case Editor:
+    a.(Clearer).Clr()
+    return a
+  }
+  return nil
+}
+*/
+
+// Object ////////////////////////////////////////
+
+func atomic (a Any) bool {
+  switch a.(type) {
+  case bool,
+       int8,  int16,  int32,  int,  int64,
+       uint8, uint16, uint32, uint, uint64,
+       float32, float64, complex64, complex128,
+       string, Stream: // we treat them also as atomic
+    return true
+  }
+  return false
+}
+
+func isObject (a Any) bool {
+  _, o := a.(Object)
+  _, e := a.(Editor) // Editor implements Object
+  return o || e
 }
 
 // Valuator //////////////////////////////////////

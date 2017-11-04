@@ -2,7 +2,7 @@ package phil
 
 // (c) Christian Maurer   v. 170627 - license see µU.go
 
-// >>> Unsymmetric solution with message-passing
+// >>> Unsymmetric solution with synchronous message-passing
 
 import
   . "µU/lockn"

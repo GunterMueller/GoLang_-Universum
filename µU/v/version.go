@@ -10,8 +10,8 @@ import (
 )
 const ( // v.
   yy = 17
-  mm = 10
-  dd = 30
+  mm = 11
+  dd =  4
 )
 var
   v day.Calendarday = day.New()

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 type
   Coder interface {
@@ -41,3 +41,9 @@ func Encode4 (a, b, c, d uint32) Stream { return encode4 (a,b,c,d) }
 //      bs encodes 4 numbers of type uint32.
 // Returns those 4 numbers.
 func Decode4 (bs Stream) (uint32, uint32, uint32, uint32) { return decode4(bs) }
+
+// Returns true, iff a implements Coder.
+func IsCoder (a Any) bool { return isCoder(a) }
+
+// Returns true, iff a is atomic or implements Coder.
+func AtomicOrCoder (a Any) bool { return atomic(a) || isCoder(a) }

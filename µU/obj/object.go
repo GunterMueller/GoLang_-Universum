@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 type
   Object interface {

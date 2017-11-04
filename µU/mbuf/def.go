@@ -22,7 +22,7 @@ type
 // Pre: a is atomic or of a type implementing Object.
 // Returns an empty buffer of capacity n for objects of the type of a
 // to be used by concurrent processes.
-// Classical implementation with explicit synchronisation. 
+// Classical implementation with explicit synchronisation per Mutex.
 func New (a Any, n uint) MBuffer { return new_(a,n) }
 
 // Implementation using synchronisation of µU/buf.
@@ -35,7 +35,10 @@ func NewM (a Any, n uint) MBuffer { return newM(a,n) }
 func NewGo (a Any, n uint) MBuffer { return newgo(a,n) }
 
 // Implementation with asynchronous message passing
-func NewCh (a Any, n uint) MBuffer { return newch(a,n) }
+func NewCh (a Any, n uint) MBuffer { return newCh(a,n) }
+
+// Implementation with synchronous message passing
+func NewCh1 (a Any, n uint) MBuffer { return newCh1(a,n) }
 
 // Implementation with asynchronous message passing and guarded selective waiting
 func NewGS (a Any, n uint) MBuffer { return newgs(a,n) }

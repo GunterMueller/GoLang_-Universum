@@ -1,6 +1,6 @@
 package smok
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171102 - license see µU.go
 
 // >>> Solution with a conditioned monitor
 

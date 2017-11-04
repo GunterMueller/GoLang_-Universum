@@ -1,6 +1,6 @@
 package lr
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171101 - license see µU.go
 
 const (
   left = uint(iota)
@@ -11,7 +11,6 @@ const (
   leftOut
   rightIn
   rightOut
-  nFuncs
 )
 const
   inf = 1 << 31 - 1

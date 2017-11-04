@@ -1,0 +1,55 @@
+package phil
+
+// (c) Christian Maurer   v. 171103 - license see µU.go
+
+// >>> Solution with synchronous message-passing and guarded selective waiting
+
+import
+  . "µU/lockn"
+type
+  guardedSelect struct {
+                    ch []chan int
+                       }
+
+func newGS() LockerN {
+  x := new(guardedSelect)
+  x.ch = make([]chan int, NPhilos)
+  for p := uint(0); p < NPhilos; p++ {
+    x.ch[p] = make(chan int)
+  }
+  for p := uint(0); p < NPhilos; p++ {
+    go func (i uint) {
+         for {
+           x.ch[i] <- 0
+           <-x.ch[i]
+         }
+       }(p)
+  }
+  return x
+}
+
+func (x *guardedSelect) Deadlock_Prevention {
+  select 
+  When eating < 4 [
+    accept enters
+    eating++
+  OR
+    accept leaves:
+    eating--
+  ]
+}
+
+func (x *guardedSelect) Lock (p uint) {
+  Deadlock_Prevention.Enters
+  changeStatus (p, hungry)
+  forks[p].PickUp
+  forks[right(p)].PickUp
+  changeStatus (p, dining)
+}
+
+func (x *guardedSelect) Unlock (p uint) {
+  forks[p].PutDown
+  forks[right(p)].PutDown
+  Deadlock_Prevention.Enters
+  changeStatus (p, satisfied)
+}

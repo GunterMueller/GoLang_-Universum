@@ -1,6 +1,6 @@
 package lr
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171101 - license see µU.go
 
 // >>> bounded left/right problem
 
@@ -58,7 +58,7 @@ func newMB (mL, mR uint) LeftRight {
          }
          return uint(0)
        }
-  x.Monitor = mon.New (nFuncs, f)
+  x.Monitor = mon.New (4, f)
   return x
 }
 

@@ -1,6 +1,6 @@
 package lr
 
-// (c) Christian Maurer   v. 171017 - license see µU.go
+// (c) Christian Maurer   v. 171101 - license see µU.go
 
 // >>> 1st left/right problem
 
@@ -39,7 +39,7 @@ func newFMon (h host.Host, port uint16, s bool) LeftRight {
          }
          return true
        }
-  x.FarMonitor = fmon.New (false, nFuncs, f, p, h, port, s)
+  x.FarMonitor = fmon.New (false, 4, f, p, h, port, s)
   return x
 }
 

@@ -1,31 +1,29 @@
 package mbuf
 
-// (c) Christian Maurer   v. 170218 - license see µU.go
+// (c) Christian Maurer   v. 171103 - license see µU.go
 
 // >>> implementation with synchronous message passing and guarded selective waiting
 
-import (
-  "µU/ker"
+import
   . "µU/obj"
-)
 type
   guardedSelect struct {
-                cI, cG chan Any
+            cIns, cGet chan Any
                        }
 
 func newgs (a Any, n uint) MBuffer {
-  if a == nil || n == 0 { ker.Panic ("mbuf.NewGS with param nil or 0") }
+  if a == nil || n == 0 { return nil }
   x := new (guardedSelect)
-  x.cI, x.cG = make (chan Any), make (chan Any)
+  x.cIns, x.cGet = make (chan Any), make (chan Any)
   go func() {
     buffer:= make ([]Any, n)
     var in, out, num uint
     for {
       select {
-      case buffer [in] = <-When (num < n, x.cI):
+      case buffer [in] = <-When (num < n, x.cIns):
         in = (in + 1) % n
         num ++
-      case When (num > 0, x.cG) <- buffer [out]:
+      case When (num > 0, x.cGet) <- buffer [out]:
         out = (out + 1) % n
         num --
       }
@@ -35,9 +33,9 @@ func newgs (a Any, n uint) MBuffer {
 }
 
 func (x *guardedSelect) Ins (a Any) {
-  x.cI <- a
+  x.cIns <- a
 }
 
 func (x *guardedSelect) Get() Any {
-  return Clone (<-x.cG)
+  return Clone (<-x.cGet)
 }

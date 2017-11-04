@@ -14,7 +14,6 @@ type
 
 func new_() Smokers {
   x := new (naive)
-  x.smokerOut.Lock()
   for u := uint(0); u < 3; u++ {
     x.avail[u].Lock()
   }

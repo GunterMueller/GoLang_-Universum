@@ -1,6 +1,6 @@
 package bpqu
 
-// (c) Christian Maurer   v. 170218 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 import (
   "sync"
@@ -15,6 +15,8 @@ var
   mutex sync.Mutex
 
 func new_(a Any, m uint) BoundedPrioQueue {
+  CheckAtomicOrObject (a)
+  if m == 0 { return nil }
   x := new(boundedPrioQueue)
   x.heap = make([]Any, m + 1)
   x.heap[0] = Clone(a)

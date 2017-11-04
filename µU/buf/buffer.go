@@ -1,6 +1,6 @@
 package buf
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 import
   . "µU/obj"
@@ -13,7 +13,7 @@ type
                 }
 
 func new_(a Any, n uint) Buffer {
-  if a == nil || n == 0 { return nil } // TODO Panic() ?
+  if a == nil || n == 0 { return nil }
   x := new(buffer)
   x.Any = Clone(a)
   x.cap = n
@@ -42,7 +42,9 @@ func (x *buffer) Ins (a Any) {
 }
 
 func (x *buffer) Get() Any {
-  if x.Empty() { return nil }
+  if x.Empty() {
+    return x.Any
+  }
   a := Clone (x.content[x.out])
   x.content[x.out] = Clone (x.Any)
   x.out = (x.out + 1) % x.cap

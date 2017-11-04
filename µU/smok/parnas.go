@@ -1,6 +1,6 @@
 package smok
 
-// (c) Christian Maurer   v. 171018 - license see µU.go
+// (c) Christian Maurer   v. 171102 - license see µU.go
 
 // >>> Solution with helper processes due to D. L. Parnas:
 //     On a Solution to the Cigarette Smoker's Problem
@@ -41,12 +41,11 @@ func (x *parnas) help (u uint) {
 }
 
 func newP() Smokers {
-  x := new (parnas)
+  x := new(parnas)
   for u := uint(0); u < 3; u++ {
     x.supplied[u].Lock()
     x.smoke[u].Lock()
   }
-  x.agent.Lock()
   for u := uint(0); u < 3; u++ {
     go x.help (u)
   }

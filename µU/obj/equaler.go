@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 170701 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 type
   Equaler interface {
@@ -23,3 +23,9 @@ func Eq (a, b Any) bool { return eq(a,b) }
 // Pre: a is atomic or implements Equaler.
 // Returns a clone of a.
 func Clone (a Any) Any { return clone(a) }
+
+// Returns true, iff a is atomic or implements Equaler.
+func IsEqualer (a Any) bool { return isEqualer(a) }
+
+// Returns true, iff a is atomic or implements Equaler.
+func AtomicOrEqualer (a Any) bool { return atomic(a) || isEqualer(a) }

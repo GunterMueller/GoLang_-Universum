@@ -1,6 +1,6 @@
 package mbuf
 
-// (c) Christian Maurer   v. 170218 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 import (
   . "µU/obj"
@@ -13,6 +13,7 @@ type
                }
 
 func newM (a Any, n uint) MBuffer {
+  if a == nil || n == 0 { return nil }
   buffer := buf.New (a, n)
   x := new(mbufM)
   f := func (a Any, i uint) Any {

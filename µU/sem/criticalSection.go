@@ -8,8 +8,8 @@ import
   "µU/cs"
 type
   semaphoreCS struct {
-                         cs.CriticalSection
-                         }
+                     cs.CriticalSection
+                     }
 
 func newCS (n uint) Semaphore {
   val := n

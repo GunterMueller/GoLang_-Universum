@@ -1,9 +1,8 @@
 package mbuf
 
-// (c) Christian Maurer   v. 170218 - license see µU.go
+// (c) Christian Maurer   v. 171103 - license see µU.go
 
 import (
-  "µU/ker"
   . "µU/obj"
   "µU/buf"
   "µU/host"
@@ -16,9 +15,7 @@ type
                     }
 
 func newfm (a Any, n uint, h host.Host, p uint16, s bool) MBuffer {
-  if a == nil || n == 0 {
-    ker.Panic("mbuf.NewFM with 1st param nil or 2nd param 0")
-  }
+  if a == nil || n == 0 { return nil }
   x := new (farMonitor)
   x.Buffer = buf.New (a, n)
   c := func (a Any, i uint) bool {

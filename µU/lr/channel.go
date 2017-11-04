@@ -1,45 +1,46 @@
 package lr
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171101 - license see µU.go
 
 // >>> 1st left/right problem
 
 type
   channel struct {
-  lI, lO, rI, rO,
+       inL, outL,
+       inR, outR chan int
             done chan int
                  }
 
 func newCh() LeftRight {
   x := new(channel)
-  x.lI, x.lO = make(chan int), make(chan int)
-  x.rI, x.rO = make(chan int), make(chan int)
+  x.inL, x.outL = make(chan int), make(chan int)
+  x.inR, x.outR = make(chan int), make(chan int)
   x.done = make(chan int)
   go func() {
     var nL, nR uint
     for {
-//      if _, ok:= <-x.done; ok { break }
+      if _, ok:= <-x.done; ok { break }
       if nL == 0 {
         if nR == 0 {
           select {
-          case <-x.lI:
+          case <-x.inL:
             nL++
-          case <-x.rI:
+          case <-x.inR:
             nR++
           }
-        } else { // nR > 0
+        } else { // nL == 0 && nR > 0
           select {
-          case <-x.rI:
+          case <-x.inR:
             nR++
-          case <-x.rO:
+          case <-x.outR:
             nR--
           }
         }
       } else { // nL > 0
         select {
-        case <-x.lI:
+        case <-x.inL:
           nL++
-        case <-x.lO:
+        case <-x.outL:
           nL--
         }
       }
@@ -49,19 +50,19 @@ func newCh() LeftRight {
 }
 
 func (x *channel) LeftIn() {
-  x.lI <- 0
+  x.inL <- 0
 }
 
 func (x *channel) LeftOut() {
-  x.lO <- 0
+  x.outL <- 0
 }
 
 func (x *channel) RightIn() {
-  x.rI <- 0
+  x.inR <- 0
 }
 
 func (x *channel) RightOut() {
-  x.rO <- 0
+  x.outR <- 0
 }
 
 func (x *channel) Fin() {

@@ -13,6 +13,7 @@ var
   NPhilos = uint(5)
 
 func NewNaive() LockerN { return new_() }
+func NewSemaphore() LockerN { return newS() }
 func NewBounded() LockerN { return newB() }
 func NewUnsymmetric() LockerN { return newU() }
 func NewSemaphoreUnfair() LockerN { return newSU() }
@@ -24,3 +25,5 @@ func NewMonitorUnfair() LockerN { return newMU() }
 func NewCondMonitor() LockerN { return newCM() }
 func NewChannel() LockerN { return newCh() }
 func NewChannelUnsymmetric() LockerN { return newChU() }
+
+func NewChannel1() LockerN { return newCh1() }

@@ -65,15 +65,16 @@ import (
   "µU/fig3"
   "µU/v"
   "µU/car"
-  "µU/chanm"
+  "µU/schan"
+  "µU/achan"
   "µU/lock"
   "µU/asem"
   "µU/barr"
   "µU/rw"
   "µU/lr"
   "µU/lockn"
-  "µU/phil"
-  "µU/smok"
+//  "µU/phil"
+//  "µU/smok"
   "µU/barb"
   "µU/mstk"
   "µU/mqu"
@@ -197,19 +198,20 @@ func main() { // just to get all stuff compiled
   gram.Touch()
   audio.New()
   fig3.Touch()
-  chanm.New()
+  schan.New(0)
+  achan.New(0)
   lock.NewMutex()
   asem.New(2)
   barr.New(2)
   rw.New1()
   lr.New1()
   lockn.NewPeterson()
-  phil.TouchPhil()
-  smok.TouchSmok()
+//  phil.TouchPhil()
+//  smok.TouchSmok()
   barb.NewDir()
   mstk.New(0)
   mqu.New(0)
-  mbuf.New(0, 1)
+  mbuf.New(nil, 1)
   acc.New()
   naddr.New(nchan.Port0)
   dgra.Touch()

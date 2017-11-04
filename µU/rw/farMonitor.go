@@ -1,6 +1,6 @@
 package rw
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171101 - license see µU.go
 
 // >>> 1st readers/writers problem
 
@@ -41,7 +41,7 @@ func newFM (h host.Host, port uint16, s bool) ReaderWriter {
          }
          return nW
        }
-  x.FarMonitor = fmon.New (true, nFuncs, f, p, h, port, s)
+  x.FarMonitor = fmon.New (true, 4, f, p, h, port, s)
   return x
 }
 

@@ -1,12 +1,11 @@
 package mbuf
 
-// (c) Christian Maurer   v. 170218 - license see µU.go
+// (c) Christian Maurer   v. 171103 - license see µU.go
 
 // >>> Implementation with a Go-Monitor
 
 import (
   "sync"
-  "µU/ker"
   . "µU/obj"
   "µU/buf"
 )
@@ -18,7 +17,7 @@ type
                    }
 
 func newgo (a Any, n uint) MBuffer {
-  if a == nil || n == 0 { ker.Panic ("mbuf.NewCM with param nil or 0") }
+  if a == nil || n == 0 { return nil }
   x := new (condition)
   x.Buffer = buf.New (a, n)
   x.notFull = sync.NewCond (&x.Mutex)

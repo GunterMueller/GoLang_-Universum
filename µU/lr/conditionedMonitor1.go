@@ -1,6 +1,6 @@
 package lr
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171101 - license see µU.go
 
 // >>> 1st left/right problem
 
@@ -38,7 +38,7 @@ func newCM1() LeftRight {
          }
          return nR
        }
-  x.Monitor = cmon.New (nFuncs, f, c)
+  x.Monitor = cmon.New (4, f, c)
   return x
 }
 

@@ -1,6 +1,6 @@
 package qu
 
-// (c) Christian Maurer   v. 170620 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 import
   . "µU/obj"
@@ -11,6 +11,7 @@ type
                }
 
 func new_(a Any) Queue {
+  if a == nil { return nil }
   x := new(queue)
   x.Any = Clone(a)
   x.s = make([]Any, 0)
@@ -31,7 +32,9 @@ func (x *queue) Ins (a Any) {
 }
 
 func (x *queue) Get() Any {
-  if x.Empty() { return nil }
+  if x.Empty() {
+    return x.Any
+  }
   a := x.s[0]
   x.s = x.s[1:]
   return a

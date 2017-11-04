@@ -1,6 +1,6 @@
 package lr
 
-// (c) Christian Maurer   v. 171017 - license see µU.go
+// (c) Christian Maurer   v. 171101 - license see µU.go
 
 // >>> bounded left/right problem
 
@@ -45,7 +45,7 @@ func newFMonB (mL, mR uint, h host.Host, port uint16, s bool) LeftRight {
          }
          return true
        }
-  x.FarMonitor = fmon.New (true, nFuncs, f, p, h, port, s)
+  x.FarMonitor = fmon.New (true, 4, f, p, h, port, s)
   return x
 }
 

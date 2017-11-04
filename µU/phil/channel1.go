@@ -1,24 +1,24 @@
 package phil
 
-// (c) Christian Maurer   v. 171101 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
-// >>> Solution with synchronous message-passing
-//     Ben-Ari: Principles of Concurrent and Distributed Programming 2nd edition, p. 188
-//     modified to be unsymmetric to avoid deadlocks
+// >>> mit asynchronem Bta noch eleganter ?
 
 import
   . "µU/lockn"
 type
-  channel struct {
-              ch []chan int
-                 }
+  channel1 struct {
+               ch []chan int
+                  }
 
-func newCh() LockerN {
-  x := new(channel)
+func newCh1() LockerN {
+  x := new(channel1)
   x.ch = make([]chan int, NPhilos)
   for p := uint(0); p < NPhilos; p++ {
-    x.ch[p] = make(chan int)
+    x.ch[p] = make(chan int, 1) // wenn die ch's Kapazität 1 hätten,
   }
+// könnte man die Goroutinen mit der for-Schleife weglassen
+/*
   for p := uint(0); p < NPhilos; p++ {
     go func (i uint) {
          for {
@@ -27,10 +27,12 @@ func newCh() LockerN {
          }
        }(p)
   }
+*/
   return x
 }
 
-func (x *channel) Lock (p uint) {
+
+func (x *channel1) Lock (p uint) {
   changeStatus (p, hungry)
   if p % 2 == 0 {
     <-x.ch[left (p)]
@@ -44,7 +46,7 @@ func (x *channel) Lock (p uint) {
   changeStatus (p, dining)
 }
 
-func (x *channel) Unlock (p uint) {
+func (x *channel1) Unlock (p uint) {
   x.ch[p] <- 0
   x.ch[left (p)] <- 0
   changeStatus (p, satisfied)

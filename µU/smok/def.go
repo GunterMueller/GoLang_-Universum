@@ -1,6 +1,6 @@
 package smok
 
-// (c) Christian Maurer   v. 170627 - license see µU.go
+// (c) Christian Maurer   v. 171102 - license see µU.go
 
 type
   Smokers interface {
@@ -27,3 +27,4 @@ func NewParnas() Smokers { return newP() }
 func NewCriticalSection() Smokers { return newCS() }
 func NewMonitor() Smokers { return newM() }
 func NewConditionedMonitor() Smokers { return newCM() }
+func NewChannel() Smokers { return newCh() }

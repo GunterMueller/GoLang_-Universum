@@ -16,6 +16,6 @@ type
   Full() bool
 }
 
-// Pre: a is atomic or of a type implementing Object.
+// Pre: a is atomic or of a type implementing Object. 
 // Returns an empty buffer of capacity n for objects of the type of a.
 func New (a Any, n uint) Buffer { return new_(a,n) }

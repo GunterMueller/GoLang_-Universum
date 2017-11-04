@@ -1,6 +1,6 @@
 package pqu
 
-// (c) Christian Maurer   v. 130316 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
 import (
   . "µU/obj"
@@ -14,4 +14,5 @@ type
 // Lower Objects have higher priority.
 }
 
+// Pre: a is atomic or of a type implementing Object (a != nil).
 func New(a Any) PrioQueue { return new_(a) }
