@@ -1,13 +1,13 @@
 package piset
 
-// (c) Christian Maurer   v. 170424 - license see µU.go
+// (c) Christian Maurer   v. 171106 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/ker"
   "µU/str"
   "µU/pseq"
-  "µU/qu"
+  "µU/buf"
   "µU/set"
   "µU/piset/internal"
 )
@@ -20,7 +20,7 @@ type
                               internal.Index
                               Func "index func"
                               set.Set "tree"
-                              qu.Queue "position pool"
+                              buf.Buffer "position pool"
                               }
 
 func new_(o Object, f Func) PersistentIndexedSet {
@@ -29,7 +29,7 @@ func new_(o Object, f Func) PersistentIndexedSet {
   x.PersistentSequence = pseq.New (x.Object)
   x.Func, x.Index = f, internal.New (f (o))
   x.Set = set.New (x.Index)
-  x.Queue = qu.New (uint(0))
+  x.Buffer = buf.New (uint(0))
   return x
 }
 
@@ -57,13 +57,13 @@ func (x *persistentIndexedSet) Offc() bool {
 func (x *persistentIndexedSet) build() {
   x.Set.Clr()
   i := uint(0)
-  x.Queue = qu.New(i)
+  x.Buffer = buf.New(i)
   if x.PersistentSequence.Empty() { return }
   x.PersistentSequence.Trav (func (a Any) {
     x.Object = a.(Object).Clone().(Object)
 //    e, ok := x.Object.(Editor); if ok { e.Write (0, 0) }
     if x.Object.Empty() {
-      x.Queue.Ins (i)
+      x.Buffer.Ins (i)
     } else {
       x.Index.Set (x.Func (x.Object), i)
       x.Set.Ins (x.Index)
@@ -91,7 +91,7 @@ func (x *persistentIndexedSet) Empty() bool {
 func (x *persistentIndexedSet) Clr() {
   x.PersistentSequence.Clr()
   x.Set.Clr()
-  x.Queue = qu.New (uint(0))
+  x.Buffer = buf.New (uint(0))
   x.Object.Clr()
 }
 
@@ -119,10 +119,10 @@ func (x *persistentIndexedSet) Ins (a Any) {
   if object.Empty() { return }
   if x.Ex (object) { return }
   var p uint
-  if x.Queue.Num() == 0 {
+  if x.Buffer.Num() == 0 {
     p = x.PersistentSequence.Num()
   } else {
-    p = x.Queue.Get().(uint)
+    p = x.Buffer.Get().(uint)
   }
   x.Index.Set (x.Func (object), p)
   x.PersistentSequence.Seek (p)
@@ -172,7 +172,7 @@ func (x *persistentIndexedSet) Del() Any {
   object.Clr()
   x.PersistentSequence.Put (object)
   x.Set.Del()
-  x.Queue.Ins (x.Index.Pos())
+  x.Buffer.Ins (x.Index.Pos())
 /*
   if x.Set.Empty() {
   } else {

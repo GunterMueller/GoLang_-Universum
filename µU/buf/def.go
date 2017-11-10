@@ -1,21 +1,29 @@
 package buf
 
-// (c) Christian Maurer   v. 170621 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see µU.go
 
-import (
+import
   . "µU/obj"
-  "µU/qu"
-)
 type
-  Buffer interface { // Bounded buffers = queues of bounded capacity.
+  Buffer interface { // Fifo-Queues
 
-  qu.Queue
+// Returns true, if there are no objects in x.
+  Empty() bool
 
-// Returns true, iff x is filled up to its capacity.
-// ! x.Full() is a precondition for a call of x.Ins(a).
-  Full() bool
+// Returns the number of objects in x.
+  Num() uint
+
+// a is inserted as last object into x.
+  Ins (a Any)
+
+// Returns the pattern object of x, if x.Empty().
+// Returns otherwise the first object of x
+// and that object is removed from x.
+  Get() Any
 }
 
-// Pre: a is atomic or of a type implementing Object. 
-// Returns an empty buffer of capacity n for objects of the type of a.
-func New (a Any, n uint) Buffer { return new_(a,n) }
+// Pre: a is atomic or of a type implementing Object (a != nil).
+// Returns a new empty queue for objects of the type of a.
+// a is the pattern object of this buffer.
+func New (a Any) Buffer { return new_(a) }
+func NewS (a Any) Buffer { return newS(a) }

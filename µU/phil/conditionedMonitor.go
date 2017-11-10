@@ -25,16 +25,16 @@ func newCM() LockerN {
          return true // Unlock
        }
   f := func (i uint) uint {
-        if i < NPhilos {
-          nForks[left(i)]--
-          nForks[right(i)]--
-          return i
-        }
-        i -= NPhilos
-        nForks[left(i)]++
-        nForks[right(i)]++
-        return i
-      }
+         if i < NPhilos {
+           nForks[left(i)]--
+           nForks[right(i)]--
+           return i
+         }
+         i -= NPhilos
+         nForks[left(i)]++
+         nForks[right(i)]++
+         return i
+       }
   return &conditionedMonitor { cmon.New (NPhilos, f, c) }
 }
 

@@ -1,10 +1,9 @@
 package macc
 
-// (c) Christian Maurer   v. 170520 - license see µU.go
+// (c) Christian Maurer   v. 171020 - license see µU.go
 
 import (
   . "µU/obj"
-  "µU/euro"
   "µU/host"
   "µU/fmon"
 )
@@ -13,34 +12,33 @@ type
                     fmon.FarMonitor
                     }
 
-func newf (h host.Host, p uint16, s bool) MAccount {
-  balance := euro.New()
-  balance.SetVal (0)
+func newFM (h host.Host, p uint16, s bool) MAccount {
+  balance := uint(0)
   x := new (farMonitor)
   ps := func (a Any, i uint) bool {
           if i == draw {
-            return ! balance.Less (a.(euro.Euro))
+            return balance >= a.(uint)
           }
           return true // deposit
         }
   fs := func (a Any, i uint) Any {
           switch i {
           case deposit:
-            balance.Add (a.(euro.Euro))
+            balance += a.(uint)
+            return balance
           case draw:
-            balance.Sub (a.(euro.Euro))
-            if balance.Empty() { panic("should not happen") }
+            balance -= a.(uint)
           }
-          return balance
+          return a
         }
-  x.FarMonitor = fmon.New (balance, nFuncs, fs, ps, h, p, s)
+  x.FarMonitor = fmon.New (balance, 2, fs, ps, h, p, s)
   return x
 }
 
-func (x *farMonitor) Deposit (e euro.Euro) euro.Euro {
-  return x.FarMonitor.F (e, deposit).(euro.Euro)
+func (x *farMonitor) Deposit (a uint) uint {
+  return x.FarMonitor.F (a, deposit).(uint)
 }
 
-func (x *farMonitor) Draw (e euro.Euro) euro.Euro {
-  return x.FarMonitor.F (e, draw).(euro.Euro)
+func (x *farMonitor) Draw (a uint) uint {
+  return x.FarMonitor.F (a, draw).(uint)
 }

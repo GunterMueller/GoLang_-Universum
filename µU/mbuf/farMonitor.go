@@ -1,6 +1,6 @@
 package mbuf
 
-// (c) Christian Maurer   v. 171103 - license see µU.go
+// (c) Christian Maurer   v. 171106 - license see µU.go
 
 import (
   . "µU/obj"
@@ -8,38 +8,46 @@ import (
   "µU/host"
   "µU/fmon"
 )
+const (
+  ins = uint(iota)
+  get
+)
 type
   farMonitor struct {
+                    Any "pattern object"
                     buf.Buffer
                     fmon.FarMonitor
                     }
 
-func newfm (a Any, n uint, h host.Host, p uint16, s bool) MBuffer {
-  if a == nil || n == 0 { return nil }
-  x := new (farMonitor)
-  x.Buffer = buf.New (a, n)
-  c := func (a Any, i uint) bool {
-         if i == get {
-           return x.Buffer.Num() > 0
-         }
-         return true // ins
-       }
-  f := func (a Any, i uint) Any {
-         if i == get {
-           return x.Buffer.Get()
-         }
-         x.Buffer.Ins (a)
-         return a // ins
-       }
-  x.FarMonitor = fmon.New (a, nFuncs, f, c, h, p, s)
+func newf (a Any, h host.Host, p uint16, s bool) MBuffer {
+  x := new(farMonitor)
+  x.Any = Clone (a)
+  x.Buffer = buf.New (a)
+  ps := func (a Any, i uint) bool {
+          if i == get {
+            return x.Buffer.Num() > 0
+          }
+          return true // ins
+        }
+  fs := func (a Any, i uint) Any {
+          if i == get {
+            return x.Buffer.Get()
+          }
+          x.Buffer.Ins (a) // ins
+          return a
+        }
+  x.FarMonitor = fmon.New (a, 2, fs, ps, h, p, s)
   return x
 }
 
+func (x *farMonitor) Fin() {
+  x.Fin()
+}
+
 func (x *farMonitor) Ins (a Any) {
-  x.FarMonitor.F(a, ins)
+  x.F (a, ins)
 }
 
 func (x *farMonitor) Get() Any {
-  var a Any
-  return x.FarMonitor.F(a, get)
+  return x.F (x.Any, get)
 }

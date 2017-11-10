@@ -37,26 +37,26 @@ func newFMon (h host.Host, port uint16, s bool) LeftRight {
          case rightOut:
            nR--
          }
-         return true
+         return 0
        }
-  x.FarMonitor = fmon.New (false, 4, f, p, h, port, s)
+  x.FarMonitor = fmon.New (0, 4, f, p, h, port, s)
   return x
 }
 
 func (x *farMonitor) LeftIn() {
-  x.F(true, leftIn)
+  x.F (0, leftIn)
 }
 
 func (x *farMonitor) LeftOut() {
-  x.F(true, leftOut)
+  x.F (0, leftOut)
 }
 
 func (x *farMonitor) RightIn() {
-  x.F(true, rightIn)
+  x.F (0, rightIn)
 }
 
 func (x *farMonitor) RightOut() {
-  x.F(true, rightOut)
+  x.F (0, rightOut)
 }
 
 func (x *farMonitor) Fin() {

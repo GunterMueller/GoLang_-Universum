@@ -21,13 +21,17 @@ func newCh() LockerN {
   }
   for p := uint(0); p < NPhilos; p++ {
     go func (i uint) {
-         for {
-           x.ch[i] <- 0
-           <-x.ch[i]
-         }
-       }(p)
+      x.fork (i)
+    }(p)
   }
   return x
+}
+
+func (x *channel) fork (p uint) {
+  for {
+    x.ch[p] <- 0
+    <-x.ch[p]
+  }
 }
 
 func (x *channel) Lock (p uint) {

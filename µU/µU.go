@@ -50,6 +50,7 @@ import (
   "µU/real"
   "µU/stk"
   "µU/buf"
+  "µU/bbuf"
   "µU/bpqu"
   "µU/menue"
   "µU/date"
@@ -77,9 +78,9 @@ import (
 //  "µU/smok"
   "µU/barb"
   "µU/mstk"
-  "µU/mqu"
   "µU/mbuf"
-  "µU/acc"
+  "µU/mbbuf"
+  "µU/macc"
   "µU/nchan"
   "µU/naddr"
   "µU/dlock"
@@ -186,7 +187,8 @@ func main() { // just to get all stuff compiled
   brat.New()
   real.String(0)
   stk.New(0)
-  buf.New(nil, 0)
+  buf.New(0)
+  bbuf.New(nil, 0)
   bpqu.New(0, 1)
   menue.Touch()
   date.New()
@@ -210,9 +212,9 @@ func main() { // just to get all stuff compiled
 //  smok.TouchSmok()
   barb.NewDir()
   mstk.New(0)
-  mqu.New(0)
-  mbuf.New(nil, 1)
-  acc.New()
+  mbuf.New(0)
+  mbbuf.New(nil, 1)
+  macc.New()
   naddr.New(nchan.Port0)
   dgra.Touch()
   dgras.Touch()

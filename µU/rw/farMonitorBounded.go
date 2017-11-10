@@ -1,6 +1,6 @@
 package rw
 
-// (c) Christian Maurer   v. 171101 - license see µU.go
+// (c) Christian Maurer   v. 171107 - license see µU.go
 
 // >>> bounded readers/writers problem
 
@@ -45,24 +45,24 @@ func newFMB (m uint, h host.Host, port uint16, s bool) ReaderWriter {
          }
          return nW
        }
-  x.FarMonitor = fmon.New (true, 4, f, p, h, port, s)
+  x.FarMonitor = fmon.New (uint(0), 4, f, p, h, port, s)
   return x
 }
 
 func (x *farMonitorBounded) ReaderIn() {
- x.F(true, readerIn)
+ x.F(uint(0), readerIn)
 }
 
 func (x *farMonitorBounded) ReaderOut() {
-  x.F(true, readerOut)
+  x.F(uint(0), readerOut)
 }
 
 func (x *farMonitorBounded) WriterIn() {
-  x.F(true, writerIn)
+  x.F(uint(0), writerIn)
 }
 
 func (x *farMonitorBounded) WriterOut() {
-  x.F(true, writerOut)
+  x.F(uint(0), writerOut)
 }
 
 func (x *farMonitorBounded) Fin() {

@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 170923 - license see µU.go
+// (c) Christian Maurer   v. 171107 - license see µU.go
 
 import (
   "net"
@@ -53,12 +53,13 @@ func new_(a Any, me, i uint, h host.Host, p uint16) NetChannel {
   x.buf = make([]byte, x.uint)
   x.oneOne = true
   x.isServer = me < i
+  port := Port0 + p
   if x.isServer {
-    x.Listener, x.error = net.Listen (network, naddr.New2(host.New(), p).String())
+    x.Listener, x.error = net.Listen (network, naddr.New2 (host.New(), port).String())
     x.panicIfErr()
     x.Conn, x.error = x.Listener.Accept()
   } else { // client
-    dialaddr := naddr.New2 (h, p).String()
+    dialaddr := naddr.New2 (h, port).String()
     for {
       if x.Conn, x.error = net.Dial (network, dialaddr); x.error == nil {
         break

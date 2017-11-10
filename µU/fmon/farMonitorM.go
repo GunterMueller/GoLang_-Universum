@@ -49,7 +49,7 @@ func newMS(a Any, n, j uint, nr []uint, fs FuncSpectrum, ps PredSpectrum,
         x.ok[i][k] = x.nr[j] == nr
       }
       if x.ok[i][k] {
-        x.ch[i][k] = nchan.NewF (x.Any, h, p[k], s)
+        x.ch[i][k] = nchan.NewN (x.Any, h, p[k], s)
         x.in[i][k], x.out[i][k] = x.ch[i][k].Chan()
       }
     }

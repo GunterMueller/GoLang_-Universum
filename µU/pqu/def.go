@@ -4,12 +4,12 @@ package pqu
 
 import (
   . "µU/obj"
-  "µU/qu"
+  "µU/buf"
 )
 type
   PrioQueue interface {
 
-  qu.Queue
+  buf.Buffer
 // where Objects are inserted due to their priority, given by their Order.
 // Lower Objects have higher priority.
 }

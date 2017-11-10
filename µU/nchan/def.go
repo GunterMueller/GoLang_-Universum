@@ -73,7 +73,7 @@ func New (a Any, me, i uint, h host.Host, p uint16) NetChannel { return new_(a,m
 // h is the server; s == true, if the calling process is the serving monitor.
 // i and o are the in- and outgoing channels for the internal communication
 // of the calling far monitor.
-func NewF (a Any, h host.Host, p uint16, s bool /*, i, o chan Any */) NetChannel { return newf(a,h,p,s /*,i,o*/) }
+func NewN (a Any, h host.Host, p uint16, s bool) NetChannel { return newn(a,h,p,s) }
 
 // Note: In case of consecutive calls of New you have to keep
 //       the correct pairing in both programs to avoid deadlocks!

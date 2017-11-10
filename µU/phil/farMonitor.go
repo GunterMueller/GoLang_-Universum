@@ -28,16 +28,16 @@ func newFM (h host.Host, port uint16, s bool) LockerN {
          return true // unlock
        }
   f := func (a Any, i uint) Any {
-        p := a.(uint) // p-th philosopher
-        if i == lock {
-          nForks[left(p)] --
-          nForks[right(p)] --
-        } else { // unlock
-          nForks[left(p)] ++
-          nForks[right(p)] ++
-        }
-        return p
-      }
+         p := a.(uint) // p-th philosopher
+         if i == lock {
+           nForks[left(p)]--
+           nForks[right(p)]--
+         } else { // unlock
+           nForks[left(p)]++
+           nForks[right(p)]++
+         }
+         return p
+       }
   return &farMonitor { fmon.New (nil, NPhilos, f, p, h, port, s) }
 }
 

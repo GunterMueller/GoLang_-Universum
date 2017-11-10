@@ -1,6 +1,6 @@
 package lockn
 
-// (c) Christian Maurer   v. 171025 - license see µU.go
+// (c) Christian Maurer   v. 171105 - license see µU.go
 
 // Ensures the access to a critical section.
 // The functions Lock and Unlock cannot be interrupted
@@ -38,3 +38,4 @@ func NewSzymanski (n uint) LockerN { return newS(n) }
 func NewKnuth (n uint) LockerN { return newK(n) }
 func NewDeBruijn (n uint) LockerN { return newDB(n) }
 func NewBurns (n uint) LockerN { return newBu(n) }
+func NewGuardedSelect (n uint) LockerN { return newGS(n) }

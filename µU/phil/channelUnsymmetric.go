@@ -8,32 +8,33 @@ import
   . "µU/lockn"
 type
   channelUnsymmetric struct {
-           cl, cll, cu, cul []chan bool
+             lock, lockLeft,
+         unlock, unlockLeft []chan bool
                             }
 
 func newChU() LockerN {
   x := new(channelUnsymmetric)
-  x.cl  = make([]chan bool, NPhilos)
-  x.cll = make([]chan bool, NPhilos)
-  x.cu  = make([]chan bool, NPhilos)
-  x.cul = make([]chan bool, NPhilos)
+  x.lock = make([]chan bool, NPhilos)
+  x.lockLeft = make([]chan bool, NPhilos)
+  x.unlock = make([]chan bool, NPhilos)
+  x.unlockLeft = make([]chan bool, NPhilos)
   for p := uint(0); p < NPhilos; p++ {
-    x.cl [p] = make(chan bool)
-    x.cll[p] = make(chan bool)
-    x.cu [p] = make(chan bool)
-    x.cul[p] = make(chan bool)
+    x.lock[p] = make(chan bool)
+    x.lockLeft[p] = make(chan bool)
+    x.unlock[p] = make(chan bool)
+    x.unlockLeft[p] = make(chan bool)
   }
   for p := uint(0); p < NPhilos; p++ {
     go func (i uint) {
-         for {
-           select {
-           case <-x.cl[i]:
-             <-x.cu[i]
-           case <-x.cll[i]:
-             <-x.cul[i]
-           }
-         }
-       }(p)
+      for {
+        select {
+        case <-x.lock[i]:
+          <-x.unlock[i]
+        case <-x.lockLeft[i]:
+          <-x.unlockLeft[i]
+        }
+      }
+    }(p)
   }
   return x
 }
@@ -41,19 +42,19 @@ func newChU() LockerN {
 func (x *channelUnsymmetric) Lock (p uint) {
   changeStatus (p, hungry)
   if p % 2 == 0 {
-    x.cll[left(p)] <- true
+    x.lockLeft[left(p)] <- true
     changeStatus (p, hasLeftFork)
-    x.cl[p] <- true
+    x.lock[p] <- true
   } else {
-    x.cl[p] <- true
+    x.lock[p] <- true
     changeStatus (p, hasRightFork)
-    x.cll[left(p)] <- true
+    x.lockLeft[left(p)] <- true
   }
   changeStatus (p, dining)
 }
 
 func (x *channelUnsymmetric) Unlock (p uint) {
   changeStatus (p, satisfied)
-  x.cul[left(p)] <- true
-  x.cu[p] <- true
+  x.unlockLeft[left(p)] <- true
+  x.unlock[p] <- true
 }

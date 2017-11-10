@@ -1,6 +1,6 @@
 package phil
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171105 - license see µU.go
 
 import
   . "µU/lockn"
@@ -26,4 +26,4 @@ func NewCondMonitor() LockerN { return newCM() }
 func NewChannel() LockerN { return newCh() }
 func NewChannelUnsymmetric() LockerN { return newChU() }
 
-func NewChannel1() LockerN { return newCh1() }
+// func NewGuardedSelect() LockerN { return newGS() }

@@ -1,6 +1,6 @@
 package rw
 
-// (c) Christian Maurer   v. 171101 - license see µU.go
+// (c) Christian Maurer   v. 171107 - license see µU.go
 
 // >>> 1st readers/writers problem
 
@@ -14,51 +14,51 @@ type
                     fmon.FarMonitor
                     }
 
-func newFM (h host.Host, port uint16, s bool) ReaderWriter {
+func newFM (h host.Host, p uint16, s bool) ReaderWriter {
   var nR, nW uint
   x := new(farMonitor)
-  p := func (a Any, i uint) bool {
-         switch i {
-         case readerIn:
-           return nW == 0
-         case writerIn:
-           return nR == 0 && nW == 0
-         }
-         return true // rOut, wOut
-       }
-  f := func (a Any, i uint) Any {
-         switch i {
-         case readerIn:
-           nR++
-           return nR
-         case readerOut:
-           nR--
-           return nR
-         case writerIn:
-           nW = 1
-         case writerOut:
-           nW = 0
-         }
-         return nW
-       }
-  x.FarMonitor = fmon.New (true, 4, f, p, h, port, s)
+  ps := func (a Any, i uint) bool {
+          switch i {
+          case readerIn:
+            return nW == 0
+          case writerIn:
+            return nR == 0 && nW == 0
+          }
+          return true // rOut, wOut
+        }
+  fs := func (a Any, i uint) Any {
+          switch i {
+          case readerIn:
+            nR++
+            return nR
+          case readerOut:
+            nR--
+            return nR
+          case writerIn:
+            nW = 1
+          case writerOut:
+            nW = 0
+          }
+          return nW
+        }
+  x.FarMonitor = fmon.New (uint(0), 4, fs, ps, h, p, s)
   return x
 }
 
 func (x *farMonitor) ReaderIn() {
-  x.F (true, readerIn)
+  x.F (uint(0), readerIn)
 }
 
 func (x *farMonitor) ReaderOut() {
-  x.F (true, readerOut)
+  x.F (uint(0), readerOut)
 }
 
 func (x *farMonitor) WriterIn() {
-  x.F (true, writerIn)
+  x.F (uint(0), writerIn)
 }
 
 func (x *farMonitor) WriterOut() {
-  x.F (true, writerOut)
+  x.F (uint(0), writerOut)
 }
 
 func (x *farMonitor) Fin() {

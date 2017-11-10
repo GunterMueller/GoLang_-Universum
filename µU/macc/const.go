@@ -1,9 +1,8 @@
 package macc
 
-// (c) Christian Maurer   v. 150214 - license see µU.go
+// (c) Christian Maurer   v. 151020 - license see µU.go
 
 const (
   deposit = uint(iota)
   draw
-  nFuncs
 )

@@ -1,6 +1,6 @@
 package fmon
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171107 - license see µU.go
 
 import (
   . "µU/ker"
@@ -10,7 +10,6 @@ import (
 )
 type
   farMonitor struct {
-                    Any "type of objects the monitor functions operate on"
                     uint "number of monitor functions"
                  ch []nchan.NetChannel
                     FuncSpectrum; PredSpectrum
@@ -26,14 +25,14 @@ func newS (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
            h host.Host, p uint16, s bool, stmt Stmt) FarMonitor {
   if n == 0 { Panic ("fmon.New must be called with 2nd arg > 0") }
   x := new(farMonitor)
-  x.Any = Clone(a)
+  pattern := Clone(a)
   x.uint = n
   x.ch = make([]nchan.NetChannel, x.uint)
   x.bool = s
   in, out := make([]chan Any, x.uint), make([]chan Any, x.uint)
-  any, ok := make([]Any, x.uint), make([]bool, x.uint)
+  any := make([]Any, x.uint)
   for i := uint(0); i < x.uint; i++ {
-    x.ch[i] = nchan.NewF (x.Any, h, p + uint16(i), s)
+    x.ch[i] = nchan.NewN (pattern, h, p + uint16(i), s)
     in[i], out[i] = x.ch[i].Chan()
   }
   if ! x.bool {
@@ -45,25 +44,19 @@ func newS (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
     go func (j uint) {
       for {
         select {
-        case any[j], ok[j] = <-When (x.PredSpectrum (x.Any, j), in[j]):
-          if ok[j] {
-            if x.PredSpectrum (any[j], j) {
-              any[j] = x.FuncSpectrum (any[j], j)
-              out[j] <- any[j]
-            } else {
-              out[j] <- x.Any
-            }
+        case any[j] = <-When (x.PredSpectrum (pattern, j), in[j]):
+          if x.PredSpectrum (any[j], j) {
+            out[j] <- x.FuncSpectrum (any[j], j)
           } else {
-//            println("client off")
+            out[j] <- x.FuncSpectrum (pattern, j)
           }
         default:
-//          println("client off")
         }
-        Msleep(300)
+        Msleep(1e3)
       }
     }(i)
   }
-  return nil
+  return nil // unreachable
 }
 
 func (x *farMonitor) F (a Any, i uint) Any {

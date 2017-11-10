@@ -1,6 +1,6 @@
 package lr
 
-// (c) Christian Maurer   v. 171101 - license see µU.go
+// (c) Christian Maurer   v. 171107 - license see µU.go
 
 // >>> bounded left/right problem
 
@@ -43,26 +43,26 @@ func newFMonB (mL, mR uint, h host.Host, port uint16, s bool) LeftRight {
          case rightOut:
            nR--
          }
-         return true
+         return 0
        }
-  x.FarMonitor = fmon.New (true, 4, f, p, h, port, s)
+  x.FarMonitor = fmon.New (0, 4, f, p, h, port, s)
   return x
 }
 
 func (x *farMonitorBounded) LeftIn() {
-  x.F(true, leftIn)
+  x.F(0, leftIn)
 }
 
 func (x *farMonitorBounded) LeftOut() {
-  x.F(true, leftOut)
+  x.F(0, leftOut)
 }
 
 func (x *farMonitorBounded) RightIn() {
-  x.F(true, rightIn)
+  x.F(0, rightIn)
 }
 
 func (x *farMonitorBounded) RightOut() {
-  x.F(true, rightOut)
+  x.F(0, rightOut)
 }
 
 func (x *farMonitorBounded) Fin() {

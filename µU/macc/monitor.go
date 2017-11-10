@@ -1,10 +1,9 @@
 package macc
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171020 - license see µU.go
 
 import (
   . "µU/obj"
-  "µU/euro"
   "µU/mon"
 )
 type
@@ -14,30 +13,27 @@ type
 
 func newM() MAccount {
   x := new(monitor)
-  cent := uint(0)
-  f := func (a Any, i uint) Any {
-         e := a.(uint)
-         if i == deposit {
-           x.Monitor.Signal (deposit)
-           cent += e
-         } else { // draw
-           if cent < e {
-             x.Monitor.Wait (deposit)
-           }
-           cent -= e
-         }
-         return cent
-       }
-  x.Monitor = mon.New (nFuncs, f)
+  balance := uint(0)
+  fs := func (a Any, i uint) Any {
+          if i == deposit {
+            x.Monitor.Signal (deposit)
+            balance += a.(uint)
+          } else { // draw
+            if balance < a.(uint) {
+              x.Monitor.Wait (deposit)
+            }
+            balance -= a.(uint)
+          }
+          return balance
+        }
+  x.Monitor = mon.New (2, fs)
   return x
 }
 
-func (x *monitor) Deposit (e euro.Euro) euro.Euro {
-  e.SetVal (x.Monitor.F (e.Val(), deposit).(uint))
-  return e
+func (x *monitor) Deposit (a uint) uint {
+  return x.Monitor.F (a, deposit).(uint)
 }
 
-func (x *monitor) Draw (e euro.Euro) euro.Euro {
-  e.SetVal (x.Monitor.F (e.Val(), draw).(uint))
-  return e
+func (x *monitor) Draw (a uint) uint {
+  return x.Monitor.F (a, draw).(uint)
 }
