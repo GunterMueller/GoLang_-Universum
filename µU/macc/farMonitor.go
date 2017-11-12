@@ -16,17 +16,15 @@ func newFM (h host.Host, p uint16, s bool) MAccount {
   balance := uint(0)
   x := new (farMonitor)
   ps := func (a Any, i uint) bool {
-          if i == draw {
-            return balance >= a.(uint)
+          if i == deposit {
+            return true
           }
-          return true // deposit
+          return balance >= a.(uint) // draw
         }
   fs := func (a Any, i uint) Any {
-          switch i {
-          case deposit:
+          if i == deposit {
             balance += a.(uint)
-            return balance
-          case draw:
+          } else { // draw
             balance -= a.(uint)
           }
           return a

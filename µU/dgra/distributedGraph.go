@@ -115,11 +115,11 @@ func new_(g gra.Graph) DistributedGraph {
     x.chanuint[i] = make(chan uint)
   }
   g.Ex (x.actVertex)
-  x.rank = uint(16) // for graphs with up to 16 vertices
-  x.top = adj.New (x.rank, uint(1))
+  x.rank = uint(12) // for graphs with up to 12 vertices
+  x.top = adj.New (x.rank, uint(0), uint(0)) // uint(0) als vertex ???
   for i := uint(0); i < x.n; i++ {
-    x.top.Set (x.me, x.nr[i], uint(1))
-    x.top.Set (x.nr[i], x.me, uint(1))
+    x.top.Set (x.me, x.nr[i], uint(0), uint(1)) // uint(0) als vertex ???
+    x.top.Set (x.nr[i], x.me, uint(0), uint(1))
   }
   x.TopAlg, x.ElectAlg, x.TravAlg = PassGraph, ChangRoberts, DFS
   x.leader = x.me

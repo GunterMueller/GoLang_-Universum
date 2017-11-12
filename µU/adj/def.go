@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 171112 - license see µU.go
 
 import (
   . "µU/obj"
@@ -8,87 +8,78 @@ import (
 )
 type
   AdjacencyMatrix interface {
-// Sqare matrices with pairs (d, v) as entries,
-// where d is of type bool and v of type Valuator or a uint-type.
+// Sqare matrices with pairs (v, e) as entries,
+// where v is atomic or implements Object and
+// and e has a uint-type or implements Valuator.
 // The entry of a matrix x in row i and column k is called x(i,k).
-// Any such matrix defines a graph (possibly with loops): Its nodes
-// are just numbered from 0 to n-1, but do not have any other content.
-// x(i,k) == (true, v) means, that in the corresponding graph there
-// is an edge outgoing from its i-th and incoming at its k-th node
-// with weight v (if x(i,k) = (false, v), v does not play any role).
+// Any such matrix defines a graph in the following way:
+// x(i,k) = (e, v) means
+// for i == k:
+//     v is a vertex in the graph (in this case e is the pattern edge of x.
+// for i != k:
+//     There is an edge from the i-th to the k-th vertex of the graph
+//     with value x.Val(i,k), iff e is not equal to the pattern edge of x.
+//     In this case v is the pattern vertex of x.
+// The patterns are those objects, that are given to a New as parameters;
+// they must not be used as vertices or edges resp.
 
   Object
   col.Colourer
 
-// Pre: x is not weighted.
-// If i or k >= x.Num(), nothing has happened.
-// Otherwise: x(i,k) == (true, v) with v of value 1.
-  Edge (i, k uint)
-
-// Pre: x is weighted. v is of the same type as the second
-//      parameter in the call of the constructor New of x.
-// If i or k >= x.Num(), nothing has happened.
-// Otherwise: x(i,k) == (true, v).
-//  Set (i, k uint, v uint)
-  Set (i, k uint, v Any)
-
-// x(i,k) == (false, v) with undefined v.
-  Del (i, k uint)
-
 // Returns the number of rows/columns of x, defined by New.
   Num() uint
 
-// A matrix corresponding to the edges of x is in the colours of x
-// written to the screen with left top corner at line, column = l, c.
-// Its values in line i, column j are "*", iff there is an edge
-// from node i to node j, and "." otherwise.
-  Write (l, c uint)
-
-// Returns true, if ! x(i,i) for all i < x.Num().
-// i.e. the corresponding graph does not contain loops.
-  Ok() bool // Loopfree() ? // Ok() = Loop() == Num()
-
-// Returns the smallest i s.t. x(i,i) != e, if such exists;
-// returns x.Num otherwise.
-  Loop() uint
-
-// Pre: i, k < x.Num().
-// Returns true, iff x(i,k) = (true, v) for some v.
-  Edged (i, k uint) bool
-
-// Pre: i, k < x.Num().
-// Returns v, iff x(i,k) = (true, v).
-  Val (i, k uint) uint
-
-// Returns true, iff x(i,i) == e for all i < x.Num()
-// and x(i,k) == x(k,i) for all i, k < x.Num(), i.e. iff
-// the corresponding graph does not contain loops
-// and is undirected.
-  Symmetric() bool
-
-// Returns true, iff x(i,i) == (true, v) for some v for all i < x.Num()
-// and there is no pair with x(i,k) == x(k,i), i.e. iff the
-// corresponding graph does not contain loops and is directed.
-  Directed() bool
-
-// TODO Spec
+// Returns true, iff x and y have the same number of rows/columns
+// and equal vertex patterns and equal edge patterns.
   Equiv (y AdjacencyMatrix) bool
 
-// TODO Spec
+// Pre: e is of the type of the pattern edge of x.
+// If i or k >= x.Num(), nothing has happened.
+// Otherwise: x(i,k) is the pair (v, e) with v = pattern vertex of x,
+// i.e. in the corresponding graph there is an edge with the value of e
+// from its i-th vertex to its k-th vertex, iff e is not equal to the pattern edge of x.
+  Edge (i, k uint, e Any)
+
+// Returns the first element in the pair x(i,i), i.e. a vertex.
+  Vertex (i uint) Any
+
+// Pre: i, k < x.Num().
+// Returns 0, iff for x(i,k) = (v, e) e is the pattern edge of x,
+// returns otherwise the value of e.
+  Val (i, k uint) uint
+
+// Pre: v has the type as the pattern vertex of x and
+//      e has the type of the pattern edge of x.
+// If i or k >= x.Num(), nothing has happened.
+// Otherwise: x(i,k) == (v, e).
+  Set (i, k uint, v, e Any)
+
+// Returns true, iff x(i,k) == x(k,i) for all i, k < x.Num(),
+// i.e. the corresponding graph is undirected.
+  Symmetric() bool
+
+// Pre: x and y are equivalent.
+// x contains all entries of x and additionally all entries of y
+// with a value > 0 (the values of entries of x are overwritten
+// by the values of corresponding entries in x. // XXX ? ? ?
   Add (y AdjacencyMatrix)
 
-// x is mirrored at its diagonal, i.e. x(i,k) equals f(k,i) for the
-// former entries f of x, i.e. if the corresponding graph is undirected
-// nothing has happened, otherwise, all its edges are inverted.
-  Invert()
-
-// Returns true, if all rows of x contain at least one entry with
-// value (true, v) for some v, i.e. iff in the corresponding graph
-// every node has at least one outgoing edge.
+// Returns true, iff each row of x contains at least one entry
+// with (v, e) with Val(e) > 0, i.e. iff in the corresponding
+// graph every node has at least one outgoing edge.
   Full () bool
+
+// A matrix corresponding to the edges of x is in the colours of x
+// written to the screen with left top corner at line, column = l, c.
+// Its values in line i, column j are 0, if for x(i,k) = (v, e)
+// e is equal to the pattern edge of x, otherwise the value of e.
+  Write (l, c uint)
 }
 
-// Pre: n > 0; e is of type Valuator or a uint-type or e == nil. 
-// Returns an n*n-matrix with all entries of (false, 0).
-func New (n uint, e Any) AdjacencyMatrix { return new_(n,e) }
-//          ^^^^ XXX generalize to allow also node.Node !!!
+// Pre: n > 0; e is of a uint-type or implements Valuator;
+//      v is atomic or implements Object.
+// v is the pattern vertex of x
+// Returns an n*n-matrix with the pattern vertex v
+// and the pattern edge e. All it's entries have the value
+// (v, e).
+func New (n uint, v, e Any) AdjacencyMatrix { return new_(n,v,e) }

@@ -62,6 +62,7 @@ func newn (a Any, h host.Host, p uint16, s bool) NetChannel {
         if c, e := x.Listener.Accept(); e == nil { // NOT x.Conn, x.error !
 //          nn, _ := nat.Natural(x.Listener.Addr().String()); x.cport = nn
           x.nClients++
+println(x.nClients)
 //          errh.Hint("number of clients: " + nat.String(x.nClients))
 //                   port von c.LocalAddr == x.cport
 //          nn, _ := nat.Natural(c.RemoteAddr().String()[14:]); x.sport = nn

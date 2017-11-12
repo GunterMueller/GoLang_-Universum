@@ -30,7 +30,7 @@ func (x *distributedGraph) fmgraph1() {
   }
   r := uint(1)
   for ! known {
-//    x.enter(r)
+    x.enter(r)
     for i := uint(0); i < x.n; i++ {
       <-lock
       bs := x.tmpGraph.Encode()
@@ -47,7 +47,7 @@ func (x *distributedGraph) fmgraph1() {
     }
     if ! known && x.tmpGraph.EqSub() {
       known = true
-//      x.log("topology in round", r)
+      x.log("topology in round", r)
     }
     r++
   }

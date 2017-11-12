@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171009 - license see µU.go
+// (c) Christian Maurer   v. 171111 - license see µU.go
 
 import (
   . "µU/obj"
@@ -34,7 +34,7 @@ type
 // the vertex, with which a vertex is connected by its n-th outgoing edge,
 // is denoted as its n-th neighbourvertex.
 //
-// A subgraph U of a graph G consists of all vertices of G
+// A subgraph U of a graph G consists of a subset of the vertices of G
 // and of those edges of G, that connect only vertices of U.
 //
 // A path in a graph is a sequence of vertices and from each of those
@@ -103,7 +103,7 @@ type
 // if v or v1 is not of the vertextype of x or
 // if v or v1 is not contained in x or
 // if v and v1 coincide or
-// if a is not of the type of the reference edge of x or
+// if a is not of the type of the pattern edge of x or
 // if there is already an edge from v to v1,
 // nothing has happened. Otherwise:
 // v is now the colocal and v1 the local vertex of x
@@ -115,17 +115,16 @@ type
 // the set of vertices of x is sorted due to their value.
   SortNeighbours()
 
-// Returns the representation of x as adjacency matrix with
-// an arbitrary order of the vertices (their content gets lost).
+// Returns the representation of x as adjacency matrix.
   Matrix() adj.AdjacencyMatrix
 
-// Pre: uint(len(n)) == a.Num().
-// x is the graph with the vertices n[i] (i = 0, ..., len(n) - 1). 
-// The edges between the vertices are exactly those, which are defined by m.
-  SetMatrix (n []Any, m adj.AdjacencyMatrix)
+// Pre: m is symmetric iff x is directed.
+// x is the graph with the vertices a.Vertex(i) and edges from
+// a.Vertex(i) to a.Vertex(k), iff a.Val(i,k) > 0 (i, k < a.Num().
+  SetMatrix (a adj.AdjacencyMatrix)
 
-// Returns true, iff
-// the colocal vertex does not coincide with the local vertex of x and
+// Returns true, iff the colocal vertex
+// does not coincide with the local vertex of x and
 // there is an edge from the colocal to the local vertex in x.
   Edged() bool
 
@@ -172,7 +171,7 @@ type
 // Returns a clone of the local vertex of x.
   Get() Any
 
-// Returns a clone of the reference edge of x, if x is empty or
+// Returns a clone of the pattern edge of x, if x is empty or
 // if there is no edge from the colocal to the local vertex of x or
 // if the colocal vertex of x coincides with the local vertex.
 // Returns otherwise a clone of the edge
@@ -284,7 +283,7 @@ type
   NumNeighboursIn() uint
 
 // Returns 0, if x is empty.
-// Returns otherwise the number of all edges to the local vertex of x.
+// Returns otherwise the number of all edges of the local vertex of x.
   NumNeighbours() uint
 
 // If x is not directed, nothing had happened. Otherwise:
@@ -336,19 +335,21 @@ type
   Step (i uint, f bool)
 
 // Returns false, if x is empty or if i >= NumNeighbourOut();
-// returns otherwise true, iff the edge to its i-th neighbour is an outgoing one.
+// returns otherwise true, iff the edge to its i-th neighbour
+// of the local vertex is an outgoing one.
   Outgoing (i uint) bool
 
 // Returns nil, if x is empty or if i >= NumNeighbourOut();
-// returns otherwise a copy of its i-th outgoing neighbour.
+// returns otherwise a copy of the i-th outgoing neighbour of the local vertex.
   NeighbourOut (i uint) Any
 
 // Returns false, if x is empty or if i >= NumNeighboursIn();
-// returns otherwise true, iff the edge to its i-th neighbour is an incoming one.
+// returns otherwise true, iff the edge to the i-th neighbour
+// of the local vertex is an incoming one.
   Incoming (i uint) bool
 
 // Returns nil, if x is empty or if i >= NumNeighboursIn();
-// returns otherwise a copy of the its i-th incoming neighbour.
+// returns otherwise a copy of the its i-th incoming neighbour of the local vertex.
   NeighbourIn (i uint) Any
 
 // Returns nil, if x is empty or if i >= NumNeighbours();
@@ -505,7 +506,7 @@ type
 // x is Empty (with undefined local and colocal vertex,
 // empty actual subgraph, empty actual path and empty vertexstack).
 // x is directed, iff d (i.e. otherwise undirected).
-// x has v as reference vertex defining the vertextype of x.
+// x has v as pattern vertex defining the vertextype of x.
 // For e == nil, e is replaced by uint(1) and all edges of x have value 1.
-// x has e as reference edge defining the edgetype of x.
+// x has e as pattern edge defining the edgetype of x.
 func New (d bool, v, e Any) Graph { return new_(d,v,e) }

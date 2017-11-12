@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 170810 - license see µU.go
+// (c) Christian Maurer   v. 171112 - license see µU.go
 
 import (
   "µU/ker"
@@ -8,36 +8,32 @@ import (
   "µU/col"
   "µU/scr"
 )
-type
-  entry struct {
-               bool
-               Any // QuasiValuator
-               }
-type
+type (
+  pair struct {
+       vertex,
+         edge Any
+              }
   adjacencyMatrix struct {
                          uint "number of rows/columns"
-                         Any "empty edge"
-                    edge [][]entry
+                     vvv,    // pattern vertex
+                     eee Any // pattern edge
+                   entry [][]pair
                   cF, cB col.Colour
                          }
-var
-  char [2]byte = [2]byte { '.', '*' }
+)
 
-func new_(n uint, e Any) AdjacencyMatrix {
+func new_(n uint, v, e Any) AdjacencyMatrix {
   if n == 0 || e == nil { ker.Oops() }
-  switch e.(type) {
-  case Valuator, uint8, uint16, uint, uint32:
-    // ok
-  default:
-    ker.Oops()
-  }
-  x := new (adjacencyMatrix)
-  x.uint, x.Any = n, Clone(e)
-  x.edge = make ([][]entry, n)
+  CheckAtomicOrObject (v)
+  CheckUintOrValuator (e)
+  x := new(adjacencyMatrix)
+  x.uint = n
+  x.vvv, x.eee = Clone(v), Clone(e)
+  x.entry = make ([][]pair, n)
   for i := uint(0); i < n; i++ {
-    x.edge[i] = make ([]entry, n)
+    x.entry[i] = make ([]pair, n)
     for k := uint(0); k < n; k++ {
-      x.edge[i][k] = entry { false, Clone(x.Any) }
+      x.entry[i][k] = pair { x.vvv, x.eee }
     }
   }
   x.cF, x.cB = scr.StartCols()
@@ -48,25 +44,26 @@ func (x *adjacencyMatrix) imp (Y Any) *adjacencyMatrix {
   y, ok := Y.(*adjacencyMatrix)
   if ! ok { TypeNotEqPanic (x, Y) }
   if x.uint != y.uint { ker.Panic ("adj.imp: different size") }
-  CheckTypeEq (x.Any, y.Any)
+  CheckTypeEq (x.eee, y.eee)
+  CheckTypeEq (x.vvv, y.vvv)
   return y
 }
 
 func (x *adjacencyMatrix) Empty() bool {
   for i := uint(0); i < x.uint; i++ {
     for k := uint(0); k < x.uint; k++ {
-      if x.edge[i][k].bool {
+      if ! Eq (x.entry[i][k].edge, x.eee) {
         return false
       }
     }
   }
-  return x.Any == nil
+  return true
 }
 
 func (x *adjacencyMatrix) Clr() {
   for i := uint(0); i < x.uint; i++ {
     for k := uint(0); k < x.uint; k++ {
-      x.edge[i][k] = entry { false, Clone(x.Any) }
+      x.entry[i][k] = pair { x.vvv, x.eee }
     }
   }
 }
@@ -75,10 +72,12 @@ func (x *adjacencyMatrix) Eq (Y Any) bool {
   y := x.imp (Y)
   if x.Empty() { return y.Empty() }
   for i := uint(0); i < x.uint; i++ {
+    if ! Eq (x.Vertex(i), y.Vertex(i)) { return false }
     for k := uint(0); k < x.uint; k++ {
-      if x.edge[i][k].bool != y.edge[i][k].bool ||
-        ! Eq (x.edge[i][k].Any, y.edge[i][k].Any) {
-          return false
+      if ! Eq (x.entry[i][k].edge, y.entry[i][k].edge) ||
+         ! Eq (x.entry[i][k].vertex, y.entry[i][k].vertex) {
+//      if i != k && x.Val(i,k) != y.Val(i,k) {
+        return false
       }
     }
   }
@@ -86,71 +85,151 @@ func (x *adjacencyMatrix) Eq (Y Any) bool {
 }
 
 func (x *adjacencyMatrix) Less (Y Any) bool {
-  y := x.imp (Y)
-  for i := uint(0); i < x.uint; i++ {
-    for k := uint(0); k < x.uint; k++ {
-      if x.edge[i][k].bool {
-        if y.edge[i][k].bool {
-          if ! Eq (x.edge[i][k].Any, y.edge[i][k].Any) {
-            return false
-          }
-        } else {
-          return false
-        }
-      }
-    }
-  }
-  return true
+  return false
 }
 
 func (x *adjacencyMatrix) Copy (Y Any) {
   y := x.imp (Y)
-  x.uint, x.Any = y.uint, Clone(y.Any)
+  x.uint = y.uint
+  x.eee, x.vvv = Clone(y.eee), Clone(y.vvv)
   for i := uint(0); i < x.uint; i++ {
     for k := uint(0); k < x.uint; k++ {
-      x.edge[i][k].bool = y.edge[i][k].bool
-      x.edge[i][k].Any = Clone (y.edge[i][k].Any)
+      x.entry[i][k].vertex = Clone (y.entry[i][k].vertex)
+      x.entry[i][k].edge = Clone (y.entry[i][k].edge)
     }
   }
 }
 
 func (x *adjacencyMatrix) Clone() Any {
-  y := new_(x.uint, x.Any)
+  y := new_(x.uint, x.vvv, x.eee)
   y.Copy (x)
   return y
 }
 
 func (x *adjacencyMatrix) Codelen() uint {
-  q, c := x.uint * x.uint, Codelen(x.Any)
-  return 4 + q * (1 + c)
+  v, e := Codelen(x.vvv), Codelen(x.eee)
+  return 4 + (1 + x.uint * x.uint) * (v + e)
 }
 
 func (x *adjacencyMatrix) Encode() []byte {
   bs := make ([]byte, x.Codelen())
+  v, e := Codelen(x.vvv), Codelen(x.eee)
   copy (bs[:4], Encode (uint32(x.uint)))
-  i, c := uint(4), Codelen(x.Any)
+  i := uint(4)
+  copy (bs[i:i+v], Encode (x.vvv))
+  i += v
+  copy (bs[i:i+e], Encode (x.eee))
+  i += e
   for j := uint(0); j < x.uint; j++ {
     for k := uint(0); k < x.uint; k++ {
-      bs[i] = 0; if x.edge[j][k].bool { bs[i] = 1 }
-      i++
-      copy (bs[i:i+c], Encode (x.edge[j][k].Any))
-      i += c
+      copy (bs[i:i+v], Encode (x.entry[j][k].vertex))
+      i += v
+      copy (bs[i:i+e], Encode (x.entry[j][k].edge))
+      i += e
     }
   }
   return bs
 }
 
 func (x *adjacencyMatrix) Decode (bs []byte) {
+  v, e := Codelen(x.vvv), Codelen(x.eee)
   x.uint = uint(Decode (uint32(0), bs[:4]).(uint32))
-  i, c := uint(4), Codelen(x.Any)
+  i := uint(4)
+  x.vvv = Decode (x.vvv, bs[i:i+v])
+  i += v
+  x.eee = Decode (x.eee, bs[i:i+e])
+  i += e
   for j := uint(0); j < x.uint; j++ {
     for k := uint(0); k < x.uint; k++ {
-      x.edge[j][k].bool = bs[i] == 1
-      i++
-      x.edge[j][k].Any = Decode (x.Any, bs[i:i+c])
-      i += c
+      x.entry[j][k].vertex = Decode (x.vvv, bs[i:i+v])
+      i += v
+      x.entry[j][k].edge = Decode (x.eee, bs[i:i+e])
+      i += e
     }
   }
+}
+
+func (x *adjacencyMatrix) Num() uint {
+  return x.uint
+}
+
+func (x *adjacencyMatrix) Equiv (Y AdjacencyMatrix) bool {
+  y := x.imp(Y)
+  if x.uint != y.uint { return false }
+  if ! Eq(x.vvv, y.vvv) || ! Eq(x.eee, y.eee) { return false }
+  return true
+}
+
+func (x *adjacencyMatrix) Edge (i, k uint, e Any) {
+  if i >= x.uint || k >= x.uint { return }
+  CheckTypeEq (e, x.eee)
+  x.entry[i][k].edge = Clone(e)
+}
+
+func (x *adjacencyMatrix) Vertex (i uint) Any {
+  return Clone(x.entry[i][i].vertex)
+}
+
+func (x *adjacencyMatrix) Val (i, k uint) uint {
+  if i >= x.uint || k >= x.uint {
+    return 0
+  }
+  if Eq (x.entry[i][k].edge, x.eee) {
+    return 0
+  }
+  return Val(x.entry[i][k].edge)
+}
+
+func (x *adjacencyMatrix) Set (i, k uint, v, e Any) {
+  if i >= x.uint || k >= x.uint { return }
+  CheckTypeEq (v, x.vvv)
+  CheckTypeEq (e, x.eee)
+  if i == k {
+    x.entry[i][k].edge = Clone(x.eee) // no loops
+    x.entry[i][k].vertex = Clone(v)
+  } else {
+    x.entry[i][k].edge = Clone(e)
+    x.entry[i][k].vertex = Clone(x.vvv) // no vertex
+  }
+}
+
+func (x *adjacencyMatrix) Symmetric() bool {
+  for i := uint(0); i < x.uint; i++ {
+    for k := uint(0); k < x.uint; k++ {
+      if Val(x.entry[i][k].edge) != Val(x.entry[k][i].edge) {
+        return false
+      }
+    }
+  }
+  return true
+}
+
+func (x *adjacencyMatrix) Add (Y AdjacencyMatrix) {
+  if ! x.Equiv (Y) { ker.Panic("cannot Add") }
+  y := x.imp(Y)
+  for i := uint(0); i < x.uint; i++ {
+    for k := uint(0); k < x.uint; k++ {
+      if i != k {
+        if x.Val (i, k) == 0 && y.Val (i, k ) > 0 {
+//          x.entry[i][i].vertex = Clone (y.entry[i][i].vertex)
+          x.entry[i][k].edge = Clone (y.entry[i][k].edge)
+        }
+      }
+    }
+  }
+}
+
+func (x *adjacencyMatrix) Full() bool {
+  for i := uint(0); i < x.uint; i++ {
+    full := false
+    for k := uint(0); k < x.uint; k++ {
+      full = full || x.Val (i, k) > 0
+    }
+    if ! full {
+      return false
+    }
+  }
+  return true
 }
 
 func (x *adjacencyMatrix) Colours (f, g col.Colour) {
@@ -161,155 +240,14 @@ func (x *adjacencyMatrix) Write (l, c uint) {
   scr.Colours (x.cF, x.cB)
   for i := uint(0); i < x.uint; i++ {
     for k := uint(0); k < x.uint; k++ {
-//      b := 1; if Eq (x.edge[i][k].Any, x.Any) { b = 0 }
-      b := 0; if x.edge[i][k].bool { b = 1 }
-      scr.Write1 (char[b], l + i, c + 2 * k)
-    }
-  }
-}
-
-func (x *adjacencyMatrix) Ok() bool {
-  for i := uint(0); i < x.uint; i++ {
-    if ! Eq (x.edge[i][i], x.Any) {
-      return false
-    }
-  }
-  return true
-}
-
-func (x *adjacencyMatrix) Loop() uint {
-  for i := uint(0); i < x.uint; i++ {
-    if Eq (x.edge[i][i], x.Any) {
-      return i
-    }
-  }
-  return x.uint
-}
-
-func (x *adjacencyMatrix) Num() uint {
-  return x.uint
-}
-
-func (x *adjacencyMatrix) Val (i, k uint) uint {
-  if i < x.uint && k < x.uint {
-    return Val(x.edge[i][k].Any)
-  }
-  return 0
-}
-
-func (x *adjacencyMatrix) Edged (i, k uint) bool {
-  if i < x.uint && k < x.uint {
-    return x.edge[i][k].bool
-  }
-  return false
-}
-
-func (x *adjacencyMatrix) Symmetric() bool {
-  for i := uint(0); i < x.uint; i++ {
-    for k := uint(0); k < x.uint; k++ {
-      if x.edge[i][k].bool != x.edge[k][i].bool {
-        return false
-      }
-      if ! Eq (x.edge[i][k].Any, x.edge[k][i].Any) {
-        return false
+      val := Val (x.entry[i][k].edge)
+      if val > 0 {
+        scr.WriteNat (val, l + i, c + 2 * k)
+      } else if i == k {
+        scr.Write ("*", l + i, c + 2 * k)
+      } else {
+        scr.Write (".", l + i, c + 2 * k)
       }
     }
   }
-  return true
-}
-
-func (x *adjacencyMatrix) Directed() bool {
-  for i := uint(0); i < x.uint; i++ {
-    for k := uint(0); k < x.uint; k++ {
-      if i != k || x.edge[i][k].bool == x.edge[k][i].bool {
-        return false
-      }
-    }
-  }
-  return true
-}
-
-func (x *adjacencyMatrix) Equiv (Y AdjacencyMatrix) bool {
-  y := x.imp(Y)
-  for i := uint(0); i < x.uint; i++ {
-    for k := uint(0); k < x.uint; k++ {
-      if x.edge[i][k].bool && y.edge[i][k].bool {
-        if ! Eq (x.edge[i][k].Any, y.edge[i][k].Any) {
-          return false
-        }
-      }
-    }
-  }
-  return true
-}
-
-func (x *adjacencyMatrix) Add (Y AdjacencyMatrix) {
-//  if ! x.Equiv (Y) { ker.Panic("cannot Add") } // XXX
-  y := x.imp(Y)
-  for i := uint(0); i < x.uint; i++ {
-    for k := uint(0); k < x.uint; k++ {
-      if ! x.edge[i][k].bool && y.edge[i][k].bool {
-        x.edge[i][k].bool = true
-        x.edge[i][k].Any = Clone (y.edge[i][k].Any)
-      }
-    }
-  }
-}
-
-func (x *adjacencyMatrix) Invert() {
-  for i := uint(0); i < x.uint; i++ {
-    for k := uint(0); k < x.uint; k++ {
-      if i != k {
-        x.edge[i][k], x.edge[k][i] = x.edge[k][i], x.edge[i][k]
-      }
-    }
-  }
-}
-
-func (x *adjacencyMatrix) Edge (i, k uint) {
-  if i >= x.uint || k >= x.uint { return }
-  x.edge[i][k].bool = true
-  switch x.Any.(type) {
-  case Valuator:
-    x.edge[i][k].Any.(Valuator).SetVal(1)
-  case uint8, uint16, uint32, uint, uint64:
-    x.edge[i][k].Any = 1
-  }
-}
-
-func (x *adjacencyMatrix) Set (i, k uint, v Any) {
-  CheckTypeEq (v, x.Any)
-  if i >= x.uint || k >= x.uint { return }
-  x.edge[i][k].bool = true
-  switch x.Any.(type) {
-  case Valuator:
-    x.edge[i][k].Any = Clone(v)
-  case uint8:
-    x.edge[i][k].Any = v.(uint8)
-  case uint16:
-    x.edge[i][k].Any = v.(uint16)
-  case uint32:
-    x.edge[i][k].Any = v.(uint32)
-  case uint:
-    x.edge[i][k].Any = v.(uint)
-  case uint64:
-    x.edge[i][k].Any = v.(uint64)
-  }
-}
-
-func (x *adjacencyMatrix) Del (i, k uint) {
-  if i >= x.uint || k >= x.uint { return }
-  x.Set (i, k, 0)
-  x.edge[i][k].bool = false
-}
-
-func (x *adjacencyMatrix) Full() bool{
-  for i := uint(0); i < x.uint; i++ {
-    f := false
-    for k := uint(0); k < x.uint; k++ {
-      f = f || x.edge[i][k].bool
-    }
-    if ! f { return false }
-  }
-  return true
 }
