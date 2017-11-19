@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 170506 - license see µU.go
+// (c) Christian Maurer   v. 171118 - license see µU.go
 
 import
   . "µU/obj"
@@ -19,8 +19,7 @@ func (x *distributedGraph) dfs1 (o Op) {
   if x.me == x.root { // root sends the first message
     x.parent = inf + 1 // trick, see below
     x.tree.Ins (x.actVertex)
-    x.tree.Ex(x.actVertex)
-    x.tree.SubLocal()
+    x.tree.Sub (x.actVertex)
     x.visited[0] = true
     x.child[0] = true
     x.ch[0].Send (x.tree.Encode())
@@ -33,9 +32,9 @@ func (x *distributedGraph) dfs1 (o Op) {
       u := x.next(j) // == x.n, iff all neighbours != j are visited
       k := u
       if ! x.visited[j] { // probe
-        x.tree.Ex(x.nb[j]) // nb[j] local in x.tree
-        if ! x.tree.Ex(x.actVertex) {
-          x.tree.Ins(x.actVertex) // MeVertex local, nb[j] colocal in x.tree
+        x.tree.Ex (x.nb[j]) // nb[j] local in x.tree
+        if ! x.tree.Ex (x.actVertex) {
+          x.tree.Ins (x.actVertex) // MeVertex local, nb[j] colocal in x.tree
           x.tree.Edge (x.directedEdge(x.nb[j], x.actVertex))
         }
         x.visited[j] = true
@@ -58,8 +57,8 @@ func (x *distributedGraph) dfs1 (o Op) {
         }
       }
       x.visited[k] = true
-      x.ch[k].Send(x.tree.Encode())
-      x.tree.Ex2(x.actVertex, x.nb[j])
+      x.ch[k].Send (x.tree.Encode())
+      x.tree.Ex2 (x.actVertex, x.nb[j])
       if x.tree.Edged() {
         x.child[j] = true
       }

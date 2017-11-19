@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 170510 - license see µU.go
+// (c) Christian Maurer   v. 171118 - license see µU.go
 
 // see G. Andrews: Concurrent Programming (1991) p. 375
 
@@ -19,8 +19,7 @@ func (x *distributedGraph) fmgraph1() {
   defer x.finMonM()
   x.awaitAllMonitorsM()
   x.tmpGraph.Copy (x.Graph)
-  x.tmpGraph.Ex (x.actVertex)
-  x.tmpGraph.SubLocal()
+  x.tmpGraph.Sub (x.actVertex)
   x.tmpGraph.Write()
   lock <- 0
   known := false
@@ -30,7 +29,7 @@ func (x *distributedGraph) fmgraph1() {
   }
   r := uint(1)
   for ! known {
-    x.enter(r)
+    x.log ("after round", r)
     for i := uint(0); i < x.n; i++ {
       <-lock
       bs := x.tmpGraph.Encode()
@@ -40,8 +39,7 @@ func (x *distributedGraph) fmgraph1() {
       <-lock
       if Decode(false, bs[:1]).(bool) { active[i] = false }
       x.tmpGraph.Add (g)
-      x.tmpGraph.Ex2(x.actVertex, x.nb[i])
-      x.tmpGraph.Sub2()
+      x.tmpGraph.Sub2 (x.actVertex, x.nb[i])
       x.tmpGraph.Write()
       lock <- 0
     }

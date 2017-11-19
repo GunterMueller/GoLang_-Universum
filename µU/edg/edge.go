@@ -126,7 +126,10 @@ func (x *edge) Write () {
 }
 
 func (x *edge) Write1 (a bool) {
-  f, b  := x.cf, x.cb; if a { f, b = x.fa, x.ba }
+  f, b := x.cf, x.cb
+  if a {
+    f, b = x.fa, x.ba
+  }
   scr.ColourF (f)
   scr.Line (x.x0, x.y0, x.x1, x.y1)
   if x.bool {

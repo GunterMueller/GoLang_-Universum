@@ -1,6 +1,6 @@
 package dgras
 
-// (c) Christian Maurer   v. 171013 - license see µU.go
+// (c) Christian Maurer   v. 171117 - license see µU.go
 
 import (
   "µU/col"
@@ -65,11 +65,12 @@ func graph (dir bool, l, c []int, es [][]uint, m, id uint) dgra.DistributedGraph
   g = g.Star()
   g.SetWrite (vtx.W, edg.W)
   d := dgra.New (g)
-  n = g.Num() - 1
-  h := make([]host.Host, n)
-  for i := uint(0); i < n; i++ { h[i] = host.Localhost() }
+  num := g.Num() - 1
+  h := make([]host.Host, num)
+  for i := uint(0); i < num; i++ { h[i] = host.Localhost() }
   d.SetHosts (h) // XXX
-  d.SetDiameter(m)
+  d.SetN (n)
+  d.SetDiameter (m)
   return d
 }
 
@@ -248,53 +249,57 @@ func g6 (i uint) dgra.DistributedGraph {
 
 func g8 (i uint) dgra.DistributedGraph {
 /*
-1        1 --------- 4 -------- 7
-2      /               \
-3    /                   \
-4  0 --------- 3 --------- 6
-5    \       /           /
-6      \   /           /
-7        2 --------- 5 
+2        0 --------- 1 -------- 2
+3       /             \
+4     /                 \
+5   /                     \
+6  3 --------- 4 --------- 5
+7   \         /           /
+8     \     /           /
+9       \ /           /
+10       6 --------- 7 
 
             1         2         3
   01234567890123456789012345678901
 */
-  l := []int { 4, 1, 7,  4,  1,  7,  4,  1 }
-  c := []int { 1, 7, 7, 13, 19, 19, 25, 30 }
-  e := [][]uint { []uint { 1, 2, 3 },
-                  []uint { 0, 4 },
-                  []uint { 0, 3, 5 },
-                  []uint { 0, 2, 6 },
-                  []uint { 1, 6, 7 },
-                  []uint { 2, 6 },
-                  []uint { 3, 4, 5 },
-                  []uint { 4 } }
+  l := []int { 2,  2,  2,  6,  6,  6, 10, 10 }
+  c := []int { 7, 19, 31,  1, 13, 25,  7, 19 }
+  e := [][]uint { []uint { 1, 3 },
+                  []uint { 0, 2, 5 },
+                  []uint { 1 },
+                  []uint { 0, 4, 6 },
+                  []uint { 3, 5, 6 },
+                  []uint { 1, 4, 7 },
+                  []uint { 3, 4, 7 },
+                  []uint { 5, 6 } }
   return graph (false, l, c, e, 4, i)
 }
 
 func g8dir (i uint) dgra.DistributedGraph {
 /*
-0       1 ------> 4
-1      *  \      *  \
-2    /      *  /      *
-3  0         3         6 -----> 7
-4    \         \      *
-5      *         *  /
-7       2 ------> 5
+2      0 ------> 1
+3     * \       * \
+4    /   \     /   \
+5   /     *   /     *
+6  2        3        4 ------> 5
+7   \         \     *
+4    \         \   /
+9     *         * /
+10     6 ------> 7
 
             1         2         3
   01234567890123456789012345678901
 */
-  l := []int { 4, 1, 7,  4,  1,  7,  4,  4 }
-  c := []int { 1, 6, 6, 11, 11, 15, 21, 30 }
-  e := [][]uint { []uint { 1, 2 },
-                  []uint { 3, 4 },
+  l := []int { 2,  2,  6,  6,  6,  6, 10, 10 }
+  c := []int { 5, 15,  1, 10, 19, 29,  5, 15 }
+  e := [][]uint { []uint { 1, 3 },
+                  []uint { 4 },
                   []uint { 5 },
-                  []uint { 4, 5 },
-                  []uint { 6 },
-                  []uint { 6 },
-                  []uint { 7 },
-                  []uint { } }
+                  []uint { 0, 6 },
+                  []uint { 1, 7 },
+                  []uint { 5 },
+                  []uint { },
+                  []uint { 7 } }
   return graph (true, l, c, e, 4, i)
 }
 
@@ -314,19 +319,21 @@ func g8cyc (i uint) dgra.DistributedGraph {
 
 func g8ring (i uint) dgra.DistributedGraph {
 /*
-1           1        3
-2  5                          6
+2            1        3
 3
-4
+4   5                          6
 5
-6  2                          4
-7           0        7
+6
+7
+8   2                          4
+9
+10           0        7
 
-            1         2
-  012345678901234567890123456789
+            1         2         3
+  01234567890123456789012345678901
 */
-  l := []int {  7,  1,  6,  1,  6,  2,  2,  7 }
-  c := []int { 10, 10,  1, 19, 28,  1, 28, 19 }
+  l := []int { 10,  2,  8,  2,  8,  4,  4, 10 }
+  c := []int { 11, 11,  2, 20, 29,  2, 29, 20 }
   e := [][]uint { []uint { 2, 7 },
                   []uint { 3, 5 },
                   []uint { 0, 5 },
@@ -340,22 +347,22 @@ func g8ring (i uint) dgra.DistributedGraph {
 
 func g8ringdir (i uint) dgra.DistributedGraph {
 /*
-1           1        3
-2  5                          6
-3
+1            1        3
+2
+3   5                          6
 4   tid-00  ntid-00  nntid-00
 5           sent-00
-6  2                          4
-7           0        7
-8
-9  active/relay       round 00
-4 tid -00   ntid -00   nntid -00
+6  active/relay       round 00
+7 tid -00   ntid -00   nntid -00
+8   2                          4
+9 
+10           0        7
 
-            1         2
-  012345678901234567890123456789
+            1         2         3
+  01234567890123456789012345678901
 */
-  l := []int {  7,  1,  6,  1,  6,  2,  2,  7 }
-  c := []int { 10, 10,  1, 19, 28,  1, 28, 19 }
+  l := []int { 10,  1,  8,  1,  8,  3,  3, 10 }
+  c := []int { 11, 11,  2, 20, 29,  2, 29, 20 }
   e := [][]uint { []uint { 7 },
                   []uint { 5 },
                   []uint { 0 },
@@ -412,18 +419,21 @@ func g10 (i uint) dgra.DistributedGraph {
 
 func g12 (i uint) dgra.DistributedGraph {
 /*
-1       7 ------- 11 ---- 8
-2     / | \     /    \      \
-3   /   |   \ /        \      \
-4  3    6    4    10 --- 0 --- 2
-5   \   |      \   |   /
-6     \ |        \ | /
-7       9 -------- 1 ---- 5
+2       7 ------- 11 ------ 8
+3     / | \     /    \       \
+4    /  |  \   /       \      \
+5   /   |   \ /          \     \
+6  3    6    4    10 ---- 0 ---- 2
+7   \   |      \   |     /
+8    \  |       \  |   /
+9     \ |        \ | /
+10      9 -------- 1 ---- 5
             1         2         3
   01234567890123456789012345678901
 */
-  l := []int {  4,  7,  4,  4,  4,  7,  4,  1,  1,  7,  4,  1 }
-  c := []int { 22, 17, 28,  2, 12, 22,  7,  7, 22,  7, 17, 17 }
+//              0   1   2   3   4   5   6   7   8   9  10  11
+  l := []int {  7, 10,  5,  5,  7,  9,  6,  3,  3,  9,  6,  2 }
+  c := []int { 24, 16, 30,  2, 12, 27,  7,  9, 25,  5, 18, 17 }
   e := [][]uint { []uint { 1, 2, 10, 11 },
                   []uint { 0, 4, 5, 9, 10 },
                   []uint { 0, 8 },

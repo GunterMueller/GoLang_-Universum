@@ -57,7 +57,7 @@ func DivBy0Panic() {
   ker.Panic ("division by 0")
 }
 
-func bluse (a Any) string {
+func text (a Any) string {
   t := "nil"
   if a != nil {
     t = reflect.TypeOf(a).String()
@@ -66,22 +66,22 @@ func bluse (a Any) string {
 }
 
 func TypeNotEqPanic (a, b Any) {
-  ker.Panic ("the types " + bluse(a) + " and " + bluse(b) + " are not equal")
+  ker.Panic ("the types " + text(a) + " and " + text(b) + " are not equal")
 }
 
 func WrongUintParameterPanic (s string, a Any, n uint) {
-  ker.Panic ("method " + s + " for object of type " + bluse(a) +
+  ker.Panic ("method " + s + " for object of type " + text(a) +
              " got wrong value for " + strconv.FormatUint(uint64(n), 10))
 }
 
 func PanicNotAtomicOrEqualer (a Any) {
-  ker.Panic ("the type " + bluse(a) + " is neither Atomic nor implements Equaler")
+  ker.Panic ("the type " + text(a) + " is neither Atomic nor implements Equaler")
 }
 
 func PanicNotAtomicOrObject (a Any) {
-  ker.Panic ("the type " + bluse(a) + " is neither Atomic nor implements Object")
+  ker.Panic ("the type " + text(a) + " is neither Atomic nor implements Object")
 }
 
 func PanicNotUintOrValuator (a Any) {
-  ker.Panic ("the type " + bluse(a) + " is neither uint nor implements Valuator")
+  ker.Panic ("the type " + text(a) + " is neither uint nor implements Valuator")
 }

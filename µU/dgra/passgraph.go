@@ -1,17 +1,18 @@
 package dgra
 
-// (c) Christian Maurer   v. 170423 - license see µU.go
+// (c) Christian Maurer   v. 171118 - license see µU.go
 
 import
   . "µU/obj"
 
 func (x *distributedGraph) passgraph() {
-  x.tmpGraph.Copy (x.Graph)
-  x.tmpGraph.Write()
   x.connect (nil)
   defer x.fin()
-  for r:= uint(0); r < x.diameter; r++ {
-    x.enter (r + 1)
+  x.tmpGraph.Copy (x.Graph)
+  x.tmpGraph.Ex (x.actVertex)
+  x.tmpGraph.Write()
+  x.log0 ("initial situation")
+  for r := uint(1); r <= x.diameter; r++ {
     for i := uint(0); i < x.n; i++ {
       x.ch[i].Send (x.tmpGraph)
     }
@@ -20,12 +21,15 @@ func (x *distributedGraph) passgraph() {
       x.add (g, i)
       x.tmpGraph.Write()
     }
-    x.tmpGraph.Write()
+    if false { // x.tmpGraph.EqSub() {
+      x.log0 ("network known")
+    } else {
+      x.log ("after round", r)
+    }
   }
 }
 
 func (x *distributedGraph) add (a Any, i uint) Any {
   x.tmpGraph.Add (x.decodedGraph(a.([]byte)))
-  x.tmpGraph.Write()
   return x.tmpGraph
 }

@@ -18,9 +18,9 @@ func p6Encode (a, p Stream) {
     p[1] = a[0] << 5 + a[1] >> 5 << 5
     p[2] = a[0] >> 3
   case 24, 32:
-    p[0] = a[2]
-    p[1] = a[1]
-    p[2] = a[0]
+    p[0] = a[0]
+    p[1] = a[2]
+    p[2] = a[1]
   default:
     for i := 0; i < P6; i++ {
       p[i] = byte(0)

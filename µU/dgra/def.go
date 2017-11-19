@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171112 - license see µU.go
+// (c) Christian Maurer   v. 171118 - license see µU.go
 
 import (
   "µU/gra"
@@ -20,13 +20,14 @@ type
 // r is the root of x.
   SetRoot (r uint)
 
-  SetDiameter (d uint) // TODO see below
+// The adjacency matrix for the TopAlgorithms has n lines/columns.
+  SetN (n uint)
+
+// The net has diameter d.
+  SetDiameter (d uint)
 
 // Returns the diameter of the net.
-  Diameter() uint // TODO corresponding graph algorithm
-
-// The rank of the matrices for PassMatrix is set to r.
-  SetRank (r uint)
+  Diameter() uint
 
 // The demo modus for graphical output is set.
   Demo()
@@ -38,21 +39,17 @@ type
   Time() uint
   Time1() uint
 
-  SetElectAlgorithm (a ElectAlg) // see electAlgorithms.go
-  ElectAlgorithm() ElectAlg
-  Leader() uint
-
   SetTopAlgorithm (a TopAlg) // see topAlgorithms.go
   TopAlgorithm() TopAlg
   Top()
 
   SetTravAlgorithm (a TravAlg) // see travAlgorithms.go
   TravAlgorithm() TravAlg
+
+  SetElectAlgorithm (a ElectAlg) // see electAlgorithms.go
+  ElectAlgorithm() ElectAlg
+  Leader() uint
 }
 
 // Returns a new distributed Graph with underlying Graph g.
 func New (g gra.Graph) DistributedGraph { return new_(g) }
-
-// func Value (a Any) uint { return value(a) }
-
-func Construct() DistributedGraph { return construct() }

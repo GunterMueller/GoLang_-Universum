@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171012 - license see µU.go
+// (c) Christian Maurer   v. 171118 - license see µU.go
 
 import (
   "µU/ker"
@@ -20,20 +20,21 @@ type
   distributedGraph struct {
                    gra.Graph // neighbourhood of the current vertex
                              // must not be changed by any application
-          tmpGraph, // a clone of gra.Graph; these three graphs are only
-        tree, ring gra.Graph // temporary graphs for the algorithms to work with
+          tmpGraph gra.Graph // a clone of gra.Graph; these three graphs are only
                    bool "Graph.Directed"
-                 n, // number of neighbours of the current vertex
-                me, // identity of the current process
+         actVertex vtx.Vertex // the vertex representing the actual process
+                me uint // and its identity
+           actHost host.Host // the host running the actual process
+                 n uint // the number of neighbours of the actual vertex
+                nb []vtx.Vertex // the neighbour vertices
+                nr []uint // and their identities
+              host []host.Host // the hosts running the neighbour processes
+                ch []nchan.NetChannel // the channels to the neighbours
+              port []uint16 // ports to connect the vertices pairwise
+        tree, ring gra.Graph // temporary graphs for the algorithms to work with
               root uint
-         actVertex, // the vertex in the Graph representing the actual process
          tmpVertex vtx.Vertex
            tmpEdge edg.Edge
-           actHost host.Host // localhost
-                nb []vtx.Vertex // the neighbour vertices
-              host []host.Host // the neighbour hosts
-                nr []uint // and their identities
-                ch []nchan.NetChannel // the channels to the neighbours
           chanuint []chan uint // internal channels
              chan1 chan uint // internal channel
            visited,
@@ -44,11 +45,9 @@ type
             parent uint
              child []bool
        time, time1 uint
-              port, // ports to connect the vertices pairwise
       sport, cport []uint16 // server- and client ports for farMonitorM
               demo bool
                top adj.AdjacencyMatrix
-              rank uint // unfortunately a dirty trick must be used
           diameter,
           distance,
             leader uint
@@ -59,7 +58,7 @@ const
   inf = uint(1 << 16)
 var (
   done = make(chan int, 1)
-  p0 = uint16(50000) // nchan.Port0()
+//  p0 = uint16(50000) // nchan.Port0()
 )
 
 func value (a Any) uint {
@@ -69,11 +68,30 @@ func value (a Any) uint {
 func new_(g gra.Graph) DistributedGraph {
   x := new(distributedGraph)
   x.Graph = g
+  x.Graph.SetWrite (vtx.W, edg.W)
+  x.tmpGraph = Clone(x.Graph).(gra.Graph)
   x.bool = x.Graph.Directed()
-  x.n = x.Graph.Num() - 1
   x.actVertex = x.Graph.Get().(vtx.Vertex)
   x.me = value(x.actVertex)
   if x.me != ego.Me() { errh.Error2 ("x.me", x.me, "Me", ego.Me()) }
+  x.actHost = host.Localhost()
+  x.n = x.Graph.Num() - 1
+  x.nb = make([]vtx.Vertex, x.n)
+  x.nr = make([]uint, x.n)
+  x.host = make([]host.Host, x.n)
+  x.port = make([]uint16, x.n)
+  x.ch = make([]nchan.NetChannel, x.n)
+  for i := uint(0); i < x.n; i++ {
+    g.Ex (x.actVertex)
+    x.nb[i] = g.Neighbour(i).(vtx.Vertex)
+    x.nr[i] = x.nb[i].(Valuator).Val()
+    x.Graph.Ex2 (x.actVertex, x.nb[i])
+    v := x.Graph.Get1().(edg.Edge).(Valuator).Val()
+    ps := v / (1<<20)
+    pc := (v - 1<<20 * ps) / (1<<10)
+//    x.port[i] = nchan.Port0 + uint16(v - 1<<10 * pc - 1<<20 * ps)
+    x.port[i] = uint16(v - 1<<10 * pc - 1<<20 * ps)
+  }
   x.tmpVertex = vtx.New (x.actVertex.Content(), x.actVertex.Wd(), x.actVertex.Ht())
   v0 := g.Neighbour(0).(vtx.Vertex)
   g.Ex2 (x.actVertex, v0)
@@ -83,44 +101,28 @@ func new_(g gra.Graph) DistributedGraph {
     g.Ex2 (v0, x.actVertex)
     x.tmpEdge = g.Get1().(edg.Edge)
   }
-  x.Graph.SetWrite (vtx.W, edg.W)
-  x.tmpGraph = Clone(x.Graph).(gra.Graph)
   x.tree = gra.New (true, x.tmpVertex, x.tmpEdge); x.tree.SetWrite (x.Graph.Writes())
   x.ring = gra.New (true, x.tmpVertex, x.tmpEdge); x.ring.SetWrite (x.Graph.Writes())
   x.visited = make([]bool, x.n)
   x.sendTo = make([]bool, x.n)
-  x.nb, x.nr = make([]vtx.Vertex, x.n), make([]uint, x.n)
-  x.ch = make([]nchan.NetChannel, x.n)
   x.chanuint = make([]chan uint, x.n)
   x.chan1 = make(chan uint)
   x.parent, x.child = inf, make([]bool, x.n)
-  x.actHost = host.Localhost()
-  x.host, x.port = make([]host.Host, x.n), make([]uint16, x.n)
   x.sport, x.cport = make([]uint16, x.n), make([]uint16, x.n)
   x.mon = make([]fmon.FarMonitor, x.n)
   x.monM = make([]fmon.FarMonitorM, x.n)
   for i := uint(0); i < x.n; i++ {
-    g.Ex (x.actVertex)
-    x.nb[i] = g.Neighbour(i).(vtx.Vertex)
-    x.nr[i] = x.nb[i].(Valuator).Val()
-    x.Graph.Ex2 (x.actVertex, x.nb[i])
     v := x.Graph.Get1().(edg.Edge).(Valuator).Val()
     ps := v / (1<<20)
     pc := (v - 1<<20 * ps) / (1<<10)
-    x.port[i] = nchan.Port0 + uint16(v - 1<<10 * pc - 1<<20 * ps)
-    x.sport[i], x.cport[i] = nchan.Port0 + uint16(ps), nchan.Port0 + uint16(pc)
+//    x.sport[i], x.cport[i] = nchan.Port0 + uint16(ps), nchan.Port0 + uint16(pc)
+    x.sport[i], x.cport[i] = uint16(ps), uint16(pc)
     if x.nr[i] < x.me {
       x.sport[i], x.cport[i] = x.cport[i], x.sport[i]
     }
     x.chanuint[i] = make(chan uint)
   }
   g.Ex (x.actVertex)
-  x.rank = uint(12) // for graphs with up to 12 vertices
-  x.top = adj.New (x.rank, uint(0), uint(0)) // uint(0) als vertex ???
-  for i := uint(0); i < x.n; i++ {
-    x.top.Set (x.me, x.nr[i], uint(0), uint(1)) // uint(0) als vertex ???
-    x.top.Set (x.nr[i], x.me, uint(0), uint(1))
-  }
   x.TopAlg, x.ElectAlg, x.TravAlg = PassGraph, ChangRoberts, DFS
   x.leader = x.me
   x.Op = Ignore
@@ -143,8 +145,13 @@ func (x *distributedGraph) SetDiameter (d uint) {
   x.diameter = d
 }
 
-func (x *distributedGraph) SetRank (d uint) {
-  x.rank = d
+func (x *distributedGraph) SetN (n uint) {
+  x.top = adj.New (n, uint(0), uint(0))
+  x.top.Set (x.me, x.me, uint(x.me), uint(0))
+  for i := uint(0); i < x.n; i++ {
+    x.top.Set (x.me, x.nr[i], uint(0), uint(1))
+    x.top.Set (x.nr[i], x.me, uint(0), uint(1))
+  }
 }
 
 func (x *distributedGraph) connect (a Any) {
@@ -250,104 +257,6 @@ func (x *distributedGraph) Diameter() uint {
 
 func (x *distributedGraph) Demo() {
   x.demo = true
-}
-
-func (x *distributedGraph) SetTopAlgorithm (a TopAlg) {
-  x.TopAlg = a
-}
-
-func (x *distributedGraph) TopAlgorithm() TopAlg {
-  return x.TopAlg
-}
-
-func (x *distributedGraph) Top() {
-  if x.Graph.Directed() {
-    errh.Error0("forget it: Graph is directed")
-    return
-  }
-  switch x.TopAlg {
-  case Graph0:
-    x.graph()
-  case Graph1:
-    x.graph1()
-  case PassMatrix:
-    x.passmatrix()
-  case PassGraph:
-    x.passgraph()
-  case FmMatrix:
-    x.fmmatrix()
-  case FmGraph:
-    x.fmgraph()
-  case FmGraph1:
-    x.fmgraph1()
-  }
-}
-
-func (x *distributedGraph) SetElectAlgorithm (a ElectAlg) {
-  x.ElectAlg = a
-}
-
-func (x *distributedGraph) ElectAlgorithm() ElectAlg {
-  return x.ElectAlg
-}
-
-func (x *distributedGraph) Leader() uint {
-  switch x.ElectAlg {
-  case ChangRoberts:
-    x.changRoberts()
-  case Peterson:
-    x.peterson()
-  case DolevKlaweRodeh:
-    x.dolevKlaweRodeh()
-  case HirschbergSinclair:
-    x.hirschbergSinclair()
-  case Maurer:
-    x.maurer()
-  case FmMaurer:
-    x.fmMaurer()
-  case DFSE:
-    x.dfse()
-  case FmDFSE:
-    x.fmdfse()
-  }
-  return x.leader
-}
-
-func (x *distributedGraph) SetTravAlgorithm (a TravAlg) {
-  x.TravAlg = a
-}
-
-func (x *distributedGraph) TravAlgorithm() TravAlg {
-  return x.TravAlg
-}
-
-func (x *distributedGraph) Trav (o Op) {
-  if x.Graph.Directed() {
-    errh.Error0("forget it: Graph is directed")
-    return
-  }
-  switch x.TravAlg {
-  case DFS:
-    x.dfs (o)
-  case DFS1:
-    x.dfs1 (o)
-  case FmDFS1:
-    x.fmdfs1 (o)
-  case FmDFSA:
-    x.fmdfsa (o)
-  case FmDFSA1:
-    x.fmdfsa1 (o)
-  case FmDFSRing:
-    x.fmdfsring()
-  case FmDFSRing1:
-    x.fmdfsring1()
-  case BFS:
-    x.bfs (o)
-  case FmBFS:
-    x.fmbfs (o)
-  case FmBFS1:
-    x.fmbfs1 (o)
-  }
 }
 
 func (x *distributedGraph) ParentChildren() string {

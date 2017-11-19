@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 170510 - license see µU.go
+// (c) Christian Maurer   v. 171118 - license see µU.go
 
 import (
 //  "µU/ker"
@@ -9,21 +9,22 @@ import (
 )
 
 func (x *distributedGraph) fmdfs1 (o Op) {
-  go func() { fmon.New (nil, 2, x.d1, AllTrueSp, x.actHost, p0 + uint16(2 * x.me), true) }()
+//  go func() { fmon.New (nil, 2, x.d1, AllTrueSp, x.actHost, p0 + uint16(2 * x.me), true) }()
+  go func() { fmon.New (nil, 2, x.d1, AllTrueSp, x.actHost, uint16(2 * x.me), true) }()
 //ker.Sleep (3)
   for i := uint(0); i < x.n; i++ {
 //println (i, " of ", x.n, "(")
-    x.mon[i] = fmon.New (nil, 2, x.d1, AllTrueSp, x.host[i], p0 + uint16(2 * x.nr[i]), false)
+//    x.mon[i] = fmon.New (nil, 2, x.d1, AllTrueSp, x.host[i], p0 + uint16(2 * x.nr[i]), false)
+    x.mon[i] = fmon.New (nil, 2, x.d1, AllTrueSp, x.host[i], uint16(2 * x.nr[i]), false)
 //println (")")
   }
   defer x.finMon()
   x.awaitAllMonitors()
-//println ("start")
   x.tmpGraph.Copy (x.Graph)
   x.tree.Clr()
   x.Op = o
   x.tree.Ins (x.actVertex)
-  x.tree.SubLocal()
+  x.tree.Sub (x.actVertex)
   x.tree.Write()
   if x.me == x.root {
     x.parent = x.me

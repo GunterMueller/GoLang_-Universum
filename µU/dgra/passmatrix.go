@@ -1,13 +1,18 @@
 package dgra
 
-// (c) Christian Maurer   v. 171112 - license see µU.go
+// (c) Christian Maurer   v. 171118 - license see µU.go
+
+import (
+  . "µU/obj"
+  "µU/adj"
+)
 
 func (x *distributedGraph) passmatrix() {
   x.connect (x.top)
   defer x.fin()
   if x.demo { x.top.Write(0, 0) }
-  for r:= uint(0); r < x.diameter; r++ {
-    x.enter (r + 1)
+  for r:= uint(1); r <= x.diameter; r++ {
+    x.log ("after round", r)
     for i := uint(0); i < x.n; i++ {
       x.ch[i].Send (x.top)
     }
@@ -17,4 +22,9 @@ func (x *distributedGraph) passmatrix() {
       if x.demo { x.top.Write(0, 0) }
     }
   }
+}
+
+func (x *distributedGraph) addMatrix (a Any, i uint) Any {
+  x.top.Add (a.(adj.AdjacencyMatrix))
+  return x.top
 }

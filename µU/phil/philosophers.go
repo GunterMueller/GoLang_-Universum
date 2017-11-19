@@ -37,8 +37,8 @@ var (
                              col.LightOrange(), col.LightGreen() }
   thinkColour col.Colour
   notUsedColour = col.DarkGray()
-  name = [max+1]string { "Platon", "Sokrates", "Aristoteles", "Cicero", "Pythagoras",
-                         "Diogenes", "Thales", "Epikur", "Heraklit", "Anaxagoras",
+  name = [max+1]string { "Platon", "Sokrates", "Aristoteles", "Cicero", "Heraklit",
+                         "Pythagoras", "Diogenes", "Thales", "Epikur", "Anaxagoras",
                          "Protagoras", "Demokrit", "Theophrast", "Nemo" }
   image [max+1]string
   text = [nStates]string { "    satt    ", "  hungrig   ", "sehr hungrig",

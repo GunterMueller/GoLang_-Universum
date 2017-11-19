@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171111 - license see µU.go
+// (c) Christian Maurer   v. 171118 - license see µU.go
 
 import (
   . "µU/obj"
@@ -52,7 +52,7 @@ type
 //
 // In any nonempty graph exactly one vertex is distinguished as colocal
 // and exactly one as local vertex.
-// Each graph has an actual subgraph, an actual path and a vertexstack.
+// Each graph has an actual subgraph and an actual path.
 
 type
   Graph interface {
@@ -148,7 +148,7 @@ type
 // The colocal vertex of x is the same as before.
   ExPred (p Pred) bool
 
-// Returns true, iff e is contained as edge in x.
+/// Returns true, iff e is contained as edge in x.
 // In this case the neighbour vertices of some such edge are now
 // the colocal and the local vertex of x (if x is directed,
 // the vertex, from which the edge goes out, is the colocal vertex.
@@ -168,7 +168,8 @@ type
 // and some vertex v1 with p1(v1) is the local vertex of x.
   ExPred2 (p, p1 Pred) bool
 
-// Returns a clone of the local vertex of x.
+// Returns the pattern vertex of x, if x is empty;
+// returns otherwise a clone of the local vertex of x.
   Get() Any
 
 // Returns a clone of the pattern edge of x, if x is empty or
@@ -193,8 +194,7 @@ type
 // The edge from the colocal to the local vertex of x is replaced by e.
   Put1 (e Any)
 
-// If x is empty or
-// if v or v1 is not of the vertextype of x or
+// If x is empty or if v or v1 is not of the vertextype of x or
 // if the colocal vertex of x coincides with the local vertex,
 // nothing had happened. Otherwise:
 // The colocal vertex of x is replaced by v
@@ -205,16 +205,24 @@ type
   ClrSub()
 
 // The subgraph of x equals x.
-  Sub()
+//  SubGraph()
 
-// If x is empty, nothing had happened. Otherwise,
-// the subgraph of x consists only of the local vertex.
-  SubLocal()
+// All edges of x are inserted into the subgraph of x.
+  SubAllEdges()
 
-// If x is empty, nothing had happened. Otherwise,
-// the subgraph of x consists of the local and the colocal vertex
-// and the edge between them.
-  Sub2()
+// If x is empty or if v is not of the vertextype of x or
+// if v is not contained in x, nothing had happened.
+// Otherwise, v is now the local vertex of x and
+// is inserted into the subgraph of x.
+// The colocal vertex of x is the same as before.
+  Sub (v Any)
+
+// If x is empty or if v or v1 is not of the vertextype of x or
+// if v or v1 is not contained in x or if v and v1 conincide,
+// nothing had happened. Otherwise, v is now the colocal and
+// v1 the local vertex of x and v, v1 and the edge between them
+// are now contained in the subgraph of x.
+  Sub2 (v, v1 Any)
 
 // Returns true, if x equals its subgraph.
   EqSub() bool
@@ -356,39 +364,6 @@ type
 // returns otherwise a copy of its i-th neighbour vertex.
   Neighbour (i uint) Any
 
-// Returns 0, if x is empty or if i >= number of outgoing neighbours of the local vertex;
-// returns otherwise the value of the edge to the i-th outgoing neighbour vertex.
-// experimental ///////////////////////////////////////////////////  ValOut (i uint) uint
-
-// Returns 0, if x is empty or if i >= number of incoming neighbours of the local vertex;
-// returns otherwise the value of the edge to the i-th incoming neighbour vertex.
-// experimental ///////////////////////////////////////////////////  ValIn (i uint) uint
-
-// Returns 0, if x is empty or if i >= number of all neighbours of the local vertex;
-// returns otherwise the value of the edge to the i-th neighbour vertex.
-// experimental ///////////////////////////////////////////////////  Val (i uint) uint
-
-// The local vertex of x is pushed on the vertexstack of x.
-  Save()
-  CoSave()
-  LenStack() uint
-
-// If the vertexstack of x is empty, nothing had happened. Otherwise:
-// The local vertex is now the top of the vertexstack
-// and this vertex is pulled from the vertexstack of x.
-  Restore()
-  CoRestore()
-
-// localvertex.dist = 0.
-// experimental //////////////////////// A()
-
-// Returns true, iff localvertex.dist = infinite.
-// experimental //////////////////////// B() bool
-
-// localvertex.dist = colocalvertex.dist + 1
-// localvertex.hinten = colocalvertex.
-// experimental //////////////////////// C()
-
 // Pre: p is defined on vertices.
 // Returns true, if x is empty or
 // if p returns true for all vertices of x.
@@ -402,7 +377,7 @@ type
 // Pre: o is defined on vertices.
 // o is applied to all vertices of x.
 // Colocal and local vertex of x are the same as before;
-// subgraph and vertexstack of x are not changed.
+// the subgraph x re not changed.
   Trav (o Op)
 
 // Pre: o is defined on vertices.
@@ -410,14 +385,14 @@ type
 // o is called with 2nd parameter "true", iff
 // the corresponding vertex is contained in the actual subgraph of x.
 // Colocal and local vertex of x are the same as before;
-// subgraph and vertexstack of x are not changed.
+// the subgraph x re not changed.
   TravCond (o CondOp)
 
 // Pre: o is defined on edges.
 // If x has no edgetype, nothing had happened. Otherwise:
 // o is applied to all edges of x.
 // Colocal and local vertex of x are the same as before;
-// subgraph and vertexstack of x are not changed.
+// the subgraph x re not changed.
   Trav1 (o Op)
 
 // Pre: o is defined on edges.
@@ -425,7 +400,7 @@ type
 // o is applied to all edges of x with 2nd parameter "true", iff
 // the correspoding edge is contained in the actual subgraph of x.
 // Colocal and local vertex of x are the same as before;
-// subgraph and vertexstack of x are not changed.
+// the subgraph x re not changed.
   Trav1Cond (o CondOp)
 
 // Pre: o is defined on edges.
@@ -504,7 +479,7 @@ type
 // Pre: v is atomic or imlements Object.
 //      e == nil or e is of type uint or implements Valuator;
 // x is Empty (with undefined local and colocal vertex,
-// empty actual subgraph, empty actual path and empty vertexstack).
+// empty actual subgraph and empty actual path).
 // x is directed, iff d (i.e. otherwise undirected).
 // x has v as pattern vertex defining the vertextype of x.
 // For e == nil, e is replaced by uint(1) and all edges of x have value 1.

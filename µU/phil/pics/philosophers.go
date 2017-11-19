@@ -12,8 +12,8 @@ import (
 func main() {
   scr.New(0, 0, mode.XGA); defer scr.Fin()
   const a = 60
-  var p = []string { "Platon", "Sokrates", "Aristoteles", "Cicero", "Pythagoras",
-                     "Diogenes", "Thales", "Epikur", "Heraklit", "Anaxagoras",
+  var p = []string { "Platon", "Sokrates", "Aristoteles", "Cicero", "Heraklit",
+                     "Pythagoras", "Diogenes", "Thales", "Epikur", "Anaxagoras",
                      "Protagoras", "Demokrit", "Theophrast" }
   var x, y uint
   for _, s := range p {

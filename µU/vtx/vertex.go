@@ -148,7 +148,10 @@ func (x *vertex) Write() {
 }
 
 func (x *vertex) Write1 (a bool) {
-  f, b  := x.f, x.b; if a { f, b = x.fa, x.ba }
+  f, b := x.f, x.b
+  if a {
+    f, b = x.fa, x.ba
+  }
   w1, h1  := scr.Wd1() * x.width, scr.Ht1() * x.height
   if x.width * x.height > 0 {
     const r0 = 3

@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 171112 - license see µU.go
+// (c) Christian Maurer   v. 171111 - license see µU.go
 
 import (
   . "µU/obj"
@@ -17,8 +17,8 @@ type
 // for i == k:
 //     v is a vertex in the graph (in this case e is the pattern edge of x.
 // for i != k:
-//     There is an edge from the i-th to the k-th vertex of the graph
-//     with value x.Val(i,k), iff e is not equal to the pattern edge of x.
+//     There is an edge outgoing from the i-th and incoming at the k-th vertex
+//     of the graph with value e, iff v is not equal to the pattern vertex of x.
 //     In this case v is the pattern vertex of x.
 // The patterns are those objects, that are given to a New as parameters;
 // they must not be used as vertices or edges resp.

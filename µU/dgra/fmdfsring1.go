@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 170507 - license see µU.go
+// (c) Christian Maurer   v. 171118 - license see µU.go
 //
 // >>> Construction of a directed ring using the idea of Awerbuch's DFS-algorithm
 
@@ -11,17 +11,19 @@ import (
 )
 
 func (x *distributedGraph) fmdfsring1() {
-  go func() { fmon.New (nil, 3, x.dr1, AllTrueSp, x.actHost, p0 + uint16(3 * x.me), true) }()
+//  go func() { fmon.New (nil, 3, x.dr1, AllTrueSp, x.actHost, p0 + uint16(3 * x.me), true) }()
+  go func() { fmon.New (nil, 3, x.dr1, AllTrueSp, x.actHost, uint16(3 * x.me), true) }()
   for i := uint(0); i < x.n; i++ {
-    x.mon[i] = fmon.New (nil, 3, x.dr1, AllTrueSp, x.host[i], p0 + uint16(3 * x.nr[i]), false)
+//    x.mon[i] = fmon.New (nil, 3, x.dr1, AllTrueSp, x.host[i], p0 + uint16(3 * x.nr[i]), false)
+    x.mon[i] = fmon.New (nil, 3, x.dr1, AllTrueSp, x.host[i], uint16(3 * x.nr[i]), false)
   }
   defer x.finMon()
   x.awaitAllMonitors()
   x.tmpGraph.Copy(x.Graph)
   x.ring.Clr()
   if x.me == x.root {
-    x.ring.Ins(x.actVertex)
-    x.ring.SubLocal()
+    x.ring.Ins (x.actVertex)
+    x.ring.Sub (x.actVertex)
     for k := uint(0); k < x.n; k++ {
       bs := Encode(x.me)
       x.mon[k].F(bs, visit)

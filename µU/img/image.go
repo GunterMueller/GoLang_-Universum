@@ -68,7 +68,7 @@ func get (n string, x, y uint) {
   scr.P6Decode (x, y, buf)
 }
 
-func print_ (x, y, w, h uint) {
+func print_(x, y, w, h uint) {
   toPrint = true
   filename := "tmp"
   put (filename, x, y, w, h)
@@ -78,5 +78,5 @@ func print_ (x, y, w, h uint) {
 }
 
 func print1() {
-  print_ (0, 0, scr.Wd(), scr.Ht())
+  print_(0, 0, scr.Wd(), scr.Ht())
 }

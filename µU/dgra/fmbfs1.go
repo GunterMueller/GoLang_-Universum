@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 170510 - license see µU.go
+// (c) Christian Maurer   v. 171118 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,10 +9,12 @@ import (
 
 func (x *distributedGraph) fmbfs1 (o Op) {
   go func() {
-    fmon.New (nil, 2, x.b1, AllTrueSp, x.actHost, p0 + uint16(2 * x.me), true)
+//    fmon.New (nil, 2, x.b1, AllTrueSp, x.actHost, p0 + uint16(2 * x.me), true)
+    fmon.New (nil, 2, x.b1, AllTrueSp, x.actHost, uint16(2 * x.me), true)
   }()
   for i := uint(0); i < x.n; i++ {
-    x.mon[i] = fmon.New (nil, 2, x.b1, AllTrueSp, x.host[i], p0 + uint16(2 * x.nr[i]), false)
+//    x.mon[i] = fmon.New (nil, 2, x.b1, AllTrueSp, x.host[i], p0 + uint16(2 * x.nr[i]), false)
+    x.mon[i] = fmon.New (nil, 2, x.b1, AllTrueSp, x.host[i], uint16(2 * x.nr[i]), false)
   }
   defer x.finMon()
   x.awaitAllMonitors()
@@ -21,7 +23,7 @@ func (x *distributedGraph) fmbfs1 (o Op) {
   x.parent = inf
   x.tree.Clr()
   x.tree.Ins (x.actVertex)
-  x.tree.SubLocal()
+  x.tree.Sub (x.actVertex)
   x.tree.Write()
   if x.me == x.root {
     x.parent = x.me
