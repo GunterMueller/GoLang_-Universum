@@ -1,0 +1,11 @@
+#!/bin/bash
+
+for v in $(ls); do
+  if [ -d $v ]; then
+  cd $v
+    for d in $(ls *.go); do
+    sed 's/nsp\.go/nU\.go/g' $d > affe; mv affe $d
+    done
+    cd ..
+  fi
+done
