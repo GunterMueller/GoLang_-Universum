@@ -1,11 +1,10 @@
 package mbbuf
 
-// (c) Christian Maurer   v. 171107 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/bbuf"
-  "µU/host"
   "µU/fmon"
 )
 type
@@ -15,7 +14,7 @@ type
                     fmon.FarMonitor
                     }
 
-func newfm (a Any, n uint, h host.Host, p uint16, s bool) MBoundedBuffer {
+func newfm (a Any, n uint, h string, p uint16, s bool) MBoundedBuffer {
   if a == nil || n == 0 { return nil }
   x := new (farMonitor)
   x.Any = Clone (a)

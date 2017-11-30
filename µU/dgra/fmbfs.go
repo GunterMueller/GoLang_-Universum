@@ -1,17 +1,20 @@
 package dgra
 
-// (c) Christian Maurer   v. 170510 - license see µU.go
+// (c) Christian Maurer   v. 171124 - license see µU.go
 
 import (
   . "µU/obj"
-  "µU/nchan"
   "µU/fmon"
 )
 
 func (x *distributedGraph) fmbfs (o Op) {
-  go func() { fmon.New (uint(0), 2, x.b, AllTrueSp, x.actHost, nchan.Port0 + uint16(2 * x.me), true) }()
+  go func() {
+    fmon.New (uint(0), 2, x.b, AllTrueSp,
+              x.actHost, p0 + uint16(2 * x.me), true)
+  }()
   for i := uint(0); i < x.n; i++ {
-    x.mon[i] = fmon.New (uint(0), 2, x.b, AllTrueSp, x.host[i], nchan.Port0 + uint16(2 * x.nr[i]), false)
+    x.mon[i] = fmon.New (uint(0), 2, x.b, AllTrueSp,
+                         x.host[i], p0 + uint16(2 * x.nr[i]), false)
   }
   defer x.finMon()
   x.awaitAllMonitors()

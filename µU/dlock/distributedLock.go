@@ -1,6 +1,6 @@
 package dlock
 
-// (c) Christian Maurer   v. 150505 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 //
 /* >>> Distributed mutual exclusion due to
        Ricart, G., Agrawala, A. K.:
@@ -9,7 +9,6 @@ package dlock
 
 import (
   "sync"
-  "µU/host"
   "µU/nchan"
 )
 const
@@ -18,7 +17,7 @@ type
   distributedLock struct {
                          uint "number of hosts involved"
                       me uint // identity of the calling process
-                    host []host.Host
+                    host []string
           request, reply []nchan.NetChannel // 0 for reqests, 1 for replies
                     time,
                    time1, // own time
@@ -28,20 +27,21 @@ type
          mutex, critSect sync.Mutex
                          }
 
-func new_(me uint, hs []host.Host, p uint16) DistributedLock {
+func new_(me uint, hs []string, p uint16) DistributedLock {
   n := uint(len(hs))
   if n < 2 || me >= n { return nil }
   x := new (distributedLock)
   x.uint = n
   x.deferred = make ([]bool, x.uint)
-  x.host = make ([]host.Host, x.uint)
+  x.host = make ([]string, x.uint)
   for i := uint(0); i < x.uint; i++ {
-    x.host[i] = hs[i].Clone().(host.Host)
+    x.host[i] = hs[i]
   }
   x.me = me
   x.critSect.Lock()
   x.request = make([]nchan.NetChannel, x.uint)
   x.reply = make([]nchan.NetChannel, x.uint)
+  p += nchan.Port0
   for k := uint(0); k < x.uint; k++ {
     i, j := x.me, k
     if k != x.me {

@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 171124 - license see µU.go
 
 import (
   . "µU/obj"
@@ -34,8 +34,7 @@ type
 // the vertex, with which a vertex is connected by its n-th outgoing edge,
 // is denoted as its n-th neighbourvertex.
 //
-// A subgraph U of a graph G consists of a subset of the vertices of G
-// and of those edges of G, that connect only vertices of U.
+// In any graph some vertices and edges might be marked.
 //
 // A path in a graph is a sequence of vertices and from each of those
 // - excluding from the last one - an outgoing edge to the next vertex.
@@ -44,7 +43,6 @@ type
 // (it may pass any vertex more than once).
 // A cycle is a path with an additional edge
 // from the last vertex of the path to its first.
-// Paths and cycles are subgraphs.
 //
 // A graph G is (strongly) connected, if for any two vertices
 // v, v1 of G there is a path from v to v1 or (and) vice versa;
@@ -52,15 +50,12 @@ type
 //
 // In any nonempty graph exactly one vertex is distinguished as colocal
 // and exactly one as local vertex.
-// Each graph has an actual subgraph and an actual path.
+// Each graph has an actual path.
 
 type
   Graph interface {
 
   Object
-
-// marks the local vertex, if x is not empty.
-  Marker
 
   Persistor
 
@@ -70,18 +65,18 @@ type
 // Returns the number of vertices of x.
   Num() uint
 
-// Returns the number of vertices in the actual subgraph of x.
-  NumSub() uint
+// Returns the number of edges of x.
+  Num1() uint
+
+// Returns the number of marked vertices x.
+  NumMarked() uint
+
+// Returns the number of marked edges of x.
+  NumMarked1() uint
 
 // Pre: p is defined on vertices.
 // Returns the number of vertices of x, for which p returns true.
   NumPred (p Pred) uint
-
-// Returns the number of edges of x.
-  Num1() uint
-
-// Returns the number of edges in the actual subgraph of x.
-  NumSub1() uint
 
 // If v is not of the vertextype of x or if v is already contained
 // as vertex in x, nothing has happend. Otherwise:
@@ -201,38 +196,31 @@ type
 // and the local vertex of x is replaced by v1.
   Put2 (v, v1 Any)
 
-// The subgraph of x is empty.
-  ClrSub()
-
-// The subgraph of x equals x.
-//  SubGraph()
-
-// All edges of x are inserted into the subgraph of x.
-  SubAllEdges()
+// No vertex and no edge in x is marked.
+  ClrMarked()
 
 // If x is empty or if v is not of the vertextype of x or
 // if v is not contained in x, nothing had happened.
-// Otherwise, v is now the local vertex of x and
-// is inserted into the subgraph of x.
+// Otherwise, v is now the local vertex of x and is marked.
 // The colocal vertex of x is the same as before.
-  Sub (v Any)
+  Mark (v Any)
 
-// If x is empty or if v or v1 is not of the vertextype of x or
-// if v or v1 is not contained in x or if v and v1 conincide,
-// nothing had happened. Otherwise, v is now the colocal and
-// v1 the local vertex of x and v, v1 and the edge between them
-// are now contained in the subgraph of x.
-  Sub2 (v, v1 Any)
+// If x is empty or if v or v1 is not of the vertextype of x
+// or if v or v1 is not contained in x
+// or if v and v1 conincide, nothing had happened.
+// Otherwise, v is now the colocal and v1 the local vertex of x
+// and v, v1 and the edge between them are marked.
+  Mark2 (v, v1 Any)
 
-// Returns true, if x equals its subgraph.
-  EqSub() bool
+// Returns true, if all vertices and all edges in x are marked.
+  AllMarked() bool
 
 // If x is empty, nothing has happened. Otherwise:
 // The former local vertex of x and
 // all its outgoing and incoming edges are deleted.
 // If x is now not empty, some other vertex is now the local vertex
 // and coincides with the colocal vertex of x.
-// The actual path and the actual subgraph of x are empty. 
+// The actual path is empty. 
   Del()
 
 // If there was an edge between the colocal and the local vertex of x,
@@ -259,7 +247,8 @@ type
 // hence, if x has no edgetype, w.r.t. their number).
 // If there is no path from the colocal to the local vertex of x,
 // the actual path consists only of the colocal vertex.
-// The actual subgraph of x is the actual path of x.
+// The marked vertices and edges of x are
+// the vertices and edges in the actual path of x,
   Act()
 
 // Pre: p is defined on vertices.
@@ -271,16 +260,17 @@ type
 // w.r.t. the sum of the values of its edges
 // (hence, if x has no edgetype, w.r.t. their number).
 // Otherwise the actual path consists only of the colocal vertex.
-// The actual subgraph of x is the actual path of x.
+// The marked vertices and edges of x are
+// the vertices and edges in the actual path of x,
   ActPred (p Pred)
 
 // Returns the sum of the values of all edges of x
 // (hence, if x has no edgetype, the number of the edges of x).
   Len() uint
 
-// Returns the sum of the values of all edges in the actual subgraph of x
-// (hence, if x has no edgetype, the number of the edges in the subgraph).
-  LenSub() uint
+// Returns the sum of the values of all marked edges in x
+// (hence, if x has no edgetype, the number of the marked edges).
+  LenMarked() uint
 
 // Returns 0, if x is empty.
 // Returns otherwise the number of the outgoing edges of the local vertex of x.
@@ -305,16 +295,16 @@ type
 
 // If x is empty, nothing had happened. Otherwise:
 // The local and the colocal vertex of x are exchanged.
-// The actual path of x consists only of the colocal vertex of x
-// and the actual subgraph of x is the actual path of x.
+// The actual path of x consists only of the colocal vertex of x.
+// The only marked is the colocal vertex; no edges are marked.
   Relocate()
 
 // If x is empty, nothing had happened. Otherwise:
 // The colocal vertex coincides with the local vertex of x,
 // where for f that is the vertex, that was the former local vertex of x,
 // and for !f the vertex, that was the former colocal vertex of x.
-// The actual path of x consists only of this vertex
-// and the actual subgraph of x is the actual path.
+// The actual path of x consists only of this vertex.
+// The only marked vertex is this vertex; no edges are marked.
   Locate (f bool)
 
 // Returns true, iff x is empty or the local vertex of x
@@ -323,13 +313,14 @@ type
 
 // If x is empty, nothing had happened. Otherwise:
 // The local and the colocal vertex of x are exchanged;
-// actual path and actual subgraph of x are not changed.
+// the actual path is not changed and
+// the marked vertices and edges are unaffected.
   Colocate()
 
 // If x is empty or directed, nothing has happened.
 // Otherwise the actual path of x is inverted, particularly
 // the local and the colocal vertex of x are exchanged.
-// The actual subgraph of x is not changed.
+// The marked vertices and edges are unaffected.
   InvertPath()
 
 // If x is empty or if i >= number of vertices outgoing from the local vertex
@@ -339,7 +330,7 @@ type
 // For !f: The last vertex of the actual path of x is deleted from it,
 //         if it had not only one vertex (i does not play any role in this case).
 // The last vertex of the actual path of x is the local vertex of x and
-// the actual subgraph of x is its actual path.
+// Vertices and edges in x are marked, if the belong to its actual path.
   Step (i uint, f bool)
 
 // Returns false, if x is empty or if i >= NumNeighbourOut();
@@ -371,36 +362,36 @@ type
 
 // Pre: p is defined on vertices.
 // Returns true, iff x is empty or
-// if p returns true for all vertices in the actual subgraph of x.
-  TrueSub (p Pred) bool
+// if p returns true for all marked vertices in x.
+  TrueMarked (p Pred) bool
 
 // Pre: o is defined on vertices.
 // o is applied to all vertices of x.
 // Colocal and local vertex of x are the same as before;
-// the subgraph x re not changed.
+// the marked vertices and edges are unaffected.
   Trav (o Op)
 
 // Pre: o is defined on vertices.
 // o is applied to all vertices of x, where
 // o is called with 2nd parameter "true", iff
-// the corresponding vertex is contained in the actual subgraph of x.
+// the corresponding vertex is marked.
 // Colocal and local vertex of x are the same as before;
-// the subgraph x re not changed.
+// The marked edgges are unaffected.
   TravCond (o CondOp)
 
 // Pre: o is defined on edges.
 // If x has no edgetype, nothing had happened. Otherwise:
 // o is applied to all edges of x.
 // Colocal and local vertex of x are the same as before;
-// the subgraph x re not changed.
+// the marked vertices and edges are unaffected.
   Trav1 (o Op)
 
 // Pre: o is defined on edges.
 // If x has no edgetype, nothing had happened. Otherwise:
-// o is applied to all edges of x with 2nd parameter "true", iff
-// the correspoding edge is contained in the actual subgraph of x.
+// o is applied to all edges of x with 2nd parameter "true",
+// iff the correspoding edge is marked.
 // Colocal and local vertex of x are the same as before;
-// the subgraph x re not changed.
+// the marked vertices and edges are unaffected.
   Trav1Cond (o CondOp)
 
 // Pre: o is defined on edges.
@@ -413,11 +404,14 @@ type
 // o is applied to all edges of the colocal vertex of x.
   Trav1Coloc (o Op)
 
-// Returns nil, if x does not contain a vertex for which p is true.
-// Returns otherwise the Graph consisting with the first such vertex found
-// als only vertex and of all edges outgoing from and incoming to this vertex.
-// This vertex is the local vertex in Star.
-  Star (/* p Pred */) Graph
+// Returns nil, if x is empty.
+// Returns otherwise the Graph consisting of the local vertex,
+// all its neighbour vertices and of all edges
+// outgoing from and incoming to it.
+// The local vertex of x is the local vertex of the star.
+// It is the only marked vertex in the star;
+// all edges in the star are marked.
+  Star () Graph
 
 // Returns true, iff there are no cycles in x.
   Acyclic() bool
@@ -429,10 +423,10 @@ type
 // equivalence classes is a directed graph without cycles).
   Isolate() // TODO name
 
-// The actual subgraph of x consists of exactly those vertices, that are
-// equivalent to the local vertex and of exactly all edges between them.
-// The actual path of x is now empty.
-  IsolateSub() // TODO name
+// Exactly those vertices in x are marked, that are equivalent
+// to the local vertex and of exactly all edges between them.
+// No edges in x are marked.
+  IsolateMarked() // TODO name
 
 // Returns true, iff x is not empty and
 // if the local and the colocal vertex of x are equivalent,
@@ -444,8 +438,9 @@ type
   Euler() bool
 
 // If x is directed, nothing has happened. Otherwise:
-// The actual subgraph of x is a minimal spanning tree in
-// the connected component, that contains the colocal vertex
+// Exactly those vertices and edges in x are marked,
+// that build a minimal spanning tree in the connected component
+// containing the colocal vertex
 // (minimal w.r.t. the values of the sum of its edges;
 // hence, if x has no edgetype, w.r.t. the number of its vertices)
 // The actual path is not changed.
@@ -478,8 +473,7 @@ type
 
 // Pre: v is atomic or imlements Object.
 //      e == nil or e is of type uint or implements Valuator;
-// x is Empty (with undefined local and colocal vertex,
-// empty actual subgraph and empty actual path).
+// x is Empty
 // x is directed, iff d (i.e. otherwise undirected).
 // x has v as pattern vertex defining the vertextype of x.
 // For e == nil, e is replaced by uint(1) and all edges of x have value 1.

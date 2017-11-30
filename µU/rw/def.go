@@ -1,9 +1,9 @@
 package rw
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
-import
-  "µU/host"
+// import
+//   "µU/host"
 type
   ReaderWriter interface { // protocols for the readers/writers problem
 
@@ -52,8 +52,8 @@ func NewKangLee() ReaderWriter { return newKL() }
 // Returns a new ReaderWriter for message passing over the net.
 // Arguments: h must be the server and p the used port.
 // s determines whether the underlying process runs on the server (s == true) or a client.
-func NewFarMonitor (h host.Host, p uint16, s bool) ReaderWriter { return newFM(h,p,s) }
+func NewFarMonitor (h /* host.Host */ string, p uint16, s bool) ReaderWriter { return newFM(h,p,s) }
 // As above; additionally at most m readers can read concurrently.
-func NewFarMonitorBounded (m uint, h host.Host, p uint16, s bool) ReaderWriter {
+func NewFarMonitorBounded (m uint, h /* host.Host */ string, p uint16, s bool) ReaderWriter {
   return newFMB(m,h,p,s)
 }

@@ -1,14 +1,9 @@
 package env
 
-// (c) Christian Maurer   v. 170923 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 import
   "os"
-const (
-  host_ = "HOST"
-  user_ = "USER"
-  home_ = "HOME"
-)
 
 func set (Variable string, content *string) {
   for i:= 0; i < len (Variable); i++ {
@@ -22,12 +17,12 @@ func val (Variable string) string {
   return os.Getenv (Variable)
 }
 
-func host() string {
-  return os.Getenv (host_)
+func localhost() string {
+  return os.Getenv ("HOSTNAME") // or "HOST" ?
 }
 
 func home() string {
-  return os.Getenv (home_)
+  return os.Getenv ("HOME")
 }
 
 func gosrc() string {
@@ -35,7 +30,7 @@ func gosrc() string {
 }
 
 func user() string {
-  return os.Getenv (user_)
+  return os.Getenv ("USER")
 }
 
 func par1() byte {

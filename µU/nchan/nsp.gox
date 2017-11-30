@@ -1,0 +1,62 @@
+package nchan
+
+import ("os"; "time"; "strconv"; "net"; . "µU/obj")
+
+type netChannel_NSP struct {
+  Any "type of objects in the channel"
+  uint "byte capacity of the channel"
+  net.Conn
+  buf []byte
+}
+
+func newNSP (a Any, host string, p uint16) NetChannel {
+  x := new(netChannel_NSP)
+  if a == nil {
+    x.Any, x.uint = nil, maxWidth
+  } else {
+    x.Any, x.uint = Clone(a), Codelen(a)
+  }
+  x.buf = make([]byte, x.uint)
+  port := strconv.Itoa (int(Port0 + p))
+  netaddr := host + ":" + port
+  if os.Getenv ("HOSTNAME") < host {
+    listener, _ := net.Listen (network, netaddr)
+    x.Conn, _ = listener.Accept()
+  } else { // client
+    var err error
+    for {
+      if x.Conn, err = net.Dial (network, netaddr); err == nil {
+        break
+      }
+      time.Sleep (500)
+    }
+  }
+  return x
+}
+
+func (x *netChannel_NSP) Send (a Any) {
+  if x.Any == nil {
+    x.uint = Codelen(a)
+    x.Conn.Write (append (Encode (x.uint), Encode(a)...))
+  } else {
+    x.Conn.Write (Encode(a))
+  }
+}
+
+func (x *netChannel_NSP) Recv() Any {
+  if x.Any == nil {
+    x.Conn.Read(x.buf[:C0])
+    x.uint = Decode (uint(0), x.buf[:C0]).(uint)
+    x.Conn.Read(x.buf[C0:C0+x.uint])
+    return x.buf[C0:C0+x.uint]
+  }
+  x.Conn.Read(x.buf)
+  return Decode(Clone(x.Any), x.buf)
+}
+
+func (x *netChannel_NSP) Chan() (chan Any, chan Any) {
+  return make(chan Any), make(chan Any)
+}
+
+func (x *netChannel_NSP) Fin() {
+}

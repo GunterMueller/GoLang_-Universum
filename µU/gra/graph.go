@@ -8,7 +8,7 @@ import (
   "µU/ker"
   . "µU/obj"
   "µU/kbd"
-  "µU/edg"
+//  "µU/edg"
 )
 
 func (x *graph) Directed() bool {
@@ -19,7 +19,7 @@ func (x *graph) Num() uint {
   return uint(x.nVertices)
 }
 
-func (x *graph) NumSub() uint {
+func (x *graph) NumMarked() uint {
   n := uint(0)
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     if v.bool {
@@ -29,7 +29,7 @@ func (x *graph) NumSub() uint {
   return n
 }
 
-func (x *graph) NumSub1() uint {
+func (x *graph) NumMarked1() uint {
   n := uint(0)
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
     if e.bool {
@@ -62,9 +62,9 @@ func newNeighbour (e *edge, v, v1 *vertex, f bool) *neighbour {
   return nb
 }
 
-func (x *graph) insertedVertex (a Any, inSubgraph bool) *vertex {
+func (x *graph) insertedVertex (a Any, marked bool) *vertex {
   v := newVertex (a)
-  v.bool = inSubgraph
+  v.bool = marked
   v.nbPtr = newNeighbour (nil, v, nil, false)
   v.nextV, v.prevV = x.vAnchor, x.vAnchor.prevV
   v.prevV.nextV = v
@@ -72,13 +72,13 @@ func (x *graph) insertedVertex (a Any, inSubgraph bool) *vertex {
   return v
 }
 
-func (x *graph) insSub (a Any, inSubgraph bool) {
+func (x *graph) insMarked (a Any, marked bool) {
   if x.vAnchor.Any == nil { ker.Oops() }
   CheckTypeEq (a, x.vAnchor.Any)
   if x.Ex (a) { // local is set
     return
   }
-  v := x.insertedVertex (a, inSubgraph)
+  v := x.insertedVertex (a, marked)
   x.nVertices++
   if x.nVertices == 1 {
     x.colocal = v
@@ -89,7 +89,7 @@ func (x *graph) insSub (a Any, inSubgraph bool) {
 }
 
 func (x *graph) Ins (a Any) {
-  x.insSub (a, false)
+  x.insMarked (a, false)
 }
 
 func newEdge (a Any) *edge {
@@ -108,11 +108,11 @@ func insertNeighbour (n *neighbour, v *vertex) {
 }
 
 // TODO Spec
-func (x *graph) insertedEdge (a Any, inSubgraph bool) *edge {
+func (x *graph) insertedEdge (a Any, marked bool) *edge {
   CheckTypeEq (a, x.eAnchor.Any)
 //  if ! TypeEq (a, x.eAnchor.Any) { ker.Panic ("gra.insertedEdge: ! TypeEq") }
   e := newEdge (a)
-  e.bool = inSubgraph
+  e.bool = marked
   e.nbPtr0 = newNeighbour (e, x.colocal, x.local, true)
   insertNeighbour (e.nbPtr0, x.colocal)
   e.nbPtr1 = newNeighbour (e, x.local, x.colocal, ! x.bool)
@@ -125,7 +125,7 @@ func (x *graph) insertedEdge (a Any, inSubgraph bool) *edge {
 }
 
 func (x *graph) Edge (a Any) {
-  x.edgeSub (a, false)
+  x.edgeMarked (a, false)
 }
 
 // Returns nil, iff there is no edge from n to n1;
@@ -139,7 +139,7 @@ func (x *graph) connection (v, v1 *vertex) *edge {
   return nil
 }
 
-func (x *graph) edgeSub (a Any, inSubgraph bool) {
+func (x *graph) edgeMarked (a Any, marked bool) {
   if x.Empty() { return }
   if x.colocal == x.local { ker.Panic ("gra.Edge: colocal == local") }
   if a == nil { a = uint(1) }
@@ -148,7 +148,7 @@ func (x *graph) edgeSub (a Any, inSubgraph bool) {
   e := x.connection (x.colocal, x.local)
   e1 := x.connection (x.local, x.colocal)
   if e == nil && e1 == nil {
-    e = x.insertedEdge (a, inSubgraph)
+    e = x.insertedEdge (a, marked)
     x.nEdges++
     return
   }
@@ -167,7 +167,7 @@ func (x *graph) edgeSub (a Any, inSubgraph bool) {
     n.to.nbPtr.outgoing = true
   }
   n.edgePtr.Any = Clone(a)
-  n.edgePtr.bool = inSubgraph
+  n.edgePtr.bool = marked
   x.nEdges++
 }
 
@@ -366,7 +366,7 @@ func (x *graph) Put2 (v, v1 Any) {
   x.local.Any = Clone (v1)
 }
 
-func (x *graph) ClrSub() {
+func (x *graph) ClrMarked() {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     v.bool = false
   }
@@ -374,29 +374,23 @@ func (x *graph) ClrSub() {
     e.bool = false
   }
 }
-/*
-func (x *graph) SubGraph() {
-  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    v.bool = true
-  }
-  for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    e.bool = true
-  }
-}
-*/
-func (x *graph) SubAllEdges() {
-  for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    e.bool = true
-  }
-}
 
-func (x *graph) Sub (v Any) {
+func (x *graph) Mark (v Any) {
   if x.local == x.vAnchor { return }
   if ! x.Ex (v) { return }
   x.local.bool = true
 }
 
-func (x *graph) Sub2 (v, v1 Any) {
+func (x *graph) Mark1 (v Any) {
+  if x.local == x.vAnchor { return }
+  if ! x.Ex (v) { return }
+  x.local.bool = true
+  for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
+    n.edgePtr.bool = true
+  }
+}
+
+func (x *graph) Mark2 (v, v1 Any) {
   if x.local == x.vAnchor { return }
   if ! x.Ex2 (v, v1) { return }
   x.local.bool = true
@@ -407,7 +401,7 @@ func (x *graph) Sub2 (v, v1 Any) {
   }
 }
 
-func (x *graph) EqSub() bool {
+func (x *graph) AllMarked() bool {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     if ! v.bool { return false }
   }
@@ -426,7 +420,7 @@ func (x *graph) Del() {
     x.nEdges--
   }
   x.path = nil
-//  x.ClrSub() // XXX
+//  x.ClrMarked() // XXX
   v := x.local
   delVertex (x.local)
   x.nVertices--
@@ -458,25 +452,6 @@ func wait() {
   kbd.Wait (true)
 }
 
-func (x *graph) defineSubgraph (v *vertex) {
-  for v1 := v; v1 != x.colocal; v1 = v1.predecessor {
-    if v1.predecessor == nil {
-      return
-    }
-  }
-  for {
-    v.bool = true
-    if v == x.colocal { return }
-    n := v.nbPtr.nextNb
-    for n.to != v.predecessor {
-      n = n.nextNb
-      if n == v.nbPtr { ker.Oops() }
-    }
-    n.edgePtr.bool = true
-    v = v.predecessor
-  }
-}
-
 func (x *graph) Len() uint {
   l := uint(0)
   if x.vAnchor == x.vAnchor.nextV {
@@ -488,7 +463,7 @@ func (x *graph) Len() uint {
   return l
 }
 
-func (x *graph) LenSub() uint {
+func (x *graph) LenMarked() uint {
   l := uint(0)
   if x.vAnchor == x.vAnchor.nextV {
     return l
@@ -569,7 +544,7 @@ func (x *graph) InvLoc() {
 }
 
 func (x *graph) Relocate() {
-  x.ClrSub() // XXX
+  x.ClrMarked() // XXX
   x.local, x.colocal = x.colocal, x.local
   x.colocal.bool = true
   x.path = nil
@@ -577,7 +552,7 @@ func (x *graph) Relocate() {
 }
 
 func (x *graph) locate (colocal2local bool) {
-  x.ClrSub() // XXX
+  x.ClrMarked() // XXX
   if colocal2local {
     x.colocal = x.local
   } else {
@@ -785,14 +760,16 @@ func (x *graph) ConnCond (p Pred) bool {
 }
 
 func (x *graph) Star() Graph {
+  if x.vAnchor == x.vAnchor.nextV { return nil }
   y := new_(x.bool, x.vAnchor.Any, x.eAnchor.Any).(*graph)
   y.Ins (x.local.Any)
+  y.local.bool = true
   local := y.local
   if y.local != y.colocal { ker.Oops() }
   if ! x.bool {
     for n, i := x.local.nbPtr.nextNb, uint(0); n != x.local.nbPtr; n, i = n.nextNb, i + 1 {
       y.Ins (Clone(n.to.Any)) // a now colocal
-      y.Edge (Clone(n.edgePtr.Any)) // edge from a to local inserted vertex with same content as in x
+      y.edgeMarked (Clone(n.edgePtr.Any), true) // edge from a to local inserted vertex with same content as in x
       y.local = local // a now again local in y
     }
   } else { // x.bool
@@ -802,19 +779,12 @@ func (x *graph) Star() Graph {
       } else { // ! n.outgoing: want edge from new inserted to a
         y.local, y.colocal = y.colocal, y.local
       }
-      y.Edge (Clone(n.edgePtr.Any)) // edge in y from colocal to local
+      y.edgeMarked (Clone(n.edgePtr.Any), true) // edge in y from colocal to local
       y.local = local
     }
   }
+  y.SetWrite (x.Writes())
   return y
-}
-
-func (x *graph) Equiv() bool {
-  if x.Empty() {
-    return false
-  }
-  x.Isolate()
-  return x.local.repr == x.colocal.repr
 }
 
 func (x *graph) Add (Ys ...Graph) {
@@ -825,7 +795,7 @@ func (x *graph) Add (Ys ...Graph) {
       if x.Ex (v.Any) && ! x.local.bool {
         x.local.bool = v.bool
       } else {
-        x.insSub (v.Any, v.bool)
+        x.insMarked (v.Any, v.bool)
       }
     }
     for e := y.eAnchor.nextE; e != y.eAnchor; e = e.nextE {
@@ -833,8 +803,8 @@ func (x *graph) Add (Ys ...Graph) {
         e1 := x.connection (x.colocal, x.local)
         e2 := x.connection (x.local, x.colocal)
         if e1 == nil && e2 == nil {
-          x.edgeSub (e.Any, e.bool)
-println("edg", e.Any.(edg.Edge).(Valuator).Val())
+          x.edgeMarked (e.Any, e.bool)
+// println("edg", e.Any.(edg.Edge).(Valuator).Val())
         } else if e1 != nil && ! e1.bool { // x.colacal already connected with x.local
           e1.bool = e.bool
         } else if e2 != nil && ! e2.bool {

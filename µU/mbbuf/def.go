@@ -1,10 +1,10 @@
 package mbbuf
 
-// (c) Christian Maurer   v. 171106 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 import (
   . "µU/obj"
-  "µU/host"
+//  "µU/host"
 )
 type
   MBoundedBuffer interface { // Synchronized buffers of bounded capacity.
@@ -44,4 +44,4 @@ func NewCh1 (a Any, n uint) MBoundedBuffer { return newCh1(a,n) }
 func NewGS (a Any, n uint) MBoundedBuffer { return newgs(a,n) }
 
 // Implementation with a far monitor
-func NewFM (a Any, n uint, h host.Host, p uint16, s bool) MBoundedBuffer { return newfm(a,n,h,p,s) }
+func NewFM (a Any, n uint, h /* host.Host */ string, p uint16, s bool) MBoundedBuffer { return newfm(a,n,h,p,s) }

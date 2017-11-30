@@ -1,11 +1,10 @@
 package mstk
 
-// (c) Christian Maurer   v. 161226 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/stk"
-  "µU/host"
   "µU/fmon"
 )
 const (
@@ -20,7 +19,7 @@ type
                     fmon.FarMonitor
                     }
 
-func NewFarMonitor (a Any, h host.Host, p uint16, s bool) MStack {
+func NewFarMonitor (a Any, h string, p uint16, s bool) MStack {
   x := new (farMonitor)
   x.Stack = stk.New (a)
   c := func (a Any, i uint) bool {

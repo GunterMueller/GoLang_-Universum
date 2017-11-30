@@ -1,12 +1,11 @@
 package sem
 
-// (c) Christian Maurer   v. 171017 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 // >>> Implementation with a far monitor
 
 import (
   . "µU/obj"
-  "µU/host"
   "µU/fmon"
 )
 type
@@ -14,7 +13,7 @@ type
                     fmon.FarMonitor
                     }
 
-func newFM (n uint, h host.Host, port uint16, s bool) Semaphore {
+func newFM (n uint, h string, port uint16, s bool) Semaphore {
   x := new(farMonitor)
   val := n
   c := func (a Any, i uint) bool {

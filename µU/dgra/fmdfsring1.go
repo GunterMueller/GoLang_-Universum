@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 //
 // >>> Construction of a directed ring using the idea of Awerbuch's DFS-algorithm
 
@@ -11,11 +11,13 @@ import (
 )
 
 func (x *distributedGraph) fmdfsring1() {
-//  go func() { fmon.New (nil, 3, x.dr1, AllTrueSp, x.actHost, p0 + uint16(3 * x.me), true) }()
-  go func() { fmon.New (nil, 3, x.dr1, AllTrueSp, x.actHost, uint16(3 * x.me), true) }()
+  go func() {
+    fmon.New (nil, 3, x.dr1, AllTrueSp,
+              x.actHost, p0 + uint16(3 * x.me), true)
+  }()
   for i := uint(0); i < x.n; i++ {
-//    x.mon[i] = fmon.New (nil, 3, x.dr1, AllTrueSp, x.host[i], p0 + uint16(3 * x.nr[i]), false)
-    x.mon[i] = fmon.New (nil, 3, x.dr1, AllTrueSp, x.host[i], uint16(3 * x.nr[i]), false)
+    x.mon[i] = fmon.New (nil, 3, x.dr1, AllTrueSp,
+                         x.host[i], p0 + uint16(3 * x.nr[i]), false)
   }
   defer x.finMon()
   x.awaitAllMonitors()
@@ -23,7 +25,7 @@ func (x *distributedGraph) fmdfsring1() {
   x.ring.Clr()
   if x.me == x.root {
     x.ring.Ins (x.actVertex)
-    x.ring.Sub (x.actVertex)
+    x.ring.Mark (x.actVertex)
     for k := uint(0); k < x.n; k++ {
       bs := Encode(x.me)
       x.mon[k].F(bs, visit)
@@ -34,7 +36,7 @@ func (x *distributedGraph) fmdfsring1() {
         x.child[k] = true
         x.ring.Ex(x.actVertex)
         bs := append(Encode(x.me), x.ring.Encode()...)
-        bs = x.mon[k].F(bs, discover).([]byte)
+        bs = x.mon[k].F(bs, discover).(Stream)
         x.ring = x.decodedGraph(bs[C0:])
         x.ring.Write()
       }
@@ -56,7 +58,7 @@ func (x *distributedGraph) fmdfsring1() {
 
 func (x *distributedGraph) dr1 (a Any, i uint) Any {
   x.awaitAllMonitors()
-  bs := a.([]byte)
+  bs := a.(Stream)
   s := Decode(uint(0), bs[:C0]).(uint)
   j := x.channel(s)
   switch i {
@@ -79,7 +81,7 @@ func (x *distributedGraph) dr1 (a Any, i uint) Any {
         x.visited[k] = true
         x.child[k] = true
         bs := append(Encode(x.me), x.ring.Encode()...)
-        bs = x.mon[k].F(bs, discover).([]byte)
+        bs = x.mon[k].F(bs, discover).(Stream)
         x.ring = x.decodedGraph(bs[C0:])
         x.ring.Write()
       }

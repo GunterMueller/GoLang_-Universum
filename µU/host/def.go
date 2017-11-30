@@ -1,6 +1,6 @@
 package host
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 import (
   . "µU/obj"
@@ -32,7 +32,11 @@ type
   Local() bool
 }
 
-// Retirms a new empty host.
+// Returns a new empty host.
 func New() Host { return new_() }
+
+// Pre: s denotes a host contained in /etc/hosts
+//      or reachable by DNS.
+func NewS (s string) Host { return news(s) }
 
 func Localhost() Host { return localhost() }

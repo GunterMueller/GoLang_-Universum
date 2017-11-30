@@ -1,11 +1,9 @@
 package nchan
 
-// (c) Christian Maurer   v. 170507 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
-import (
+import
   . "µU/obj" // see also µU/host
-  "µU/host"
-)
 const
   Port0 = uint16(50000) // uint16(1<<16 - 1<<14) // first private port (= 49152)
 type
@@ -36,14 +34,14 @@ type
   Fin()
 }
 
-// h0 always denotes the calling host (running the calling process).
+// h0 always denotes the name of the host running the calling process.
 
 // For all constructors for the first parameter a the following holds:
 //      For a == nil, arbitrary objects of Codelen <= 1<<32 can be passed.
 //      In this case, calls of Recv() return only slices of bytes, so
 //      it is up to the receiver to Decode the object wanted to receive.
 //
-// Pre: h is in /etc/hosts or resolvable per DNS (! h.Empty());
+// Pre: h is contained in /etc/hosts or denotes a DNS-resolvable host.
 //      h is different from h0.
 //      p > 0; p is not used on h0 or h by a network service.
 //      The communication partner calls New with
@@ -53,7 +51,7 @@ type
 // Returns a asynchronous 1:1 channel for messages of the type of a
 // between h0 and h over port p.
 // p is now used on h0 and h by a network service.
-func NewD (a Any, h host.Host, p uint16) NetChannel { return newd(a,h,p) }
+func NewD (a Any, h string, p uint16) NetChannel { return newd(a,h,p) }
 
 // Pre: h is in /etc/hosts or resolvable per DNS (! h.Empty()).
 //      me != i; me is the identity of h0 and i is the identity of h
@@ -67,18 +65,18 @@ func NewD (a Any, h host.Host, p uint16) NetChannel { return newd(a,h,p) }
 // Returns a asynchronous 1:1 channel for messages of the type of a
 // between h0 and h over port p.
 // p is now used on h0 and h by a network service.
-func New (a Any, me, i uint, h host.Host, p uint16) NetChannel { return new_(a,me,i,h,p) }
+func New (a Any, me, i uint, h string, p uint16) NetChannel { return new_(a,me,i,h,p) }
 
 // See above function. To be called in the constructor of a far monitor.
 // h is the server; s == true, if the calling process is the serving monitor.
 // i and o are the in- and outgoing channels for the internal communication
 // of the calling far monitor.
-func NewN (a Any, h host.Host, p uint16, s bool) NetChannel { return newn(a,h,p,s) }
+func NewN (a Any, h string, p uint16, s bool) NetChannel { return newn(a,h,p,s) }
 
 // Note: In case of consecutive calls of New you have to keep
 //       the correct pairing in both programs to avoid deadlocks!
 
-// Pre: i, j < n, a < 2.
-// Returns different port numbers 0..a * NPorts(n)-1.
+// Pre: i, j < n; a < 2.
+// Returns different port numbers 0..NPorts(n,a).
 func Port (n, i, j, a uint) uint16 { return port(n,i,j,a) }
 func NPorts (n, a uint) uint { return nPorts(n,a) }

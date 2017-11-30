@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 //
 // >>> simplified version of the algorithm of B. Awerbuch:
 //     A New Distributed Depth-First-Search Algorithm, Inf, Proc. Letters 28 (1985) 147-160 
@@ -11,11 +11,13 @@ import (
 )
 
 func (x *distributedGraph) fmdfsa1 (o Op) {
-//  go func() { fmon.New (nil, 3, x.da1, AllTrueSp, x.actHost, p0 + uint16(3 * x.me), true) }()
-  go func() { fmon.New (nil, 3, x.da1, AllTrueSp, x.actHost, uint16(3 * x.me), true) }()
+  go func() {
+    fmon.New (nil, 3, x.da1, AllTrueSp,
+              x.actHost, p0 + uint16(3 * x.me), true)
+  }()
   for i := uint(0); i < x.n; i++ {
-//    x.mon[i] = fmon.New (nil, 3, x.da1, AllTrueSp, x.host[i], p0 + uint16(3 * x.nr[i]), false)
-    x.mon[i] = fmon.New (nil, 3, x.da1, AllTrueSp, x.host[i], uint16(3 * x.nr[i]), false)
+    x.mon[i] = fmon.New (nil, 3, x.da1, AllTrueSp,
+                         x.host[i], p0 + uint16(3 * x.nr[i]), false)
   }
   defer x.finMon()
   x.awaitAllMonitors()
@@ -25,7 +27,7 @@ func (x *distributedGraph) fmdfsa1 (o Op) {
   if x.me == x.root {
     x.parent = x.me
     x.tree.Ins (x.actVertex)
-    x.tree.Sub (x.actVertex)
+    x.tree.Mark (x.actVertex)
     x.tree.Write()
     for k := uint(0); k < x.n; k++ {
       x.mon[k].F(x.tree, visit)
@@ -35,7 +37,7 @@ func (x *distributedGraph) fmdfsa1 (o Op) {
         x.visited[k] = true
         x.child[k] = true
         x.tree.Ex (x.actVertex)
-        bs := x.mon[k].F(x.tree, discover).([]byte)
+        bs := x.mon[k].F(x.tree, discover).(Stream)
         x.tree = x.decodedGraph(bs)
         x.tree.Write()
       }
@@ -54,7 +56,7 @@ func (x *distributedGraph) fmdfsa1 (o Op) {
 
 func (x *distributedGraph) da1 (a Any, i uint) Any {
   x.awaitAllMonitors()
-  bs := a.([]byte)
+  bs := a.(Stream)
   x.tree = x.decodedGraph(bs)
   s := nrLocal(x.tree)
   j := x.channel(s)
@@ -63,7 +65,7 @@ func (x *distributedGraph) da1 (a Any, i uint) Any {
     x.visited[j] = true
   case discover:
     x.tree.Ins (x.actVertex) // x.nb[j] colocal, x.actVertex local
-    x.tree.Edge (x.directedEdge (x.nb[j], x.actVertex))
+    x.tree.Edge (x.edge(x.nb[j], x.actVertex))
     x.tree.Write()
     x.parent = x.nr[j]
     for k := uint(0); k < x.n; k++ {
@@ -77,7 +79,7 @@ func (x *distributedGraph) da1 (a Any, i uint) Any {
         x.visited[k] = true
         x.child[k] = true
         x.tree.Ex (x.actVertex)
-        bs = x.mon[k].F(x.tree, discover).([]byte)
+        bs = x.mon[k].F(x.tree, discover).(Stream)
         x.tree = x.decodedGraph(bs)
         x.tree.Write()
       }

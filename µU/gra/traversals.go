@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171112 - license see µU.go
+// (c) Christian Maurer   v. 171122 - license see µU.go
 
 import
   . "µU/obj"
@@ -14,7 +14,7 @@ func (x *graph) True (p Pred) bool {
   return true
 }
 
-func (x *graph) TrueSub (p Pred) bool {
+func (x *graph) TrueMarked (p Pred) bool {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     if v.bool {
       if ! p (v.Any) {

@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171112 - license see µU.go
+// (c) Christian Maurer   v. 171122 - license see µU.go
 
 // topological Sort, CLR 23.4, CLRS 22.4
 // TODO spec
@@ -58,7 +58,7 @@ func (x *graph) Isolate() {
   }
 }
 
-func (x *graph) IsolateSub() {
+func (x *graph) IsolateMarked() {
   x.Isolate()
 // only exactly those vertices in the actual subgraph, that
 // are contained in the strong connection component of the local vertex:
@@ -69,4 +69,33 @@ func (x *graph) IsolateSub() {
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
     e.bool = e.nbPtr0.from.bool && e.nbPtr1.from.bool
   }
+}
+
+func (x *graph) Equiv() bool {
+  if x.Empty() {
+    return false
+  }
+  x.Isolate()
+  return x.local.repr == x.colocal.repr
+}
+
+// Returns true, iff every vertex of x is accessible from every other one by a path.
+func (x *graph) totallyConnected() bool {
+  if x.nVertices <= 1 {
+    return true
+  }
+  if x.bool {
+    x.Isolate()
+  } else {
+    x.dfs()
+  }
+  v := x.vAnchor.nextV
+  e0 := v.repr
+  for v != x.vAnchor {
+    if v.repr != e0 {
+      return false
+    }
+    v = v.nextV
+  }
+  return true
 }

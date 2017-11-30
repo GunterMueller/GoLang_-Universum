@@ -45,11 +45,11 @@ func (x *adjacencyMatrix) Set (i, k uint, v, e Any) {
   CheckTypeEq (v, x.v)
   CheckTypeEq (e, x.e)
   if i == k {
-    x.entry[i][k].edge = Clone(x.e) // no loops
-    x.entry[i][k].vertex = Clone(v)
+    x.entry[i][i].vertex = Clone(v)
+    x.entry[i][i].edge = Clone(x.e) // no loops
   } else {
-    x.entry[i][k].edge = Clone(e)
     x.entry[i][k].vertex = Clone(x.v) // no vertex
+    x.entry[i][k].edge = Clone(e)
   }
 }
 
@@ -109,8 +109,7 @@ func (x *adjacencyMatrix) Write (l, c uint) {
       if val > 0 {
         scr.WriteNat (val, l + i, c + 2 * k)
       } else if i == k {
-//        scr.Write ("*", l + i, c + 2 * k)
-        scr.WriteNat (x.entry[i][i].vertex.(uint), l + i, c + 2 * k)
+        scr.Write ("*", l + i, c + 2 * k)
       } else {
         scr.Write (".", l + i, c + 2 * k)
       }

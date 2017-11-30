@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 171122 - license see µU.go
 
 import (
   "µU/ker"
@@ -127,8 +127,8 @@ func (x *graph) Codelen() uint {
   return c
 }
 
-func (x *graph) Encode() []byte {
-  bs := make ([]byte, x.Codelen())
+func (x *graph) Encode() Stream {
+  bs := make (Stream, x.Codelen())
   bs[0] = 0; if x.bool { bs[0] = 1 }
   i, a := uint32(1), uint32(4)
   copy (bs[i:i+a], Encode (x.nVertices))
@@ -174,7 +174,7 @@ func (x *graph) Encode() []byte {
   return bs
 }
 
-func (x *graph) check (s string, i, a uint32, bs []byte) {
+func (x *graph) check (s string, i, a uint32, bs Stream) {
   n := uint32(len(bs))
   if i >= n {
     errh.Error2(s + ": i =", uint(i), ">= len(bs) =", uint(n))
@@ -186,7 +186,7 @@ func (x *graph) check (s string, i, a uint32, bs []byte) {
   }
 }
 
-func (x *graph) Decode (bs []byte) {
+func (x *graph) Decode (bs Stream) {
   if len(bs) == 0 { panic("gra.Decode: len(bs) == 0") }
   x.Clr()
   x.bool = bs[0] == 1
@@ -199,12 +199,12 @@ func (x *graph) Decode (bs []byte) {
   for n := uint32(0); n < x.nVertices; n++ {
     k := Decode (uint32(0), bs[i:i+a]).(uint32)
     i += a
-    inSubgraph := bs[i] == 1
+    marked := bs[i] == 1
     i++
     vc := Clone (x.vAnchor.Any)
     content := Decode (x.vAnchor.Any, bs[i:i+k])
     x.vAnchor.Any = Clone (vc)
-    x.insertedVertex (content, inSubgraph)
+    x.insertedVertex (content, marked)
     i += k
   }
   p := Decode (uint32(0), bs[i:i+a]).(uint32)

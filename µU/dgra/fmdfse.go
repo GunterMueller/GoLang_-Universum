@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 170508 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 // Find the leader by depth-first-search:
 // Compare the own identity with the received value and return the appropriate value.
@@ -11,11 +11,13 @@ import (
 )
 
 func (x *distributedGraph) fmdfse() {
-//  go func() { fmon.New (uint(0), 3, x.de, AllTrueSp, x.actHost, p0 + uint16(3 * x.me), true) }()
-  go func() { fmon.New (uint(0), 3, x.de, AllTrueSp, x.actHost, uint16(3 * x.me), true) }()
+  go func() {
+    fmon.New (uint(0), 3, x.de, AllTrueSp,
+              x.actHost, p0 + uint16(3 * x.me), true)
+  }()
   for i := uint(0); i < x.n; i++ {
-//    x.mon[i] = fmon.New (uint(0), 3, x.de, AllTrueSp, x.host[i], p0 + uint16(3 * x.nr[i]), false)
-    x.mon[i] = fmon.New (uint(0), 3, x.de, AllTrueSp, x.host[i], uint16(3 * x.nr[i]), false)
+    x.mon[i] = fmon.New (uint(0), 3, x.de, AllTrueSp,
+                         x.host[i], p0 + uint16(3 * x.nr[i]), false)
   }
   defer x.finMon()
   x.awaitAllMonitors()

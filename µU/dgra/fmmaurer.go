@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 171124 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,11 +9,13 @@ import (
 
 func (x *distributedGraph) fmMaurer() {
   in, out := uint(1), uint(0); if x.Graph.Outgoing(1) { in, out = out, in }
-//  go func() { fmon.New (nil, 1, x.addMeVertex, AllTrueSp, x.actHost, p0 + uint16(x.me), true) }()
-  go func() { fmon.New (nil, 1, x.addMeVertex, AllTrueSp, x.actHost, uint16(x.me), true) }()
+  go func() {
+    fmon.New (nil, 1, x.addMeVertex, AllTrueSp,
+              x.actHost, p0 + uint16(x.me), true)
+  }()
   for i := uint(0); i < x.n; i++ {
-//    x.mon[i] = fmon.New (nil, 1, x.addMeVertex, AllTrueSp, x.host[i], p0 + uint16(x.nr[i]), false)
-    x.mon[i] = fmon.New (nil, 1, x.addMeVertex, AllTrueSp, x.host[i], uint16(x.nr[i]), false)
+    x.mon[i] = fmon.New (nil, 1, x.addMeVertex, AllTrueSp,
+                         x.host[i], p0 + uint16(x.nr[i]), false)
   }
   defer x.finMon()
   x.awaitAllMonitors()
@@ -23,8 +25,8 @@ func (x *distributedGraph) fmMaurer() {
     x.ring.Ins (x.actVertex)
     x.ring.Write()
     bs := x.ring.Encode()
-    bs = x.mon[out].F(bs, 0).([]byte)
-    x.ring = x.decodedGraph(bs)
+    bs = x.mon[out].F(bs, 0).(Stream)
+    x.ring = x.decodedGraph (bs)
     x.ring.Write()
   } else {
     <-done
@@ -32,13 +34,13 @@ func (x *distributedGraph) fmMaurer() {
   x.ring.Write()
   x.leader = valueMax (x.ring)
   exValue (x.ring, x.leader)
-  x.ring.Sub (x.leader)
+  x.ring.Mark (x.leader)
   x.ring.Write()
 }
 
 func (x *distributedGraph) addMeVertex (a Any, i uint) Any {
   x.awaitAllMonitors()
-  bs := a.([]byte)
+  bs := a.(Stream)
   x.ring = x.decodedGraph(bs)
   s := nrLocal(x.ring)
   j := x.channel(s)
@@ -54,7 +56,7 @@ func (x *distributedGraph) addMeVertex (a Any, i uint) Any {
     }
     x.ring.Write()
     bs = x.ring.Encode()
-    bs = x.mon[out].F(bs, 0).([]byte)
+    bs = x.mon[out].F(bs, 0).(Stream)
     x.ring = x.decodedGraph(bs)
     x.ring.Write()
   }

@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 171107 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 import (
   "net"
@@ -30,7 +30,6 @@ type
                 buf []byte
                     int "number of sent/received bytes"
                     error
-//       cport, sport uint
                     }
 
 func (x *netChannel) panicIfErr() {
@@ -39,11 +38,9 @@ func (x *netChannel) panicIfErr() {
   }
 }
 
-func new_(a Any, me, i uint, h host.Host, p uint16) NetChannel {
-  if h.Empty() { Panic("nchan.New: h.Empty()") }
+func new_(a Any, me, i uint, n string, p uint16) NetChannel {
   if me == i { Panic("nchan.New: me == i") }
   x := new(netChannel)
-
   if a == nil {
     x.Any, x.uint = nil, maxWidth
   } else {
@@ -53,9 +50,9 @@ func new_(a Any, me, i uint, h host.Host, p uint16) NetChannel {
   x.buf = make([]byte, x.uint)
   x.oneOne = true
   x.isServer = me < i
-  port := Port0 + p
+  h, port := host.NewS(n), Port0 + p
   if x.isServer {
-    x.Listener, x.error = net.Listen (network, naddr.New2 (host.New(), port).String())
+    x.Listener, x.error = net.Listen (network, naddr.New2 (h, port).String())
     x.panicIfErr()
     x.Conn, x.error = x.Listener.Accept()
   } else { // client

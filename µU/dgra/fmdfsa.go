@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 170510 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 //
 // >>> simplified version of the algorithm of B. Awerbuch:
 //     A New Distributed Depth-First-Search Algorithm, Inf, Proc. Letters 28 (1985) 147-160 
@@ -15,11 +15,13 @@ const (
 )
 
 func (x *distributedGraph) fmdfsa (o Op) {
-//  go func() { fmon.New (uint(0), 2, x.da, AllTrueSp, x.actHost, p0 + uint16(2 * x.me), true) }()
-  go func() { fmon.New (uint(0), 2, x.da, AllTrueSp, x.actHost, uint16(2 * x.me), true) }()
+  go func() {
+    fmon.New (uint(0), 2, x.da, AllTrueSp,
+              x.actHost, p0 + uint16(2 * x.me), true)
+  }()
   for i := uint(0); i < x.n; i++ {
-//    x.mon[i] = fmon.New (uint(0), 2, x.da, AllTrueSp, x.host[i], p0 + uint16(2 * x.nr[i]), false)
-    x.mon[i] = fmon.New (uint(0), 2, x.da, AllTrueSp, x.host[i], uint16(2 * x.nr[i]), false)
+    x.mon[i] = fmon.New (uint(0), 2, x.da, AllTrueSp,
+                         x.host[i], p0 + uint16(2 * x.nr[i]), false)
   }
   defer x.finMon()
   x.awaitAllMonitors()

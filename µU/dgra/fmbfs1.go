@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,12 +9,12 @@ import (
 
 func (x *distributedGraph) fmbfs1 (o Op) {
   go func() {
-//    fmon.New (nil, 2, x.b1, AllTrueSp, x.actHost, p0 + uint16(2 * x.me), true)
-    fmon.New (nil, 2, x.b1, AllTrueSp, x.actHost, uint16(2 * x.me), true)
+    fmon.New (nil, 2, x.b1, AllTrueSp,
+              x.actHost, p0 + uint16(2 * x.me), true)
   }()
   for i := uint(0); i < x.n; i++ {
-//    x.mon[i] = fmon.New (nil, 2, x.b1, AllTrueSp, x.host[i], p0 + uint16(2 * x.nr[i]), false)
-    x.mon[i] = fmon.New (nil, 2, x.b1, AllTrueSp, x.host[i], uint16(2 * x.nr[i]), false)
+    x.mon[i] = fmon.New (nil, 2, x.b1, AllTrueSp,
+                         x.host[i], p0 + uint16(2 * x.nr[i]), false)
   }
   defer x.finMon()
   x.awaitAllMonitors()
@@ -23,7 +23,7 @@ func (x *distributedGraph) fmbfs1 (o Op) {
   x.parent = inf
   x.tree.Clr()
   x.tree.Ins (x.actVertex)
-  x.tree.Sub (x.actVertex)
+  x.tree.Mark (x.actVertex)
   x.tree.Write()
   if x.me == x.root {
     x.parent = x.me
@@ -33,7 +33,7 @@ func (x *distributedGraph) fmbfs1 (o Op) {
         if ! x.visited[k] {
           x.tree.Ex(x.actVertex)
           bs := append(Encode(x.distance), x.tree.Encode()...)
-          bs = x.mon[k].F(bs, 0).([]byte)
+          bs = x.mon[k].F(bs, 0).(Stream)
           if len(bs) == 0 {
             x.visited[k] = true
           } else {
@@ -63,7 +63,7 @@ func (x *distributedGraph) fmbfs1 (o Op) {
 
 func (x *distributedGraph) b1 (a Any, i uint) Any {
   x.awaitAllMonitors()
-  bs := a.([]byte)
+  bs := a.(Stream)
   x.distance = Decode(uint(0), bs[:C0]).(uint)
   x.tree = x.decodedGraph(bs[C0:])
   x.tree.Write()
@@ -79,7 +79,7 @@ func (x *distributedGraph) b1 (a Any, i uint) Any {
       if ! x.tree.Ex(x.actVertex) {
         x.tree.Ins(x.actVertex)
       }
-      x.tree.Edge (x.directedEdge(x.nb[j], x.actVertex)) // XXX colocal == local
+      x.tree.Edge (x.edge(x.nb[j], x.actVertex)) // XXX colocal == local
       x.tree.Ex(x.actVertex)
       x.tree.Write()
       x.Op (x.actVertex)
@@ -90,7 +90,7 @@ func (x *distributedGraph) b1 (a Any, i uint) Any {
       if k != j && ! x.visited[k] {
         x.tree.Ex (x.actVertex)
         bs := append(Encode(x.distance - 1), x.tree.Encode()...)
-        bs = x.mon[k].F(bs, 0).([]byte)
+        bs = x.mon[k].F(bs, 0).(Stream)
         if len(bs) == 0 {
           x.visited[k] = true
         } else {

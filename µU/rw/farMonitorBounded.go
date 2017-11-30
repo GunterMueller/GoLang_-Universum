@@ -1,12 +1,11 @@
 package rw
 
-// (c) Christian Maurer   v. 171107 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 // >>> bounded readers/writers problem
 
 import (
   . "µU/obj"
-  "µU/host"
   "µU/fmon"
 )
 type
@@ -14,7 +13,7 @@ type
                            fmon.FarMonitor
                            }
 
-func newFMB (m uint, h host.Host, port uint16, s bool) ReaderWriter {
+func newFMB (m uint, h string, port uint16, s bool) ReaderWriter {
   if m == 0 { m = inf } // unbounded case
   var nR, nW uint
   var tR uint // number of active readers within one turn

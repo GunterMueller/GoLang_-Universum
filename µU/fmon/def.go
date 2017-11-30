@@ -1,11 +1,9 @@
 package fmon
 
-// (c) Christian Maurer   v. 170508 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
-import (
+import
   . "µU/obj"
-  "µU/host"
-)
 type
   FarMonitor interface { // x always denotes the calling object.
 
@@ -23,7 +21,7 @@ type
 }
 
 // Pre: fs and ps are defined in their second argument for all i < n.
-//      h is by an entry in /etc/hosts or DNS-lookup reachable,
+//      h is contained in /etc/hosts or denotes a DNS-resolvable host,
 //      p is not used by any network service.
 //      If s == true, New is called in a process on the host h.
 // Returns a new far monitor with n monitor operations.
@@ -41,26 +39,12 @@ type
 // the needed net channels are opened.
 // The far monitor runs as server, iff s == true; otherwise as client.
 func New (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
-          h host.Host, p uint16, s bool) FarMonitor {
-  return new_(a, n, fs, ps, h, p, s)
+          h string, p uint16, s bool) FarMonitor {
+  return new_(a,n,fs,ps,h,p,s)
 }
 
 // See above. Additionally, st is executed by the server before it starts serving.
 func NewS (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
-           h host.Host, p uint16, s bool, stmt Stmt) FarMonitor {
-  return newS(a, n, fs, ps, h, p, s, stmt)
-}
-
-type
-  FarMonitorM interface {
-  Fm (a Any, i, k uint) Any
-  Fin()
-}
-
-// Pre: j is the id of the calling process,
-//      nr are the ids of the neighbours of the calling process.
-// See above. Additionally, for each server-client-pair there is an own channel.
-func NewM (a Any, n, j uint, nr []uint, fs FuncSpectrum, ps PredSpectrum,
-           h host.Host, p []uint16, s bool) FarMonitorM {
-  return newM (a, n, j, nr, fs, ps, h, p, s)
+           h string, p uint16, s bool, stmt Stmt) FarMonitor {
+  return news(a, n, fs, ps, h, p, s, stmt)
 }

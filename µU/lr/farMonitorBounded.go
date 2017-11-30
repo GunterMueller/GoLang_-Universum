@@ -1,12 +1,11 @@
 package lr
 
-// (c) Christian Maurer   v. 171107 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 // >>> bounded left/right problem
 
 import (
   . "µU/obj"
-  "µU/host"
   "µU/fmon"
 )
 type
@@ -14,7 +13,7 @@ type
                            fmon.FarMonitor
                            }
 
-func newFMonB (mL, mR uint, h host.Host, port uint16, s bool) LeftRight {
+func newFMonB (mL, mR uint, h string, port uint16, s bool) LeftRight {
   if mL * mR == 0 { mL, mR = inf, inf } // unbounded case
   var nL, nR uint
   var tL, tR uint // number of actives within one turn

@@ -1,9 +1,11 @@
 package sem
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
+/*
 import
   "µU/host"
+*/
 type
   Semaphore interface { // Protocols for critical sections.
                         // Neither P nor V can be interrupted by calls
@@ -52,4 +54,4 @@ func NewChannel (n uint) Semaphore { return newCh(n) }
 func NewGSel (n uint) Semaphore { return newGS(n) }
 
 // Implementation for distributed use
-func NewFMon (n uint, h host.Host, p uint16, s bool) Semaphore { return newFM(n,h,p,s) }
+func NewFMon (n uint, h /* host.Host */ string, p uint16, s bool) Semaphore { return newFM(n,h,p,s) }

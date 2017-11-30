@@ -1,12 +1,11 @@
 package lr
 
-// (c) Christian Maurer   v. 171101 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 // >>> 1st left/right problem
 
 import (
   . "µU/obj"
-  "µU/host"
   "µU/fmon"
 )
 type
@@ -14,7 +13,7 @@ type
                     fmon.FarMonitor
                     }
 
-func newFMon (h host.Host, port uint16, s bool) LeftRight {
+func newFMon (h string, port uint16, s bool) LeftRight {
   var nL, nR uint
   x := new(farMonitor)
   p := func (a Any, i uint) bool {

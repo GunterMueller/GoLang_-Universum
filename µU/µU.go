@@ -85,7 +85,6 @@ import (
   "µU/naddr"
   "µU/dlock"
   "µU/dgra"
-  "µU/dgras"
   "µU/vnset"
 )
 var
@@ -217,7 +216,6 @@ func main() { // just to get all stuff compiled
   macc.New()
   naddr.New(nchan.Port0)
   dgra.Touch()
-  dgras.Touch()
   dlock.New(0, nil, 0)
   vnset.EmptySet()
   go input()

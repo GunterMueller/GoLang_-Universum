@@ -295,17 +295,20 @@ func wait (w *bool) {
 
 func (x *graphModel) DFS (all bool) {
   x.Mark (true)
+////////////////////////////////////////////////////////////////////
   x.Write()
 //  kbd.Wait (true)
   n := x.NumNeighboursOut()
   if n > 0 {
     for i := uint(0); i < n; i++ {
       x.Step (i, true)
-      if x.Marked() {
+      if false { // x.Marked() {
+////////////////////////////////////////////////////////////////////
         x.Step (0, false)
       } else {
         x.DFS (all)
         if all { x.Mark (false) } // for _all_ ways
+////////////////////////////////////////////////////////////////////
         x.Step (0, false)
         x.Write()
 //        kbd.Wait (true)
@@ -319,7 +322,7 @@ func (x *graphModel) BFS (all bool) {
   if x.Conn() {
     x.Act()
     x.Write()
-    errh.Error ("ein kürzester Weg in Hinrichtung der Länge", x.NumSub1())
+    errh.Error ("ein kürzester Weg in Hinrichtung der Länge", x.NumMarked1())
   } else {
     x.Write()
     errh.Error0("es gibt keinen Weg in Hinrichtung")
@@ -330,7 +333,7 @@ func (x *graphModel) BFS (all bool) {
     if x.Conn() {
       x.Act()
       x.Write()
-      errh.Error ("ein (kürzester) Weg in Rückrichtung der Länge", x.NumSub1())
+      errh.Error ("ein (kürzester) Weg in Rückrichtung der Länge", x.NumMarked1())
     } else {
       errh.Error0("es gibt keinen Weg in Rückrichtung")
     }
@@ -339,6 +342,7 @@ func (x *graphModel) BFS (all bool) {
 
 func (x *graphModel) Hamilton (ready, ok Cond, w *bool) {
   x.Mark (true)
+////////////////////////////////////////////////////////////////////
   if ready() {
     x.nWays++
     x.Graph.Write()
@@ -347,12 +351,14 @@ func (x *graphModel) Hamilton (ready, ok Cond, w *bool) {
     n := x.NumNeighboursOut()
     for i := uint(0); i < n; i++ {
       x.Step (i, true)
-      if x.Marked() || ! ok() {
+      if false { // x.Marked() || ! ok() {
+////////////////////////////////////////////////////////////////////
         x.Step (0, false)
       } else {
         x.Graph.Write(); wait (w)
         x.Hamilton (ready, ok, w)
         x.Mark (false)
+////////////////////////////////////////////////////////////////////
         x.Step (0, false)
         x.Graph.Write(); wait (w)
       }

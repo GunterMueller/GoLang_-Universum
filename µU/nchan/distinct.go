@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 170923 - license see µU.go
+// (c) Christian Maurer   v. 170925 - license see µU.go
 
 import (
   "net"
@@ -10,8 +10,7 @@ import (
   "µU/naddr"
 )
 
-func newd (a Any, h host.Host, p uint16) NetChannel {
-  if h.Empty() { Panic("nchan.newd: h.Empty()") }
+func newd (a Any, h string, p uint16) NetChannel {
   x := new(netChannel)
   if a == nil {
     x.Any, x.uint = nil, maxWidth
@@ -21,7 +20,7 @@ func newd (a Any, h host.Host, p uint16) NetChannel {
   x.in, x.out = make(chan Any), make(chan Any)
   x.buf = make([]byte, x.uint)
   x.oneOne = true
-  n0, n1 := naddr.NewLocal(p), naddr.New2(h, p)
+  n0, n1 := naddr.NewLocal(p), naddr.New2(host.NewS(h), p)
   x.isServer = n0.Less(n1)
   if x.isServer {
     x.Listener, x.error = net.Listen(network, naddr.New(p).String())

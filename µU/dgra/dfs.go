@@ -13,7 +13,7 @@ func (x *distributedGraph) dfs (o Op) {
     x.time = 0
     x.parent = inf + 1 // trick, see below
     x.ch[0].Send (x.time)
- println ("send", x.time, "to", x.nr[0])
+// x.log2 ("send", x.time, "to", x.nr[0])
     x.child[0] = true
     x.visited[0] = true
   }
@@ -21,7 +21,7 @@ func (x *distributedGraph) dfs (o Op) {
   for i := uint(0); i < x.n; i++ {
     go func (j uint) {
       t := x.ch[j].Recv().(uint)
- println ("recv", t, "from", x.nr[j])
+// x.log2 ("recv", t, "from", x.nr[j])
       mutex.Lock()
       if x.distance == j && x.diameter == t { // unchanged t back from this channel
         x.child[j] = false // so x.nr[j] is no child of x.me
@@ -59,7 +59,7 @@ func (x *distributedGraph) dfs (o Op) {
         x.distance, x.diameter = k, t
         x.child[k] = true // temptative
       }
- println ("send", t, "to", x.nr[k])
+// x.log2 ("send", t, "to", x.nr[k])
       x.ch[k].Send(t)
       mutex.Unlock()
       done <- 0

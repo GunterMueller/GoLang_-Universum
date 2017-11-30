@@ -1,6 +1,6 @@
 package env
 
-// (c) Christian Maurer   v. 170923 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 // Pre: v does not contain characters, that must not be contained
 //      in an environment variable, as e.g. ' ' or '='.
@@ -11,8 +11,8 @@ func Set (v string, c *string) { set(v, c) }
 // if that is defined; otherwise "".
 func Val (v string) string { return val(v) }
 
-// Returns the name of the environment variable HOST.
-func Host() string { return host() }
+// Returns the name of the local host.
+func Localhost() string { return localhost() }
 
 // Returns the name of the user (value of the environment variable USER).
 func User() string { return user() }

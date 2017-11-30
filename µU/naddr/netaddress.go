@@ -17,7 +17,7 @@ type
 
 func new_(p uint16) NetAddress {
   return &netAddress { host.New(), p, host.Hostname }
-//              see mu/host/def.go ^^^^^^^^^^^^^
+//                 see mu/host/def.go ^^^^^^^^^^^^^
 }
 
 func new2 (h host.Host, p uint16) NetAddress {

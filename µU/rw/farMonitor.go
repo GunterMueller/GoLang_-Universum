@@ -6,7 +6,6 @@ package rw
 
 import (
   . "µU/obj"
-  "µU/host"
   "µU/fmon"
 )
 type
@@ -14,7 +13,7 @@ type
                     fmon.FarMonitor
                     }
 
-func newFM (h host.Host, p uint16, s bool) ReaderWriter {
+func newFM (h string, p uint16, s bool) ReaderWriter {
   var nR, nW uint
   x := new(farMonitor)
   ps := func (a Any, i uint) bool {

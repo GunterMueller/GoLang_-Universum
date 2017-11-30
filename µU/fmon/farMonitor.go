@@ -1,11 +1,10 @@
 package fmon
 
-// (c) Christian Maurer   v. 171107 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 import (
   . "µU/ker"
   . "µU/obj"
-  "µU/host"
   "µU/nchan"
 )
 type
@@ -17,12 +16,12 @@ type
                     }
 
 func new_(a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
-          h host.Host, p uint16, s bool) FarMonitor {
-  return newS (a, n, fs, ps, h, p, s, Nothing)
+          h string, p uint16, s bool) FarMonitor {
+  return news (a, n, fs, ps, h, p, s, Nothing)
 }
 
-func newS (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
-           h host.Host, p uint16, s bool, stmt Stmt) FarMonitor {
+func news (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
+           h string, p uint16, s bool, stmt Stmt) FarMonitor {
   if n == 0 { Panic ("fmon.New must be called with 2nd arg > 0") }
   x := new(farMonitor)
   pattern := Clone(a)

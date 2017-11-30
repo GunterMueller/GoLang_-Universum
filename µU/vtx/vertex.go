@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 171122 - license see µU.go
 
 import (
 //  "µU/ker"
@@ -89,8 +89,7 @@ func (x *vertex) Less (Y Any) bool {
 
 func (x *vertex) Copy (Y Any) {
   y := x.imp(Y)
-  yy  := y.EditorGr
-  x.EditorGr.(Object).Copy (yy)
+  x.EditorGr.(Object).Copy (y.EditorGr.(Object))
   x.width, x.height = y.width, y.height
   x.x, x.y = y.x, y.y
   x.f, x.b = y.f, y.b

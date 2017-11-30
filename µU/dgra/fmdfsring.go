@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 170507 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 //
 // >>> Construction of a directed ring using the idea pf Awerbuch's DFS-algorithm
 //     The sequence of the vertices in the ring is given by the discover-times x.time.
@@ -11,11 +11,13 @@ import (
 )
 
 func (x *distributedGraph) fmdfsring() {
-//  go func() { fmon.New (uint(0), 2, x.dr, AllTrueSp, x.actHost, p0 + uint16(2 * x.me), true) }()
-  go func() { fmon.New (uint(0), 2, x.dr, AllTrueSp, x.actHost, uint16(2 * x.me), true) }()
+  go func() {
+    fmon.New (uint(0), 2, x.dr, AllTrueSp,
+              x.actHost, p0 + uint16(2 * x.me), true)
+  }()
   for i := uint(0); i < x.n; i++ {
-//    x.mon[i] = fmon.New (uint(0), 2, x.dr, AllTrueSp, x.host[i], p0 + uint16(2 * x.nr[i]), false)
-    x.mon[i] = fmon.New (uint(0), 2, x.dr, AllTrueSp, x.host[i], uint16(2 * x.nr[i]), false)
+    x.mon[i] = fmon.New (uint(0), 2, x.dr, AllTrueSp,
+                         x.host[i], p0 + uint16(2 * x.nr[i]), false)
   }
   defer x.finMon()
   x.awaitAllMonitors()

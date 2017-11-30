@@ -1,13 +1,9 @@
 package dgra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 171122 - license see µU.go
 
 import
   . "µU/obj"
-const (
-  probe = uint(iota)
-  echo
-)
 
 func (x *distributedGraph) dfs1 (o Op) {
   x.connect (nil)
@@ -19,14 +15,14 @@ func (x *distributedGraph) dfs1 (o Op) {
   if x.me == x.root { // root sends the first message
     x.parent = inf + 1 // trick, see below
     x.tree.Ins (x.actVertex)
-    x.tree.Sub (x.actVertex)
+    x.tree.Mark (x.actVertex)
     x.visited[0] = true
     x.child[0] = true
     x.ch[0].Send (x.tree.Encode())
   }
   for i := uint(0); i < x.n; i++ {
     go func (j uint) {
-      bs := x.ch[j].Recv().([]byte)
+      bs := x.ch[j].Recv().(Stream)
       mutex.Lock()
       x.tree = x.decodedGraph(bs)
       u := x.next(j) // == x.n, iff all neighbours != j are visited
@@ -34,7 +30,7 @@ func (x *distributedGraph) dfs1 (o Op) {
       if ! x.visited[j] { // probe
         x.tree.Ex (x.nb[j]) // nb[j] local in x.tree
         if ! x.tree.Ex (x.actVertex) {
-          x.tree.Ins (x.actVertex) // MeVertex local, nb[j] colocal in x.tree
+          x.tree.Ins (x.actVertex) // actVertex local, nb[j] colocal in x.tree
           x.tree.Edge (x.directedEdge(x.nb[j], x.actVertex))
         }
         x.visited[j] = true
@@ -70,16 +66,16 @@ func (x *distributedGraph) dfs1 (o Op) {
     <-done
   }
   x.tree.Ex(x.actVertex) // now x.actVertex is local in x.tree
-  var bs []byte
+  var bs Stream
   if x.me == x.root {
     x.Write()
     bs = x.tree.Encode()
     x.parent = x.me
   } else {
-    bs = x.ch[x.channel(x.parent)].Recv().([]byte)
-    x.tree = x.decodedGraph(bs)
+    bs = x.ch[x.channel(x.parent)].Recv().(Stream)
+    x.tree = x.decodedGraph (bs)
   }
-  x.tree.Ex(x.actVertex) // now x.actVertex is local in x.tree
+  x.tree.Ex (x.actVertex) // now x.actVertex is local in x.tree
   for k := uint(0); k < x.n; k++ {
     if x.child[k] {
       x.ch[k].Send(bs)

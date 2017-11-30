@@ -30,24 +30,24 @@ import (
   |           |   |        |                                |         |  |           |
   |   bool    |   |        v              edge              V         |  |   bool    |
   |___________|   |   ___________      __________      ___________    |  |___________|
-  |           |   |  /           \    /          \    /           \   |  |           |
-  |  marked   |   |  | edgePtr---|--->|   Any    |<---|--edgePtr  |   |  |  marked   |
-  |___________|   |  |___________|    |__________|    |___________|   |  |___________|
-  |     |     |   |  |           |    |          |    |           |   |  |     |     |
-  |dist | time|<-----|---from    |<---|--nbPtr0  |    |   from----|----->|dist | time|
+  |     |     |   |  /           \    /          \    /           \   |  |     |     |
+  |dist | time|   |  | edgePtr---|--->|   Any    |<---|--edgePtr  |   |  |dist | time|
   |_____|_____|   |  |___________|    |__________|    |___________|   |  |_____|_____|
+  |           |   |  |           |    |          |    |           |   |  |           |
+  |predecessor|<-----|---from    |<---|--nbPtr0  |    |   from----|----->|predecessor|
+  |___________|   |  |___________|    |__________|    |___________|   |  |___________|
   |           |   \  |           |    |          |    |           |   |  |           |
-  |predecessor|    --|----to     |    |  nbPtr1 -|--->|    to-----|--/   |predecessor|
+  |   repr    |    --|----to     |    |  nbPtr1 -|--->|    to-----|--/   |   repr    |
   |___________|      |___________|    |__________|    |___________|      |___________|
   |           |      |           |    |          |    |           |      |           |
-  |    repr   |      | outgoing  |    |   bool   |    | outgoing  |      |    repr   |
+  |   nextV---|->    | outgoing  |    |   bool   |    | outgoing  |      |   nextV---|->
   |___________|      |___________|    |__________|    |___________|      |___________|
   |           |      |           |    |          |    |           |      |           |
-  |   nextV---|->    |  nextNb---|->  |  nextE---|->  |  nextNb---|->    |   nextV---|->
-  |___________|      |___________|    |__________|    |___________|      |___________|
-  |           |      |           |    |          |    |           |      |          _|
-<-|---prevV   |    <-|---prevNb  |  <-|---prevE  |  <-|---prevNb  |    <-|---prevV   |
-  \___________/      \___________/    \__________/    \___________/      \___________/
+<-|---prevV   |      |  nextNb---|->  |  nextE---|->  |  nextNb---|->  <-|---prevV   |
+  \___________/      |___________|    |__________|    |___________|      \___________/
+                     |           |    |          |    |           |
+                   <-|---prevNb  |  <-|---prevE  |  <-|---prevNb  |
+                     \___________/    \__________/    \___________/
 
 The vertices of a graph are represented by structs,
 whose field "Any" represents the "real" vertex.
@@ -81,8 +81,7 @@ type (
   vertex struct {
                 Any "content of the vertex"
           nbPtr *neighbour
-                bool "in subgraph"
-         marked,
+                bool "marked"
         acyclic bool   // for the development of design patterns by clients
            dist,       // for breadth first search/Dijkstra and use in En/Decode
    time0, time1 uint32 // for applications of depth first search
@@ -100,7 +99,7 @@ type (
               Any "attribute of the edge"
        nbPtr0,
        nbPtr1 *neighbour
-              bool "in subgraph"
+              bool "marked"
  nextE, prevE *edge
               }
 

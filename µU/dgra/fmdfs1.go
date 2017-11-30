@@ -1,22 +1,20 @@
 package dgra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 import (
-//  "µU/ker"
   . "µU/obj"
   "µU/fmon"
 )
 
 func (x *distributedGraph) fmdfs1 (o Op) {
-//  go func() { fmon.New (nil, 2, x.d1, AllTrueSp, x.actHost, p0 + uint16(2 * x.me), true) }()
-  go func() { fmon.New (nil, 2, x.d1, AllTrueSp, x.actHost, uint16(2 * x.me), true) }()
-//ker.Sleep (3)
+  go func() {
+    fmon.New (nil, 2, x.d1, AllTrueSp,
+              x.actHost, p0 + uint16(2 * x.me), true)
+  }()
   for i := uint(0); i < x.n; i++ {
-//println (i, " of ", x.n, "(")
-//    x.mon[i] = fmon.New (nil, 2, x.d1, AllTrueSp, x.host[i], p0 + uint16(2 * x.nr[i]), false)
-    x.mon[i] = fmon.New (nil, 2, x.d1, AllTrueSp, x.host[i], uint16(2 * x.nr[i]), false)
-//println (")")
+    x.mon[i] = fmon.New (nil, 2, x.d1, AllTrueSp,
+                         x.host[i], p0 + uint16(2 * x.nr[i]), false)
   }
   defer x.finMon()
   x.awaitAllMonitors()
@@ -24,14 +22,14 @@ func (x *distributedGraph) fmdfs1 (o Op) {
   x.tree.Clr()
   x.Op = o
   x.tree.Ins (x.actVertex)
-  x.tree.Sub (x.actVertex)
+  x.tree.Mark (x.actVertex)
   x.tree.Write()
   if x.me == x.root {
     x.parent = x.me
     for k := uint(0); k < x.n; k++ {
       x.child[k] = true
       x.tree.Ex(x.actVertex) // actVertex local in x.tree
-      bs := x.mon[k].F(x.tree, 0).([]byte)
+      bs := x.mon[k].F(x.tree, 0).(Stream)
       if len(bs) == 0 {
         x.visited[k] = true
       } else {
@@ -55,7 +53,7 @@ func (x *distributedGraph) fmdfs1 (o Op) {
 
 func (x *distributedGraph) d1 (a Any, i uint) Any {
   x.awaitAllMonitors()
-  bs := a.([]byte)
+  bs := a.(Stream)
   x.tree = x.decodedGraph(bs)
   switch i {
   case 0:
@@ -65,13 +63,13 @@ func (x *distributedGraph) d1 (a Any, i uint) Any {
     }
     x.parent = x.nr[j]
     x.tree.Ins (x.actVertex)
-    x.tree.Edge (x.directedEdge(x.nb[j], x.actVertex))
+    x.tree.Edge (x.edge(x.nb[j], x.actVertex))
     x.tree.Write()
     for k := uint(0); k < x.n; k++ {
       if k != j {
         if ! x.tree.Ex (x.nb[k]) {
           x.tree.Ex (x.actVertex)
-          bs = x.mon[k].F(x.tree, 0).([]byte)
+          bs = x.mon[k].F(x.tree, 0).(Stream)
           if len(bs) == 0 {
             return nil
           } else {

@@ -1,15 +1,17 @@
 package dgra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 import (
   "µU/ker"
   . "µU/obj"
+  "µU/env"
   "µU/nat"
+  "µU/str"
   "µU/errh"
   "µU/vtx"
   "µU/edg"
-  "µU/host"
+//  "µU/host"
   "µU/nchan"
   "µU/fmon"
   "µU/gra"
@@ -24,41 +26,40 @@ type
                    bool "Graph.Directed"
          actVertex vtx.Vertex // the vertex representing the actual process
                 me uint // and its identity
-           actHost host.Host // the host running the actual process
+           actHost string // host.Host // the host running the actual process
                  n uint // the number of neighbours of the actual vertex
                 nb []vtx.Vertex // the neighbour vertices
                 nr []uint // and their identities
-              host []host.Host // the hosts running the neighbour processes
+              host []string // host.Host // the hosts running the neighbour processes
                 ch []nchan.NetChannel // the channels to the neighbours
               port []uint16 // ports to connect the vertices pairwise
         tree, ring gra.Graph // temporary graphs for the algorithms to work with
               root uint
          tmpVertex vtx.Vertex
            tmpEdge edg.Edge
-          chanuint []chan uint // internal channels
              chan1 chan uint // internal channel
            visited,
             sendTo []bool
            labeled bool
                mon []fmon.FarMonitor
-              monM []fmon.FarMonitorM
             parent uint
              child []bool
        time, time1 uint
-      sport, cport []uint16 // server- and client ports for farMonitorM
               demo bool
-               top adj.AdjacencyMatrix
+            matrix adj.AdjacencyMatrix
+              size uint // number of lines/colums of matrix
           diameter,
           distance,
             leader uint
-                   TopAlg; ElectAlg; TravAlg
+                   PulseAlg; ElectAlg; TravAlg
                    Op
                    }
-const
+const (
+  p0 = nchan.Port0
   inf = uint(1 << 16)
+)
 var (
   done = make(chan int, 1)
-//  p0 = uint16(50000) // nchan.Port0()
 )
 
 func value (a Any) uint {
@@ -74,11 +75,11 @@ func new_(g gra.Graph) DistributedGraph {
   x.actVertex = x.Graph.Get().(vtx.Vertex)
   x.me = value(x.actVertex)
   if x.me != ego.Me() { errh.Error2 ("x.me", x.me, "Me", ego.Me()) }
-  x.actHost = host.Localhost()
+  x.actHost = env.Localhost()
   x.n = x.Graph.Num() - 1
   x.nb = make([]vtx.Vertex, x.n)
   x.nr = make([]uint, x.n)
-  x.host = make([]host.Host, x.n)
+  x.host = make([]string, x.n) // make([]host.Host, x.n)
   x.port = make([]uint16, x.n)
   x.ch = make([]nchan.NetChannel, x.n)
   for i := uint(0); i < x.n; i++ {
@@ -86,11 +87,7 @@ func new_(g gra.Graph) DistributedGraph {
     x.nb[i] = g.Neighbour(i).(vtx.Vertex)
     x.nr[i] = x.nb[i].(Valuator).Val()
     x.Graph.Ex2 (x.actVertex, x.nb[i])
-    v := x.Graph.Get1().(edg.Edge).(Valuator).Val()
-    ps := v / (1<<20)
-    pc := (v - 1<<20 * ps) / (1<<10)
-//    x.port[i] = nchan.Port0 + uint16(v - 1<<10 * pc - 1<<20 * ps)
-    x.port[i] = uint16(v - 1<<10 * pc - 1<<20 * ps)
+    x.port[i] = nchan.Port0 + uint16(x.Graph.Get1().(edg.Edge).(Valuator).Val())
   }
   x.tmpVertex = vtx.New (x.actVertex.Content(), x.actVertex.Wd(), x.actVertex.Ht())
   v0 := g.Neighbour(0).(vtx.Vertex)
@@ -105,35 +102,57 @@ func new_(g gra.Graph) DistributedGraph {
   x.ring = gra.New (true, x.tmpVertex, x.tmpEdge); x.ring.SetWrite (x.Graph.Writes())
   x.visited = make([]bool, x.n)
   x.sendTo = make([]bool, x.n)
-  x.chanuint = make([]chan uint, x.n)
   x.chan1 = make(chan uint)
   x.parent, x.child = inf, make([]bool, x.n)
-  x.sport, x.cport = make([]uint16, x.n), make([]uint16, x.n)
   x.mon = make([]fmon.FarMonitor, x.n)
-  x.monM = make([]fmon.FarMonitorM, x.n)
-  for i := uint(0); i < x.n; i++ {
-    v := x.Graph.Get1().(edg.Edge).(Valuator).Val()
-    ps := v / (1<<20)
-    pc := (v - 1<<20 * ps) / (1<<10)
-//    x.sport[i], x.cport[i] = nchan.Port0 + uint16(ps), nchan.Port0 + uint16(pc)
-    x.sport[i], x.cport[i] = uint16(ps), uint16(pc)
-    if x.nr[i] < x.me {
-      x.sport[i], x.cport[i] = x.cport[i], x.sport[i]
-    }
-    x.chanuint[i] = make(chan uint)
-  }
   g.Ex (x.actVertex)
-  x.TopAlg, x.ElectAlg, x.TravAlg = PassGraph, ChangRoberts, DFS
+  x.PulseAlg, x.ElectAlg, x.TravAlg = PulseGraph, ChangRoberts, DFS
   x.leader = x.me
   x.Op = Ignore
   return x
 }
 
-func (x *distributedGraph) SetHosts (h []host.Host) {
-  if uint(len(h)) != x.n { ker.Shit() }
+func newg (dir bool, e [][]uint, h []string, m, id uint) DistributedGraph {
+  g := gra.New (dir, uint(0), uint(1)) // g ist ein neuer
+             // Graph mit Eckentyp uint und Kanten vom Wert 1
+  n := uint(len(e))
+  for i := uint(0); i < n; i++ { // die Identitäten aller
+    g.Ins(i)           // Prozesse als Ecken in g einfügen
+  }
+  for i := uint(0); i < n; i++ {
+    for _, j := range e[i] {
+      g.Ex2 (i, j)     // i ist jetzt die kolokale
+                       // und j die lokale Ecke in g
+      if ! g.Edged() { // wenn es noch keine Kante
+                       // von i nach j gibt,
+        g.Edge (1)     // i mit j durch eine Kante verbinden
+      }
+    }
+  }
+  g.Ex (id)      // id ist jetzt die lokale Ecke in g
+  g = g.Star()   // und g ist jetzt nur noch der Stern von id
+  d := new_(g).(*distributedGraph) // d ist der verteilte
+                 // Graph mit g als zugrundeliegendem Graphen
+  d.setSize (n)  // Zeilen/Spaltenzahl der Adjazenzmatrix 
+                 // = Anzahl der Ecken von g
+  d.setHostnames (h)
+  d.diameter = m // Durchmesser von g
+  return d
+}
+
+func (x *distributedGraph) setHosts (h []string) { // (h []host.Host) {
+  if uint(len(h)) != x.size { ker.Shit() }
   for i := uint(0); i < x.n; i++ {
-    if h[i] == nil { ker.Oops() }
-    x.host[i] = h[i]
+    if str.Empty (h[i]) { ker.Oops() }
+    x.host[i] = h[x.nr[i]]
+  }
+}
+
+func (x *distributedGraph) setHostnames (h []string) {
+  if uint(len(h)) != x.size { ker.Shit() }
+  for i := uint(0); i < x.n; i++ {
+    if str.Empty(h[i]) { ker.Oops() }
+    x.host[i] = h[i] // host.New(); x.host[i].Defined (h[x.nr[i]])
   }
 }
 
@@ -141,16 +160,12 @@ func (x *distributedGraph) SetRoot (r uint) {
   x.root = r
 }
 
-func (x *distributedGraph) SetDiameter (d uint) {
-  x.diameter = d
-}
-
-func (x *distributedGraph) SetN (n uint) {
-  x.top = adj.New (n, uint(0), uint(0))
-  x.top.Set (x.me, x.me, uint(x.me), uint(0))
+func (x *distributedGraph) setSize (n uint) {
+  x.size = n
+  x.matrix = adj.New (x.size, uint(0), uint(0))
   for i := uint(0); i < x.n; i++ {
-    x.top.Set (x.me, x.nr[i], uint(0), uint(1))
-    x.top.Set (x.nr[i], x.me, uint(0), uint(1))
+    x.matrix.Set (x.me, x.nr[i], uint(0), uint(1))
+    x.matrix.Set (x.nr[i], x.me, uint(0), uint(1))
   }
 }
 
@@ -172,12 +187,6 @@ func (x *distributedGraph) finMon() {
   }
 }
 
-func (x *distributedGraph) finMonM() {
-  for i := uint(0); i < x.n; i++ {
-    x.monM[i].Fin()
-  }
-}
-
 func (x *distributedGraph) channel (id uint) uint {
   j := x.n
   for i := uint(0); i < x.n; i++ {
@@ -189,10 +198,16 @@ func (x *distributedGraph) channel (id uint) uint {
   return j
 }
 
-func (x *distributedGraph) decodedGraph (bs []byte) gra.Graph {
+// Returns a new empty graph of the type of the underlying graph of x.
+func (x *distributedGraph) emptyGraph() gra.Graph {
   g := gra.New (x.tmpGraph.Directed(), x.tmpVertex, x.tmpEdge)
-  g.Decode(bs)
   g.SetWrite (vtx.W, edg.W)
+  return g
+}
+
+func (x *distributedGraph) decodedGraph (bs Stream) gra.Graph {
+  g := x.emptyGraph()
+  g.Decode(bs)
   return g
 }
 
@@ -200,6 +215,14 @@ func (x *distributedGraph) directedEdge (v, v1 vtx.Vertex) edg.Edge {
   x.tmpGraph.Ex2 (v, v1)
   e := x.tmpGraph.Get1().(edg.Edge)
   e.Direct (true)
+  e.SetPos0 (v.Pos()); e.SetPos1 (v1.Pos())
+  e.Label (false)
+  return e
+}
+
+func (x *distributedGraph) edge (v, v1 vtx.Vertex) edg.Edge {
+  x.tmpGraph.Ex2 (v, v1)
+  e := x.tmpGraph.Get1().(edg.Edge)
   e.SetPos0 (v.Pos()); e.SetPos1 (v1.Pos())
   e.Label (false)
   return e
@@ -249,10 +272,6 @@ func (x *distributedGraph) Time() uint {
 
 func (x *distributedGraph) Time1() uint {
   return x.time1
-}
-
-func (x *distributedGraph) Diameter() uint {
-  return x.diameter
 }
 
 func (x *distributedGraph) Demo() {

@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171013 - license see µU.go
+// (c) Christian Maurer   v. 171124 - license see µU.go
 
 // >>> Algorithmus von Zhu, Y., Cheung, T.-Y.: A New Distributed Breadth-First-Seach Algorithm
 //     Inform. Proc. Letters 25 (1987), 329-333
@@ -61,9 +61,7 @@ func (x *distributedGraph) bfs (o Op) {
           x.chan1 <- t
         }
       }
-println("for broken", i)
       done <- 1
-println("sent done", i)
     }(j)
   }
   for {
@@ -119,12 +117,6 @@ println("sent done", i)
     case END:
       x.visited[j] = true
       x.child[j], x.sendTo[j] = true, false
-/*
-      for k := uint(0); k < x.n; k++ {
-        x.ch[k].Send(TERM)
-        <-done
-      }
-*/
     case TERM:
       // ignore
     }
@@ -138,11 +130,9 @@ println("sent done", i)
         x.Op (x.actVertex)
         for k := uint(0); k < x.n; k++ {
           x.ch[k].Send(TERM)
-// println("sent TERM", k)
         }
         for k := uint(0); k < x.n; k++ {
           <-done
-println("got done", k)
         }
         return
       } else {

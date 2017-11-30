@@ -1,13 +1,13 @@
 package phil
 
-// (c) Christian Maurer   v. 171017 - license see µU.go
+// (c) Christian Maurer   v. 171125 - license see µU.go
 
 // >>> Solution with far monitor
 
 import (
   . "µU/obj"
   . "µU/lockn"
-  "µU/host"
+//  "µU/host"
   "µU/fmon"
 )
 type
@@ -15,7 +15,7 @@ type
                     fmon.FarMonitor
                     }
 
-func newFM (h host.Host, port uint16, s bool) LockerN {
+func newFM (h /* host.Host */ string, port uint16, s bool) LockerN {
   nForks := make([]uint, NPhilos)
   for i := uint(0); i < NPhilos; i++ {
     nForks[i] = 2
@@ -38,7 +38,7 @@ func newFM (h host.Host, port uint16, s bool) LockerN {
          }
          return p
        }
-  return &farMonitor { fmon.New (nil, NPhilos, f, p, h, port, s) }
+  return &farMonitor { fmon.NewN (nil, NPhilos, f, p, h, port, s) }
 }
 
 func (x *farMonitor) Lock (p uint) {

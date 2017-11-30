@@ -1,33 +1,12 @@
 package gra
 
-// (c) Christian Maurer   v. 171112 - license see µU.go
+// (c) Christian Maurer   v. 171122 - license see µU.go
 
 import (
   "µU/ker"
   . "µU/obj"
   "µU/rand"
 )
-
-// Returns true, iff every vertex of x is accessible from every other one by a path.
-func (x *graph) totallyConnected() bool {
-  if x.nVertices <= 1 {
-    return true
-  }
-  if x.bool {
-    x.Isolate()
-  } else {
-    x.dfs()
-  }
-  v := x.vAnchor.nextV
-  e0 := v.repr
-  for v != x.vAnchor {
-    if v.repr != e0 {
-      return false
-    }
-    v = v.nextV
-  }
-  return true
-}
 
 func existsnb (s []*neighbour, p Pred) (*neighbour, bool) {
   for _, a := range s {
@@ -136,7 +115,7 @@ func (x *graph) Euler() bool {
   default:
     ker.Shit()
   }
-  x.ClrSub()
+  x.ClrMarked()
   x.eulerPath = nil
   x.colocal.bool = true
   v := x.colocal
