@@ -1,6 +1,6 @@
 package phil
 
-// (c) Christian Maurer   v. 171105 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 // >>> Implementation with a universal guardedSelect
 //
@@ -9,14 +9,13 @@ package phil
 import (
   "µU/ker"
   . "µU/obj"
-  . "µU/lockn"
 )
 type
   guardedSelect struct {
           lock, unlock []chan Any
                        }
 
-func newGS() LockerN {
+func newGS() Philos {
   x := new(guardedSelect)
   nForks := make([]uint, NPhilos)
   x.lock = make([]chan Any, NPhilos)

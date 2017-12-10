@@ -6,16 +6,14 @@ package phil
 //     Störung der Symmetrie dadurch, dass manche (aber nicht alle)
 //     Philosophen zuerst die linke Gabel aufnehmen
 
-import (
+import
   "sync"
-  . "µU/lockn"
-)
 type
   unsymmetric struct {
                 fork []sync.Mutex
                      }
 
-func newU() LockerN {
+func newU() Philos {
   x := new(unsymmetric)
   x.fork = make([]sync.Mutex, NPhilos)
   return x

@@ -12,18 +12,19 @@ type
 var
   NPhilos = uint(5)
 
-func NewNaive() LockerN { return new_() }
-func NewSemaphore() LockerN { return newS() }
-func NewBounded() LockerN { return newB() }
-func NewUnsymmetric() LockerN { return newU() }
-func NewSemaphoreUnfair() LockerN { return newSU() }
-func NewSemaphoreFair() LockerN { return newSF() }
-func NewCriticalSection() LockerN { return newCS() }
-func NewMonitor() LockerN { return newM() }
-func NewMonitorFair() LockerN { return newMF() }
-func NewMonitorUnfair() LockerN { return newMU() }
-func NewCondMonitor() LockerN { return newCM() }
-func NewChannel() LockerN { return newCh() }
-func NewChannelUnsymmetric() LockerN { return newChU() }
+func NewNaive() Philos { return new_() }
+func NewSemaphore() Philos { return newS() }
+func NewBounded() Philos { return newB() }
+func NewUnsymmetric() Philos { return newU() }
+func NewSemaphoreUnfair() Philos { return newSU() }
+func NewSemaphoreFair() Philos { return newSF() }
+func NewCriticalSection() Philos { return newCS() }
+func NewMonitor() Philos { return newM() }
+func NewMonitorFair() Philos { return newMF() }
+func NewMonitorUnfair() Philos { return newMU() }
+func NewCondMonitor() Philos { return newCM() }
+func NewChannel() Philos { return newCh() }
+func NewChannelUnsymmetric() Philos { return newChU() }
+func NewFarMonitor (h string, p uint16, s bool) Philos { return newFM(h,p,s) }
 
-// func NewGuardedSelect() LockerN { return newGS() }
+// func NewGuardedSelect() Philos { return newGS() }

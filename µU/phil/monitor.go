@@ -1,12 +1,11 @@
 package phil
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 // >>> Implementation with a universal monitor
 
 import (
   . "µU/obj"
-  . "µU/lockn"
   "µU/mon"
 )
 type
@@ -14,7 +13,7 @@ type
                  mon.Monitor
                  }
 
-func newM() LockerN {
+func newM() Philos {
   var m mon.Monitor
   nForks := make([]uint, NPhilos)
   for i := uint(0); i < NPhilos; i++ {

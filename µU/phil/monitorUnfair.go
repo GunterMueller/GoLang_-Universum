@@ -1,12 +1,11 @@
 package phil
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 // >>> Unfair monitor solution due to Dijkstra
 
 import (
   . "µU/obj"
-  . "µU/lockn"
   "µU/mon"
 )
 type
@@ -14,7 +13,7 @@ type
                        mon.Monitor
                        }
 
-func newMU() LockerN {
+func newMU() Philos {
   var m mon.Monitor
   f := func (a Any, i uint) Any {
          p := a.(uint)

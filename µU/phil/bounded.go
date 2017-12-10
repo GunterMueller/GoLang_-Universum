@@ -1,6 +1,6 @@
 package phil
 
-// (c) Christian Maurer   v. 170627 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 // >>> Bounded case:
 //     At most m - 1 philosophers are allowed to take place at the table
@@ -8,7 +8,6 @@ package phil
 
 import (
   "sync"
-  . "µU/lockn"
   "µU/sem"
 )
 type
@@ -17,7 +16,7 @@ type
             fork []sync.Mutex
                  }
 
-func newB() LockerN {
+func newB() Philos {
   x := new(bounded)
   x.Semaphore = sem.New (NPhilos - 1)
   x.fork = make([]sync.Mutex, NPhilos)

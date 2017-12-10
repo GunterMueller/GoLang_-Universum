@@ -1,19 +1,17 @@
 package phil
 
-// (c) Christian Maurer   v. 170627 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 // >>> Naive solution with deadlock
 
-import (
+import
   "sync"
-  . "µU/lockn"
-)
 type
   naive struct {
                fork []sync.Mutex
                }
 
-func new_() LockerN {
+func new_() Philos {
   x := new(naive)
   x.fork = make([]sync.Mutex, NPhilos)
   return x

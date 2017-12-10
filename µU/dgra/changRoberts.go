@@ -5,7 +5,7 @@ package dgra
 // >>> Algorithm of Chang and Roberts: An Improved Algorithm for Decentralized Extrema-
 //     Finding in Circular Configurations of Processes. Comm. ACM 22 (1979), 281 - 283
 
-func (x *distributedGraph) changRoberts() {
+func (x *distributedGraph) changRoberts() uint {
   x.connect(uint(0))
   defer x.fin()
   id, m := x.me, inf
@@ -22,16 +22,16 @@ func (x *distributedGraph) changRoberts() {
         x.ch[out].Send (x.me)
       } else { // r == id
         x.ch[out].Send (m + x.me)
-        x.leader = x.me
-        return
+//        x.leader = x.me
+        return x.me
       }
     } else { // n >= m
       n -= m
       if n != x.me {
         x.ch[out].Send (m + n)
       }
-      x.leader = n
-      return
+//      x.leader = n
+      return n
     }
   }
 }

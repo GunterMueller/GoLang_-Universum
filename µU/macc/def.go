@@ -1,9 +1,7 @@
 package macc
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
-//import
-//  "µU/host"
 type
   MAccount interface { // A multitasking capable account.
                        // The exported functions cannot be interrupted
@@ -31,4 +29,4 @@ func NewM() MAccount { return newM() }
 func NewCh() MAccount { return newCh() }
 
 // Implementation with a far monitor.
-func NewFM (h /* host.Host */ string, p uint16, s bool) MAccount { return newFM(h,p,s) }
+func NewFM (h string, p uint16, s bool) MAccount { return newFM(h,p,s) }

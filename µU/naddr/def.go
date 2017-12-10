@@ -1,6 +1,6 @@
 package naddr
 
-// (c) Christian Maurer   v. 170106 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 import (
   . "µU/obj"
@@ -16,7 +16,6 @@ type
 // Returns true, iff (h, p) defines an IP4-net address.
   Set (h host.Host, p uint16)
 
-//  SetHost (h host.Host)
   SetPort (p uint16)
 
 // Returns the host and the port of x.

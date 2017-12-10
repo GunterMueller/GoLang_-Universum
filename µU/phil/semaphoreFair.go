@@ -4,10 +4,8 @@ package phil
 
 // >>> Fair Algorithm of Dijkstra
 
-import (
+import
   "sync"
-  . "µU/lockn"
-)
 type
   semaphoreFair struct {
                  plate []sync.Mutex
@@ -29,7 +27,7 @@ func (x *semaphoreFair) test (p uint) {
   }
 }
 
-func newSF() LockerN {
+func newSF() Philos {
   x := new(semaphoreFair)
   x.plate = make([]sync.Mutex, NPhilos)
   for p := uint(0); p < NPhilos; p++ {

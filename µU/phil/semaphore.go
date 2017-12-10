@@ -1,19 +1,17 @@
 package phil
 
-// (c) Christian Maurer   v. 171104 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 // >>> naive solution with semaphores - deadlock
 
-import (
+import
   "µU/sem"
-  . "µU/lockn"
-)
 type
   semaphore struct {
               fork []sem.Semaphore
                    }
 
-func newS() LockerN {
+func newS() Philos {
   x := new(semaphore)
   x.fork = make([]sem.Semaphore, NPhilos)
   for p := uint(0); p < NPhilos; p++ {

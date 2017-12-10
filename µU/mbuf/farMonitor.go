@@ -1,6 +1,6 @@
 package mbuf
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 import (
   . "µU/obj"
@@ -18,7 +18,7 @@ type
                     fmon.FarMonitor
                     }
 
-func newf (a Any, h string, p uint16, s bool) MBuffer {
+func newfm (a Any, h string, p uint16, s bool) MBuffer {
   x := new(farMonitor)
   x.Any = Clone (a)
   x.Buffer = buf.New (a)

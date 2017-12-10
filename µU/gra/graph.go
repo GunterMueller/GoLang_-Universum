@@ -1,14 +1,12 @@
 package gra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 171128 - license see µU.go
 
 import (
-//  "reflect"
-  "sort"
+//  "sort"
   "µU/ker"
   . "µU/obj"
   "µU/kbd"
-//  "µU/edg"
 )
 
 func (x *graph) Directed() bool {
@@ -197,6 +195,7 @@ func (ns nSeq) Less (i, j int) bool {
   return ns[i].to.Any.(Valuator).Val() < ns[j].to.Any.(Valuator).Val()
 }
 
+/*
 func (x *graph) SortNeighbours() {
   switch x.vAnchor.Any.(type) {
   case Valuator:
@@ -225,6 +224,7 @@ func (x *graph) SortNeighbours() {
     }
   }
 }
+*/
 
 func (x *graph) Edged() bool {
   return x.connection (x.colocal, x.local) != nil

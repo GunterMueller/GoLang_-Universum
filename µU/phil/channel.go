@@ -1,19 +1,17 @@
 package phil
 
-// (c) Christian Maurer   v. 171101 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 // >>> Solution with synchronous message-passing
 //     Ben-Ari: Principles of Concurrent and Distributed Programming 2nd edition, p. 188
 //     modified to be unsymmetric to avoid deadlocks
 
-import
-  . "µU/lockn"
 type
   channel struct {
               ch []chan int
                  }
 
-func newCh() LockerN {
+func newCh() Philos {
   x := new(channel)
   x.ch = make([]chan int, NPhilos)
   for p := uint(0); p < NPhilos; p++ {

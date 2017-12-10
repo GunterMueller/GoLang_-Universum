@@ -1,11 +1,12 @@
 package nchan
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 171202 - license see µU.go
 
 import
-  . "µU/obj" // see also µU/host
+  . "µU/obj"
 const
-  Port0 = uint16(50000) // uint16(1<<16 - 1<<14) // first private port (= 49152)
+//  Port0 = uint16(1<<16 - 1<<14) // == 49152 (first private port)
+  Port0 = uint16(50000)
 type
   NetChannel interface { // Channels for passing objects over the net
 
@@ -36,41 +37,26 @@ type
 
 // h0 always denotes the name of the host running the calling process.
 
-// For all constructors for the first parameter a the following holds:
+// For both constructors for the first parameter a the following holds:
 //      For a == nil, arbitrary objects of Codelen <= 1<<32 can be passed.
 //      In this case, calls of Recv() return only slices of bytes, so
 //      it is up to the receiver to Decode the object wanted to receive.
-//
-// Pre: h is contained in /etc/hosts or denotes a DNS-resolvable host.
-//      h is different from h0.
-//      p > 0; p is not used on h0 or h by a network service.
-//      The communication partner calls New with
-//      - an object of the same type as the type of a as 1st argument,
-//      - with h0 as 2nd argument and
-//      - an identical value of the 3rd argument.
-// Returns a asynchronous 1:1 channel for messages of the type of a
-// between h0 and h over port p.
-// p is now used on h0 and h by a network service.
-func NewD (a Any, h string, p uint16) NetChannel { return newd(a,h,p) }
 
-// Pre: h is in /etc/hosts or resolvable per DNS (! h.Empty()).
+// Pre: h is contained in /etc/hosts or resolvable per DNS.
 //      me != i; me is the identity of h0 and i is the identity of h
 //      (me, i < number of hosts involved).
 //      p > 0; p is not used on h0 or h by a network service.
 //      The communication partner calls New with
-//      - an object of the same type as the type of a as 1st argument,
-//      - with the host of the calling process as 4th argument.
-//      - with the values of me and i reversed, i.e. me/i as 3rd/2nd argument and
-//      - an identical value of the 5th argument.
+//      - an object of the same type as the type of a as 1st argument
+//        and an identical value of the port,
+//      - the values of me and i reversed and h0 as 4th argument.
 // Returns a asynchronous 1:1 channel for messages of the type of a
 // between h0 and h over port p.
 // p is now used on h0 and h by a network service.
 func New (a Any, me, i uint, h string, p uint16) NetChannel { return new_(a,me,i,h,p) }
 
 // See above function. To be called in the constructor of a far monitor.
-// h is the server; s == true, if the calling process is the serving monitor.
-// i and o are the in- and outgoing channels for the internal communication
-// of the calling far monitor.
+// h is the server (s = true), if the calling process is the serving monitor.
 func NewN (a Any, h string, p uint16, s bool) NetChannel { return newn(a,h,p,s) }
 
 // Note: In case of consecutive calls of New you have to keep

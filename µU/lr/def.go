@@ -1,9 +1,7 @@
 package lr
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
-//import
-//  "µU/host"
 type
   LeftRight interface { // protocols for the left right problem
 
@@ -45,7 +43,7 @@ func NewConditionedMonitorBounded (l, r uint) LeftRight { return newCMB(l,r) }
 func NewChannel() LeftRight { return newCh() }
 func NewGuardedSelect() LeftRight { return newGS() }
 
-func NewFarMonitor (h /* host.Host */ string, p uint16, s bool) LeftRight { return newFMon(h,p,s) }
-func NewFarMonitorBounded (l, r uint, h /* host.Host */ string, p uint16, s bool) LeftRight {
+func NewFarMonitor (h string, p uint16, s bool) LeftRight { return newFMon(h,p,s) }
+func NewFarMonitorBounded (l, r uint, h string, p uint16, s bool) LeftRight {
   return newFMonB(l,r,h,p,s)
 }

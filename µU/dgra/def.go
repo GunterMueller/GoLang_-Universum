@@ -2,10 +2,8 @@ package dgra
 
 // (c) Christian Maurer   v. 171124 - license see µU.go
 
-import (
+import
   "µU/gra"
-//  "µU/host"
-)
 type
   DistributedGraph interface {
 
@@ -41,17 +39,7 @@ type
 // Returns a new distributed Graph with underlying Graph g.
 func New (g gra.Graph) DistributedGraph { return new_(g) }
 
-// Pre: len(e) == len(e[j]) for all j < n = len(e) = len(h); i < n.
-//      values of the edges e: as above.
-// Returns the star of edge i, directed if d, with edges e, hosts h and diameter m
-// as new distributed graph.
-func NewG (d bool, e [][]uint, h []string, m, i uint) DistributedGraph { return newg(d,e,h,m,i) }
-
-// Spec see above. l/c are the lines/colums of the vertices of d.
-func NewG1 (d bool, l, c []int, e [][]uint, m, i uint) DistributedGraph { return newg1(d,l,c,e,m,i) }
-
 // Examples of distributed Graphs
-
 // G_ returns the star of the distributed Graph defined by g_
 // with the vertex with the identity i as center.
 func G3 (i uint) DistributedGraph { return g3(i) }

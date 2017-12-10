@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 171130 - license see µU.go
 
 type
   ElectAlg byte; const (
@@ -9,9 +9,9 @@ type
   DolevKlaweRodeh
   HirschbergSinclair
   Maurer
-  FmMaurer
-  DFSE
-  FmDFSE
+  Maurerfm
+  DFSelect
+  DFSelectfm
 )
 
 func (x *distributedGraph) SetElectAlgorithm (a ElectAlg) {
@@ -34,12 +34,12 @@ func (x *distributedGraph) Leader() uint {
     x.hirschbergSinclair()
   case Maurer:
     x.maurer()
-  case FmMaurer:
-    x.fmMaurer()
-  case DFSE:
-    x.dfse()
-  case FmDFSE:
-    x.fmdfse()
+  case Maurerfm:
+    x.maurerfm()
+  case DFSelect:
+    x.dfselect()
+  case DFSelectfm:
+    x.dfselectfm()
   }
   return x.leader
 }

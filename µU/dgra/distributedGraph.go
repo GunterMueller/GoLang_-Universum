@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 171210 - license see µU.go
 
 import (
   "µU/ker"
@@ -11,7 +11,6 @@ import (
   "µU/errh"
   "µU/vtx"
   "µU/edg"
-//  "µU/host"
   "µU/nchan"
   "µU/fmon"
   "µU/gra"
@@ -26,21 +25,19 @@ type
                    bool "Graph.Directed"
          actVertex vtx.Vertex // the vertex representing the actual process
                 me uint // and its identity
-           actHost string // host.Host // the host running the actual process
+           actHost string // the name of the host running the actual process
                  n uint // the number of neighbours of the actual vertex
                 nb []vtx.Vertex // the neighbour vertices
                 nr []uint // and their identities
-              host []string // host.Host // the hosts running the neighbour processes
+              host []string // the names of the hosts running the neighbour processes
                 ch []nchan.NetChannel // the channels to the neighbours
               port []uint16 // ports to connect the vertices pairwise
-        tree, ring gra.Graph // temporary graphs for the algorithms to work with
+       tree, cycle gra.Graph // temporary graphs for the algorithms to work with
               root uint
          tmpVertex vtx.Vertex
            tmpEdge edg.Edge
              chan1 chan uint // internal channel
-           visited,
-            sendTo []bool
-           labeled bool
+   visited, sendTo []bool
                mon []fmon.FarMonitor
             parent uint
              child []bool
@@ -48,8 +45,8 @@ type
               demo bool
             matrix adj.AdjacencyMatrix
               size uint // number of lines/colums of matrix
-          diameter,
-          distance,
+           labeled bool
+diameter, distance,
             leader uint
                    PulseAlg; ElectAlg; TravAlg
                    Op
@@ -79,7 +76,7 @@ func new_(g gra.Graph) DistributedGraph {
   x.n = x.Graph.Num() - 1
   x.nb = make([]vtx.Vertex, x.n)
   x.nr = make([]uint, x.n)
-  x.host = make([]string, x.n) // make([]host.Host, x.n)
+  x.host = make([]string, x.n)
   x.port = make([]uint16, x.n)
   x.ch = make([]nchan.NetChannel, x.n)
   for i := uint(0); i < x.n; i++ {
@@ -98,11 +95,11 @@ func new_(g gra.Graph) DistributedGraph {
     g.Ex2 (v0, x.actVertex)
     x.tmpEdge = g.Get1().(edg.Edge)
   }
-  x.tree = gra.New (true, x.tmpVertex, x.tmpEdge); x.tree.SetWrite (x.Graph.Writes())
-  x.ring = gra.New (true, x.tmpVertex, x.tmpEdge); x.ring.SetWrite (x.Graph.Writes())
+  x.tree = gra.New (false, x.tmpVertex, x.tmpEdge); x.tree.SetWrite (x.Graph.Writes())
+  x.cycle = gra.New (true, x.tmpVertex, x.tmpEdge); x.cycle.SetWrite (x.Graph.Writes())
   x.visited = make([]bool, x.n)
   x.sendTo = make([]bool, x.n)
-  x.chan1 = make(chan uint)
+  x.chan1 = make(chan uint, 1)
   x.parent, x.child = inf, make([]bool, x.n)
   x.mon = make([]fmon.FarMonitor, x.n)
   g.Ex (x.actVertex)
@@ -112,35 +109,7 @@ func new_(g gra.Graph) DistributedGraph {
   return x
 }
 
-func newg (dir bool, e [][]uint, h []string, m, id uint) DistributedGraph {
-  g := gra.New (dir, uint(0), uint(1)) // g ist ein neuer
-             // Graph mit Eckentyp uint und Kanten vom Wert 1
-  n := uint(len(e))
-  for i := uint(0); i < n; i++ { // die Identitäten aller
-    g.Ins(i)           // Prozesse als Ecken in g einfügen
-  }
-  for i := uint(0); i < n; i++ {
-    for _, j := range e[i] {
-      g.Ex2 (i, j)     // i ist jetzt die kolokale
-                       // und j die lokale Ecke in g
-      if ! g.Edged() { // wenn es noch keine Kante
-                       // von i nach j gibt,
-        g.Edge (1)     // i mit j durch eine Kante verbinden
-      }
-    }
-  }
-  g.Ex (id)      // id ist jetzt die lokale Ecke in g
-  g = g.Star()   // und g ist jetzt nur noch der Stern von id
-  d := new_(g).(*distributedGraph) // d ist der verteilte
-                 // Graph mit g als zugrundeliegendem Graphen
-  d.setSize (n)  // Zeilen/Spaltenzahl der Adjazenzmatrix 
-                 // = Anzahl der Ecken von g
-  d.setHostnames (h)
-  d.diameter = m // Durchmesser von g
-  return d
-}
-
-func (x *distributedGraph) setHosts (h []string) { // (h []host.Host) {
+func (x *distributedGraph) setHosts (h []string) {
   if uint(len(h)) != x.size { ker.Shit() }
   for i := uint(0); i < x.n; i++ {
     if str.Empty (h[i]) { ker.Oops() }
@@ -152,7 +121,7 @@ func (x *distributedGraph) setHostnames (h []string) {
   if uint(len(h)) != x.size { ker.Shit() }
   for i := uint(0); i < x.n; i++ {
     if str.Empty(h[i]) { ker.Oops() }
-    x.host[i] = h[i] // host.New(); x.host[i].Defined (h[x.nr[i]])
+    x.host[i] = h[i]
   }
 }
 

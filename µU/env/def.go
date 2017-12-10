@@ -1,6 +1,6 @@
 package env
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 171202 - license see µU.go
 
 // Pre: v does not contain characters, that must not be contained
 //      in an environment variable, as e.g. ' ' or '='.
@@ -25,21 +25,21 @@ func Home() string { return home() }
 // you have to set that e.g. in /etc/profile.d/go.sh !
 func Gosrc() string { return gosrc() }
 
-// Returns the first byte of the 1st parameter of the program call,
+// Returns the first byte of the 1st argument of the program call,
 // if that was given; otherwise 0.
-func Par1() byte { return par1() }
+func Arg1() byte { return arg1() }
 
-// Returns the first byte of the 2nd parameter of the program call,
+// Returns the first byte of the 2nd argument of the program call,
 // if that was given; otherwise 0.
-func Par2() byte { return par2() }
+func Arg2() byte { return arg2() }
 
-// Returns the number of parameters of the program call
-// (the program call itself not counting as parameter).
-func NPars() uint { return nPars() }
+// Returns the number of arguments of the program call
+// (the program call itself not counting as argument).
+func NArgs() uint { return nArgs() }
 
-// Returns the i-th parameter of the program call,
+// Returns the i-th argument of the program call,
 // if that was given; otherwise "".
-func Par (i uint) string { return par(i) }
+func Arg (i uint) string { return arg(i) }
 
 // Returns the name of the call.
 func Call() string { return call() }

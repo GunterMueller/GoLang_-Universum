@@ -1,18 +1,16 @@
 package phil
 
-// (c) Christian Maurer   v. 170627 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 // >>> Unsymmetric solution with synchronous message-passing
 
-import
-  . "µU/lockn"
 type
   channelUnsymmetric struct {
              lock, lockLeft,
          unlock, unlockLeft []chan bool
                             }
 
-func newChU() LockerN {
+func newChU() Philos {
   x := new(channelUnsymmetric)
   x.lock = make([]chan bool, NPhilos)
   x.lockLeft = make([]chan bool, NPhilos)

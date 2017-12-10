@@ -15,7 +15,6 @@ func (x *distributedGraph) dolevKlaweRodeh() {
   for {
     i := x.ch[in].Recv().(uint)
     if i == max {
-//      x.ch[out].Send (max + x.uint)
       x.ch[out].Send (max + inf)
       x.leader = max
       return
@@ -35,9 +34,7 @@ func (x *distributedGraph) dolevKlaweRodeh() {
   for {
     i := x.ch[in].Recv().(uint)
     x.ch[out].Send (i)
-//    if i > x.uint {
     if i > inf {
-//      x.leader = i - x.uint
       x.leader = i - inf
       break
     }

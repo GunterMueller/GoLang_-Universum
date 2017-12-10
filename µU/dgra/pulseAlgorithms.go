@@ -5,7 +5,7 @@ package dgra
 type
   PulseAlg byte; const (
   PulseMatrix = PulseAlg(iota)
-//  PulseMatrix1
+  PulseMatrix1
   PulseGraph
   PulseGraph1
 )
@@ -23,8 +23,8 @@ func (x *distributedGraph) Pulse() {
   switch x.PulseAlg {
   case PulseMatrix:
     x.pulsematrix()
-//  case PulseMatrix1:
-//    x.pulsematrix1()
+  case PulseMatrix1:
+    x.pulsematrix1()
   case PulseGraph:
     x.pulsegraph()
   case PulseGraph1:

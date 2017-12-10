@@ -1,21 +1,17 @@
 package phil
 
-// (c) Christian Maurer   v. 171202 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 import (
   "sync"
   "math"
-  "µU/env"
+  "µU/ego"
   "µU/col"
   "µU/mode"
   "µU/scr"
-  "µU/nat"
-  "µU/img"
 )
-const (
-  min =  5 // minimal and
-  max = 13 // maximal number of philosophers
-)
+const
+  N = 5
 const (
   lock = iota
   unlock
@@ -30,33 +26,26 @@ const (
   nStates
 )
 var (
-  status [max]int
-  colour = [max]col.Colour { col.Red(), col.Yellow(), col.Magenta(), col.Cyan(),
-                             col.Green(), col.Orange(), col.LightBlue(), col.LightRed(),
-                             col.LightYellow(), col.LightMagenta(), col.LightCyan(),
-                             col.LightOrange(), col.LightGreen() }
+  status [N]int
+  colour = [N]col.Colour { col.Red(), col.Yellow(), col.Magenta(), col.Cyan(), col.Green() }
   thinkColour col.Colour
   notUsedColour = col.DarkGray()
-  name = [max+1]string { "Platon", "Sokrates", "Aristoteles", "Cicero", "Heraklit",
-                         "Pythagoras", "Diogenes", "Thales", "Epikur", "Anaxagoras",
-                         "Protagoras", "Demokrit", "Theophrast", "Nemo" }
-  image [max+1]string
   text = [nStates]string { "    satt    ", "  hungrig   ", "sehr hungrig",
                            "sehr hungrig", "sehr hungrig", "  speisend  " }
   x0, y0 int
-  x, y, x1, y1, xt, yt [max]int
+  x, y, x1, y1, xt, yt [N]int
   mutex, writeMutex sync.Mutex
 )
 
 func init() {
-  scr.New (0, 0, mode.SVGA)
-  thinkColour = scr.ScrColB()
-  s := env.Arg(1)
-  if n, ok := nat.Natural (s); ok {
-    if n < min { n = min }
-    if n > max { n = max }
-    NPhilos = n
+  me := ego.Me()
+  if me == 0 {
+    scr.New (me * 240, 700, mode.HQVGA)
+  } else {
+    scr.New ((me - 1) * 240, 300, mode.HQVGA)
   }
+  thinkColour = scr.ScrColB()
+  NPhilos = N
 }
 
 func left (i uint) uint {
@@ -68,10 +57,12 @@ func right (i uint) uint {
 }
 
 func writePlate (i uint, b bool) {
-  r := uint(y0) / 4
-  if NPhilos > 7 {
-    r = uint(y0) / 6
+  if ! b {
+    scr.Colours (thinkColour, thinkColour)
+    scr.CircleFull (xt[i], yt[i], uint(y0)/ 8)
   }
+  scr.Colours (colour[i], thinkColour)
+  r := uint(y0) / 4
   scr.Circle (xt[i], yt[i], r)
   if b {
     scr.Circle (xt[i], yt[i], (2 * r) / 3)
@@ -92,13 +83,15 @@ func _write (i uint) {
     scr.Colours (notUsedColour, thinkColour)
     writeFork (left (i))
     writeFork (i)
-    img.Get (image[i], uint(xt[i]) - 30, uint(yt[i]) - 40)
+    scr.Colours (colour[i], thinkColour)
+    scr.Colours (thinkColour, thinkColour)
+    scr.CircleFull (xt[i], yt[i], uint(y0) / 8)
     return
   }
-  img.Get (image[max], uint(xt[i] - 30), uint(yt[i]) - 40)
   scr.Colours (colour[i], thinkColour)
-  scr.WriteGr (text[status[i]], xt[i] - 12 * 4, yt[i] - 8)
+  scr.CircleFull (xt[i], yt[i], uint(y0)/ 8)
   writePlate (i, false)
+  scr.WriteGr (text[status[i]], xt[i] - 12 * 4, yt[i] - 8)
   switch status[i] {
   case hasRightFork:
     writeFork (i)
@@ -114,18 +107,15 @@ func _write (i uint) {
 func SitDownAtTable() (uint, bool) {
   mutex.Lock(); defer mutex.Unlock()
   for i := uint(0); i < NPhilos; i++ {
-    if scr.UnderMouseGr (xt[i], yt[i], xt[i], yt[i], 50) && status[i] == satisfied {
+    if scr.UnderMouseGr (xt[i], yt[i], xt[i], yt[i], 30) && status[i] == satisfied {
       return i, true
     }
   }
-  return max, false
+  return N, false
 }
 
 func Start() {
   const twoPi = 2 * math.Pi
-  for i := uint(0); i <= max; i++ {
-    image[i] = env.Val ("GOSRC") + "/µU/phil/pics/" + name[i]
-  }
   x0, y0 = int(scr.Wd()) / 2, int(scr.Ht()) / 2
   const f = 0.5
   for i := uint(0); i < NPhilos; i++ {

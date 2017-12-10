@@ -1,6 +1,6 @@
 package env
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 171202 - license see µU.go
 
 import
   "os"
@@ -33,25 +33,25 @@ func user() string {
   return os.Getenv ("USER")
 }
 
-func par1() byte {
+func arg1() byte {
   if uint(len (os.Args)) > 1 {
     return os.Args[1][0]
   }
   return 0
 }
 
-func par2() byte {
+func arg2() byte {
   if uint(len (os.Args)) > 2 {
     return os.Args[2][0]
   }
   return 0
 }
 
-func nPars() uint {
+func nArgs() uint {
   return uint(len (os.Args)) - 1
 }
 
-func par (i uint) string {
+func arg (i uint) string {
   if uint(len (os.Args)) > i {
     return os.Args[i]
   }

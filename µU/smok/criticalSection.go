@@ -11,7 +11,6 @@ type
                          cs.CriticalSection
                          }
 
-
 func newCS() Smokers {
   var avail [3]bool
   var smoking bool

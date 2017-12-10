@@ -1,33 +1,33 @@
 package dgra
 
-// (c) Christian Maurer   v. 171124 - license see µU.go
+// (c) Christian Maurer   v. 171210 - license see µU.go
 
 // >>> Algorithmus von Zhu, Y., Cheung, T.-Y.: A New Distributed Breadth-First-Seach Algorithm
 //     Inform. Proc. Letters 25 (1987), 329-333
 //
-// >>> "visited" used for "echoed", "time" used for "level"
+// >>> "visited" used for "echoed"
 
 import
   . "µU/obj"
 const (
-  LABEL = uint(iota)
-  KEEPON
-  STOP
-  END
-  TERM
+  label = uint(iota)
+  keepon
+  stop
+  end
+  term
 )
-const
-  high = 1<<16
 
-func (x *distributedGraph) sendTos() uint {
-  v := uint(0)
+func (x *distributedGraph) numSendTos() uint {
+  s := uint(0)
   for k := uint(0); k < x.n; k++ {
-    if x.sendTo[k] { v++ }
+    if x.sendTo[k] {
+      s++
+    }
   }
-  return v
+  return s
 }
 
-func (x *distributedGraph) allSendTosEchoed() bool {
+func (x *distributedGraph) allSendTosVisited() bool {
   for k := uint(0); k < x.n; k++ {
     if x.sendTo[k] && ! x.visited[k] {
       return false
@@ -38,15 +38,17 @@ func (x *distributedGraph) allSendTosEchoed() bool {
 
 func (x *distributedGraph) bfs (o Op) {
   x.connect (uint(0))
-//  defer x.fin()
+  defer x.fin()
   x.Op = o
-  h := high * x.me
+  m := inf * x.me
   if x.me == x.root {
-    x.labeled, x.parent, x.time = true, x.me, 0
+    x.labeled, x.parent, x.distance = true, x.me, 0
     for i := uint(0); i < x.n; i++ {
-      x.sendTo[i], x.child[i] = true, false
-      x.ch[i].Send (LABEL + 8 * 0 + h)
+      x.child[i] = false
+      x.ch[i].Send (label + 8 * x.distance + m)
+// x.log("label to", x.nr[i])
       x.visited[i] = false
+      x.sendTo[i] = true
     }
   }
   done := make(chan int, x.n)
@@ -55,58 +57,72 @@ func (x *distributedGraph) bfs (o Op) {
       loop:
       for {
         t := x.ch[i].Recv().(uint)
-        if t % 8 == TERM {
+// // x.log("recv from", x.nr[i])
+        if t % 8 == term {
+// if x.me == x.root { println(x.me, "recv term from", x.nr[i]) }
           break loop
         } else {
           x.chan1 <- t
         }
       }
       done <- 1
+// println("sent done", i, "/", x.nr[i])
     }(j)
   }
   for {
-    t := <-x.chan1; j := x.channel (t / high)
-    t = t % high; x.distance = t / 8
-    msg := t % 8
-    switch msg {
-    case LABEL:
+    t := <-x.chan1
+    j := x.channel (t / inf)
+    t %= inf
+    x.distance = t / 8
+    switch t % 8 {
+    case label:
       if ! x.labeled {
-        x.labeled, x.parent, x.time = true, x.nr[j], x.distance + 1
+        x.labeled = true
+        x.parent = x.nr[j]
+        x.distance++
         for k := uint(0); k < x.n; k++ {
           x.sendTo[k] = k != j
         }
-        if x.sendTos() == 0 {
-          x.ch[j].Send (END + h)
+        if x.n == 1 { // no neighbours != parent
+if x.numSendTos() > 0 { panic ("oops") }
+          x.ch[j].Send (end + m)
+// x.log("end to", x.nr[j])
         } else {
-          x.ch[j].Send (KEEPON + h)
+          x.ch[j].Send (keepon + m)
+// x.log("keepon to", x.nr[j])
         }
       } else {
         if x.parent == x.nr[j] {
           for k := uint(0); k < x.n; k++ {
             if x.sendTo[k] {
-              x.ch[k].Send (LABEL + 8 * x.time + h)
+              x.ch[k].Send (label + 8 * x.distance + m)
               x.visited[k] = false
             }
           }
         } else { // x.parent =! x.nr[j]
-          x.ch[j].Send (STOP + h)
+          x.ch[j].Send (stop + m)
+// x.log("stop to", x.nr[j])
         }
       }
-    case KEEPON:
+    case keepon:
       x.visited[j] = true
       x.child[j] = true
-    case STOP:
+    case stop:
       if x.nr[j] == x.parent {
         for k := uint(0); k < x.n; k++ {
           if x.child[k] {
-            x.ch[k].Send (STOP + h)
+            x.ch[k].Send (stop + m)
+// x.log("stop to", x.nr[k])
           }
         }
         x.Op (x.actVertex)
         for k := uint(0); k < x.n; k++ {
-          x.ch[k].Send(TERM)
+          x.ch[k].Send (term)
+// if x.nr[k] == x.root { println(x.me, "sent term to", x.nr[k]) }
+// x.log("term to", x.nr[k])
         }
         for k := uint(0); k < x.n; k++ {
+// println("got done", k)
           <-done
         }
         return
@@ -114,42 +130,48 @@ func (x *distributedGraph) bfs (o Op) {
         x.visited[j] = true
         x.sendTo[j] = false
       }
-    case END:
+    case end:
+      x.child[j] = true
       x.visited[j] = true
-      x.child[j], x.sendTo[j] = true, false
-    case TERM:
-      // ignore
+      x.sendTo[j] = false
     }
-    if x.sendTos() == 0 {
-      if x.parent == x.me {
-        for k := uint(0); k < x.n; k++ {
-          if x.child[k] {
-            x.ch[k].Send (STOP + h)
-          }
-        }
-        x.Op (x.actVertex)
-        for k := uint(0); k < x.n; k++ {
-          x.ch[k].Send(TERM)
-        }
-        for k := uint(0); k < x.n; k++ {
-          <-done
-        }
-        return
-      } else {
-        k := x.channel(x.parent); x.ch[k].Send (END + h)
-      }
-    } else {
-      if x.allSendTosEchoed() {
-        if x.parent == x.me {
+    if x.numSendTos() > 0 {
+      if x.allSendTosVisited() {
+        if x.me == x.root {
           for k := uint(0); k < x.n; k++ {
             if x.sendTo[k] {
-              x.ch[k].Send (LABEL + 8 * x.time + h)
+              x.ch[k].Send (label + 8 * x.distance + m)
+// x.log("label to", x.nr[k])
               x.visited[k] = false
             }
           }
         } else {
-          k := x.channel(x.parent); x.ch[k].Send (KEEPON + h)
+          x.ch[x.channel(x.parent)].Send (keepon + m)
+// x.log("keepon to", x.nr[k])
         }
+      }
+    } else { // numSendTos() == 0
+      if x.me == x.root {
+        for k := uint(0); k < x.n; k++ {
+          if x.child[k] {
+            x.ch[k].Send (stop + m)
+// x.log("stop to", x.nr[k])
+          }
+        }
+        x.Op (x.actVertex)
+        for k := uint(0); k < x.n; k++ {
+          x.ch[k].Send (term)
+// println("sent term to", x.nr[k], "on", k)
+// x.log("term to", x.nr[k])
+        }
+        for k := uint(0); k < x.n; k++ {
+// println("got done", k)
+          <-done
+        }
+        return
+      } else {
+        k := x.channel(x.parent); x.ch[k].Send (end + m)
+// x.log("end to", x.nr[k])
       }
     }
   }

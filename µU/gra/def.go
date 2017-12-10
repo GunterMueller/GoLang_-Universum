@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171124 - license see µU.go
+// (c) Christian Maurer   v. 171128 - license see µU.go
 
 import (
   . "µU/obj"
@@ -104,11 +104,6 @@ type
 // v is now the colocal and v1 the local vertex of x
 // and e is inserted is an edge from v to v1.
   Edge2 (v, v1, e Any)
-
-// If x is empty of if the vertices of x do not implement Valuator,
-// nothing has happened. Otherwise,
-// the set of vertices of x is sorted due to their value.
-  SortNeighbours()
 
 // Returns the representation of x as adjacency matrix.
   Matrix() adj.AdjacencyMatrix

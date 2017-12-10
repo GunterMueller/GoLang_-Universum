@@ -1,19 +1,17 @@
 package phil
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 // >>> Solution with critical sections
 
-import (
-  . "µU/lockn"
+import
   . "µU/cs"
-)
 type
   criticalSection struct {
                          CriticalSection
                          }
 
-func newCS() LockerN {
+func newCS() Philos {
   nForks := make([]uint, NPhilos)
   for i := uint(0); i < NPhilos; i++ {
     nForks[i] = 2

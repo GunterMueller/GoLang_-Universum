@@ -1,13 +1,11 @@
 package phil
 
-// (c) Christian Maurer   v. 170627 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 // >>> Unfair solution with semaphores, danger of starvation
 
-import (
+import
   "sync"
-  . "µU/lockn"
-)
 type
   semaphoreUnfair struct {
                    plate []sync.Mutex
@@ -23,7 +21,7 @@ func (x *semaphoreUnfair) test (p uint) {
   }
 }
 
-func newSU() LockerN {
+func newSU() Philos {
   x := new(semaphoreUnfair)
   x.plate = make([]sync.Mutex, NPhilos)
   for p := uint(0); p < NPhilos; p++ {

@@ -1,6 +1,6 @@
 package ego
 
-// (c) Christian Maurer   v. 170424 - license see µU.go
+// (c) Christian Maurer   v. 171202 - license see µU.go
 
 import (
   "µU/ker"
@@ -9,7 +9,7 @@ import (
 )
 
 func ego (n uint) uint {
-  i, ok := nat.Natural (env.Par(1))
+  i, ok := nat.Natural (env.Arg(1))
   if ! ok {
     ker.Panic("falsches Argument")
   }
@@ -20,7 +20,7 @@ func ego (n uint) uint {
 }
 
 func me() uint {
-  i, ok := nat.Natural (env.Par(1))
+  i, ok := nat.Natural (env.Arg(1))
   if ! ok {
     return uint(1 << 16)
   }

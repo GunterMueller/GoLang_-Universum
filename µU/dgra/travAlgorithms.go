@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 171203 - license see µU.go
 
 import
   . "µU/obj"
@@ -8,14 +8,16 @@ type
   TravAlg byte; const (
   DFS = TravAlg(iota) // depth first seach showing discover and finish times
   DFS1 // depth first seach showing the DFS-tree
-  FmDFS1 // depth first search with far monitors without visit phase, showing the DFS-tree
-  FmDFSA // simplified DFS-algorithm of Awerbuch with far monitors
-  FmDFSA1 // simplified DFS-algorithm of Awerbuch with far monitors, showing the DFS-tree
-  FmDFSRing // construction of a ring using DFS, showing the vertices of the ring
-  FmDFSRing1 // construction of a ring using DFS, showing the ring
+  DFSfm1 // depth first search without visit phase showing the DFS-tree, with far monitors
+  Awerbuch // simplified DFS-algorithm of Awerbuch, with far monitors
+  Awerbuch1 // simplified DFS-algorithm of Awerbuch showing the DFS-tree, with far monitors
+  Awerbuch2 // experimental
+  Ring // construction of a ring using DFS showing the vertices of the ring, with far monitors
+  Ring1 // construction of a ring using DFS showing the ring, with far monitors
   BFS // BFS-algorithm of Zhu/Cheung
-  FmBFS // breadth first search with far monitors
-  FmBFS1 // breadth first search with far monitor, showing the BFS-tree
+  BFSfm // breadth first search, with far monitors
+  BFSfm1 // breadth first search showing the BFS-tree, with far monitors
+  MA1 // experimental
 )
 
 func (x *distributedGraph) SetTravAlgorithm (a TravAlg) {
@@ -33,21 +35,25 @@ func (x *distributedGraph) Trav (o Op) {
     x.dfs (o)
   case DFS1:
     x.dfs1 (o)
-  case FmDFS1:
-    x.fmdfs1 (o)
-  case FmDFSA:
-    x.fmdfsa (o)
-  case FmDFSA1:
-    x.fmdfsa1 (o)
-  case FmDFSRing:
-    x.fmdfsring()
-  case FmDFSRing1:
-    x.fmdfsring1()
+  case DFSfm1:
+    x.dfsfm1 (o)
+  case Awerbuch:
+    x.awerbuch (o)
+  case Awerbuch1:
+    x.awerbuch1 (o)
+  case Awerbuch2:
+    x.awerbuch2 (o)
+  case Ring:
+    x.ring()
+  case Ring1:
+    x.ring1()
   case BFS:
     x.bfs (o)
-  case FmBFS:
-    x.fmbfs (o)
-  case FmBFS1:
-    x.fmbfs1 (o)
+  case BFSfm:
+    x.bfsfm (o)
+  case BFSfm1:
+    x.bfsfm1 (o)
+  case MA1:
+    x.ma1 (o)
   }
 }

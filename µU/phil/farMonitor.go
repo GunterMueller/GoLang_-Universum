@@ -1,13 +1,11 @@
 package phil
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 171127 - license see µU.go
 
 // >>> Solution with far monitor
 
 import (
   . "µU/obj"
-  . "µU/lockn"
-//  "µU/host"
   "µU/fmon"
 )
 type
@@ -15,30 +13,30 @@ type
                     fmon.FarMonitor
                     }
 
-func newFM (h /* host.Host */ string, port uint16, s bool) LockerN {
+func newFM (h string, port uint16, s bool) Philos {
   nForks := make([]uint, NPhilos)
   for i := uint(0); i < NPhilos; i++ {
     nForks[i] = 2
   }
   p := func (a Any, i uint) bool {
          if i == lock {
-           p := a.(uint) // p-th philosopher
-           return nForks[p] == 2
+           j := a.(uint) // j-th philosopher
+           return nForks[j] == 2
          }
          return true // unlock
        }
   f := func (a Any, i uint) Any {
-         p := a.(uint) // p-th philosopher
+         j := a.(uint) // j-th philosopher
          if i == lock {
-           nForks[left(p)]--
-           nForks[right(p)]--
+           nForks[left(j)]--
+           nForks[right(j)]--
          } else { // unlock
-           nForks[left(p)]++
-           nForks[right(p)]++
+           nForks[left(j)]++
+           nForks[right(j)]++
          }
-         return p
+         return j
        }
-  return &farMonitor { fmon.NewN (nil, NPhilos, f, p, h, port, s) }
+  return &farMonitor { fmon.New (uint(0), NPhilos, f, p, h, port, s) }
 }
 
 func (x *farMonitor) Lock (p uint) {

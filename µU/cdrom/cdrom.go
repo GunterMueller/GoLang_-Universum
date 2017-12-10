@@ -1,6 +1,6 @@
 package cdrom
 
-// (c) Christian Maurer   v. 150622 - license see µU.go
+// (c) Christian Maurer   v. 171202 - license see µU.go
 
 //#include <stdlib.h>
 //#include <stdio.h>
@@ -189,7 +189,7 @@ func string_() string {
 }
 
 func soundfile() *os.File {
-  dev:= env.Par (1)
+  dev:= env.Arg(1)
   if dev == "" { dev = "sr0" }
   if dev == "" { dev = "dvd" }
   if dev == "" { dev = "cdrom" }

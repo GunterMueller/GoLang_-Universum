@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 170423 - license see µU.go
+// (c) Christian Maurer   v. 171202 - license see µU.go
 
 import (
   "µU/ker"
@@ -161,7 +161,7 @@ func names (mask, suffix string, n uint, l, c uint, f, b col.Colour) (string, st
   bx.Colours (f, b)
   ptSuffix = "." + suffix
   errh.Hint ("falls Dateien vorhanden, auswählen F2-, dann Pfeil-/Eingabetaste, ggf. Esc")
-  name:= env.Par (1)
+  name:= env.Arg(1)
   if name == "" {
     name = str.Clr (n) // Wörkeraunt um Fehler in box/imp.go
   }

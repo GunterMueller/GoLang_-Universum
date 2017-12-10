@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 171202 - license see µU.go
 
 import (
   "µU/env"
@@ -15,7 +15,7 @@ import (
   "µU/nchan"
 )
 
-func newg1 (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
+func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
   cf, ca, cb := col.Blue(), col.Red(), col.LightWhite()
   n := uint(len(l))
   if n != uint(len(es)) || n != uint(len(c)) { panic("len's different") }
@@ -98,7 +98,7 @@ func g3 (i uint) DistributedGraph {
   e := [][]uint { []uint { 1, 2 },
                   []uint { 0, 2 },
                   []uint { 0, 1 } }
-  return newg1 (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1, i)
 }
 
 func g3dir (i uint) DistributedGraph {
@@ -119,7 +119,7 @@ func g3dir (i uint) DistributedGraph {
   e := [][]uint { []uint { },
                   []uint { 0, 2 },
                   []uint { 0 } }
-  return newg1 (true, l, c, e, 1, i)
+  return newg (true, l, c, e, 1, i)
 }
 
 func g4 (i uint) DistributedGraph {
@@ -141,7 +141,7 @@ func g4 (i uint) DistributedGraph {
                   []uint { 0, 2 },
                   []uint { 0, 1, 3 },
                   []uint { 2 } }
-  return newg1 (false, l, c, e, 2, i)
+  return newg (false, l, c, e, 2, i)
 }
 
 func g4flat (i uint) DistributedGraph {
@@ -157,7 +157,7 @@ func g4flat (i uint) DistributedGraph {
                   []uint { 0, 2 },
                   []uint { 1, 3 },
                   []uint { 2 } }
-  return newg1 (false, l, c, e, 3, i)
+  return newg (false, l, c, e, 3, i)
 }
 
 
@@ -180,7 +180,7 @@ func g4full (i uint) DistributedGraph {
                   []uint { 0, 2, 3 },
                   []uint { 0, 1, 3 },
                   []uint { 0, 1, 2 } }
-  return newg1 (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1, i)
 }
 
 func g5 (i uint) DistributedGraph {
@@ -203,7 +203,7 @@ func g5 (i uint) DistributedGraph {
                   []uint { 1 },
                   []uint { 0, 4 },
                   []uint { 1, 3 }}
-  return newg1 (false, l, c, e, 3, i)
+  return newg (false, l, c, e, 3, i)
 }
 
 func g6 (i uint) DistributedGraph {
@@ -227,7 +227,7 @@ func g6 (i uint) DistributedGraph {
                   []uint { 0, 2, 5 },
                   []uint { 2, 5 },
                   []uint { 1, 3, 4 }}
-  return newg1 (false, l, c, e, 2, i)
+  return newg (false, l, c, e, 2, i)
 }
 
 func g8a (i uint) DistributedGraph {
@@ -255,7 +255,7 @@ func g8a (i uint) DistributedGraph {
                   []uint { 2, 6 },
                   []uint { 3, 4, 5 },
                   []uint { 4 } }
-  return newg1 (false, l, c, e, 4, i)
+  return newg (false, l, c, e, 4, i)
 }
 
 func g8 (i uint) DistributedGraph {
@@ -283,7 +283,7 @@ func g8 (i uint) DistributedGraph {
                   []uint { 1, 4, 7 },
                   []uint { 3, 4, 7 },
                   []uint { 5, 6 } }
-  return newg1 (false, l, c, e, 4, i)
+  return newg (false, l, c, e, 4, i)
 }
 
 func g8dir (i uint) DistributedGraph {
@@ -311,7 +311,7 @@ func g8dir (i uint) DistributedGraph {
                   []uint { 5 },
                   []uint { },
                   []uint { 7 } }
-  return newg1 (true, l, c, e, 4, i)
+  return newg (true, l, c, e, 4, i)
 }
 
 func g8cyc (i uint) DistributedGraph {
@@ -325,7 +325,7 @@ func g8cyc (i uint) DistributedGraph {
                   []uint { 0, 6 },
                   []uint { 1, 7 },
                   []uint { 4 } }
-  return newg1 (true, l, c, e, 4, i)
+  return newg (true, l, c, e, 4, i)
 }
 
 func g8ring (i uint) DistributedGraph {
@@ -353,7 +353,7 @@ func g8ring (i uint) DistributedGraph {
                   []uint { 1, 2 },
                   []uint { 3, 4 },
                   []uint { 0, 4 } }
-  return newg1 (false, l, c, e, 4, i)
+  return newg (false, l, c, e, 4, i)
 }
 
 func g8ringdir (i uint) DistributedGraph {
@@ -382,7 +382,7 @@ func g8ringdir (i uint) DistributedGraph {
                   []uint { 2 },
                   []uint { 3 },
                   []uint { 4 } }
-  return newg1 (true, l, c, e, 7, i)
+  return newg (true, l, c, e, 7, i)
 }
 
 func g8full (i uint) DistributedGraph {
@@ -397,7 +397,7 @@ func g8full (i uint) DistributedGraph {
       if k != j { e[j] = append (e[j], k) }
     }
   }
-  return newg1 (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1, i)
 }
 
 func g10 (i uint) DistributedGraph {
@@ -425,39 +425,39 @@ func g10 (i uint) DistributedGraph {
                   []uint { 4 },
                   []uint { 5, 9 },
                   []uint { 6, 8 } }
-  return newg1 (false, l, c, e, 4, i)
+  return newg (false, l, c, e, 4, i)
 }
 
 func g12 (i uint) DistributedGraph {
 /*
-2       7 ------- 11 ------ 8
-3     / | \     /    \       \
-4    /  |  \   /       \      \
-5   /   |   \ /          \     \
-6  3    6    4    10 ---- 0 ---- 2
-7   \   |      \   |     /
-8    \  |       \  |   /
-9     \ |        \ | /
-10      9 -------- 1 ---- 5
+2        0 -------- 1------ 2
+3      / | \       / \       \
+4     /  |  \    /     \      \
+5    /   |   \ /         \     \
+6   3 -- 4 -- 5 --- 6 --- 7 --- 8
+7    \   |     \    |    /
+8     \  |       \  |  /
+9      \ |         \|/
+10       9-------- 10 ----- 11
             1         2         3
   01234567890123456789012345678901
 */
 //              0   1   2   3   4   5   6   7   8   9  10  11
-  l := []int {  7, 10,  5,  5,  7,  9,  6,  3,  3,  9,  6,  2 }
-  c := []int { 24, 16, 30,  2, 12, 27,  7,  9, 25,  5, 18, 17 }
-  e := [][]uint { []uint { 1, 2, 10, 11 },
-                  []uint { 0, 4, 5, 9, 10 },
-                  []uint { 0, 8 },
-                  []uint { 7, 9 },
-                  []uint { 1, 7, 11 },
-                  []uint { 1 },
-                  []uint { 7, 9 },
-                  []uint { 3, 4, 6, 11 },
-                  []uint { 2, 11 },
-                  []uint { 1, 3, 6 },
-                  []uint { 0, 1 },
-                  []uint { 0, 4, 7, 8 } }
-  return newg1 (false, l, c, e, 4, i)
+  l := []int {  3,  2,  3,  5,  6,  7,  5,  6,  6,  9, 10,  9 }
+  c := []int {  7, 18, 26,  2,  7, 12, 18, 24, 30,  7, 18, 27 }
+  e := [][]uint { []uint { 1, 3, 4, 5 },
+                  []uint { 0, 2, 5, 7 },
+                  []uint { 1, 8 },
+                  []uint { 0, 9 },
+                  []uint { 0, 9 },
+                  []uint { 0, 1, 10 },
+                  []uint { 7, 10 },
+                  []uint { 1, 6, 8, 10 },
+                  []uint { 2, 7 },
+                  []uint { 3, 4, 10 },
+                  []uint { 5, 6, 7, 9, 11 },
+                  []uint { 10 } }
+  return newg (false, l, c, e, 4, i)
 }
 
 func g12ringdir (i uint) DistributedGraph {
@@ -485,7 +485,7 @@ func g12ringdir (i uint) DistributedGraph {
   x := []int { 28, 25, 20, 14,  8,  3,  2,  3,  8, 14, 20, 25 }
   l, c := make([]int, m), make([]int, m)
   for j := uint(0); j < m; j++ { l[s[j]], c[s[j]] = y[j], x[j] }
-  return newg1 (true, l, c, e, 6, i)
+  return newg (true, l, c, e, 6, i)
 }
 
 func g12full (i uint) DistributedGraph {
@@ -498,7 +498,7 @@ func g12full (i uint) DistributedGraph {
       if k != j { e[j] = append (e[j], k) }
     }
   }
-  return newg1 (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1, i)
 }
 
 func g16 (i uint) DistributedGraph {
@@ -532,7 +532,7 @@ func g16 (i uint) DistributedGraph {
                   []uint { 2, 5 },
                   []uint { 1, 4, 6 },
                   []uint { 4, 9, 11, 12 } }
-  return newg1 (false, l, c, e, 5, i)
+  return newg (false, l, c, e, 5, i)
 }
 
 func g16dir (i uint) DistributedGraph {
@@ -563,7 +563,7 @@ func g16dir (i uint) DistributedGraph {
                   []uint { },
                   []uint { 1, 4 },
                   []uint { 4, 11, 12 } }
-  return newg1 (true, l, c, e, 5, i)
+  return newg (true, l, c, e, 5, i)
 }
 
 func g16ring (i uint) DistributedGraph {
@@ -597,7 +597,7 @@ func g16ring (i uint) DistributedGraph {
                   []uint { 4, 9 },
                   []uint { 2, 4 },
                   []uint { 5, 11 } }
-  return newg1 (false, l, c, e, 8, i)
+  return newg (false, l, c, e, 8, i)
 }
 
 func g16ringdir (i uint) DistributedGraph {
@@ -626,7 +626,7 @@ func g16ringdir (i uint) DistributedGraph {
   x := []int { 28, 26, 22, 18, 14, 10, 6, 3, 1, 3, 6, 10, 14, 18, 22, 26 }
   l, c := make([]int, m), make([]int, m)
   for j := uint(0); i < m; j++ { l[s[j]], c[s[j]] = y[j], x[j] }
-  return newg1 (true, l, c, e, 6, i)
+  return newg (true, l, c, e, 6, i)
 }
 
 func g16full (i uint) DistributedGraph {
@@ -638,5 +638,5 @@ func g16full (i uint) DistributedGraph {
     e[j] = make ([]uint, 0)
     for k:= uint(0); k < m; k++ { if k != i { e[j] = append (e[j], k) } }
   }
-  return newg1 (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1, i)
 }
