@@ -30,13 +30,13 @@ type
                     net.Listener
                 buf []byte
                     int "number of sent/received bytes"
-          err, errR error
+    err, errS, errR error
                     }
 
 func (x *netChannel) panicIfErr() {
-  if x.err != nil {
-    Panic (x.err.Error())
-  }
+  if x.errS != nil { Panic (x.errS.Error()) }
+  if x.errR != nil { Panic (x.errR.Error()) }
+  if x.err != nil { Panic (x.err.Error()) }
 }
 
 func new_(a Any, me, i uint, n string, p uint16) NetChannel {
@@ -74,18 +74,18 @@ func (x *netChannel) Send (a Any) error {
   if x.Any == nil {
     x.uint = Codelen(a)
     if x.uint > maxWidth { Panic ("object to send is too large") }
-    x.int, x.err = x.Conn.Write (append (Encode (x.uint), Encode(a)...))
+    x.int, x.errS = x.Conn.Write (append (Encode (x.uint), Encode(a)...))
   } else {
     CheckTypeEq (x.Any, a)
-    x.int, x.err = x.Conn.Write(Encode(a))
+    x.int, x.errS = x.Conn.Write(Encode(a))
   }
-  if x.err != nil { println (x.err.Error()) }
-  return x.err
+//  if x.error != nil { println (x.error.Error()) }
+  return x.errS
 }
 
 func (x *netChannel) Recv() Any {
   if x.Conn == nil {
-    x.err = errors.New("no Connection")
+    x.errR = errors.New("no Connection")
     return Clone(x.Any)
   }
   if x.Any == nil {

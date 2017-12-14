@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 171202 - license see µU.go
+// (c) Christian Maurer   v. 171212 - license see µU.go
 
 import
   . "µU/obj"
@@ -13,11 +13,11 @@ type
   Chan() (chan Any, chan Any)
 
 // Pre: a is of the type of x.
-// a is sent on x (resp. if x is a 1:n channel and
+// Returns nil, if a is sent on x (resp. if x is a 1:n channel and
 // the calling process is a server, on the actual subchannel of x)
 // to the communication partner of the calling process.
-  Send (a Any)
-//  SendM (a ...Any)
+// Returns otherwise an appropriate error.
+  Send (a Any) error
 
 // Returns a slice of bytes, if x was created by New with nil as first argument.
 // In this case, the client is responsible for decoding that slice,
@@ -29,7 +29,8 @@ type
 // returns an empty object otherwise.
 // The calling process was blocked, until an object was received.
   Recv() Any
-//  RecvM() []Any
+
+// RecvError() error // TODO
 
 // The port used by x is not used by a network service on the calling host.
   Fin()

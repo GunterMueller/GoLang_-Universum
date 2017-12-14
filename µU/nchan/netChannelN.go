@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 171107 - license see µU.go
+// (c) Christian Maurer   v. 171213 - license see µU.go
 
 import (
   "net"
@@ -13,10 +13,14 @@ import (
 )
 
 func (x *netChannel) serve (c net.Conn) {
+// TODO better error handling
   for {
-    x.int, x.error = c.Read (x.buf)
-//    if x.error != nil { println("Error:", x.error.Error()) } // TODO better error handling
-    if x.int == 0 { break }
+    x.int, x.err = c.Read (x.buf)
+//    if x.err != nil { println(x.err.Error()) }
+    if x.int == 0 {
+      println ("connection to partner broken")
+      break
+    }
     if x.Any == nil {
       x.uint = uint(Decode (uint(0), x.buf[:C0]).(uint))
 // println(nat.String(x.cport), nat.String(x.sport), "<<", x.uint)
@@ -28,13 +32,19 @@ func (x *netChannel) serve (c net.Conn) {
 // that had called newn, has sent his reply
       a := <-x.out
       x.uint = Codelen(a)
-      x.int, x.error = c.Write(append(Encode(x.uint), Encode(a)...))
+      x.int, x.err = c.Write(append(Encode(x.uint), Encode(a)...))
       if uint(x.int) != C0 + x.uint { Shit() }
     } else {
-      x.checkRecv()
+      if x.int == -1 {
+        println ("partner closed")
+      } else {
+        if x.err != nil && x.int < int(x.uint) {
+          println (x.err.Error())
+        }
+      }
       x.in <- Decode (Clone (x.Any), x.buf[:x.int])
-      x.int, x.error = c.Write (Encode(<-x.out))
-      x.checkSend()
+      x.int, x.err = c.Write (Encode(<-x.out))
+      if x.err != nil { println (x.err.Error()) } // provisorial
     }
   }
   x.nClients--
@@ -54,12 +64,12 @@ func newn (a Any, h string, p uint16, s bool) NetChannel {
   x.isServer = s
   if x.isServer {
 //    x.cport = uint(p) - 50000
-//    x.Listener, x.error = net.Listen (network, naddr.New (port).String())
-    x.Listener, x.error = net.Listen (network, naddr.New (p).String())
+//    x.Listener, x.err = net.Listen (network, naddr.New (port).String())
+    x.Listener, x.err = net.Listen (network, naddr.New (p).String())
     x.panicIfErr()
     go func() {
       for {
-        if c, e := x.Listener.Accept(); e == nil { // NOT x.Conn, x.error !
+        if c, e := x.Listener.Accept(); e == nil { // NOT x.Conn, x.err !
 //          nn, _ := nat.Natural(x.Listener.Addr().String()); x.cport = nn
           x.nClients++
 // println(x.nClients)
@@ -76,7 +86,7 @@ func newn (a Any, h string, p uint16, s bool) NetChannel {
   } else { // clientA
     ht := host.NewS (h)
     for {
-      if x.Conn, x.error = net.Dial (network, naddr.New2 (ht, p).String()); x.error == nil {
+      if x.Conn, x.err = net.Dial (network, naddr.New2 (ht, p).String()); x.err == nil {
         break
       }
       Msleep(500)

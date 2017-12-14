@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171210 - license see µU.go
+// (c) Christian Maurer   v. 171213 - license see µU.go
 
 import (
   "µU/ker"
@@ -53,7 +53,7 @@ diameter, distance,
                    }
 const (
   p0 = nchan.Port0
-  inf = uint(1 << 16)
+  inf = uint(1<<16)
 )
 var (
   done = make(chan int, 1)
@@ -208,6 +208,19 @@ func valueMax (g gra.Graph) uint {
     if v > m { m = v }
   })
   return m
+}
+
+func vertexMax (g gra.Graph) vtx.Vertex {
+  m := uint(0)
+  var vt vtx.Vertex
+  g.Trav (func (a Any) {
+    v := value (a.(vtx.Vertex))
+    if v > m {
+      m = v
+      vt = a.(vtx.Vertex)
+    }
+  })
+  return vt
 }
 
 func exValue (g gra.Graph, v uint) bool {

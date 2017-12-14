@@ -2,6 +2,8 @@ package dgra
 
 // (c) Christian Maurer   v. 171203 - license see µU.go
 
+// XXX connection to partner broken
+
 import (
   . "µU/obj"
   "µU/fmon"
@@ -33,8 +35,9 @@ func (x *distributedGraph) maurerfm() {
   }
   x.cycle.Write()
   x.leader = valueMax (x.cycle)
+  affe := vertexMax (x.cycle)
   exValue (x.cycle, x.leader)
-  x.cycle.Mark (x.leader)
+  x.cycle.Mark (affe)
   x.cycle.Write()
 }
 

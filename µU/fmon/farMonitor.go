@@ -1,8 +1,9 @@
 package fmon
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 171212 - license see µU.go
 
 import (
+  "errors"
   . "µU/ker"
   . "µU/obj"
   "µU/nchan"
@@ -13,6 +14,7 @@ type
                  ch []nchan.NetChannel
                     FuncSpectrum; PredSpectrum
                     bool "true iff the monitor is a server"
+                    error
                     }
 
 func new_(a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
@@ -59,7 +61,10 @@ func news (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
 }
 
 func (x *farMonitor) F (a Any, i uint) Any {
-  if x.ch[i] == nil { Panic("fmon.F: x.ch == nil") }
+  if x.ch[i] == nil {
+    x.error = errors.New("fmon.F: x.ch == nil")
+    return nil
+  }
   x.ch[i].Send (a)
   return x.ch[i].Recv()
 }

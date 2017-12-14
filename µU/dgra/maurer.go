@@ -9,6 +9,8 @@ package dgra
 //     and propagates it to its successor.
 //     So finally each vertex has the whole cycle and can easily compute the leader.
 
+// XXX funzt nicht, sondern hört nach zwei auf
+
 import
   . "µU/obj"
 
@@ -22,8 +24,9 @@ func (x *distributedGraph) maurer() {
     x.cycle.Write()
     x.ch[out].Send(x.cycle.Encode())
   }
-//  bs := x.ch[in].Recv().(Stream)
-  x.cycle = x.decodedGraph (x.ch[in].Recv().(Stream))
+  bs := x.ch[in].Recv().(Stream)
+x.log0("recvd")
+  x.cycle = x.decodedGraph (bs)
   x.cycle.Write()
   if x.me == x.root {
     x.cycle.Locate (true) // colocal vertex is now the local vertex

@@ -1,37 +1,32 @@
 package dgra
 
-// (c) Christian Maurer   v. 170423 - license see µU.go
+// (c) Christian Maurer   v. 171212 - license see µU.go
 //
 // >>> Algorithm of Chang and Roberts: An Improved Algorithm for Decentralized Extrema-
 //     Finding in Circular Configurations of Processes. Comm. ACM 22 (1979), 281 - 283
 
-func (x *distributedGraph) changRoberts() uint {
+func (x *distributedGraph) changRoberts() {
   x.connect(uint(0))
   defer x.fin()
-  id, m := x.me, inf
-  out, in := uint(0), uint(1); if x.Graph.Outgoing(1) { in, out = out, in }
-  if x.me == x.root {
-    x.ch[out].Send (id)
-  }
+  out, in := uint(0), uint(1)
+  if x.Graph.Outgoing(1) { in, out = out, in }
+  x.ch[out].Send (x.me)
   for {
-    n := x.ch[in].Recv().(uint)
-    if n < m {
-      if n > id {
-        x.ch[out].Send (n)
-      } else if n < x.me {
-        x.ch[out].Send (x.me)
-      } else { // r == id
-        x.ch[out].Send (m + x.me)
-//        x.leader = x.me
-        return x.me
+    id := x.ch[in].Recv().(uint)
+    if id < inf {
+      if id > x.me {
+        x.ch[out].Send (id)
+      } else if id == x.me {
+        x.leader = x.me
+        x.ch[out].Send (inf + x.me)
+        return
       }
-    } else { // n >= m
-      n -= m
-      if n != x.me {
-        x.ch[out].Send (m + n)
+    } else { // n > inf
+      x.leader = id - inf
+      if x.leader != x.me {
+        x.ch[out].Send (id)
       }
-//      x.leader = n
-      return n
+      return
     }
   }
 }

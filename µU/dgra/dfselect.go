@@ -6,7 +6,7 @@ func (x *distributedGraph) dfselect() {
   x.connect (x.leader)
   defer x.fin()
   if x.me == x.root { // root sends the first message
-    x.parent = inf + 1 // trick, see below
+    x.parent = x.root // inf + 1 // trick, see below
     x.ch[0].Send (x.leader)
     x.child[0] = true
     x.visited[0] = true
