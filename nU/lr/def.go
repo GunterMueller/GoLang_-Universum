@@ -1,6 +1,6 @@
 package lr
 
-// (c) Christian Maurer   v. 171015 - license see nU.go
+// (c) Christian Maurer   v. 171216 - license see nU.go
 
 type LeftRight interface { // protocols for the left right problem
 
@@ -39,3 +39,4 @@ func NewConditionedMonitor2() LeftRight { return newCM2() }
 func NewConditionedMonitorBounded (l, r uint) LeftRight { return newCMB(l,r) }
 func NewChannel() LeftRight { return newCh() }
 func NewGuardedSelect() LeftRight { return newGS() }
+func NewFarMonitor (h string, p uint16, s bool) LeftRight { return newFMon(h,p,s) }

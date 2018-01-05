@@ -3,35 +3,36 @@ package rw
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
 type channel struct {
-  rI, rO, wI, wO chan int
+  inR, outR, inW, outW chan int
 }
 
 func newCh() ReaderWriter {
   x := new(channel)
-  x.rI, x.rO = make(chan int), make(chan int)
-  x.wI, x.wO = make(chan int), make(chan int)
+  x.inR, x.outR = make(chan int), make(chan int)
+  x.inW, x.outW = make(chan int), make(chan int)
+
   go func() {
     var nR, nW uint
     for {
       if nW == 0 {
         if nR == 0 {
           select {
-          case <-x.rI:
+          case <-x.inR:
             nR++
-          case <-x.wI:
+          case <-x.inW:
             nW = 1
           }
         } else { // nR > 0
           select {
-          case <-x.rI:
+          case <-x.inR:
             nR++
-          case <-x.rO:
+          case <-x.outR:
             nR--
           }
         }
       } else { // nW == 1
         select {
-        case <-x.wO:
+        case <-x.outW:
           nW = 0
         }
       }
@@ -41,17 +42,17 @@ func newCh() ReaderWriter {
 }
 
 func (x *channel) ReaderIn() {
-  x.rI <- 0
+  x.inR <- 0
 }
 
 func (x *channel) ReaderOut() {
-  x.rO <- 0
+  x.outR <- 0
 }
 
 func (x *channel) WriterIn() {
-  x.wI <- 0
+  x.inW <- 0
 }
 
 func (x *channel) WriterOut() {
-  x.wO <- 0
+  x.outW <- 0
 }

@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 171227 - license see nU.go
 
 import ("strconv"; "time"; "net"; . "nU/obj")
 
@@ -9,21 +9,22 @@ func (x *netChannel) Chan() (chan Any, chan Any) {
 }
 
 func (x *netChannel) serve (c net.Conn) {
+  var r int
   for {
-    x.int, x.error = c.Read (x.buf)
-    if x.int == 0 { break }
+    r, x.error = c.Read (x.Stream)
+    if r == 0 {
+      break
+    }
     if x.Any == nil {
-      x.uint = uint(Decode (uint(0), x.buf[:C0]).(uint))
-      x.in <- x.buf[C0:C0+x.uint]
+      x.uint = uint(Decode (uint(0), x.Stream[:C0]).(uint))
+      x.in <- x.Stream[C0:C0+x.uint]
       a := <-x.out
-      x.uint = Codelen(a)
-      x.int, x.error = c.Write(append(Encode(x.uint), Encode(a)...))
+      _, x.error = c.Write(append(Encode(Codelen(a)), Encode(a)...))
     } else {
-      x.in <- Decode (Clone (x.Any), x.buf[:x.int])
-      x.int, x.error = c.Write (Encode(<-x.out))
+      x.in <- Decode (Clone (x.Any), x.Stream[:r])
+      _, x.error = c.Write (Encode(<-x.out))
     }
   }
-  x.nClients--
   c.Close()
 }
 
@@ -34,7 +35,7 @@ func newn (a Any, h string, p uint16, s bool) NetChannel {
   if a == nil {
     x.uint = maxWidth
   }
-  x.buf = make([]byte, x.uint)
+  x.Stream = make(Stream, x.uint)
   x.in, x.out = make(chan Any), make(chan Any)
   x.isServer = s
   ps := ":" + strconv.Itoa(int(p))

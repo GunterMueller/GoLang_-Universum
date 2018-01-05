@@ -5,8 +5,8 @@ package barb
 import (. "nU/obj"; "nU/cs")
 
 type barberCS struct {
-                     cs.CriticalSection
-                     }
+  cs.CriticalSection
+}
 
 func newCS() Barber {
   var n uint

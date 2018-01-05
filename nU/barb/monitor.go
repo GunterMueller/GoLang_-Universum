@@ -11,18 +11,11 @@ type monitor struct {
 func newM() Barber {
   var n uint
   var m mon.Monitor
-//  barberFree := true
   f := func (a Any, i uint) Any {
          if i == customer {
-//           if ! barberFree {
-//             m.Wait (barber)
-//           }
-//           barberFree = false
            n++
            m.Signal (customer)
-         } else {
-//           barberFree = true
-//           m.Signal (barber)
+         } else { // barber
            for n == 0 {
              m.Wait (customer)
            }

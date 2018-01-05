@@ -4,7 +4,7 @@ package scr
 
 // TODO ausdünnen, um µU loszuwerden
 
-import ( "time"; "math/rand"; "µU/col"; "µU/scr")
+import ( "time"; "math/rand"; "nU/col"; "nU/scr")
 
 const (
   line = 1

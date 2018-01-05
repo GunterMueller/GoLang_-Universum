@@ -1,6 +1,6 @@
 package cr
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 171229 - license see nU.go
 
 /* Objects, that synchronize the access to critical sections
    (e.g. operating resources or shared data) for p process classes

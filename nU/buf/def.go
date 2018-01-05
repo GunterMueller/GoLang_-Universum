@@ -6,23 +6,23 @@ import . "nU/obj"
 
 type Buffer interface { // Fifo-Queues
 
-// Returns true, if there are no objects in x.
+// Liefert genau dann true, wenn x keine Objekte enthält.
   Empty() bool
 
-// Returns the number of objects in x.
+// Liefert die Anzahl der Objekte in x.
   Num() int
 
-// a is inserted as last object into x.
+// a ist als letztes Objekt in x eingefügt.
   Ins (a Any)
 
-// Returns the pattern object of x, if x.Empty().
-// Returns otherwise the first object of x
-// and that object is removed from x.
+// Liefert das Musterobjekt von x, wenn x leer ist.
+// Liefert andernfalls das erste Objekt von x
+// und dieses Objekt ist aus x entfernt.
   Get() Any
 }
 
-// Pre: a is atomic or of a type implementing Object (a != nil).
-// Returns a new empty queue for objects of the type of a.
-// a is the pattern object of this buffer.
+// Vor.: a ist atomar oder implementiert Equaler.
+// Liefert eine leere Schlange für Objekte des Typs von a
+// mit Musterobjekt a.
 func New (a Any) Buffer { return new_(a) }
 func NewS (a Any) Buffer { return newS(a) }

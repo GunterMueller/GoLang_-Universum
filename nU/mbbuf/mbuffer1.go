@@ -2,33 +2,35 @@ package mbbuf
 
 // (c) Christian Maurer   v. 171106 - license see nU.go
 
-import ("sync"; . "nU/obj"; "nU/bbuf")
+import (. "nU/obj"; "nU/bbuf"; "nU/sem")
 
-type mbuffer1 struct {
+type mBuffer1 struct {
   bbuf.BoundedBuffer
-  notEmpty, notFull, ins, get sync.Mutex
+  notEmpty, notFull, ins, get sem.Semaphore
 }
 
 func new1 (a Any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }
-  x := new(mbuffer1)
+  x := new(mBuffer1)
   x.BoundedBuffer = bbuf.New (a, n)
-  x.notEmpty.Lock()
+  x.notEmpty, x.notFull = sem.New(0), sem.New(n)
+  x.ins, x.get = sem.New(1), sem.New(1)
   return x
 }
 
-func (x *mbuffer1) Ins (a Any) {
-  x.notFull.Lock()
-  defer x.notEmpty.Unlock()
-  x.ins.Lock()
-  defer x.ins.Unlock()
+func (x *mBuffer1) Ins (a Any) {
+  x.notFull.P()
+  x.ins.P()
   x.BoundedBuffer.Ins (a)
+  x.ins.V()
+  x.notEmpty.V()
 }
 
-func (x *mbuffer1) Get() Any {
-  x.notEmpty.Lock()
-  defer x.notFull.Unlock()
-  x.get.Lock()
-  defer x.get.Unlock()
-  return x.BoundedBuffer.Get()
+func (x *mBuffer1) Get() Any {
+  x.notEmpty.P()
+  x.get.P()
+  a := x.BoundedBuffer.Get()
+  x.get.V()
+  x.notFull.V()
+  return a
 }

@@ -1,22 +1,21 @@
 package ego
 
-// (c) Christian Maurer   v. 170424 - license see nU.go
+// (c) Christian Maurer   v. 171227 - license see nU.go
 
-import "nU/env"
+import ("strconv"; "nU/env")
 
-/*
 func ego (n uint) uint {
-  i, ok := nat.Natural (env.Par(1))
-  if ! ok {
-    panic("falsches Argument")
+  if i, err := strconv.Atoi(env.Arg(1)); err == nil {
+    if uint(i) < n {
+      return uint(i)
+    }
   }
-  if i >= n {
-    panic("zu großes Argument")
-  }
-  return i
+  return uint(1<<16)
 }
-*/
 
 func me() uint {
-  return uint(env.Par1() - '0')
+  if i, err := strconv.Atoi(env.Arg(1)); err == nil {
+    return uint(i)
+  }
+  return uint(1<<16)
 }

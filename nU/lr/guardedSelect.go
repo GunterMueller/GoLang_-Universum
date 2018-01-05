@@ -5,24 +5,24 @@ package lr
 import . "nU/obj"
 
 type guardedSelect struct {
-  iL, oL, iR, oR chan Any
+  inL, outL, inR, outR chan Any
 }
 
 func newGS() LeftRight {
-  x:= new(guardedSelect)
-  x.iL, x.oL = make(chan Any), make(chan Any)
-  x.iR, x.oR = make(chan Any), make(chan Any)
+  x := new(guardedSelect)
+  x.inL, x.outL = make(chan Any), make(chan Any)
+  x.inR, x.outR = make(chan Any), make(chan Any)
   go func() {
-    var nL, nR uint // active lefts, rights
+    var nL, nR uint
     for {
       select {
-      case <-When (nR == 0, x.iL):
+      case <-When (nR == 0, x.inL):
         nL++
-      case <-When (nL > 0, x.oL):
+      case <-When (nL > 0, x.outL):
         nL--
-      case <-When (nL == 0, x.iR):
+      case <-When (nL == 0, x.inR):
         nR++
-      case <-When (nR > 0, x.oR):
+      case <-When (nR > 0, x.outR):
         nR--
       }
     }
@@ -31,17 +31,17 @@ func newGS() LeftRight {
 }
 
 func (x *guardedSelect) LeftIn() {
-  x.iL <- 0
+  x.inL <- 0
 }
 
 func (x *guardedSelect) LeftOut() {
-  x.oL <- 0
+  x.outL <- 0
 }
 
 func (x *guardedSelect) RightIn() {
-  x.iR <- 0
+  x.inR <- 0
 }
 
 func (x *guardedSelect) RightOut() {
-  x.oR <- 0
+  x.outR <- 0
 }

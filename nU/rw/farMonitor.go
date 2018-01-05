@@ -11,31 +11,31 @@ type farMonitor struct {
 func newFM (h string, p uint16, s bool) ReaderWriter {
   var nR, nW uint
   x := new(farMonitor)
-  ps := func (a Any, i uint) bool {
-          switch i {
-          case readerIn:
-            return nW == 0
-          case writerIn:
-            return nR == 0 && nW == 0
-          }
-          return true // rOut, wOut
-        }
-  fs := func (a Any, i uint) Any {
-          switch i {
-          case readerIn:
-            nR++
-            return nR
-          case readerOut:
-            nR--
-            return nR
-          case writerIn:
-            nW = 1
-          case writerOut:
-            nW = 0
-          }
-          return nW
-        }
-  x.FarMonitor = fmon.New (uint(0), 4, fs, ps, h, p, s)
+  c := func (a Any, i uint) bool {
+         switch i {
+         case readerIn:
+           return nW == 0
+         case writerIn:
+           return nR == 0 && nW == 0
+         }
+         return true // readerOut, writerOut
+       }
+  f := func (a Any, i uint) Any {
+         switch i {
+         case readerIn:
+           nR++
+           return nR
+         case readerOut:
+           nR--
+           return nR
+         case writerIn:
+           nW = 1
+         case writerOut:
+           nW = 0
+         }
+         return nW
+       }
+  x.FarMonitor = fmon.New (uint(0), 4, f, c, h, p, s)
   return x
 }
 

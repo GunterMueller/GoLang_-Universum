@@ -1,6 +1,6 @@
 package smok
 
-// (c) Christian Maurer   v. 171102 - license see nU.go
+// (c) Christian Maurer   v. 171227 - license see nU.go
 
 type Smokers interface {
 
@@ -18,8 +18,10 @@ type Smokers interface {
 // Der aufrufende Raucher raucht nicht mehr.
   SmokerOut()
 }
-// func WriteAgent (u uint) { writeAgent(u) }
-// func WriteSmoker (u uint) { writeSmoker(u) }
+
+func Init() { init_() }
+func WriteAgent (u uint) { writeAgent(u) }
+func WriteSmoker (u uint) { writeSmoker(u) }
 
 func NewNaive() Smokers { return new_() }
 func NewParnas() Smokers { return newP() }

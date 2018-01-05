@@ -5,8 +5,8 @@ package bbuf
 import . "nU/obj"
 
 type boundedBuffer struct {
-  Any
-  num int
+  Any "Musterobjekt"
+  int "Anzahl der Objekte im Puffer"
   cap, in, out uint
   content AnyStream
 }
@@ -15,20 +15,20 @@ func new_(a Any, n uint) BoundedBuffer {
   x := new(boundedBuffer)
   x.Any = Clone(a)
   x.cap = n
-  x.content = make (AnyStream, x.cap)
+  x.content = make(AnyStream, x.cap)
   return x
 }
 
 func (x *boundedBuffer) Empty() bool {
-  return x.num == 0
+  return x.int == 0
 }
 
 func (x *boundedBuffer) Num() int {
-  return x.num
+  return x.int
 }
 
 func (x *boundedBuffer) Full() bool {
-  return x.num == int(x.cap - 1)
+  return x.int == int(x.cap - 1)
 }
 
 func (x *boundedBuffer) Ins (a Any) {
@@ -36,7 +36,7 @@ func (x *boundedBuffer) Ins (a Any) {
   CheckTypeEq (a, x.Any)
   x.content[x.in] = Clone (a)
   x.in = (x.in + 1) % x.cap
-  x.num++
+  x.int++
 }
 
 func (x *boundedBuffer) Get() Any {
@@ -46,6 +46,6 @@ func (x *boundedBuffer) Get() Any {
   a := Clone (x.content[x.out])
   x.content[x.out] = Clone (x.Any)
   x.out = (x.out + 1) % x.cap
-  x.num--
+  x.int--
   return a
 }

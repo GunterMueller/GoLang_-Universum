@@ -24,10 +24,10 @@ func newFMon (h string, port uint16, s bool) LeftRight {
          switch i {
          case leftIn:
            nL++
-         case rightIn:
-           nR++
          case leftOut:
            nL--
+         case rightIn:
+           nR++
          case rightOut:
            nR--
          }

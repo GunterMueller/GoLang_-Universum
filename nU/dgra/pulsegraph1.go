@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 171227 - license see nU.go
 
 import . "nU/obj"
 
@@ -9,6 +9,8 @@ func (x *distributedGraph) pulsegraph1() {
   defer x.fin()
   ready := make([]bool, x.n)
   x.tmpGraph.Copy (x.Graph)
+  x.tmpGraph.Write()
+  pause()
   for r := uint(1); true; r++ {
     bs := x.tmpGraph.Encode()
     for i := uint(0); i < x.n; i++ {
@@ -22,7 +24,9 @@ func (x *distributedGraph) pulsegraph1() {
       g := x.emptyGraph()
       g.Decode (bs[1:])
       x.tmpGraph.Add (g)
-      x.tmpGraph.Mark2 (x.me, x.nr[i])
+      x.tmpGraph.Mark2 (x.actVertex, x.nb[i])
+      x.tmpGraph.Write()
+      pause()
     }
     if x.tmpGraph.AllMarked() {
       break

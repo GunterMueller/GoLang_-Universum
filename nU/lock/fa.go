@@ -1,19 +1,20 @@
 package lock
 
-// (c) Christian Maurer   v. 171013 - license see nU.go
+// (c) Christian Maurer   v. 171231 - license see nU.go
 
-type
-  fa struct {
-            uint32
-            }
+import "nU/atomic"
+
+type fa struct {
+  uint32
+}
 
 func newFA() Locker {
   return new (fa)
 }
 
 func (x *fa) Lock() {
-  for FetchAndAddUint32 (&x.uint32, 1) != 0 {
-    null()
+  for atomic.FetchAndAdd (&x.uint32, 1) != 0 {
+    nothing()
   }
 }
 

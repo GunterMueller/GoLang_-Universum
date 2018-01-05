@@ -1,6 +1,6 @@
 package asem
 
-// (c) Christian Maurer   v. 171225 - license see nU.go
+// (c) Christian Maurer   v. 171227 - license see nU.go
 
 import (. "sync"; "nU/sem")
 

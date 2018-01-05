@@ -1,25 +1,23 @@
 package lock
 
-// (c) Christian Maurer   v. 161216 - license see nU.go
+// (c) Christian Maurer   v. 171231 - license see nU.go
 
-// Secures the access to a critical section.
-// The functions Lock and Unlock cannot be interrupted
-// by calls of Lock or Unlock of other goroutines.
+// Die Funktionen Lock und Unlock können durch Aufrufe von
+// Lock oder Unlock durch andere Goroutinen nicht unterbrochen werden.
 
-type
-  Locker interface {
+type Locker interface {
 
-// Pre: The calling goroutine is not in the critical section.
-// It is the only one in the critical section.
+// Vor.: Der aufrufende Prozess ist nicht im kritischen Abschnitt.
+// Er ist jetzt als einziger im kritischen Abschnitt.
   Lock()
 
-// Pre: The calling goroutine is in the critical section.
-// It is not in the critical section.
+// Vor.: Der aufrufende Prozess ist im kritischen Abschnitt.
+// Er ist nicht im kritischen Abschnitt.
   Unlock()
 }
 
-// Return new unlocked locks
-// with an implementation revealed by their names.
+// Liefern neue unverschlossene Schlösser für n Prozesse
+// mit einer Implementierung, die ihr Name verrät.
 func NewCAS() Locker { return newCAS() }
 func NewChannel() Locker { return newChan() }
 func NewDEC() Locker { return newDEC() }

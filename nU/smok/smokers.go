@@ -1,44 +1,37 @@
 package smok
 
-// (c) Christian Maurer   v. 171018 - license see µU.go
+// (c) Christian Maurer   v. 180101 - license see nU.go
 
-// TODO ausdünnen, damit es unter nU läuft
+import ("time"; "nU/col"; "nU/scr")
 
-import ("time"; "nU/env"; "µU/mode"; "µU/col"; "µU/scr")
-
-const
-  raucher = "Raucher mit"
+const raucher = "Raucher mit"
 var (
   text   = [3]string     {"Papier",         " Tabak",         "Hölzer" }
-  colour = [3]col.Colour {col.LightWhite(), col.LightBrown(), col.Sandgelb1()}
-)
-var (
-  xm, ym, r0, r1 int
+  colour = [3]col.Colour {col.LightWhite(), col.LightBrown(), col.Yellow()}
+  cm, lm, r0, r1 uint
   la, ca, r uint
   lsm [3]uint
   csm [3]int
+  ready = make (chan bool)
 )
 
-func init() {
-  if env.Call() == "smokers" {
-    scr.New(0, 50, mode.VGA)
-    xm, ym, r = int(scr.Wd()) / 2, int(scr.Ht()) / 2, scr.Wd() / 4
-    la, ca = scr.NLines() / 2, scr.NColumns() / 2
-    r0, r1 = int (r), (866 * int(r)) / 1000
-    cr, cc := len(raucher), r1 / int(scr.Wd1()) + 1
-    l1 := r / 2 / scr.Ht1()
-    lsm = [3]uint { l1 - 1, la + l1 - 1, la + l1 - 1 }
-    csm = [3]int { -cr/2, -cc - cr/2, cc - cr/2 }
-  }
+func init_() {
+  cm, lm, r = scr.NColumns() / 4, scr.NLines() / 2, 3 * scr.NLines() / 8
+  la, ca = scr.NLines() / 2, scr.NColumns() / 2
+  r0, r1 = r, (866 * r) / 1000
+  cr, cc := len(raucher), 2 * (int(r1) + 1)
+  l1 := r / 2
+  lsm = [3]uint { l1 - 2, la + l1 - 1, la + l1 - 1 }
+  csm = [3]int { -cr/2, -cc - cr/2, cc - cr/2 }
 }
 
 func table() {
   scr.ColourF (col.LightWhite())
-  scr.Circle (xm, ym, r)
+  scr.Circle (lm, cm, r)
 }
 
-func write (u uint, c col.Colour) {
-  scr.Colours (c, col.Black())
+func write (u uint, f col.Colour) {
+  scr.Colours (f, col.Black())
   scr.Write (raucher,            lsm[u],     uint(int(ca) + csm[u]))
   scr.Write (text[u] + "vorrat", lsm[u] + 1, uint(int(ca) + csm[u]) - 1)
 }
@@ -50,37 +43,35 @@ func writeAgent (u uint) {
     write (i, colour[i])
   }
   u1, u2 := others(u)
-  scr.Colours (colour[u1], col.Black())
+  scr.ColourF (colour[u1])
   scr.Write (text[u1], la - 1, ca - 2)
-  scr.Colours (colour[u2], col.Black())
+  scr.ColourF (colour[u2])
   scr.Write (text[u2], la, ca - 2)
   scr.Unlock()
   time.Sleep (1e9)
 }
 
-var
-  ready chan bool = make (chan bool)
-
 func smoke (u uint, a uint) {
   time.Sleep (time.Duration(a) * 200 * 1e6)
-  x, y := xm, ym
+  c, l := cm, lm
   switch u {
   case paper:
-    y -= r0
+    l -= r0
   case tobacco:
-    x -= r1; y += r0 / 2
+    c -= r1; l += r0 / 2
   case matches:
-    x += r1; y += r0 / 2
+    c += r1; l += r0 / 2
   }
-  for i := uint(3); true; i++ {
+  for i := float64(3); true; i += 0.1 {
+    r := uint(i)
     scr.Lock()
     scr.ColourF (colour[u])
-    scr.Circle (x, y, i)
+    scr.Circle (l, c, r)
     scr.Unlock()
     time.Sleep (50 * 1e6)
     scr.Lock()
     scr.ColourF (col.Black())
-    scr.Circle (x, y, i)
+    scr.Circle (l, c, r)
     scr.Unlock()
     select {
     case <-ready:
@@ -90,8 +81,7 @@ func smoke (u uint, a uint) {
   }
 }
 
-const
-  rings = 10
+const rings = 10
 
 func start (u uint) {
   scr.Lock()
@@ -109,11 +99,10 @@ func stop() {
   }
 }
 
-const
-  pause = 2
+const pause = 2
 
 func writeSmoker (u uint) {
-  time.Sleep (pause * 1e6)
+  time.Sleep (pause * 1e9)
   scr.Lock()
   write (u, colour[u])
   scr.Colours (col.Black(), col.Black())
@@ -121,6 +110,6 @@ func writeSmoker (u uint) {
   scr.Write (text[0], la, ca - 2)
   scr.Unlock()
   start (u)
-  time.Sleep (2 * pause * 1e6)
+  time.Sleep (2 * pause * 1e9)
   stop()
 }

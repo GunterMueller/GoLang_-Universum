@@ -1,19 +1,20 @@
 package lock
 
-// (c) Christian Maurer   v. 171013 - license see nU.go
+// (c) Christian Maurer   v. 171231 - license see nU.go
 
-type
-  tas struct {
-             bool "locked"
-             }
+import "nU/atomic"
+
+type tas struct {
+  bool "locked"
+}
 
 func newTAS() Locker {
   return new(tas)
 }
 
 func (x *tas) Lock() {
-  for TestAndSet (&x.bool) {
-    null()
+  for atomic.TestAndSet (&x.bool) {
+    nothing()
   }
 }
 

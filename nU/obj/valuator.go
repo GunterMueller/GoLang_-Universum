@@ -6,11 +6,11 @@ import "reflect"
 
 type Valuator interface {
 
-// Returns the value of x.
+// Liefert den Wert von x.
   Val() uint
 
-// Returns true, iff x can be given a value. In that case x.Val() == n.
-// Returns otherwise false.
+// Liefert genau dann true, wenn x ein Wert gegeben werden kann;
+// in diesem Fall ist x.Val() = n.
   SetVal (n uint) bool
 }
 

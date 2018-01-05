@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 171227 - license see nU.go
 
 import ("sort"; . "nU/obj")
 
@@ -367,7 +367,7 @@ func (x *graph) ClrMarked() {
 
 func (x *graph) Mark (v Any) {
   if x.local == x.vAnchor { return }
-  if ! x.Ex (v) { return }
+  if ! x.Ex (v) { panic("bluse"); return }
   x.local.bool = true
 }
 
@@ -603,7 +603,7 @@ func (x *graph) Add (Ys ...Graph) {
         e2 := x.connection (x.local, x.colocal)
         if e1 == nil && e2 == nil {
           x.edgeMarked (e.Any, e.bool)
-        } else if e1 != nil && ! e1.bool { // x.colacal already connected with x.local
+        } else if e1 != nil && ! e1.bool { // x.colocal already connected with x.local
           e1.bool = e.bool
         } else if e2 != nil && ! e2.bool {
           e2.bool = e.bool
@@ -613,16 +613,11 @@ func (x *graph) Add (Ys ...Graph) {
   }
 }
 
+func (x *graph) SetWrite (w CondOp, w2 CondOp2) {
+  x.write, x.write2 = w, w2
+}
+
 func (x *graph) Write() {
-  switch x.vAnchor.Any.(type) {
-  case uint: // ok
-  default: panic("Ecken nicht vom Typ uint")
-  }
-  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    print(v.Any.(uint), ": ")
-    for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
-      print(n.to.Any.(uint), " ")
-    }
-    println()
-  }
+  x.trav2Cond (x.write2)
+  x.travCond (x.write)
 }

@@ -15,16 +15,16 @@ func newgs (a Any, n uint) MBoundedBuffer {
   x := new (guardedSelect)
   x.cIns, x.cGet = make (chan Any), make (chan Any)
   go func() {
-    buffer:= make ([]Any, n)
+    buffer := make ([]Any, n)
     var in, out, num uint
     for {
       select {
       case buffer [in] = <-When (num < n, x.cIns):
         in = (in + 1) % n
-        num ++
+        num++
       case When (num > 0, x.cGet) <- buffer [out]:
         out = (out + 1) % n
-        num --
+        num--
       }
     }
   }()

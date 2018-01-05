@@ -1,6 +1,6 @@
 package sem
 
-// (c) Christian Maurer   v. 171126 - license see µU.go
+// (c) Christian Maurer   v. 171229 - license see nU.go
 
 import "nU/cs"
 

@@ -1,9 +1,9 @@
 package main
 
-/* (c) Christian Maurer   v. 171129
+/* (c) Christian Maurer   v. 171231
        dr.maurer-berlin.eu proprietary - all rights reserved
 
-  Dieses Paket enthält die Quelltexte aus meinem Lehrbuch
+  Dieses Paket - das nUniversum - enthält die Quelltexte aus meinem Lehrbuch
   "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2018).
 
   THIS SOFTWARE  IS PROVIDED BY THE AUTHOR  "AS IS"  AND ANY EXPRESS OR IMPLIED WARRANTIES,
@@ -26,26 +26,14 @@ package main
 
   Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen. */
 
-import (
-  "nU/lockp"
-  "nU/mbuf"
-  "nU/mbbuf"
-  "nU/macc"
-  "nU/rw"
-  "nU/lr"
-  "nU/dgra"
-//  "nU/phil"
-//  "nU/smok"
-)
+import ("nU/lockn"; "nU/mbuf"; "nU/mbbuf"; "nU/macc"; "nU/rw"; "nU/lr"; "nU/dgra")
 
 func main() {
-  lockp.NewDekker()
+  lockn.NewDekker()
   mbuf.New(3)
   mbbuf.New(0,3)
   macc.New()
   rw.New1()
   lr.New1()
   dgra.Touch()
-//  phil.Touch()
-//  smok.Touch()
 }

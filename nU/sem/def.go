@@ -34,7 +34,7 @@ func NewGo (n int) Semaphore { return newGo(n) }
 func NewBarz (n uint) Semaphore { return newBarz(n) }
 
 // Solution with synchronous message passing
-func NewChannel (n uint) Semaphore { return newChannel(n) }
+func NewChannel (n uint) Semaphore { return newCh(n) }
 
 // Solution with guarded select
-func NewGSel (n uint) Semaphore { return newGSel(n) }
+func NewGSelect (n uint) Semaphore { return newGS(n) }

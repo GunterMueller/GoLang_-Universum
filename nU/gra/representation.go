@@ -82,6 +82,8 @@ type graph struct {
   nVertices, nEdges uint32
   vAnchor, colocal, local *vertex
   eAnchor *edge
+  write CondOp
+  write2 CondOp2
 }
 func newVertex (a Any) *vertex {
   v := new(vertex)
@@ -101,6 +103,8 @@ func new_(d bool, v, e Any) Graph {
   CheckUintOrValuator (e)
   x.eAnchor = newEdge (e)
   x.colocal, x.local = x.vAnchor, x.vAnchor
+  x.write = CondIgnore
+  x.write2 = CondIgnore2
   return x
 }
 

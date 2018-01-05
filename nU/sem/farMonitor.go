@@ -15,13 +15,12 @@ func newFM (n uint, h string, port uint16, s bool) Semaphore {
          if i == p {
            return val > 0
          }
-         return true // vOp
+         return true
        }
   f := func (a Any, i uint) Any {
-         switch i {
-         case p:
+         if i == p {
            val--
-         case v:
+         } else {
            val++
          }
          return true

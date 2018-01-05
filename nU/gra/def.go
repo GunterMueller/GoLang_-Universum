@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171128 - license see nU.go
+// (c) Christian Maurer   v. 171227 - license see nU.go
 
 import (. "nU/obj"; "nU/adj")
 
@@ -13,6 +13,9 @@ type Graph interface {
 
 // Liefert die Anzahl der Ecken von x.
   Num() uint
+
+// Liefert die Anzahl der Kanten von x.
+  Num1() uint
 
 // Wenn e nicht vom Type der Ecken von x ist oder schon
 // in x enthalten ist, ist nichts verändert. Andernfalls
@@ -143,8 +146,11 @@ type Graph interface {
 // (i, k < a.Num()).
   SetMatrix (a adj.AdjacencyMatrix)
 
-// Vor.: Die Ecken von v sind vom Typ uint.
-// Zeilenweise sind eic Ecken von x ausgegeben,
+// w und w2 sind die Operationen zur Ausgabe von x.
+  SetWrite (w CondOp, w2 CondOp2)
+
+// Die Werte der Ecken von x sind an ihren Positionen
+// und die Kanten von x als einfache Linien ausgegeben.
 // durch ":" getrennt dahinter alle ihre Nachbarecken.
   Write()
 }

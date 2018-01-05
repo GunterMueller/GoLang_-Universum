@@ -1,18 +1,13 @@
 package lock
 
-// (c) Christian Maurer   v. 161216 - license see nU.go
+// (c) Christian Maurer   v. 171231 - license see nU.go
 
-// >>> Algorithm of Udding: Absence of Individual Starvation using Weak Semaphores.
-//     Inf. Proc. Letters 23 (1986), 159-
+import "sync"
 
-import
-  "sync"
-type
-  udding struct {
-    mutex, door,
-          queue sync.Mutex
-          n0, n uint
-                }
+type udding struct {
+  mutex, door, queue sync.Mutex
+  n0, n uint
+}
 
 func newUdding() Locker {
   x:= new (udding)

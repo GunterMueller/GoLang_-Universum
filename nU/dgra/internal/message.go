@@ -1,13 +1,14 @@
 package internal
 
-// (c) Christian Maurer   v. 170429 - license see nU.go
+// (c) Christian Maurer   v. 171229 - license see nU.go
 
 import . "nU/obj"
 
 type message struct {
-  typ MsgType
-  value, num, maxnum uint
-  replyOk bool
+  byte "message type"
+  uint "identity"
+  num, maxnum uint
+  bool "reply ok"
 }
 
 func new_() Message {
@@ -22,16 +23,19 @@ func (x *message) imp(Y Any) *message {
 
 func (x *message) Eq (Y Any) bool {
   y := x.imp(Y)
-  return x.typ == y.typ &&
-         x.value == y.value &&
+  return x.byte == y.byte &&
+         x.uint == y.uint &&
          x.num == y.num &&
          x.maxnum == y.maxnum &&
-         x.replyOk == y.replyOk
+         x.bool == y.bool
 }
 
 func (x *message) Copy (Y Any) {
   y := x.imp(Y)
-  x.typ, x.value, x.num, x.maxnum, x.replyOk = y.typ, y.value, y.num, y.maxnum, y.replyOk
+  x.byte = y.byte
+  x.uint = y.uint
+  x.num, x.maxnum = y.num, y.maxnum
+  x.bool = y.bool
 }
 
 func (x *message) Clone() Any {
@@ -46,52 +50,49 @@ func (x *message) Codelen() uint {
 
 func (x *message) Encode() []byte {
   bs := make([]byte, x.Codelen())
-  bs[0] = byte(x.typ)
+  bs[0] = x.byte
   i, a := uint(1), C0
-  copy(bs[i:i+a], Encode(x.value))
+  copy(bs[i:i+a], Encode(x.uint))
   i += a
   copy(bs[i:i+a], Encode(x.num))
   i += a
   copy(bs[i:i+a], Encode(x.maxnum))
   i += a
-  bs[i] = 0; if x.replyOk { bs[i] = 1 }
+  bs[i] = 0; if x.bool { bs[i] = 1 }
   return bs
 }
 
 func (x *message) Decode (bs []byte) {
-  x.typ = MsgType(bs[0])
+  x.byte = bs[0]
   i, a := uint(1), C0
-  x.value = Decode(uint(0), bs[i:i+a]).(uint)
+  x.uint = Decode(uint(0), bs[i:i+a]).(uint)
   i += a
   x.num = Decode(uint(0), bs[i:i+a]).(uint)
   i += a
   x.maxnum = Decode(uint(0), bs[i:i+a]).(uint)
   i += a
-  x.replyOk = bs[i] == 1
+  x.bool = bs[i] == 1
 }
 
-func (x *message) Typ() MsgType {
-  return x.typ
+func (x *message) Type() byte {
+  return x.byte
 }
 
-func (x *message) Content() (uint, uint, uint, bool) {
-  return x.value, x.num, x.maxnum, x.replyOk
+func (x *message) IdNumsOk() (uint, uint, uint, bool) {
+  return x.uint, x.num, x.maxnum, x.bool
 }
 
-func (x *message) Val() uint {
-  return x.value
+func (x *message) SetPass (v, n, m uint) {
+  x.byte = Candidate
+  x.uint, x.num, x.maxnum = v, n, m
 }
 
-func (x *message) Reply (t bool) {
-  x.typ = Reply
-  x.replyOk = t
+func (x *message) SetReply (b bool) {
+  x.byte = Reply
+  x.bool = b
 }
 
-func (x *message) PassCandidate (i, n, m uint) {
-  x.typ = Candidate
-  x.value, x.num, x.maxnum = i, n, m
-}
-
-func (x *message) Define (t MsgType, v uint){
-  x.typ, x.value = t, v
+func (x *message) SetLeader (v uint) {
+  x.byte = Leader
+  x.uint = v
 }

@@ -2,8 +2,6 @@ package mbbuf
 
 // (c) Christian Maurer   v. 171106 - license see nU.go
 
-// >>> implementation with synchronous message passing ans selective waiting
-
 import . "nU/obj"
 
 type channel1 struct {

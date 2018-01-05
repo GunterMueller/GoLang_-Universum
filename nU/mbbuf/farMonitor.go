@@ -5,31 +5,35 @@ package mbbuf
 import (. "nU/obj"; "nU/bbuf"; "nU/fmon")
 
 type farMonitor struct {
-  Any "pattern object"
+  Any "Musterobjekt"
   bbuf.BoundedBuffer
   fmon.FarMonitor
 }
 
 func newfm (a Any, n uint, h string, p uint16, s bool) MBoundedBuffer {
   if a == nil || n == 0 { return nil }
-  x := new (farMonitor)
+  x := new(farMonitor)
   x.Any = Clone (a)
   x.BoundedBuffer = bbuf.New (a, n)
   c := func (a Any, i uint) bool {
          if i == get {
            return x.BoundedBuffer.Num() > 0
          }
-         return true // ins
+         return true
        }
   f := func (a Any, i uint) Any {
          if i == get {
            return x.BoundedBuffer.Get()
          }
          x.BoundedBuffer.Ins (a)
-         return a // ins
+         return a
        }
-  x.FarMonitor = fmon.New (a, nFuncs, f, c, h, p, s)
+  x.FarMonitor = fmon.New (a, 2, f, c, h, p, s)
   return x
+}
+
+func (x *farMonitor) Fin() {
+  x.FarMonitor.Fin()
 }
 
 func (x *farMonitor) Ins (a Any) {

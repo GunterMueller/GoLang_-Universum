@@ -10,8 +10,8 @@ type criticalSection struct {
   s []sync.Mutex "on which goroutines are blocked, if ! CondSpectrum"
   ns []uint "numbers of goroutines, that are blocked on these semaphores"
   CondSpectrum "conditions to enter the critical section"
-  in NFuncSpectrum "functions in the enter protocols"
-  out StmtSpectrum "statements in the leave protocols"
+  NFuncSpectrum "functions in the enter protocols"
+  StmtSpectrum "statements in the leave protocols"
   perm.Permutation "random permutation"
 }
 
@@ -24,7 +24,7 @@ func new_(n uint, c CondSpectrum, e NFuncSpectrum, l StmtSpectrum) CriticalSecti
   for k := uint(0); k < x.uint; k++ {
     x.s[k].Lock()
   }
-  x.CondSpectrum, x.in, x.out = c, e, l
+  x.CondSpectrum, x.NFuncSpectrum, x.StmtSpectrum = c, e, l
   x.Permutation = perm.New (x.uint)
   return x
 }
@@ -56,12 +56,12 @@ func (x *criticalSection) Enter (i uint) uint {
     x.s[i].Lock()
   }
   defer x.vAll()
-  return x.in (i)
+  return x.NFuncSpectrum (i)
 }
 
 func (x *criticalSection) Leave (i uint) {
   if i >= x.uint { return }
   x.Mutex.Lock()
-  x.out (i)
+  x.StmtSpectrum (i)
   x.vAll()
 }

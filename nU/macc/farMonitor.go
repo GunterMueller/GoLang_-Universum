@@ -8,11 +8,11 @@ type farMonitor struct {
   fmon.FarMonitor
 }
 
-func newFM (h string, port uint16, s bool) MAccount {
+func newFM (h string, p uint16, s bool) MAccount {
   balance := uint(0)
   x := new (farMonitor)
-  p := func (a Any, i uint) bool {
-          if i == deposit {
+  c := func (a Any, i uint) bool {
+         if i == deposit {
            return true
          }
          return balance >= a.(uint) // draw
@@ -25,7 +25,7 @@ func newFM (h string, port uint16, s bool) MAccount {
          }
          return a
        }
-  x.FarMonitor = fmon.New (balance, 2, f, p, h, port, s)
+  x.FarMonitor = fmon.New (balance, 2, f, c, h, p, s)
   return x
 }
 

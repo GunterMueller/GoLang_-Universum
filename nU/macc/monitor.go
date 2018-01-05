@@ -1,16 +1,16 @@
 package macc
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 171229 - license see nU.go
 
-import (. "µU/obj"; "µU/mon")
+import (. "nU/obj"; "nU/mon")
 
 type monitor struct {
   mon.Monitor
 }
 
 func newM() MAccount {
-  x := new(monitor)
   balance := uint(0)
+  x := new(monitor)
   f := func (a Any, i uint) Any {
          if i == deposit {
            x.Monitor.Signal (deposit)

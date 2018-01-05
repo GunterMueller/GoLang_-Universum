@@ -12,7 +12,7 @@ type condition struct {
   sync.Mutex
 }
 
-func newgo (a Any, n uint) MBoundedBuffer {
+func newGo (a Any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }
   x := new (condition)
   x.BoundedBuffer = bbuf.New (a, n)

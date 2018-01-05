@@ -47,7 +47,7 @@ func DivBy0Panic() {
 
 func TypeNotEqPanic (a, b Any) {
   panic ("the types " + reflect.TypeOf(a).String() +
-                  " and " + reflect.TypeOf(b).String() + " are not equal")
+              " and " + reflect.TypeOf(b).String() + " are not equal")
 }
 
 func WrongUintParameterPanic (s string, a Any, n uint) {

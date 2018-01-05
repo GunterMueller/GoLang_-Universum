@@ -5,14 +5,14 @@ package mon
 import ("sync"; . "nU/obj"; "nU/perm")
 
 type monitor struct {
-  uint "number of monitor functions"
-  sync.Mutex "monitor entry queue"
-  s []sync.Mutex "condition variable queues"
-  ns []uint "numbers of goroutines blocked on s"
-  u sync.Mutex "urgent queue"
-  nu uint "number of goroutines blocked on urgent"
-  FuncSpectrum "monitor functions"
-  perm.Permutation "indeterminism"
+  uint "Anzahl der Monitorfunktionen"
+  sync.Mutex "Eintrittswarteschlange"
+  s []sync.Mutex "Bedingungswarteschlangen"
+  ns []uint "Anzahl der darauf blockierten Prozesse"
+  u sync.Mutex "Dringlichkeitswarteschlange"
+  nu uint "Anzahl der auf sie blockierten Prozesse"
+  FuncSpectrum "Monitorfunktionen"
+  perm.Permutation "Indeterminismus"
 }
 
 func new_(n uint, f FuncSpectrum) Monitor {

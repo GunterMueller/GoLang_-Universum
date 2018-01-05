@@ -1,13 +1,10 @@
 package lock
 
-// (c) Christian Maurer   v. 161216 - license see nU.go
+// (c) Christian Maurer   v. 171231 - license see nU.go
 
-// >>> Implementation with message passing
-
-type
-  channel struct {
-               c chan bool
-                 }
+type channel struct {
+  c chan bool
+}
 
 func newChan() Locker {
   x := new(channel)

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 171227 - license see nU.go
 
 type (
 // statements
@@ -23,6 +23,7 @@ type (
   PredSpectrum func (Any, uint) bool
 // conditioned operations
   CondOp func (Any, bool)
+  CondOp2 func (Any, Any, bool)
   CondOpSpectrum func (Any, bool, uint)
 // relations
   Rel func (Any, Any) bool
@@ -57,6 +58,7 @@ func AllTrueSp (a Any, i uint) bool { return true }
 
 // CondOp[Spectrum]
 func CondIgnore (a Any, b bool) { }
+func CondIgnore2 (a, a1 Any, b bool) { }
 func CondIgnoreSp (a Any, b bool, i uint) { }
 
 // we get rid of TravPred by:

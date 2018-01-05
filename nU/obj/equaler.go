@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 171227 - license see nU.go
 
 import "reflect"
 
@@ -38,6 +38,7 @@ func isEqualer (a Any) bool {
 
 func eq (a, b Any) bool {
   if a == nil { return b == nil }
+  if b == nil { return a == nil }
   if ! TypeEq (a, b) {
     return false
   }

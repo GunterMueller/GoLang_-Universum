@@ -21,9 +21,8 @@ func newCS1() ReaderWriter {
          if i == reader {
            nR++
            return nR
-         } else { // writer
-           nW = 1
          }
+         nW = 1
          return nW
        }
   l := func (i uint) {

@@ -1,13 +1,13 @@
 package ego
 
-// (c) Christian Maurer   v. 170424 - license see nU.go
+// (c) Christian Maurer   v. 171202 - license see nU.go
 
-// Returns the value of the first argument of the programm call,
-// that uses this function, if that is a natural number < n.
-// Panics otherwise.
-//func Ego (n uint) uint { return ego(n) }
+// Liefert den Wert des ersten Arguments des Programmaufrufs,
+// der diese Funktion benutzt, wenn das eine natürliche Zahl < n ist.
+// Panict andernfalls.
+func Ego (n uint) uint { return ego(n) }
 
-// Returns the value of the first argument of the programm call,
-// that uses this function, if that is a natural number.
-// Returns otherwise uint(1<<16).
+// Liefert den Wert des ersten Arguments des Programmaufrufs,
+// der diese Funktion benutzt, wenn das eine natürliche Zahl ist.
+// Liefert andernfalls uint(1<<16).
 func Me() uint { return me() }

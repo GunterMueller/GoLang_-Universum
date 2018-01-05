@@ -13,5 +13,6 @@ type Monitor interface {
   F (i uint) uint
 }
 
-// Returns a new conditioned monitor with NFunc- and CondSpectrum f and c resp.
+// Liefert einen konditionierten Monitor mit Funktionsspektrum f
+// und Bedingungsspektrum c mit SU-Semantik.
 func New (n uint, f NFuncSpectrum, c CondSpectrum) Monitor { return new_(n,f,c) }

@@ -1,54 +1,49 @@
 package cs
 
-// (c) Christian Maurer   v. 171019 - license see nU.go
+// (c) Christian Maurer   v. 171230 - license see nU.go
 
 import . "nU/obj"
 
-/* Conditioned critical sections to ensure consistency of common ressources
-   used by processes of at most two classes s.t. the critical sections
-   can be entered concurrently by several processes of the same class,
-   but by processes of different classes only under mutual exclusion.
-   The classes are identified by natural numbers, starting with 0.
+type CriticalSection interface {
 
-   Mutual exclusion is guaranteed by conditions and by statemantes,
-   that control these conditions, depending on the class.
-   The are bundled in functions of type CondSpectrum and StmtSpectrum,
-   that have to be constructed by clients and passed to the constructor.
-
-   The functions Enter and Leave cannot be interrupted
-   by calls of these functions of other processes. */
-
-type
-  CriticalSection interface {
-// x means in the following always the calling critical section.
-
-// Pre: i < number of classes of x.
-//      The function is called within the entry conditions of x (see remark).
-// Returns true, iff at least one process of the i-th class of x
-// is blocked at the moment of the call.
-// Bemark: The result can be different immediately after the call;
-//         so it is only usable if the call and the following evaluation
-//         are atomic, which is the case, if the precondition holds.
+// Vor.: i < Anzahl der Klassen von x.
+//       Die Funktion ist innerhalb der Eintrittsbedingungen
+//       von x aufgerufen (s. Bem.).
+// Liefert genau dann true, wenn im Moment des Aufrufs
+// mindestens ein Prozess der k-ten Klasse von x blockiert ist.
+// Bem.: Der Wert kann sich sofort nach dem Aufruf geändert
+//       haben; er ist folglich nur verwertbar,
+//       wenn die Unteilbarkeit des Aufrufs von
+//       späteren Bearbeitungen sichergestellt ist.
+//       Das ist der Fall bei Einhaltung der Voraussetzung.
   Blocked (i uint) bool
 
-// Pre: i < number of classes of the x.
-//      The calling process is not in x.
-// It is now in the i-th class of x, i.e. it was eventually blocked,
-// until c(i) was true, and now e(i) is executed (where c is the
-// condition of x and e the processing during the entry into x).
-// Returns the result of e(i)
+// Vor.: i < Anzahl der Klassen von x.
+//       Der aufrufende Prozess befindet sich nicht in x.
+// Er befindet sich jetzt in der i-ten Klasse von x, d.h.,
+// er war ggf. solange blockiert, bis c(i) galt, und jetzt ist
+// e(i) ausgeführt (wobei c die Eintrittsbedingung von x
+// und e die Funktion beim Eintritt in x sind).
+// Liefert den Wert von e(i).
   Enter (i uint) uint
 
-// Pre: i < number of classes of the x.
-//      The calling process is in the i-th class of x.
-// It is now not any more in x, i.e. c(i) has been executed
-// (where l is the processing at the exit from x), 
-// and i the class of x, in which the calling process was before.)
+// Vor.: i < Anzahl der Klassen von x.
+//       Der aufrufende Prozess befindet sich
+//       in der i-ten Klasse von x.
+// Er befindet sich nicht mehr in x, d.h., o(a, i) ist
+// ausgeführt (wobei o die Bearbeitung beim Austritt aus x
+// und i die Klasse von x, in der sich der aufrufende
+// Prozess befand, sind). c(i) ist nicht mehr sichergestellt.
   Leave (i uint)
 }
 
-// Returns a new conditinal critical section with n classes
-// and the conditions and enter-/leave-functions given
-// by c, e and l to be used by concurrent processes.
-func New (n uint, c CondSpectrum, e NFuncSpectrum, l StmtSpectrum) CriticalSection {
-  return new_(n,c,e,l) }
+// Vor.: n > 1. c, e und l sind für alle i < n definiert.
+// Liefert einen neuen kritischen Abschnitt mit n Klassen,
+// x hat die Eintrittsbedingung c(i) und die Bearbeitungen
+// e(_, k) und l(i) zum Eintritt in die i-te Klasse von x
+// bzw. zum Austritt aus ihr zum Gebrauch von nebenläufigen
+// Prozessen. Alle Eintrittsbedingungen für x sind erfüllt;
+// kein Prozess befindet sich in x.
+  func New (n uint, c CondSpectrum, e NFuncSpectrum, l StmtSpectrum) CriticalSection {
+    return new_(n,c,e,l)
+  }

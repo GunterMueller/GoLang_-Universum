@@ -1,14 +1,14 @@
 package cr
 
-// (c) Christian Maurer   v. 171019 - license see nU.go
+// (c) Christian Maurer   v. 171230 - license see nU.go
 
 import ("unsafe"; "math"; "nU/cs")
 
 type status struct {
   max []uint // indiziert über die Prozessklassen
-  number,
-  class uint
+  number, class uint
 }
+
 type criticalResource struct {
   stat []status // indiziert über die Ressourcen
   nC, nR uint
@@ -16,7 +16,7 @@ type criticalResource struct {
 }
 
 func max() uint {
-  if unsafe.Sizeof(uint(0)) == 32 {
+  if unsafe.Sizeof(int(0)) == 32 {
     return math.MaxUint32
   }
   return math.MaxUint64

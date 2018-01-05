@@ -5,24 +5,24 @@ package rw
 import . "nU/obj"
 
 type guardedSelect struct {
-  iR, oR, iW, oW chan Any
+  inR, outR, inW, outW chan Any
 }
 
 func newGS() ReaderWriter {
   x := new(guardedSelect)
-  x.iR, x.oR = make(chan Any), make(chan Any)
-  x.iW, x.oW = make(chan Any), make(chan Any)
+  x.inR, x.outR = make(chan Any), make(chan Any)
+  x.inW, x.outW = make(chan Any), make(chan Any)
   go func() {
     var nR, nW uint // active readers, writers
     for {
       select {
-      case <-When (nW == 0, x.iR):
+      case <-When (nW == 0, x.inR):
         nR++
-      case <-When (nR > 0, x.oR):
+      case <-When (nR > 0, x.outR):
         nR--
-      case <-When (nR == 0 && nW == 0, x.iW):
+      case <-When (nR == 0 && nW == 0, x.inW):
         nW = 1
-      case <-When (nW == 1, x.oW):
+      case <-When (nW == 1, x.outW):
         nW = 0
       }
     }
@@ -31,17 +31,17 @@ func newGS() ReaderWriter {
 }
 
 func (x *guardedSelect) ReaderIn() {
-  x.iR <- 0
+  x.inR <- 0
 }
 
 func (x *guardedSelect) ReaderOut() {
-  x.oR <- 0
+  x.outR <- 0
 }
 
 func (x *guardedSelect) WriterIn() {
-  x.iW <- 0
+  x.inW <- 0
 }
 
 func (x *guardedSelect) WriterOut() {
-  x.oW <- 0
+  x.outW <- 0
 }

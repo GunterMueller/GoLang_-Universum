@@ -13,6 +13,7 @@ type BoundedBuffer interface {
   Full() bool
 }
 
-// Vor.: a ist atomar oder implemtiert Object.
+// Vor.: a ist atomar oder implementiert Equaler.
 // Liefert einen leeren Puffer der Kapazität n für Objekte vom Typ a.
 func New (a Any, n uint) BoundedBuffer { return new_(a,n) }
+func New1 (a Any, n uint) BoundedBuffer { return new1(a,n) }

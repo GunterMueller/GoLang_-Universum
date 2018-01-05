@@ -2,17 +2,14 @@ package sem
 
 // (c) Christian Maurer   v. 170121 - license see nU.go
 
-// >>> Implementation with asynchronous message passing
-//     (the most elegant solution, I think)
-
 type semaphore struct {
   c chan int
 }
 
 func new_(n uint) Semaphore {
-  x:= new (semaphore)
+  x := new(semaphore)
   x.c = make(chan int, n)
-  for i:= uint(0); i < n; i++ {
+  for i := uint(0); i < n; i++ {
     x.c <- 0
   }
   return x

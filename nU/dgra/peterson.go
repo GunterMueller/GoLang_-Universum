@@ -2,51 +2,48 @@ package dgra
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-/*
-Es können nie zwei im Ring hintereinander liegende akive Prozesse in die nächste Phase gelangen.
-
-id     n-1 -----> n -----> n+1 
-tid     a         b         _
-ntid    _         a         b
-nntid   _      max(a,_)  max(b,a)
-
-Denn für Prozesse $n$ und $n+1$ mit den temporären Identitäten $id_n = a$ und $id_{n+1} = b\neq a$
-hätte man in diesem Fall $a\geq b$ und $b\geq a$, also -- im Widerspruch zu $a\neq b$ -- $a=b$.
-*/
-
 func (x *distributedGraph) peterson() {
   x.connect(uint(0))
   defer x.fin()
-  out, in := uint(0), uint(1); if x.Graph.Outgoing(1) { in, out = out, in }
-  m, tid := inf, x.me
+  out, in := uint(0), uint(1)
+  if x.Graph.Outgoing(1) { in, out = out, in }
+  tid := x.me
   for {
+println ("send", tid)
     x.ch[out].Send (tid)
     ntid := x.ch[in].Recv().(uint)
+println ("recv", ntid)
     if ntid == x.me {
-      x.ch[out].Send (ntid + m)
       x.leader = x.me
+println ("send", x.leader + inf)
+      x.ch[out].Send (x.leader + inf)
       return
     }
-    if ntid >= m {
+    if ntid >= inf {
+      x.leader = ntid - inf
+println ("send", ntid)
       x.ch[out].Send (ntid)
-      tid = x.me
-      x.leader = ntid - m
+//      tid = x.me
       return
     }
     if tid > ntid {
+println ("send", tid)
       x.ch[out].Send (tid)
     } else {
+println ("send", ntid)
       x.ch[out].Send (ntid)
     }
     nntid := x.ch[in].Recv().(uint)
     if nntid == x.me {
-      x.ch[out].Send (nntid + m)
       x.leader = x.me
+println ("send", x.leader + inf)
+      x.ch[out].Send (x.leader + inf)
       return
     }
-    if nntid >= m {
+    if nntid >= inf {
+      x.leader = nntid - inf
+println ("send", nntid)
       x.ch[out].Send (nntid)
-      x.leader = nntid - m
       return
     }
     if ntid >= tid && ntid >= nntid {
@@ -58,16 +55,19 @@ func (x *distributedGraph) peterson() {
   for {
     n := x.ch[in].Recv().(uint)
     if n == x.me {
-      x.ch[out].Send (n + m)
-      x.ch[in].Recv()
       x.leader = x.me
+      x.ch[out].Send (x.leader + inf)
+      affe := x.ch[in].Recv().(uint)
+println ("recv", affe - inf)
       return
     }
-    if n >= m {
+    if n >= inf {
+      x.leader = n - inf
+println ("send", n)
       x.ch[out].Send (n)
-      x.leader = n - m
       return
     }
+println ("send", n)
     x.ch[out].Send (n)
   }
 }

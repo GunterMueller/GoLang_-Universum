@@ -8,11 +8,11 @@ type guardedSelect struct {
   p, v chan Any
 }
 
-func newGSel (n uint) Semaphore {
-  x:= new (guardedSelect)
-  x.p, x.v = make (chan Any), make (chan Any)
+func newGS (n uint) Semaphore {
+  x := new(guardedSelect)
+  x.p, x.v = make(chan Any), make(chan Any)
   go func() {
-    val:= n
+    val := n
     for {
       select {
       case <-When (val > 0, x.p):

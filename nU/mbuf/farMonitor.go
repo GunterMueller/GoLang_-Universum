@@ -4,40 +4,37 @@ package mbuf
 
 import (. "nU/obj"; "nU/buf"; "nU/fmon")
 
-const (
-  ins = uint(iota)
-  get
-)
-type
-  farMonitor struct {
-                    Any "pattern object"
-                    buf.Buffer
-                    fmon.FarMonitor
-                    }
+const (ins = uint(iota); get)
+
+type farMonitor struct {
+  Any "Musterobjekt"
+  buf.Buffer
+  fmon.FarMonitor
+}
 
 func newfm (a Any, h string, p uint16, s bool) MBuffer {
   x := new(farMonitor)
   x.Any = Clone (a)
   x.Buffer = buf.New (a)
-  ps := func (a Any, i uint) bool {
-          if i == get {
-            return x.Buffer.Num() > 0
-          }
-          return true // ins
-        }
-  fs := func (a Any, i uint) Any {
-          if i == get {
-            return x.Buffer.Get()
-          }
-          x.Buffer.Ins (a) // ins
-          return a
-        }
-  x.FarMonitor = fmon.New (a, 2, fs, ps, h, p, s)
+  c := func (a Any, i uint) bool {
+         if i == get {
+           return x.Buffer.Num() > 0
+         }
+         return true
+       }
+  f := func (a Any, i uint) Any {
+         if i == get {
+           return x.Buffer.Get()
+         }
+         x.Buffer.Ins (a)
+         return a
+       }
+  x.FarMonitor = fmon.New (a, 2, f, c, h, p, s)
   return x
 }
 
 func (x *farMonitor) Fin() {
-  x.Fin()
+  x.FarMonitor.Fin()
 }
 
 func (x *farMonitor) Ins (a Any) {

@@ -1,8 +1,8 @@
 package adj
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 171227 - license see nU.go
 
-import . "nU/obj";
+import (. "nU/obj"; "nU/col"; "nU/scr")
 
 func (x *adjacencyMatrix) Num() uint {
   return x.uint
@@ -94,8 +94,12 @@ func (x *adjacencyMatrix) Full() bool {
 func (x *adjacencyMatrix) Write() {
   for i := uint(0); i < x.uint; i++ {
     for k := uint(0); k < x.uint; k++ {
-      print (Val(x.entry[i][k].edge), " ")
+      if i == k {
+        scr.ColourF (col.Magenta())
+      } else {
+        scr.ColourF (col.Yellow())
+      }
+      scr.WriteNat (Val(x.entry[i][k].edge), i, 2 * k)
     }
-    println()
   }
 }

@@ -6,11 +6,11 @@ type channel struct {
   p, v chan int
 }
 
-func newChannel (n uint) Semaphore {
-  x:= new (channel)
-  x.p, x.v = make (chan int), make (chan int)
+func newCh (n uint) Semaphore {
+  x := new(channel)
+  x.p, x.v = make(chan int), make(chan int)
   go func() {
-    val:= n
+    val := n
     for {
       if val == 0 {
         <-x.v

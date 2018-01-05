@@ -14,10 +14,11 @@ func (x *graph) numEdges (n *vertex) uint {
 
 func (x *graph) Eq (Y Any) bool { // disgusting complexity
   y := x.imp (Y)
-  if x.nVertices != y.nVertices || x.nEdges != y.nEdges ||
-     ! TypeEq (x.vAnchor.Any, y.vAnchor.Any) ||
-     ! TypeEq (x.eAnchor.Any, y.eAnchor.Any) {
+  if x.nVertices != y.nVertices || x.nEdges != y.nEdges {
     return false
+  }
+  if ! TypeEq (x.vAnchor.Any, y.vAnchor.Any) || ! TypeEq (x.eAnchor.Any, y.eAnchor.Any) {
+    panic ("oops")
   }
   ya := y.local // save
   eq := true
@@ -55,10 +56,10 @@ func (x *graph) Eq (Y Any) bool { // disgusting complexity
   return eq
 }
 
-// XXX The actual path is not copied.
 func (x *graph) Copy (Y Any) {
   y := x.imp(Y)
   x.Decode (y.Encode())
+  x.write, x.write2 = y.write, y.write2
 }
 
 func (x *graph) Clone() Any {
@@ -102,7 +103,6 @@ func (x *graph) Clr() {
   }
   x.nVertices = 0
   x.colocal, x.local = x.vAnchor, x.vAnchor
-  // x.path = nil
 }
 
 func (x *graph) Codelen() uint {
@@ -240,5 +240,4 @@ func (x *graph) Decode (bs Stream) {
     e.prevE.nextE = e
     x.eAnchor.prevE = e
   }
-//  x.path = nil
 }
