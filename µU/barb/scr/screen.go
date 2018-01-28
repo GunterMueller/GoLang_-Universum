@@ -1,9 +1,9 @@
 package scr
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 171217 - license see µU.go
 
 import (
-  "µU/ker"
+  "µU/time"
   "µU/rand"
   "µU/col"
   "µU/scr"
@@ -43,7 +43,7 @@ func takeSeatInWaitingRoom() {
 func w() {
   scr.Unlock ()
   const t = 500
-  ker.Msleep (rand.Natural (t))
+  time.Msleep (rand.Natural (t))
   scr.Lock ()
 }
 
@@ -90,11 +90,11 @@ func getNextCustomer() {
   drawCustomer (columnC + 4 * K, true, col.Black())
   K ++
   if K == 10 { K = 0 }
-  ker.Sleep (1)
+  time.Sleep (1)
   drawCustomer (columnB, true, col.LightGreen())
   for i:= 0; i <= 15; i++ { cut () }
   drawCustomer (columnB, false, col.LightGreen())
-  ker.Sleep (2)
+  time.Sleep (2)
   drawCustomer (columnB, true, col.Black())
   barberSleeping = true
 }
@@ -133,7 +133,7 @@ func snore() {
       scr.Write (tx[i], line + 1, column0 + 2)
       scr.Unlock ()
       const t = 200 * 1000
-      ker.Usleep (rand.Natural (t))
+      time.Usleep (rand.Natural (t))
       scr.Lock()
     }
   }

@@ -1,9 +1,10 @@
 package day
 
-// (c) Christian Maurer   v. 171030 - license see µU.go
+// (c) Christian Maurer   v. 171217 - license see µU.go
 
 import (
   . "µU/ker"
+  "µU/time"
   . "µU/obj"
   "µU/rand"
   "µU/str"
@@ -134,7 +135,7 @@ func (x *calendarday) SetMax() {
 }
 
 func (x *calendarday) Update() {
-  x.day, x.month, x.year = UpdateDate()
+  x.day, x.month, x.year = time.UpdateDate()
 }
 
 func (x *calendarday) Set (Tag, Monat, Jahr uint) bool {

@@ -1,6 +1,6 @@
 package cdrom
 
-// (c) Christian Maurer   v. 171202 - license see µU.go
+// (c) Christian Maurer   v. 171217 - license see µU.go
 
 //#include <stdlib.h>
 //#include <stdio.h>
@@ -114,6 +114,7 @@ import (
   "os"
   "syscall"
   "µU/ker"
+  "µU/time"
   "µU/env"
   "µU/clk"
 )
@@ -204,7 +205,7 @@ func soundfile() *os.File {
   for jj:= 0; jj < 10; jj++ {
     // kkk:= C.closeTray (C.int(cdd))
 //    println (int(kkk))
-    ker.Msleep(100)
+    time.Msleep(100)
   }
 // println ("Klappe zu ???", cdd)
   counter:= 0
@@ -217,7 +218,7 @@ func soundfile() *os.File {
 //    println ("f ==", f, "status ==", status)
 //    println ("tracks ==", uint8(C.nTracks (C.int(cdd))))
     if status <= invalid { // invalid || -1
-      ker.Msleep (1000)
+      time.Msleep (1000)
     } else {
       break
     }

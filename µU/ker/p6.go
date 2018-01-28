@@ -1,13 +1,13 @@
 package ker
 
-// (c) Christian Maurer   v. 170101 - license see µU.go
+// (c) Christian Maurer   v. 180106 - license see µU.go
 
 const (
   T6 = 54
   tw = 38 //           0          1         2          3          4         5
 )         //           012 345678901234567890123456789 0123456789 0123456789012
 var       //                                                   !    !
-  p6t []byte = []byte("P6\n# (c) 1986-2017   Christian Maurer\n____ ____\n255\n")
+  p6t []byte = []byte("P6\n# (c) 1986-2018   Christian Maurer\n____ ____\n255\n")
 
 func p6txt (n, k uint) {
   for i := 0; i < 4; i++ {

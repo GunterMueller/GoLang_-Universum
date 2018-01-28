@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171209 - license see µU.go
+// (c) Christian Maurer   v. 171226 - license see µU.go
 
 import (
   . "µU/obj"
@@ -27,23 +27,30 @@ func (x *distributedGraph) dfsfm1 (o Op) {
   x.tree.Ins (x.actVertex)
   x.tree.Mark (x.actVertex)
   x.tree.Write()
+  pause()
   if x.me == x.root {
     x.parent = x.me
     for k := uint(0); k < x.n; k++ {
       x.tree.Ex (x.actVertex) // actVertex local in x.tree
-      bs := x.mon[k].F(x.tree, 0).(Stream)
+// x.log("search ", x.nr[k])
+      bs := x.mon[k].F(x.tree, search).(Stream)
+// x.log0(" ok")
       if len(bs) == 0 {
       } else {
         x.child[k] = true
         x.tree = x.decodedGraph(bs)
         x.tree.Write()
+        pause()
       }
     }
     x.tree.Ex (x.actVertex) // actVertex local in x.tree
     x.tree.Write()
+    pause()
     for k := uint(0); k < x.n; k++ {
       if x.child[k] {
+// x.log("deliver ", x.nr[k])
         x.mon[k].F(x.tree, deliver)
+// x.log0(" ok")
       }
     }
     x.Op(x.actVertex)
@@ -66,17 +73,21 @@ func (x *distributedGraph) d1 (a Any, i uint) Any {
     x.tree.Ins (x.actVertex)
     x.tree.Edge (x.edge(x.nb[j], x.actVertex))
     x.tree.Write()
+    pause()
     for k := uint(0); k < x.n; k++ {
       if k != j {
         if ! x.tree.Ex (x.nb[k]) {
           x.tree.Ex (x.actVertex)
-          bs = x.mon[k].F(x.tree, 0).(Stream)
+// x.log("search ", x.nr[k])
+          bs = x.mon[k].F(x.tree, search).(Stream)
+// x.log0(" ok")
           if len(bs) == 0 {
             return nil
           } else {
             x.child[k] = true
             x.tree = x.decodedGraph (bs)
             x.tree.Write()
+            pause()
           }
         }
       }
@@ -86,7 +97,9 @@ func (x *distributedGraph) d1 (a Any, i uint) Any {
     x.tree.Write()
     for k := uint(0); k < x.n; k++ {
       if x.child[k] {
+// x.log("deliver ", x.nr[k])
         x.mon[k].F(x.tree, deliver)
+// x.log0(" ok")
       }
     }
     x.Op (x.actVertex)

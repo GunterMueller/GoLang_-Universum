@@ -1,11 +1,11 @@
 package cons
 
-// (c) Christian Maurer   v. 140615 - license see µU.go
+// (c) Christian Maurer   v. 121217 - license see µU.go
 
 import (
   "runtime"
   . "µU/shape"
-  "µU/ker"
+  "µU/time"
 )
 var
   finished bool
@@ -25,7 +25,7 @@ func (x *console) blink() {
     if finished {
       break
     }
-    ker.Msleep (250)
+    time.Msleep (250)
   }
   runtime.Goexit()
 }

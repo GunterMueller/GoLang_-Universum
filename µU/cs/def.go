@@ -43,7 +43,7 @@ type
 
 // Pre: i < number of classes of the x.
 //      The calling process is in the i-th class of x.
-// It is now not any more in x, i.e. c(i) has been executed
+// It is now not any more in x, i.e. l(i) has been executed
 // (where l is the processing at the exit from x), 
 // and i the class of x, in which the calling process was before.)
   Leave (i uint)

@@ -2,8 +2,6 @@ package dgra
 
 // (c) Christian Maurer   v. 171203 - license see µU.go
 
-// XXX connection to partner broken
-
 import (
   . "µU/obj"
   "µU/fmon"

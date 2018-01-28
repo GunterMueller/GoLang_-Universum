@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 170917 - license see µU.go
+// (c) Christian Maurer   v. 171221 - license see µU.go
 
 import (
   "strconv"
@@ -53,6 +53,9 @@ func newScr (x, y uint, m mode.Mode) Screen {
     width, height = xwin.MaxRes()
   } else {
     X.Console = cons.New (x, y, m)
+    if X.Console == nil {
+      panic ("µU does not yet work on far tty-consoles")
+    }
     width, height = cons.MaxRes()
   }
   X.Colours (col.StartCols())
@@ -79,7 +82,7 @@ func newWH (x, y, w, h uint) Screen {
   } else {
 //    X.Console = cons.NewWH (x, y, w, h)
 //    width, height = cons.MaxRes()
-    ker.Panic ("newWH is not yet implemented for tty-concoles")
+    ker.Panic ("newWH is not yet implemented for tty-consoles")
   }
   X.Colours (col.StartCols())
   X.ScrColours (col.StartCols())

@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171208 - license see µU.go
+// (c) Christian Maurer   v. 171226 - license see µU.go
 //
 // >>> Construction of a directed ring using the idea of Awerbuch's -algorithm
 
@@ -25,29 +25,31 @@ func (x *distributedGraph) ring1() {
   if x.me == x.root {
     x.cycle.Ins (x.actVertex)
     x.cycle.Mark (x.actVertex)
+    x.cycle.Write()
+    pause()
     for k := uint(0); k < x.n; k++ {
-      bs := Encode(x.me)
-      x.mon[k].F(bs, visit)
+      x.mon[k].F(Encode(x.me), visit)
     }
     for k := uint(0); k < x.n; k++ {
       if ! x.visited[k] {
         x.visited[k] = true
         x.child[k] = true
-//        x.cycle.Ex(x.actVertex)
+        x.cycle.Ex (x.actVertex)
         bs := append(Encode(x.me), x.cycle.Encode()...)
         bs = x.mon[k].F(bs, discover).(Stream)
         x.cycle = x.decodedGraph(bs[C0:])
         x.cycle.Write()
+        pause()
       }
     }
     v := x.cycle.Get().(vtx.Vertex)
     x.cycle.Ex2 (v, x.actVertex)
     x.cycle.Edge (x.directedEdge (v, x.actVertex))
     x.cycle.Write()
-    bs := x.cycle.Encode()
+    pause()
     for k := uint(0); k < x.n; k++ {
       if x.child[k] {
-        x.mon[k].F(bs, 2)
+        x.mon[k].F(x.cycle, 2)
       }
     }
   } else {
@@ -70,11 +72,12 @@ func (x *distributedGraph) r1 (a Any, i uint) Any {
       }
     }
     x.cycle = x.decodedGraph(bs[C0:])
-    x.cycle.Ins(x.actVertex)
+    x.cycle.Ins (x.actVertex)
     a0, a1 := x.cycle.Get2()
     e := x.directedEdge (a0.(vtx.Vertex), a1.(vtx.Vertex))
     x.cycle.Edge (e)
     x.cycle.Write()
+    pause()
     for k := uint(0); k < x.n; k++ {
       if k != j && ! x.visited[k] {
         x.visited[k] = true
@@ -83,12 +86,14 @@ func (x *distributedGraph) r1 (a Any, i uint) Any {
         bs = x.mon[k].F(bs, discover).(Stream)
         x.cycle = x.decodedGraph(bs[C0:])
         x.cycle.Write()
+        pause()
       }
     }
     return append(Encode(x.me), x.cycle.Encode()...)
   case distribute:
     x.cycle = x.decodedGraph(bs)
     x.cycle.Write()
+    pause()
     for k := uint(0); k < x.n; k++ {
       if x.child[k] {
         x.mon[k].F(bs, 2)

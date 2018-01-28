@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 170810 - license see µU.go
+// (c) Christian Maurer   v. 171217 - license see µU.go
 
 import (
   "sync"
@@ -9,6 +9,7 @@ import (
   . "µU/shape"
   . "µU/mode"
   "µU/ker"
+  "µU/time"
   "µU/col"
   "µU/font"
   "µU/ptr"
@@ -62,7 +63,8 @@ func imp (x, y uint) *console {
 }
 
 func (X *console) ok() bool {
-  return uint(X.x) + X.wd <= width && uint(X.y) + X.ht <= height
+  return uint(X.x) + X.wd <= width &&
+         uint(X.y) + X.ht <= height
 }
 
 func newCons (x, y uint, m Mode) Console {
@@ -73,17 +75,21 @@ func newCons (x, y uint, m Mode) Console {
   X.wd, X.ht = Wd(m), Ht(m)
   X.cF, X.cB = col.StartCols()
   X.cFA, X.cBA = col.StartColsA()
-  consoleInit()
+  if ! framebufferOk() {
+    return nil
+  }
   if ! X.ok() {
     ker.Panic ("new console too large: " +
                strconv.Itoa(X.x) + " + " + strconv.Itoa(int(X.wd)) + " > " + strconv.Itoa (int(width)) + " or " +
                strconv.Itoa(X.y) + " + " + strconv.Itoa(int(X.ht)) + " > " + strconv.Itoa (int(height)))
   }
-  X.archive = make ([]byte, fbmemsize)
-  X.shadow = make ([][]byte, X.ht)
-  for i := 0; i < int(X.ht); i++ { X.shadow[i] = make ([]byte, X.wd * colourdepth) }
+  X.archive = make([]byte, fbmemsize)
+  X.shadow = make([][]byte, X.ht)
+  for i := 0; i < int(X.ht); i++ {
+    X.shadow[i] = make([]byte, X.wd * colourdepth)
+  }
   X.initMouse()
-  X.pg = make ([][]bool, X.ht)
+  X.pg = make([][]bool, X.ht)
   for i := 0; i < int(X.ht); i++ { X.pg[i] = make ([]bool, X.wd) }
   X.ScrColours (X.cF, X.cB)
   X.Cls()
@@ -134,6 +140,6 @@ func followMouse() {
       i --
     }
     actMutex.Unlock()
-    ker.Msleep (100)
+    time.Msleep (100)
   }
 }

@@ -26,7 +26,7 @@ func (x *distributedGraph) awerbuch1 (o Op) {
     x.tree.Mark (x.actVertex)
     x.tree.Write()
     for k := uint(0); k < x.n; k++ {
-x.log ("call visit", x.nr[k])
+// x.log ("call visit", x.nr[k])
       x.mon[k].F(x.tree, visit)
     }
     for k := uint(0); k < x.n; k++ {
@@ -34,7 +34,7 @@ x.log ("call visit", x.nr[k])
         x.visited[k] = true
         x.child[k] = true
         x.tree.Ex (x.actVertex)
-x.log ("call discover", x.nr[k])
+// x.log ("call discover", x.nr[k])
         bs := x.mon[k].F(x.tree, discover).(Stream)
         x.tree = x.decodedGraph(bs)
         x.tree.Write()
@@ -43,7 +43,7 @@ x.log ("call discover", x.nr[k])
     x.tree.Ex (x.actVertex)
     for k := uint(0); k < x.n; k++ {
       if x.child[k] {
-x.log ("call distribute", x.nr[k])
+// x.log ("call distribute", x.nr[k])
         x.mon[k].F(x.tree, distribute)
         x.tree.Write()
       }
@@ -71,7 +71,7 @@ func (x *distributedGraph) a1 (a Any, i uint) Any {
     for k := uint(0); k < x.n; k++ {
       if k != j {
         x.tree.Ex (x.actVertex)
-x.log ("call visit", x.nr[k])
+// x.log ("call visit", x.nr[k])
         x.mon[k].F(x.tree, visit)
       }
       x.tree.Write()
@@ -81,7 +81,7 @@ x.log ("call visit", x.nr[k])
         x.visited[k] = true
         x.child[k] = true
         x.tree.Ex (x.actVertex)
-x.log ("call discover", x.nr[k])
+// x.log ("call discover", x.nr[k])
         bs = x.mon[k].F(x.tree, discover).(Stream)
         x.tree = x.decodedGraph(bs)
         x.tree.Write()
@@ -91,7 +91,7 @@ x.log ("call discover", x.nr[k])
     x.tree.Ex(x.actVertex)
     for k := uint(0); k < x.n; k++ {
       if x.child[k] {
-x.log ("call distribute", x.nr[k])
+// x.log ("call distribute", x.nr[k])
         x.mon[k].F(x.tree, distribute)
       }
       x.tree.Write()

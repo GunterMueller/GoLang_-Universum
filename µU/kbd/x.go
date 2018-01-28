@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 170903 - license see µU.go
+// (c) Christian Maurer   v. 171217 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -8,7 +8,7 @@ import
   "C"
 import (
   "os"
-  "µU/ker"
+  "µU/time"
   "µU/xwin"
 )
 var (
@@ -20,7 +20,7 @@ var (
 // Pre: xwin.x.initialized == true
 func catchX () {
   for xwin.Eventpipe == nil {
-    ker.Msleep (10)
+    time.Msleep (10)
   }
 //  ch <- 0
 //  println ("keyboard.catchX: Eventpipe != nil")

@@ -1,12 +1,13 @@
 package ker
 
-// (c) Christian Maurer   v. 140615 - license see µU.go
+// (c) Christian Maurer   v. 171217 - license see µU.go
 
 import (
   "sync"
   "syscall"
   "os"
   "os/signal"
+  "time"
 )
 var (
   mutex sync.Mutex
@@ -26,7 +27,7 @@ func CatchSignals() {
   for {
     s:= <-c
     if tst {
-      if s != syscall.SIGUSR1 && s != syscall.SIGUSR2 { println ("ker.CatchSignals caught Signal ", s); Sleep (5) }
+      if s != syscall.SIGUSR1 && s != syscall.SIGUSR2 { println ("ker.CatchSignals caught Signal ", s); time.Sleep (5e9) }
     }
     mutex.Lock()
     sigterm [s.(syscall.Signal)]()

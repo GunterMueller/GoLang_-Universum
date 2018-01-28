@@ -1,10 +1,10 @@
 package v
 
-// (c) Christian Maurer   v. 150401 - license see µU.go
+// (c) Christian Maurer   v. 171217 - license see µU.go
 
 import (
   "strconv"
-  "µU/ker"
+  "µU/time"
   "µU/str"
   "µU/col"
   "µU/scr"
@@ -24,14 +24,14 @@ var (
 func rot (n int) { var b byte
   for i:= 0; ! ok; i++ {
     switch i % 4 { case 0: b = '|'; case 1: b = '/'; case 2: b = '-'; case 3: b = '\\' }
-    scr.Write1 (b, y0 + 1, x0 + 64); ker.Msleep (50)
+    scr.Write1 (b, y0 + 1, x0 + 64); time.Msleep (50)
   }
 }
 
 func doof (y, x uint) { scr.ColourF (doofcol); scr.Write ("d(o,o)f", y, x0 + x) }
 
 func doodle (c col.Colour, n int) {
-  scr.ScrColourB (c); scr.Cls(); ker.Msleep(50)
+  scr.ScrColourB (c); scr.Cls(); time.Msleep(50)
   scr.ScrColourB (col.Black()); scr.Cls(); scr.ScrColourF (col.LightGreen())
   scr.Write ("The µU-tool to remove \"       \" is going to be executed, i.e.", y0, x0)
   scr.Write ("your disk will be completely reformatted, one moment please ... ", y0 + 1, x0); doof (y0, 26)
@@ -63,5 +63,5 @@ func April1st() {
   scr.Write ("The µU-tool has removed \"       \" - your disk is reformatted :-)", y0, x0); doof (y0, 28)
   scr.Colours (col.LightWhite(), col.Blue())
   scr.Write ("Please install Linux, TeX, git, Go and µU completely new !", y0 + 2, x0)
-  ker.Sleep(30)
+  time.Sleep(30)
 }

@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171210 - license see µU.go
+// (c) Christian Maurer   v. 171226 - license see µU.go
 
 // >>> Algorithmus von Zhu, Y., Cheung, T.-Y.: A New Distributed Breadth-First-Seach Algorithm
 //     Inform. Proc. Letters 25 (1987), 329-333
@@ -42,7 +42,7 @@ func (x *distributedGraph) bfs (o Op) {
   x.Op = o
   m := inf * x.me
   if x.me == x.root {
-    x.labeled, x.parent, x.distance = true, x.me, 0
+    x.labeled, x.parent, x.distance = true, x.root, 0
     for i := uint(0); i < x.n; i++ {
       x.child[i] = false
       x.ch[i].Send (label + 8 * x.distance + m)
@@ -59,14 +59,14 @@ func (x *distributedGraph) bfs (o Op) {
         t := x.ch[i].Recv().(uint)
 // // x.log("recv from", x.nr[i])
         if t % 8 == term {
-// if x.me == x.root { println(x.me, "recv term from", x.nr[i]) }
+// if x.me == x.root { x.log2(x.me, "recv term from", x.nr[i]) }
           break loop
         } else {
           x.chan1 <- t
         }
       }
       done <- 1
-// println("sent done", i, "/", x.nr[i])
+// x.log2("sent done", i, "/", x.nr[i])
     }(j)
   }
   for {
@@ -118,11 +118,11 @@ if x.numSendTos() > 0 { panic ("oops") }
         x.Op (x.actVertex)
         for k := uint(0); k < x.n; k++ {
           x.ch[k].Send (term)
-// if x.nr[k] == x.root { println(x.me, "sent term to", x.nr[k]) }
+// if x.nr[k] == x.root { x.log2(x.me, "sent term to", x.nr[k]) }
 // x.log("term to", x.nr[k])
         }
         for k := uint(0); k < x.n; k++ {
-// println("got done", k)
+// x.logo("got done", k)
           <-done
         }
         return
@@ -161,11 +161,11 @@ if x.numSendTos() > 0 { panic ("oops") }
         x.Op (x.actVertex)
         for k := uint(0); k < x.n; k++ {
           x.ch[k].Send (term)
-// println("sent term to", x.nr[k], "on", k)
+// x.log2("sent term to", x.nr[k], "on", k)
 // x.log("term to", x.nr[k])
         }
         for k := uint(0); k < x.n; k++ {
-// println("got done", k)
+// x.log("got done", k)
           <-done
         }
         return

@@ -1,10 +1,10 @@
 package dgra
 
-// (c) Christian Maurer   v. 171123 - license see µU.go
+// (c) Christian Maurer   v. 171226 - license see µU.go
 
 import (
   "sync"
-  "µU/ker"
+  "time"
 )
 var
   lock = make(chan int, 1)
@@ -14,7 +14,12 @@ var
 func (x *distributedGraph) awaitAllMonitors() {
   for k := uint(0); k < x.n; k++ {
     for x.mon[k] == nil {
-      ker.Msleep (100)
+      time.Sleep (1e8)
     }
   }
+}
+
+func pause () {
+  time.Sleep (1e9)
+  return
 }

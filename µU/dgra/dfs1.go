@@ -18,7 +18,7 @@ func (x *distributedGraph) dfs1 (o Op) {
     x.tree.Ins (x.actVertex)
     x.tree.Mark (x.actVertex)
     x.tree.Write()
-    x.ch[0].Send (x.tree.Encode())
+    x.ch[0].Send (x.tree)
 // x.log("sent to", x.nr[0])
   }
   for i := uint(0); i < x.n; i++ {
@@ -43,7 +43,6 @@ func (x *distributedGraph) dfs1 (o Op) {
           // k == u < x.n, x.tree unchanged as probe to x.nr[u]
         }
       } else { // ! visited[j], i.e. probe
-//        x.tree.Ex (x.nb[j]) // nb[j] local in x.tree
         if ! x.tree.Ex (x.actVertex) {
           x.tree.Ex (x.nb[j]) // nb[j] local in x.tree
           x.tree.Ins (x.actVertex) // actVertex local, nb[j] colocal in x.tree
@@ -62,7 +61,7 @@ func (x *distributedGraph) dfs1 (o Op) {
       }
       x.visited[k] = true
 // x.log("send to", x.nr[k])
-      x.ch[k].Send (x.tree.Encode())
+      x.ch[k].Send (x.tree)
       if k == u {
         x.distance = k // save for test
         x.tmpGraph.Copy (x.tree)
@@ -84,15 +83,14 @@ func (x *distributedGraph) dfs1 (o Op) {
     bs = x.ch[x.channel(x.parent)].Recv().(Stream)
     x.tree = x.decodedGraph (bs)
 //    j := nrLocal (x.tree)
-    x.tree.Write()
 // x.log("Recv", j) // from", x.nr[j])
   }
-  x.tree.Write()
-  x.tree.Ex (x.actVertex) // now x.actVertex is local in x.tree
+//  x.tree.Write()
+//  x.tree.Ex (x.actVertex) // now x.actVertex is local in x.tree
   for k := uint(0); k < x.n; k++ {
     if x.child[k] {
 // x.log("Send to", x.nr[k])
-      x.ch[k].Send(bs)
+      x.ch[k].Send (bs)
     }
   }
   x.Op (x.actVertex)

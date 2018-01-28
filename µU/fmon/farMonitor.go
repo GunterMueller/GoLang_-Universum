@@ -1,20 +1,20 @@
 package fmon
 
-// (c) Christian Maurer   v. 171212 - license see µU.go
+// (c) Christian Maurer   v. 180101 - license see µU.go
 
 import (
-  "errors"
   . "µU/ker"
+  "µU/time"
   . "µU/obj"
   "µU/nchan"
 )
 type
   farMonitor struct {
+                    Any "pattern object"
                     uint "number of monitor functions"
                  ch []nchan.NetChannel
                     FuncSpectrum; PredSpectrum
                     bool "true iff the monitor is a server"
-                    error
                     }
 
 func new_(a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
@@ -26,14 +26,14 @@ func news (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
            h string, p uint16, s bool, stmt Stmt) FarMonitor {
   if n == 0 { Panic ("fmon.New must be called with 2nd arg > 0") }
   x := new(farMonitor)
-  pattern := Clone(a)
+  x.Any = Clone(a)
   x.uint = n
   x.ch = make([]nchan.NetChannel, x.uint)
   x.bool = s
   in, out := make([]chan Any, x.uint), make([]chan Any, x.uint)
   any := make([]Any, x.uint)
   for i := uint(0); i < x.uint; i++ {
-    x.ch[i] = nchan.NewN (pattern, h, p + uint16(i), s)
+    x.ch[i] = nchan.NewN (x.Any, h, p + uint16(i), s)
     in[i], out[i] = x.ch[i].Chan()
   }
   if ! x.bool {
@@ -45,26 +45,23 @@ func news (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
     go func (j uint) {
       for {
         select {
-        case any[j] = <-When (x.PredSpectrum (pattern, j), in[j]):
+        case any[j] = <-When (x.PredSpectrum (x.Any, j), in[j]):
           if x.PredSpectrum (any[j], j) {
             out[j] <- x.FuncSpectrum (any[j], j)
           } else {
-            out[j] <- x.FuncSpectrum (pattern, j)
+            out[j] <- x.FuncSpectrum (x.Any, j)
           }
         default:
         }
-        Msleep(1e3)
+        time.Msleep(1e3)
       }
     }(i)
   }
-  return nil // unreachable
+  return nil
 }
 
 func (x *farMonitor) F (a Any, i uint) Any {
-  if x.ch[i] == nil {
-    x.error = errors.New("fmon.F: x.ch == nil")
-    return nil
-  }
+  if x.ch[i] == nil { panic ("no comm-channel") }
   x.ch[i].Send (a)
   return x.ch[i].Recv()
 }

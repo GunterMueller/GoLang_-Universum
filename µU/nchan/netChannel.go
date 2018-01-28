@@ -3,9 +3,10 @@ package nchan
 // (c) Christian Maurer   v. 171213 - license see µU.go
 
 import (
-  "errors"
+//  "strconv"
   "net"
   . "µU/ker"
+  "µU/time"
   . "µU/obj"
   "µU/errh"
 //  "µU/nat"
@@ -26,21 +27,19 @@ type
            isServer,
              oneOne bool
                     net.Conn
-           nClients uint
                     net.Listener
-                buf []byte
-                    int "number of sent/received bytes"
-          err, errR error
+                buf Stream
+                    error
                     }
 
 func (x *netChannel) panicIfErr() {
-  if x.err != nil {
-    Panic (x.err.Error())
+  if x.error != nil {
+    Panic (x.error.Error())
   }
 }
 
 func new_(a Any, me, i uint, n string, p uint16) NetChannel {
-  if me == i { Panic("nchan.New: me == i") }
+  if me == i { Panic("me == i") }
   x := new(netChannel)
   if a == nil {
     x.Any, x.uint = nil, maxWidth
@@ -48,68 +47,75 @@ func new_(a Any, me, i uint, n string, p uint16) NetChannel {
     x.Any, x.uint = Clone(a), Codelen(a)
   }
   x.in, x.out = make(chan Any), make(chan Any)
-  x.buf = make([]byte, x.uint)
+  x.buf = make(Stream, x.uint)
   x.oneOne = true
   x.isServer = me < i
   h, port := host.NewS(n), Port0 + p
   if x.isServer {
-    x.Listener, x.err = net.Listen (network, naddr.New2 (h, port).String())
+    x.Listener, x.error = net.Listen (network, naddr.New2 (h, port).String())
     x.panicIfErr()
-    x.Conn, x.err = x.Listener.Accept()
+    x.Conn, x.error = x.Listener.Accept()
   } else { // client
-    dialaddr := naddr.New2 (h, port).String()
     for {
-      if x.Conn, x.err = net.Dial (network, dialaddr); x.err == nil {
+      if x.Conn, x.error = net.Dial (network, naddr.New2 (h, port).String()); x.error == nil {
         break
       }
-      errh.Hint(x.err.Error())
-      Msleep (500)
+      errh.Hint (x.error.Error())
+      time.Msleep (500)
     }
   }
   return x
 }
 
-func (x *netChannel) Send (a Any) error {
-  if x.Conn == nil { Shit() }
+func (x *netChannel) Send (a Any) {
+  if x.Conn == nil { panic("no Conn") }
   if x.Any == nil {
-    x.uint = Codelen(a)
-    if x.uint > maxWidth { Panic ("object to send is too large") }
-    x.int, x.err = x.Conn.Write (append (Encode (x.uint), Encode(a)...))
+    _, x.error = x.Conn.Write (append (Encode(Codelen(a)), Encode(a)...))
+    if x.error != nil { println ("1. " + x.error.Error()) }
   } else {
     CheckTypeEq (x.Any, a)
-    x.int, x.err = x.Conn.Write(Encode(a))
+    _, x.error = x.Conn.Write(Encode(a))
   }
-  if x.err != nil { println (x.err.Error()) }
-  return x.err
+/*
+  n := uint(len(bs)) / maxWidth
+  for i := uint(0); i < n; i++ {
+    _, x.err = x.Conn.Write (bs[i*maxWidth:(i+1)*maxWidth])
+    if x.err != nil { println ("2. " + x.err.Error()) }
+  }
+  if uint(len(bs)) % maxWidth > 0 {
+    s, x.err = x.Conn.Write (bs[n*maxWidth:])
+    if x.err != nil { println ("3. (" + strconv.Itoa(s) + ") " + x.err.Error()) }
+  }
+*/
 }
 
 func (x *netChannel) Recv() Any {
-  if x.Conn == nil {
-    x.err = errors.New("no Connection")
-    return Clone(x.Any)
-  }
+//  var r int
+  if x.Conn == nil { panic("no Conn") }
   if x.Any == nil {
-    x.int, x.errR = x.Conn.Read(x.buf[:C0])
-    if x.errR != nil {
+    _, x.error = x.Conn.Read(x.buf[:C0])
+    if x.error != nil {
+//      println ("4. (" + strconv.Itoa(r) + ") " + x.errR.Error())
       return Clone(x.Any)
     }
     x.uint = Decode (uint(0), x.buf[:C0]).(uint)
-    x.int, x.errR = x.Conn.Read(x.buf[C0:C0+x.uint])
-    u, v := uint(x.int), x.uint // + C0
-    if u != v {
-      println("shit: u ==", u, "!= v ==", v)
+    _, x.error = x.Conn.Read (x.buf[C0:C0+x.uint])
+    if x.error != nil {
+      println ("5. " + x.error.Error())
+      return Clone(x.Any)
     }
     return x.buf[C0:C0+x.uint]
   }
-  x.int, x.errR = x.Conn.Read(x.buf)
-  if x.errR != nil {
-    return Clone(x.Any)
-  }
+//  bs := make(Stream, x.uint)
+//  _, x.errR = x.Conn.Read(x.buf)
+//  if x.errR != nil {
+//    println ("6. " + x.errR.Error())
+//    return Clone(x.Any)
+//  }
+//  copy (bs, x.buf[:])
+  _, x.error = x.Conn.Read (x.buf)
   return Decode(Clone(x.Any), x.buf)
-}
-
-func (x *netChannel) RecvError() error {
-  return x.errR
+//  return Decode(Clone(x.Any), bs)
 }
 
 func (x *netChannel) Fin() {

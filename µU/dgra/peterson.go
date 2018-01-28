@@ -11,7 +11,6 @@ func (x *distributedGraph) peterson() {
   out, in := uint(0), uint(1)
   if x.Graph.Outgoing(1) { in, out = out, in }
   tid := x.me
-x.log("blubb", x.nr[out])
   for {
     x.ch[out].Send (tid)
     ntid := x.ch[in].Recv().(uint)
@@ -52,8 +51,7 @@ x.log("blubb", x.nr[out])
     if n == x.me {
       x.leader = x.me
       x.ch[out].Send (x.leader + inf)
-      affe := x.ch[in].Recv().(uint)
-x.log("affe", affe)
+      x.ch[in].Recv()
       return
     }
     if n >= inf {

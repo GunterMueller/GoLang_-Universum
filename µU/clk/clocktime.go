@@ -1,9 +1,10 @@
 package clk
 
-// (c) Christian Maurer   v. 171005 - license see µU.go
+// (c) Christian Maurer   v. 171217 - license see µU.go
 
 import (
   . "µU/ker"
+  "µU/time"
   . "µU/obj"
   "µU/str"
   "µU/col"
@@ -61,7 +62,7 @@ func (x *clocktime) imp(Y Any) *clocktime {
 }
 
 func (x *clocktime) Update() {
-  x.hour, x.minute, x.second = UpdateTime()
+  x.hour, x.minute, x.second = time.UpdateTime()
 }
 
 func (x *clocktime) Empty() bool {
@@ -337,7 +338,7 @@ func Show() {
   for {
     clock.Update()
     clockbx.Write(clock.String(), line, column)
-    Sleep(1) // not precise, but good enough for practical purposes
-             // more precise would be: sleep until AlarmClock rings
+    time.Sleep(1) // not precise, but good enough for practical purposes
+                  // more precise would be: sleep until AlarmClock rings
   }
 }

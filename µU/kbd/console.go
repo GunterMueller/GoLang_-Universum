@@ -1,10 +1,11 @@
 package kbd
 
-// (c) Christian Maurer   v. 170916 - license see µU.go
+// (c) Christian Maurer   v. 180106 - license see µU.go
 
 import (
   "os"
   "µU/ker"
+  "µU/term"
   "µU/mouse"
   "µU/navi"
 )
@@ -17,10 +18,9 @@ var (
 
 func catch() {
   shiftC, ctrlC, altC, altGrC, fn = false, false, false, false, false
-  var b byte
   defer ker.Fin() // Hilft nix. Warum nicht ???
   for {
-    ker.ReadTerminal (&b)
+    b := term.Read()
     switch b { // case 0:
       // ker.Oops() // Fn-key combination !
     case shiftL, shiftR, shiftLock:
@@ -48,7 +48,7 @@ func catch() {
       fn = true
     default:
       if ctrlC && // (alt || altGr) && b == pause ||
-                 b == 46 { // 'C'
+                  b == 46 { // 'C'
         ker.Fin()
         os.Exit (1)
       } else if b < off && ctrlC && (altC || altGrC) {
@@ -162,8 +162,8 @@ func input (b *byte, c *Comm, d *uint) {
 }
 
 func initConsole() {
-  ker.InitTerminal()
-  ker.InstallTerm (func() { ker.TerminalFin() } )
+  term.New()
+  ker.InstallTerm (func() { term.Fin() } )
   keypipe = make (chan byte, 256)
   if mouse.Ex() {
     mousepipe = mouse.Channel()

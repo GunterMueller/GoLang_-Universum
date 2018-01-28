@@ -26,6 +26,7 @@ func (x *distributedGraph) bfsfm (o Op) {
       c := uint(0)
       for k := uint(0); k < x.n; k++ {
         if ! x.visited[k] {
+// x.log("call", x.nr[k])
           if x.mon[k].F(x.me + inf * x.distance, 0).(uint) == inf {
             x.visited[k] = true
           } else {
@@ -62,6 +63,7 @@ func (x *distributedGraph) b (a Any, i uint) Any {
   c := uint(0)
   for k := uint(0); k < x.n; k++ {
     if k != j && ! x.visited[k] {
+// x.log("call", x.nr[k])
       if x.mon[k].F(x.me + (x.distance - 1) * inf, 0).(uint) == inf {
         x.visited[k] = true
       } else {

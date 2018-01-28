@@ -5,8 +5,6 @@ package dgra
 // Find the leader by depth-first-search:
 // Compare the own identity with the received value and return the appropriate value.
 
-// XXX connection to partner broken
-
 import (
   . "µU/obj"
   "µU/fmon"

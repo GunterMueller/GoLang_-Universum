@@ -1,10 +1,10 @@
 package prt
 
-// (c) Christian Maurer   v. 151116 - license see µU.go
+// (c) Christian Maurer   v. 171217 - license see µU.go
 
 import (
   "os/exec"
-  "µU/ker"
+  "µU/time"
   "µU/str"
   . "µU/font"
   "µU/nat"
@@ -164,9 +164,9 @@ func goPrint() {
   }
   ins ("\\bye\n")
   exec.Command ("tex", "-output-directory", files.TmpDir(), texname).Run()
-  ker.Msleep (100)
+  time.Msleep (100)
   exec.Command ("dvips", dviname, "-o", psname).Run()
-  ker.Msleep (100)
+  time.Msleep (100)
   exec.Command (PrintCommand, psname, "-o", "fit-to-page").Run()
   tex.Clr(); log.Clr(); dvi.Clr(); ps.Clr()
 //  pseq.Erase (texname); pseq.Erase (logname); pseq.Erase (dviname); pseq.Erase (psname) // TODO

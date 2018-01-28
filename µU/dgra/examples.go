@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171202 - license see µU.go
+// (c) Christian Maurer   v. 171217 - license see µU.go
 
 import (
   "µU/env"
@@ -96,8 +96,8 @@ func g3 (i uint) DistributedGraph {
   l := []int {  7,  1, 7 }
   c := []int { 25, 15, 5 }
   e := [][]uint { []uint { 1, 2 },
-                  []uint { 0, 2 },
-                  []uint { 0, 1 } }
+                  []uint { 2 },
+                  []uint { } }
   return newg (false, l, c, e, 1, i)
 }
 
@@ -138,9 +138,9 @@ func g4 (i uint) DistributedGraph {
   l := []int { 1,  1, 7,  7 }
   c := []int { 7, 23, 7, 23 }
   e := [][]uint { []uint { 1, 2 },
-                  []uint { 0, 2 },
-                  []uint { 0, 1, 3 },
-                  []uint { 2 } }
+                  []uint { 2 },
+                  []uint { 3 },
+                  []uint { } }
   return newg (false, l, c, e, 2, i)
 }
 
@@ -154,9 +154,9 @@ func g4flat (i uint) DistributedGraph {
   l := []int { 4,  4,  4,  4 }
   c := []int { 1, 10, 19, 28 }
   e := [][]uint { []uint { 1 },
-                  []uint { 0, 2 },
-                  []uint { 1, 3 },
-                  []uint { 2 } }
+                  []uint { 2 },
+                  []uint { 3 },
+                  []uint { } }
   return newg (false, l, c, e, 3, i)
 }
 
@@ -177,9 +177,9 @@ func g4full (i uint) DistributedGraph {
   l := []int {  4,  4,  1,  7 }
   c := []int {  6, 15, 23, 23 }
   e := [][]uint { []uint { 1, 2, 3 },
-                  []uint { 0, 2, 3 },
-                  []uint { 0, 1, 3 },
-                  []uint { 0, 1, 2 } }
+                  []uint { 2, 3 },
+                  []uint { 3 },
+                  []uint { } }
   return newg (false, l, c, e, 1, i)
 }
 
@@ -199,10 +199,10 @@ func g5 (i uint) DistributedGraph {
   l := []int { 1,  1, 1,  7,  7 }
   c := []int { 3, 16, 3, 16, 29 }
   e := [][]uint { []uint { 1, 3 },
-                  []uint { 0, 2, 4 },
-                  []uint { 1 },
-                  []uint { 0, 4 },
-                  []uint { 1, 3 }}
+                  []uint { 2, 4 },
+                  []uint { },
+                  []uint { 4 },
+                  []uint { }}
   return newg (false, l, c, e, 3, i)
 }
 
@@ -222,11 +222,11 @@ func g6 (i uint) DistributedGraph {
   l := []int { 4,  1, 7,  4,  7,  4 }
   c := []int { 1, 13, 7, 13, 19, 25 }
   e := [][]uint { []uint { 1, 2, 3 },
-                  []uint { 0, 5 },
-                  []uint { 0, 3, 4 },
-                  []uint { 0, 2, 5 },
-                  []uint { 2, 5 },
-                  []uint { 1, 3, 4 }}
+                  []uint { 5 },
+                  []uint { 3, 4 },
+                  []uint { 5 },
+                  []uint { 5 },
+                  []uint { }}
   return newg (false, l, c, e, 2, i)
 }
 
@@ -276,13 +276,13 @@ func g8 (i uint) DistributedGraph {
   l := []int { 2,  2,  2, 6,  6,  6, 10, 10 }
   c := []int { 7, 19, 31, 1, 13, 25,  7, 19 }
   e := [][]uint { []uint { 1, 3 },
-                  []uint { 0, 2, 5 },
-                  []uint { 1 },
-                  []uint { 0, 4, 6 },
-                  []uint { 3, 5, 6 },
-                  []uint { 1, 4, 7 },
-                  []uint { 3, 4, 7 },
-                  []uint { 5, 6 } }
+                  []uint { 2, 5 },
+                  []uint { },
+                  []uint { 4, 6 },
+                  []uint { 5, 6 },
+                  []uint { 7 },
+                  []uint { 7 },
+                  []uint { } }
   return newg (false, l, c, e, 4, i)
 }
 
@@ -345,14 +345,14 @@ func g8ring (i uint) DistributedGraph {
 */
   l := []int { 10,  2,  8,  2,  8,  4,  4, 10 }
   c := []int { 11, 11,  2, 20, 29,  2, 29, 20 }
-  e := [][]uint { []uint { 2, 7 },
-                  []uint { 3, 5 },
-                  []uint { 0, 5 },
-                  []uint { 1, 6 },
-                  []uint { 6, 7 },
-                  []uint { 1, 2 },
-                  []uint { 3, 4 },
-                  []uint { 0, 4 } }
+  e := [][]uint { []uint { 7 },
+                  []uint { 5 },
+                  []uint { 0 },
+                  []uint { 1 },
+                  []uint { 6 },
+                  []uint { 2 },
+                  []uint { 3 },
+                  []uint { 4 } }
   return newg (false, l, c, e, 4, i)
 }
 
@@ -416,15 +416,15 @@ func g10 (i uint) DistributedGraph {
   l := []int { 4, 1, 7,  4,  1,  7,  4,  1,  7,  4 }
   c := []int { 1, 6, 6, 10, 15, 15, 19, 24, 24, 28 }
   e := [][]uint { []uint { 1, 2, 3 },
-                  []uint { 0, 4 },
-                  []uint { 0, 3, 5 },
-                  []uint { 0, 2, 6 },
-                  []uint { 1, 6, 7 },
-                  []uint { 2, 6, 8 },
-                  []uint { 3, 4, 5, 9 },
                   []uint { 4 },
-                  []uint { 5, 9 },
-                  []uint { 6, 8 } }
+                  []uint { 3, 5 },
+                  []uint { 6 },
+                  []uint { 6, 7 },
+                  []uint { 6, 8 },
+                  []uint { 9 },
+                  []uint { },
+                  []uint { 9 },
+                  []uint { } }
   return newg (false, l, c, e, 4, i)
 }
 
@@ -446,17 +446,17 @@ func g12 (i uint) DistributedGraph {
   l := []int {  3,  2,  3,  5,  6,  7,  5,  6,  6,  9, 10,  9 }
   c := []int {  7, 18, 26,  2,  7, 12, 18, 24, 30,  7, 18, 27 }
   e := [][]uint { []uint { 1, 3, 4, 5 },
-                  []uint { 0, 2, 5, 7 },
-                  []uint { 1, 8 },
-                  []uint { 0, 9 },
-                  []uint { 0, 9 },
-                  []uint { 0, 1, 10 },
+                  []uint { 2, 5, 7 },
+                  []uint { 8 },
+                  []uint { 9 },
+                  []uint { 9 },
+                  []uint { 10 },
                   []uint { 7, 10 },
-                  []uint { 1, 6, 8, 10 },
-                  []uint { 2, 7 },
-                  []uint { 3, 4, 10 },
-                  []uint { 5, 6, 7, 9, 11 },
-                  []uint { 10 } }
+                  []uint { 8, 10 },
+                  []uint { },
+                  []uint { 10 },
+                  []uint { 11 },
+                  []uint { } }
   return newg (false, l, c, e, 4, i)
 }
 
@@ -519,19 +519,19 @@ func g16 (i uint) DistributedGraph {
   e := [][]uint { []uint { 3, 6, 8, 12 },
                   []uint { 11, 14 },
                   []uint { 3, 5, 7, 8, 10, 13 },
-                  []uint { 0, 2, 5, 9 },
+                  []uint { 5, 9 },
                   []uint { 14, 15 },
-                  []uint { 2, 3, 13 },
-                  []uint { 0, 8, 12, 14 },
-                  []uint { 2, 10 },
-                  []uint { 0, 2, 6, 10 },
-                  []uint { 3, 12, 15 },
-                  []uint { 2, 7, 8 },
-                  []uint { 1, 15 },
-                  []uint { 0, 6, 9, 15 },
-                  []uint { 2, 5 },
-                  []uint { 1, 4, 6 },
-                  []uint { 4, 9, 11, 12 } }
+                  []uint { 13 },
+                  []uint { 8, 12, 14 },
+                  []uint { 10 },
+                  []uint { 10 },
+                  []uint { 12, 15 },
+                  []uint { },
+                  []uint { 15 },
+                  []uint { 15 },
+                  []uint { },
+                  []uint { },
+                  []uint { } }
   return newg (false, l, c, e, 5, i)
 }
 
@@ -581,22 +581,22 @@ func g16ring (i uint) DistributedGraph {
 */
   l := []int {  4,  1,  7,  7,  1, 6, 1,  6,  7,  1,  2, 2, 7,  1,  7, 4 }
   c := []int { 28, 10, 14, 22, 22, 3, 6, 26, 10, 14, 26, 3, 6, 18, 18, 1 }
-  e := [][]uint { []uint { 7, 10 },
-                  []uint { 6, 9 },
-                  []uint { 8, 14 },
-                  []uint { 7, 14 },
-                  []uint { 10, 13 },
-                  []uint { 12, 15 },
-                  []uint { 1, 11 },
-                  []uint { 0, 3 },
-                  []uint { 2, 12 },
-                  []uint { 1, 13 },
-                  []uint { 0, 4 },
-                  []uint { 6, 15 },
-                  []uint { 5, 8 },
-                  []uint { 4, 9 },
-                  []uint { 2, 4 },
-                  []uint { 5, 11 } }
+  e := [][]uint { []uint { 10 },
+                  []uint { 6 },
+                  []uint { 14 },
+                  []uint { 7 },
+                  []uint { 13 },
+                  []uint { 12 },
+                  []uint { 11 },
+                  []uint { 0 },
+                  []uint { 2 },
+                  []uint { 1 },
+                  []uint { 4 },
+                  []uint { 15 },
+                  []uint { 8 },
+                  []uint { 9 },
+                  []uint { 3 },
+                  []uint { 5 } }
   return newg (false, l, c, e, 8, i)
 }
 

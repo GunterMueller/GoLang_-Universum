@@ -12,6 +12,7 @@ type
   Awerbuch // simplified DFS-algorithm of Awerbuch, with far monitors
   Awerbuch1 // simplified DFS-algorithm of Awerbuch showing the DFS-tree, with far monitors
   Awerbuch2 // experimental
+  HelaryRaynal // experimental
   Ring // construction of a ring using DFS showing the vertices of the ring, with far monitors
   Ring1 // construction of a ring using DFS showing the ring, with far monitors
   BFS // BFS-algorithm of Zhu/Cheung
@@ -43,6 +44,8 @@ func (x *distributedGraph) Trav (o Op) {
     x.awerbuch1 (o)
   case Awerbuch2:
     x.awerbuch2 (o)
+  case HelaryRaynal:
+    x.helaryRaynal (o)
   case Ring:
     x.ring()
   case Ring1:

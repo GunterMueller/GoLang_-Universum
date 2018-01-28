@@ -4,7 +4,7 @@ package img
 
 import (
   "os/exec"
-  "µU/ker"
+  "µU/time"
   "µU/str"
   "µU/scr"
   "µU/prt"
@@ -30,7 +30,7 @@ func put (n string, x, y, w, h uint) {
   file.Fin()
   if ! toPrint {
     exec.Command ("pnmtopng", filename + suffix, ">", n, ".png").Run()
-    ker.Msleep (100)
+    time.Msleep (100)
     exec.Command ("rm", filename)
   }
 }

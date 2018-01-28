@@ -1,11 +1,11 @@
 package xwin
 
-// (c) Christian Maurer   v. 170814 - license see µU.go
+// (c) Christian Maurer   v. 171217 - license see µU.go
 
 import (
   "runtime"
+  "time"
   . "µU/shape"
-  "µU/ker"
 )
 var
   finished bool
@@ -25,7 +25,7 @@ func (X *xwindow) blink() {
     if finished {
       break
     }
-    ker.Msleep (250)
+    time.Sleep (250 * 1e6)
   }
   runtime.Goexit()
 }

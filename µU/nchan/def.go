@@ -17,7 +17,7 @@ type
 // the calling process is a server, on the actual subchannel of x)
 // to the communication partner of the calling process.
 // Returns otherwise an appropriate error.
-  Send (a Any) error
+  Send (a Any)
 
 // Returns a slice of bytes, if x was created by New with nil as first argument.
 // In this case, the client is responsible for decoding that slice,
@@ -30,7 +30,8 @@ type
 // The calling process was blocked, until an object was received.
   Recv() Any
 
-// RecvError() error // TODO
+// Returns the error of the last Recv()-call.
+//  RecvError() error
 
 // The port used by x is not used by a network service on the calling host.
   Fin()

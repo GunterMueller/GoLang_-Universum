@@ -1,11 +1,11 @@
 package smok
 
-// (c) Christian Maurer   v. 171018 - license see µU.go
+// (c) Christian Maurer   v. 171217 - license see µU.go
 
 import (
-  "µU/ker"
-//  "µU/env"
-  "µU/mode"
+  "µU/time"
+  "µU/env"
+//  "µU/mode"
   "µU/col"
   "µU/scr"
 )
@@ -37,8 +37,8 @@ func others (u uint) (uint, uint) {
 }
 
 func init() {
-  if true { // env.Call() == "smokers" {
-    scr.New(0, 50, mode.VGA)
+  if env.Call() == "smokers" {
+    scr.NewMax() // bluse    scr.New(0, 50, mode.VGA)
     xm, ym, r = int(scr.Wd()) / 2, int(scr.Ht()) / 2, scr.Wd() / 4
     la, ca = scr.NLines() / 2, scr.NColumns() / 2
     r0, r1 = int (r), (866 * int(r)) / 1000
@@ -72,14 +72,14 @@ func writeAgent (u uint) {
   scr.Colours (colour[u2], col.Black())
   scr.Write (text[u2], la, ca - 2)
   scr.Unlock()
-  ker.Sleep (1)
+  time.Sleep (1)
 }
 
 var
   ready chan bool = make (chan bool)
 
 func smoke (u uint, a uint) {
-  ker.Msleep (a * 200)
+  time.Msleep (a * 200)
   x, y := xm, ym
   switch u {
   case paper:
@@ -94,7 +94,7 @@ func smoke (u uint, a uint) {
     scr.ColourF (colour[u])
     scr.Circle (x, y, i)
     scr.Unlock()
-    ker.Msleep (50)
+    time.Msleep (50)
     scr.Lock()
     scr.ColourF (col.Black())
     scr.Circle (x, y, i)
@@ -130,7 +130,7 @@ const
   pause = 2
 
 func writeSmoker (u uint) {
-  ker.Sleep (pause)
+  time.Sleep (pause)
   scr.Lock()
   write (u, colour[u])
   scr.Colours (col.Black(), col.Black())
@@ -138,6 +138,6 @@ func writeSmoker (u uint) {
   scr.Write (text[0], la, ca - 2)
   scr.Unlock()
   start (u)
-  ker.Sleep (2 * pause)
+  time.Sleep (2 * pause)
   stop()
 }

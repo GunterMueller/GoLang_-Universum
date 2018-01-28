@@ -7,6 +7,7 @@ package rand
 import (
   "math"
   . "µU/ker"
+  "µU/time"
 )
 const (
   milliard = 1000 * 1000 * 1000
@@ -30,7 +31,7 @@ func init() {
 }
 
 func _init() {
-  s, us:= SecondsSinceUnix()
+  s, us:= time.SecondsSinceUnix()
   randomNumber = 1000 * 1000 * uint(s % 60) + uint(us)
 }
 

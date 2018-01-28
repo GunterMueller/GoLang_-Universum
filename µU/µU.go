@@ -1,6 +1,6 @@
 package main
 
-/* (c) 1986-2017  Christian Maurer
+/* (c) 1986-2018  Christian Maurer
        dr.maurer-berlin.eu proprietary - all rights reserved
 
   Die Quellen von µU sind nur zum Einsatz in der Lehre konstruiert  und haben deshalb einen
@@ -32,6 +32,7 @@ package main
 import (
   "µU/env"
   "µU/ker"
+  "µU/time"
   . "µU/obj"
   "µU/sort"
   "µU/cdrom";
@@ -101,7 +102,7 @@ func dr (x0, x1, y int, c col.Colour, f bool) {
   for x := x0; x < x1; x += dx {
     screen.SaveGr (x, y, x + car.W, y + car.H)
     car.Draw (true, c, x, y)
-    ker.Msleep (10)
+    time.Msleep (10)
     screen.RestoreGr (x, y, x + car.W, y + car.H)
     if f && x > x0 + 47 * nx1 && x % 8 == 0 && y + car.H < ny {
       y1++
@@ -118,7 +119,7 @@ func moon (x0 int) {
     screen.ColourF (col.LightGray())
     screen.CircleFull (x, y, r)
     screen.Flush()
-    ker.Msleep (33)
+    time.Msleep (33)
     screen.RestoreGr (x - r, y - r, x + r, y + r)
     y1 ++
     y += y1
@@ -134,7 +135,7 @@ func joke (x0, x1, y0, nx1, ny1, x, y, w int, cl col.Colour, s string, b bool) {
   dr (x0, x2, y0 + y * ny1, cl, false)
   screen.SaveGr (x2 - 4, y1, x0 + x * nx1 + w * nx1, y2)
   img.Get (s, uint(x2) - 4, uint(y1))
-  ker.Sleep (t)
+  time.Sleep (t)
   screen.RestoreGr (x2 - 4, y1, x2 + w * nx1, y2)
   if b { w = 2 * w / 3 }
   dr (x2 + w * nx1, x1, y0 + y * ny1, cl, false)
@@ -222,7 +223,7 @@ func main() { // just to get all stuff compiled
   x, y := int(screen.Wd()), int(screen.Ht()) / 2
   cf, cl, cb := v.Colours()
   circ (cb, x / 2, y); circ (cl, x - y, y); circ (cf, y, y)
-  errh.MuLicense (ker.Mu, v.String(), "1986-2017  Christian Maurer   https://maurer-berlin.eu/mu", cf, cl, cb)
+  errh.MuLicense (ker.Mu, v.String(), "1986-2018  Christian Maurer   https://maurer-berlin.eu/mu", cf, cl, cb)
   screen.ScrColourB (cb)
   done := make(chan bool)
   go drive (cf, cl, cb, done)
