@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 171215 - license see µU.go
+// (c) Christian Maurer   v. 180212 - license see µU.go
 
 import (
   "net"
@@ -15,21 +15,21 @@ import (
 func (x *netChannel) serve (c net.Conn) {
   var r int
   for {
-    r, x.error = c.Read (x.buf)
+    r, x.error = c.Read (x.Stream)
     if x.error != nil {
       break
     }
     if x.Any == nil {
-      x.uint = uint(Decode (uint(0), x.buf[:C0]).(uint))
+      x.uint = uint(Decode (uint(0), x.Stream[:C0]).(uint))
 // println(nat.String(x.cport), nat.String(x.sport), "<<", x.uint)
-      x.in <- x.buf[C0:C0+x.uint]
+      x.in <- x.Stream[C0:C0+x.uint]
 // the calling process is blocked until until the server in the far monitor,
 // that had called newn, has sent his reply
       a := <-x.out
       _, x.error = c.Write(append(Encode(Codelen(a)), Encode(a)...))
       if x.error != nil { println(x.error.Error()) }
     } else {
-      x.in <- Decode (Clone (x.Any), x.buf[:r])
+      x.in <- Decode (Clone (x.Any), x.Stream[:r])
       _, x.error = c.Write (Encode(<-x.out))
       if x.error != nil { println(x.error.Error()) } // provisorial
     }
@@ -44,7 +44,7 @@ func newn (a Any, h string, p uint16, s bool) NetChannel {
   if a == nil {
     x.uint = maxWidth
   }
-  x.buf = make(Stream, x.uint)
+  x.Stream = make(Stream, x.uint)
   x.in, x.out = make(chan Any), make(chan Any)
   x.isServer = s
   if x.isServer {

@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171128 - license see µU.go
+// (c) Christian Maurer   v. 180131 - license see µU.go
 
 import (
   . "µU/obj"
@@ -81,13 +81,13 @@ type
 // If v is not of the vertextype of x or if v is already contained
 // as vertex in x, nothing has happend. Otherwise:
 // v is inserted as vertex in x.
-// If x was empty, then n is now the colocal and local vertex of x,
+// If x was empty, then v is now the colocal and local vertex of x,
 // otherwise, v is now the local vertex and the former local vertex
 // is now the colocal vertex of x.
   Ins (v Any)
 
-// If x is empty or if the colocal vertex of x coincides with the local vertex or
-// if e is not of the edgetype of x, nothing has happened. Otherwise:
+// If x is empty or if the colocal vertex of x coincides with the local vertex
+// or if e is not of the edgetype of x, nothing has happened. Otherwise:
 // e is inserted in x as edge from the colocal to the local vertex of x
 // (if these two vertices were already connected by an edge,
 // that edge is replaced by e).
@@ -110,7 +110,7 @@ type
 
 // Pre: m is symmetric iff x is directed.
 // x is the graph with the vertices a.Vertex(i) and edges from
-// a.Vertex(i) to a.Vertex(k), iff a.Val(i,k) > 0 (i, k < a.Num().
+// a.Vertex(i) to a.Vertex(k), iff a.Val(i,k) > 0 (i, k < a.Num()).
   SetMatrix (a adj.AdjacencyMatrix)
 
 // Returns true, iff the colocal vertex

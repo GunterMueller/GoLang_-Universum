@@ -20,8 +20,11 @@ func g8 (i uint) DistributedGraph {
                   []uint { 1, 4, 7 },
                   []uint { 3, 4, 7 },
                   []uint { 5, 6 } }
+/*
   j := "jupiter"; h := []string { j, "uranus", j, j, "saturn", j, j, j }
   return newg (false, l, c, e, h, 4, i)
+*/
+  return newg (false, l, c, e, nil, 4, i)
 }
 
 func g8dr (i uint) DistributedGraph {

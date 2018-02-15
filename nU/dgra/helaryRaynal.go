@@ -7,7 +7,7 @@ package dgra
 //     Research Rreport RR-0704, INRIA, 1987
 
 import
-  . "µU/obj"
+  . "nU/obj"
 const (
   DISCOVER = uint(iota)
   RETURN
@@ -22,7 +22,7 @@ func (x *distributedGraph) helaryRaynal (o Op) {
   if x.me == x.root {
     x.parent = x.root
     us := append(UintStream {DISCOVER}, x.me)
-    x.log("send DISCOVER to", x.nr[0])
+println ("DISCOVER to", x.nr[0])
     x.ch[0].Send (us)
     x.child[0] = true
   }
@@ -46,7 +46,7 @@ func (x *distributedGraph) helaryRaynal (o Op) {
       break
     }
     j := us[0]
-    us = us[1:]
+    us = us[1:]; if len(us) == 0 { println("ganz große Scheiße von", x.nr[j]) }
     neighbours := us[1:]
     existUnvisitedNeighbours := false
     for i := uint(0); i < x.n; i++ {
@@ -73,17 +73,17 @@ func (x *distributedGraph) helaryRaynal (o Op) {
       us = append(us, x.me)
       if ! existUnvisitedNeighbours {
         us[0] = RETURN
-        x.log("send RETURN to", x.nr[j])
+println ("RETURN to", x.nr[j])
         x.ch[j].Send (us)
       } else { // existUnvisitedNeighbours
-        x.log("send DISCOVER to", x.nr[k])
+println ("DISCOVER to", x.nr[k])
         x.ch[k].Send (us) // DISCOVER
         x.child[k] = true
       }
     } else { // us[0] == RETURN
       if existUnvisitedNeighbours {
         us[0] = DISCOVER
-        x.log("send DISCOVER to", x.nr[k])
+println ("DISCOVER to", x.nr[k])
         x.ch[k].Send (us)
         x.child[k] = true
       } else { // ! existUnvisitedNeighbours
@@ -91,7 +91,7 @@ func (x *distributedGraph) helaryRaynal (o Op) {
           x.Op(x.me)
           return
         } else {
-          x.log("send RETURN to", x.parent)
+println ("RETURN to", x.parent)
           x.ch[x.channel(x.parent)].Send (us)
         }
       }

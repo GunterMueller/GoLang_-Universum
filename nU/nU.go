@@ -1,6 +1,6 @@
 package main
 
-/* (c) Christian Maurer   v. 171231
+/* (c) Christian Maurer   v. 180212
        dr.maurer-berlin.eu proprietary - all rights reserved
 
   Dieses Paket - das nUniversum - enthält die Quelltexte aus meinem Lehrbuch

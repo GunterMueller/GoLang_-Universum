@@ -1,23 +1,13 @@
 package gra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 180131 - license see µU.go
 //
 // >>>  References:
 // >>>  CLR  = Cormen, Leiserson, Rivest        (1990)
 // >>>  CLRS = Cormen, Leiserson, Rivest, Stein (2001)
 
-import (
-//  "reflect"
-//  "sort"
-//  "µU/ker"
+import
   . "µU/obj"
-//  "µU/str"
-//  "µU/rand"
-//  "µU/kbd"
-//  "µU/errh"
-//  "µU/pseq"
-//  "µU/adj"
-)
 
 /*    vertex           neighbour                        neighbour            vertex
    ___________                                                            ___________ 

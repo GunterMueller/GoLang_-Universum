@@ -5,8 +5,8 @@ package dgra
 import . "nU/obj"
 
 type TravAlg byte
-const (DFS = TravAlg(iota); DFS1; DFSfm1; Awerbuch;
-       Awerbuch1; Ring; Ring1; BFS; BFSfm; BFSfm1)
+const (DFS = TravAlg(iota); DFS1; DFSfm1; Awerbuch; Awerbuch1;
+       HelaryRaynal; Ring; Ring1; BFS; BFSfm; BFSfm1)
 
 func (x *distributedGraph) SetTravAlgorithm (a TravAlg) {
   x.TravAlg = a
@@ -29,6 +29,8 @@ func (x *distributedGraph) Trav (o Op) {
     x.awerbuch (o)
   case Awerbuch1:
     x.awerbuch1 (o)
+  case HelaryRaynal:
+    x.helaryRaynal (o)
   case Ring:
     x.ring()
   case Ring1:

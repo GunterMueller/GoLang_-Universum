@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 180212 - license see nU.go
 
 import ("time"; "strconv"; "net"; . "nU/obj")
 
@@ -15,7 +15,8 @@ type netChannel struct {
   in, out chan Any
   FuncSpectrum
   PredSpectrum
-  isServer, oneOne bool
+  isServer,
+  oneOne bool
   net.Conn
   net.Listener
   Stream "Puffer zur Datenübertragung"
@@ -37,6 +38,7 @@ func new_(a Any, me, i uint, n string, p uint16) NetChannel {
   ps := ":" + strconv.Itoa(int(Port0 + p))
   if x.isServer {
     x.Listener, x.error = net.Listen (network, n + ps)
+if x.error != nil { println ("Pantherpisse", n, ps) }
     x.Conn, x.error = x.Listener.Accept()
   } else { // client
     for {
@@ -61,9 +63,11 @@ func (x *netChannel) Send (a Any) {
 func (x *netChannel) Recv() Any {
   if x.Conn == nil { panic("no Conn") }
   if x.Any == nil {
-    x.Conn.Read (x.Stream[:C0])
+    _, x.error = x.Conn.Read (x.Stream[:C0])
+    if x.error != nil { return nil }
     x.uint = Decode (uint(0), x.Stream[:C0]).(uint)
-    x.Conn.Read (x.Stream[C0:C0+x.uint])
+    _, x.error = x.Conn.Read (x.Stream[C0:C0+x.uint])
+    if x.error != nil { return nil }
     return x.Stream[C0:C0+x.uint]
   }
   x.Conn.Read (x.Stream)

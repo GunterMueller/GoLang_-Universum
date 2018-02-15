@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 180212 - license see nU.go
 
 import ("runtime"; "math"; "strconv")
 
@@ -55,7 +55,17 @@ func isCoder (a Any) bool {
 }
 
 func fail (a Any) {
-  panic ("nU only [en|de]codes atomic types and objects of type string, Stream, BoolStream or Coder !")
+  panic ("nU only [en|de]codes atomic types and objects of type string, {[Bool|Uint|Any]}Stream or Coder !")
+}
+
+func c0() uint {
+  switch runtime.GOARCH {
+  case "amd64":
+    return 8
+  case "386":
+    return 4
+  }
+  panic ("$GOARCH not treated") // Wer hilft mir mit MAC-OS ?
 }
 
 func codelen (a Any) uint {
@@ -68,14 +78,7 @@ func codelen (a Any) uint {
   case int32, uint32, float32:
     return 4
   case int, uint:
-    switch runtime.GOARCH {
-    case "amd64":
-      return 8
-    case "386":
-      return 4
-    default:
-      panic ("$GOARCH not treated")
-    }
+    return c0()
   case int64, uint64, float64, complex64:
     return 8
   case complex128:
@@ -86,8 +89,10 @@ func codelen (a Any) uint {
     return uint(len(a.(BoolStream)))
   case Stream:
     return uint(len(a.(Stream)))
+  case UintStream:
+    return c0() * uint(len(a.(UintStream)) + 1)
   case AnyStream:
-    y := uint(0)
+    y := c0()
     for _, b := range a.(AnyStream) {
       y += uint(codelen(b))
     }
@@ -213,6 +218,17 @@ func encode (a Any) Stream {
     copy (bs, ys)
   case Stream:
     return a.(Stream)
+  case UintStream:
+    us := a.(UintStream)
+    n := uint(len(us))
+    c := c0()
+    bs = make(Stream, c * (n + 1))
+    copy (bs[:c], encode(n))
+    i := c
+    for j := uint(0); j < n; j++ {
+      copy (bs[i:i+c], encode(us[j]))
+      i += c
+    }
   case AnyStream:
     as := a.(AnyStream)
     n := uint(len(as))
@@ -450,6 +466,16 @@ func decode (a Any, bs Stream) Any {
   case Stream:
     return bs
     copy (a.(Stream), bs)
+  case UintStream:
+    c := c0()
+    n := decode(uint(0), bs[:c]).(uint)
+    us := make(UintStream, n)
+    i := c
+    for j := uint(0); j < n; j++ {
+      us[j] = decode(uint(0), bs[i:i+c]).(uint)
+      i += c
+    }
+    return us
   case AnyStream:
     n := decode(uint(0), bs[:C0]).(uint)
     as := make(AnyStream, n)

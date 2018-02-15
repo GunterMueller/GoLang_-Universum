@@ -15,16 +15,17 @@ func main() {
   g.SetTravAlgorithm (dgra.DFSfm1)
   g.SetTravAlgorithm (dgra.Awerbuch)
   g.SetTravAlgorithm (dgra.Awerbuch1)
+  g.SetTravAlgorithm (dgra.HelaryRaynal)
   g.SetTravAlgorithm (dgra.Ring)
   g.SetTravAlgorithm (dgra.Ring1)
   g.SetTravAlgorithm (dgra.BFS)
   g.SetTravAlgorithm (dgra.BFSfm)
   g.SetTravAlgorithm (dgra.BFSfm1)
 */
-  g.SetTravAlgorithm (dgra.BFSfm1)
+  g.SetTravAlgorithm (dgra.HelaryRaynal)
   g.Trav (Ignore)
   switch g.TravAlgorithm() {
-  case dgra.DFS, dgra.Awerbuch, dgra.BFS, dgra.BFSfm:
+  case dgra.DFS, dgra.Awerbuch, dgra.HelaryRaynal, dgra.BFS, dgra.BFSfm:
     scr.Write ("Vater:     Kind[er]:", 0, 0)
     scr.ColourF (col.LightBlue())
     scr.WriteNat (g.Parent(), 0, 7)
@@ -38,11 +39,17 @@ func main() {
       scr.ColourF (col.Red())
       scr.WriteNat (g.Time1(), 1, 19)
     }
+  case dgra.DFS1, dgra.DFSfm1, dgra.Awerbuch1:
+    ; // s. Ausgabe
   case dgra.Ring:
     scr.ColourF (col.Yellow())
     scr.Write ("   ist Nummer    im Ring.", 0, 0)
     scr.WriteNat (g.Me(), 0, 0)
     scr.ColourF (col.Green())
     scr.WriteNat (g.Time(), 0, 14)
+  case dgra.Ring1:
+    ; // s. Ausgabe
+  case dgra.BFSfm1:
+    ; // s. Ausgabe
   }
 }

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 171220 - license see µU.go
+// (c) Christian Maurer   v. 180212 - license see µU.go
 
 import (
   "runtime"
@@ -60,7 +60,7 @@ func isCoder (a Any) bool {
 }
 
 func fail (a Any) {
-  ker.Panic ("µU only [en|de]codes atomic types and objects of type string, Stream, BoolStream or Coder !")
+  ker.Panic ("µU only [en|de]codes atomic types and objects of type string, {[Bool|Uint|Any]}Stream or Coder !")
 }
 
 func c0() uint {
@@ -231,7 +231,7 @@ func encode (a Any) Stream {
     copy (bs[:c], encode(n))
     i := c
     for j := uint(0); j < n; j++ {
-      copy(bs[i:i+c], encode(us[j]))
+      copy (bs[i:i+c], encode(us[j]))
       i += c
     }
   case AnyStream:

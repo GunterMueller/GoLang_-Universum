@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 171213 - license see µU.go
+// (c) Christian Maurer   v. 180212 - license see µU.go
 
 import (
 //  "strconv"
@@ -28,7 +28,7 @@ type
              oneOne bool
                     net.Conn
                     net.Listener
-                buf Stream
+                    Stream "buffer"
                     error
                     }
 
@@ -47,7 +47,7 @@ func new_(a Any, me, i uint, n string, p uint16) NetChannel {
     x.Any, x.uint = Clone(a), Codelen(a)
   }
   x.in, x.out = make(chan Any), make(chan Any)
-  x.buf = make(Stream, x.uint)
+  x.Stream = make(Stream, x.uint)
   x.oneOne = true
   x.isServer = me < i
   h, port := host.NewS(n), Port0 + p
@@ -70,11 +70,11 @@ func new_(a Any, me, i uint, n string, p uint16) NetChannel {
 func (x *netChannel) Send (a Any) {
   if x.Conn == nil { panic("no Conn") }
   if x.Any == nil {
-    _, x.error = x.Conn.Write (append (Encode(Codelen(a)), Encode(a)...))
-    if x.error != nil { println ("1. " + x.error.Error()) }
+    _, x.error = x.Conn.Write (append (Encode (Codelen(a)), Encode(a)...))
+    if x.error != nil { println (x.error.Error()) }
   } else {
     CheckTypeEq (x.Any, a)
-    _, x.error = x.Conn.Write(Encode(a))
+    _, x.error = x.Conn.Write (Encode(a))
   }
 /*
   n := uint(len(bs)) / maxWidth
@@ -93,28 +93,25 @@ func (x *netChannel) Recv() Any {
 //  var r int
   if x.Conn == nil { panic("no Conn") }
   if x.Any == nil {
-    _, x.error = x.Conn.Read(x.buf[:C0])
+    _, x.error = x.Conn.Read (x.Stream[:C0])
     if x.error != nil {
-//      println ("4. (" + strconv.Itoa(r) + ") " + x.errR.Error())
-      return Clone(x.Any)
+//      println (x.error.Error())
+      return nil
     }
-    x.uint = Decode (uint(0), x.buf[:C0]).(uint)
-    _, x.error = x.Conn.Read (x.buf[C0:C0+x.uint])
-    if x.error != nil {
-      println ("5. " + x.error.Error())
-      return Clone(x.Any)
-    }
-    return x.buf[C0:C0+x.uint]
+    x.uint = Decode (uint(0), x.Stream[:C0]).(uint)
+    _, x.error = x.Conn.Read (x.Stream[C0:C0+x.uint])
+    if x.error != nil { return nil }
+    return x.Stream[C0:C0+x.uint]
   }
 //  bs := make(Stream, x.uint)
-//  _, x.errR = x.Conn.Read(x.buf)
+//  _, x.errR = x.Conn.Read(x.Stream)
 //  if x.errR != nil {
 //    println ("6. " + x.errR.Error())
 //    return Clone(x.Any)
 //  }
-//  copy (bs, x.buf[:])
-  _, x.error = x.Conn.Read (x.buf)
-  return Decode(Clone(x.Any), x.buf)
+//  copy (bs, x.Stream[:])
+  _, x.error = x.Conn.Read (x.Stream)
+  return Decode (Clone(x.Any), x.Stream)
 //  return Decode(Clone(x.Any), bs)
 }
 
