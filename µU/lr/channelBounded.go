@@ -21,7 +21,7 @@ func newChB (mL, mR uint) LeftRight {
     var (
       nL, nR,     // active lefties, righties
       tR, tL uint // number of actives within one turn
-      bR, bL uint // XXX where are these variables set ? ? ? ? ? ? ? ? ? ? ? ? ? ?
+      bR, bL uint // TODO where are these variables set ?
     )
     loop:
     for {

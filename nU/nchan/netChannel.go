@@ -38,7 +38,7 @@ func new_(a Any, me, i uint, n string, p uint16) NetChannel {
   ps := ":" + strconv.Itoa(int(Port0 + p))
   if x.isServer {
     x.Listener, x.error = net.Listen (network, n + ps)
-if x.error != nil { println ("Pantherpisse", n, ps) }
+if x.error != nil { println ("Listen error", n, ps) }
     x.Conn, x.error = x.Listener.Accept()
   } else { // client
     for {

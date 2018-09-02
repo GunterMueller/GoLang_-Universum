@@ -1,10 +1,11 @@
 package obj
 
-// (c) Christian Maurer   v. 171220 - license see µU.go
+// (c) Christian Maurer   v. 180812 - license see µU.go
 
 type (
   Stream = []byte
-  AnyStream = []Any
   BoolStream = []bool
+  IntStream = []int
   UintStream = []uint
+  AnyStream = []Any
 )

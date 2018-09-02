@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 171007 - license see µU.go
+// (c) Christian Maurer   v. 180608 - license see µU.go
 
 import (
 //  "µU/env"
@@ -22,12 +22,12 @@ var (
 // 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
   license = []string {
   " Die Quellen von µU sind nur zum Einsatz in der Lehre konstruiert  und haben deshalb einen ",
-  " rein akademischen Charakter. Sie liefern u.a. eine Reihe von Beispielen für mein Lehrbuch ",
-  " \"Nichtsequentielle Programmierung mit Go 1 kompakt\"  (Springer, 2. Auflage 2012, 223 S.). ",
+  " rein akademischen Charakter. Sie liefern u.a. eine Reihe von Beispielen für die 3.Auflage ",
+  " meines Lehrbuchs \"Nichtsequentielle und Verteilte Programmierung mit Go\" (Springer 2018). ",
   " Für Lehrzwecke in Universitäten und Schulen  sind die Quellen uneingeschränkt verwendbar; ",
   " jegliche weitergehende - insbesondere kommerzielle - Nutzung ist jedoch strikt untersagt. ",
   "                                                                                           ",
-  " THIS SOFTWARE IS PROVIDED BY THE AUTHORS  \"AS IS\"   AND ANY EXPRESS OR IMPLIED WARRANTIES, ",
+  " THIS SOFTWARE IS PROVIDED BY THE AUTHORS  \"AS IS\"  AND ANY EXPRESS OR IMPLIED WARRANTIES, ",
   " INCLUDING,  BUT NOT LIMITED TO,  THE IMPLIED WARRANTIES  OF MERCHANTABILITY  AND  FITNESS ",
   " FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY ",
   " DIRECT, INDIRECT,  INCIDENTAL, SPECIAL,  EXEMPLARY, OR CONSEQUENTIAL DAMAGES  (INCLUDING, ",

@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 170814 - license see µU.go
+// (c) Christian Maurer   v. 180608 - license see µU.go
 
 // #include <stdio.h>
 // #include <stdlib.h>
@@ -8,7 +8,7 @@ package xwin
 // #include <X11/Xlib.h>
 // #include <X11/Xlibint.h>
 /*
-cut (Display *d, char* s, int n) {
+void cut (Display *d, char* s, int n) {
   int r0, r1, r2;
   r0 = XStoreBytes (d, s, n);
   r1 = XStoreBuffer (d, s, n, 1);

@@ -1,11 +1,11 @@
 package main
 
 /* (c) 1986-2018  Christian Maurer
-       dr.maurer-berlin.eu proprietary - all rights reserved
+       christian.maurer-berlin.eu proprietary - all rights reserved
 
   Die Quellen von µU sind nur zum Einsatz in der Lehre konstruiert  und haben deshalb einen
-  rein akademischen Charakter. Sie liefern u.a. eine Reihe von Beispielen für mein Lehrbuch
-  "Nichtsequentielle Programmierung mit Go 1 kompakt"  (Springer, 2. Auflage 2012, 223 S.).
+  rein akademischen Charakter. Sie liefern u.a. eine Reihe von Beispielen für die 3.Auflage
+  meines Lehrbuchs "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer 2018).
   Für Lehrzwecke in Universitäten und Schulen  sind die Quellen uneingeschränkt verwendbar;
   jegliche weitergehende - insbesondere kommerzielle - Nutzung ist jedoch strikt untersagt.
 
@@ -86,6 +86,7 @@ import (
   "µU/naddr"
   "µU/dlock"
   "µU/dgra"
+  "µU/rpc"
   "µU/vnset"
 )
 var
@@ -131,11 +132,12 @@ func joke (x0, x1, y0, nx1, ny1, x, y, w int, cl col.Colour, s string, b bool) {
   y1, y2, t := (y + 0) * ny1, (y + 13) * ny1, uint(1)
   a := int(screen.NLines() - scr.MaxY() / screen.Ht1() / 2) / 2 // fehlerdrumrum TODO
   y1 += a * ny1; y2 += a * ny1
-  if b { y1 += 6 * ny1; y2 += 17 * ny1; t += 1 }
+  if b { y1 += 6 * ny1; y2 += 17 * ny1; t += 3 }
   dr (x0, x2, y0 + y * ny1, cl, false)
   screen.SaveGr (x2 - 4, y1, x0 + x * nx1 + w * nx1, y2)
   img.Get (s, uint(x2) - 4, uint(y1))
   time.Sleep (t)
+//  time.Sleep (1e6)
   screen.RestoreGr (x2 - 4, y1, x2 + w * nx1, y2)
   if b { w = 2 * w / 3 }
   dr (x2 + w * nx1, x1, y0 + y * ny1, cl, false)
@@ -150,7 +152,7 @@ func drive (cf, cl, cb col.Colour, d chan bool) {
   dr (x0, x1, y0,            cf, false)
   dr (x0, x1, y0 +  2 * ny1, cl, false)
   dr (x0, x1, y0 +  3 * ny1, cl, false)
-  joke (x0, x1, y0, nx1, ny1, 2, 5, 32, cl, "nsp", true)
+  joke (x0, x1, y0, nx1, ny1, 19, 4, 34, cl, "nsp", true)
   dr (x0, x1, y0 + 18 * ny1, cl, false)
   dr (x0, x0 + 42 * nx1, y0 + 19 * ny1, cl, false)
   b := screen.ScrColB(); screen.ScrColourB (col.Black())
@@ -206,7 +208,7 @@ func main() { // just to get all stuff compiled
   asem.New(2)
   barr.New(2)
   rw.New1()
-  lr.New1()
+  lr.NewMutex()
   lockn.NewPeterson()
 //  phil.TouchPhil()
 //  smok.TouchSmok()
@@ -218,6 +220,7 @@ func main() { // just to get all stuff compiled
   naddr.New(nchan.Port0)
   dgra.Touch()
   dlock.New(0, nil, 0)
+  rpc.Touch()
   vnset.EmptySet()
   go input()
   x, y := int(screen.Wd()), int(screen.Ht()) / 2

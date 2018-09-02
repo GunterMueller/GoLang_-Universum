@@ -37,7 +37,7 @@ x.log ("call visit", x.nr[k])
       if ! x.visited[k] {
         x.visited[k] = true
         x.child[k] = true
-x.log ("child", x.nr[k])
+// x.log ("child", x.nr[k])
 x.log ("call discover", x.nr[k])
         x.mon[k].F(x.me, discover)
       }
@@ -57,7 +57,7 @@ func (x *distributedGraph) a (a Any, i uint) Any {
     x.visited[j] = true
   case discover:
     x.parent = x.nr[j]
-x.log ("parent", x.nr[j])
+// x.log ("parent", x.nr[j])
     for k := uint(0); k < x.n; k++ {
       if k != j {
 x.log ("call visit", x.nr[k])
@@ -68,7 +68,7 @@ x.log ("call visit", x.nr[k])
       if k != j && ! x.visited[k] {
         x.visited[k] = true
         x.child[k] = true
-x.log ("child", x.nr[k])
+// x.log ("child", x.nr[k])
 x.log ("call discover", x.nr[k])
         x.mon[k].F(x.me, discover)
       }

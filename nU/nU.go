@@ -1,9 +1,9 @@
 package main
 
-/* (c) Christian Maurer   v. 180212
-       dr.maurer-berlin.eu proprietary - all rights reserved
+/* (c) Christian Maurer   v. 180902
+       christian.maurer-berlin.eu proprietary - all rights reserved
 
-  Dieses Paket - das nUniversum - enthält die Quelltexte aus meinem Lehrbuch
+  Dieses Paket - das n(ano)Universum - enthält die Quelltexte aus meinem Lehrbuch
   "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2018).
 
   THIS SOFTWARE  IS PROVIDED BY THE AUTHOR  "AS IS"  AND ANY EXPRESS OR IMPLIED WARRANTIES,

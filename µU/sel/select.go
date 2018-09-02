@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 171202 - license see µU.go
+// (c) Christian Maurer   v. 180804 - license see µU.go
 
 import (
   "µU/ker"
@@ -123,7 +123,7 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
 }
 
 func select1 (Line []string, h, w uint, i *uint, l, c uint, f, b col.Colour) {
-//  if len (Zeile) + 1 < h { h = len (Zeile) + 1 }
+//  if len(line) + 1 < h { h = len(line) + 1 }
   bx.Wd (w)
   Select (func (k, l, c uint, f, b col.Colour) { bx.Colours (f, b); bx.Write (Line[k], l, c) }, h, h, w, i, l, c, f, b)
 }

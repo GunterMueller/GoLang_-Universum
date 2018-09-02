@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 180812 - license see µU.go
 
 import (
   . "µU/obj"
@@ -95,6 +95,18 @@ func (x *person) FullAged() bool {
     tmp.Inc (day.Yearly)
   }
   return tmp.Elapsed()
+}
+
+func (x *person) Age() uint {
+  today := day.New()
+	today.Update()
+	birth := x.Calendarday.Clone().(day.Calendarday)
+  var a uint
+  for birth.Less (today) {
+    a++
+    birth.Inc (day.Yearly)
+  }
+  return a - 1
 }
 
 func (x *person) Copy (Y Any) {

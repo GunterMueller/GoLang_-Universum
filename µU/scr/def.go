@@ -312,6 +312,13 @@ type
   OnInfLine (x, y, x1, y1, a, b int, d uint) bool
 
 // Pre: See above.
+// Between (x, y), (x1, y1) and (x2, y2) a triangle is drawn
+// in the actual foregroundcolour resp. all points on it are inverted
+// resp. all its interior points (including its borders) are drawn / inverted.
+  Triangle (x, y, x1, y1, x2, y2 int); TriangleInv (x, y, x1, y1, x2, y2 int)
+  TriangleFull (x, y, x1, y1, x2, y2 int); TriangleFullInv (x, y, x1, y1, x2, y2 int)
+
+// Pre: See above.
 // Between (x, y) and (x1, y1) a rectangle (with horizontal and vertical borders)
 // is drawn in the actual foregroundcolour resp. all points on it are inverted
 // resp. all its interior points (including its borders) are drawn / inverted.

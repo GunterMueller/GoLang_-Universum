@@ -1,6 +1,6 @@
 package lr
 
-// (c) Christian Maurer   v. 171101 - license see µU.go
+// (c) Christian Maurer   v. 180812 - license see µU.go
 
 // >>> 1st left/right problem
 
@@ -19,16 +19,17 @@ func newCh() LeftRight {
   go func() {
     var nL, nR uint
     for {
-      if _, ok:= <-x.done; ok { break }
       if nL == 0 {
-        if nR == 0 {
+        if nR == 0 {      // nL == 0 && nR == 0
           select {
+          case <-x.done:
+            break
           case <-x.inL:
             nL++
           case <-x.inR:
             nR++
           }
-        } else { // nL == 0 && nR > 0
+        } else {          // nL == 0 && nR > 0
           select {
           case <-x.inR:
             nR++
@@ -36,13 +37,15 @@ func newCh() LeftRight {
             nR--
           }
         }
-      } else { // nL > 0
+      } else if nR == 0 { // nL > 0 && nR == 0
         select {
         case <-x.inL:
           nL++
         case <-x.outL:
           nL--
         }
+      } else {            // nL > 0 && nR > 0
+        panic ("catastrophy")
       }
     }
   }()

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 171112 - license see µU.go
+// (c) Christian Maurer   v. 180812 - license see µU.go
 
 import(
   "reflect"
@@ -68,6 +68,24 @@ func eq (a, b Any) bool {
       }
       return true
     }
+  case IntStream:
+    n := len(a.(IntStream))
+    if n != len(b.(IntStream)) { return false }
+    for i, y := range a.(IntStream) {
+      if b.(IntStream)[i] != y {
+        return false
+      }
+      return true
+    }
+  case UintStream:
+    n := uint(len(a.(IntStream)))
+    if n != uint(len(b.(UintStream))) { return false }
+    for i, y := range a.(UintStream) {
+      if b.(UintStream)[i] != y {
+        return false
+      }
+      return true
+    }
   case AnyStream:
     n := len(a.(AnyStream))
     if n != len(b.(AnyStream)) { return false }
@@ -93,10 +111,6 @@ func clone (a Any) Any {
   switch a.(type) {
   case Equaler:
     return a.(Equaler).Clone()
-  case Stream:
-    b := make (Stream, len (a.(Stream)))
-    copy (b, a.(Stream))
-    return b
   case BoolStream:
     n := len(a.(BoolStream))
     b := make(BoolStream, n)
@@ -104,8 +118,20 @@ func clone (a Any) Any {
       b[i] = a.(BoolStream)[i]
     }
     return b
+  case Stream:
+    b := make (Stream, len (a.(Stream)))
+    copy (b, a.(Stream))
+    return b
+  case IntStream:
+    b := make (IntStream, len (a.(IntStream)))
+    copy (b, a.(IntStream))
+    return b
+  case UintStream:
+    b := make (UintStream, len (a.(UintStream)))
+    copy (b, a.(UintStream))
+    return b
   default:
-    ker.Panic ("µU only clones atomic types and objects of type string, Stream, BoolStream or Equaler")
+    ker.Panic ("µU only clones atomic types and objects of type string or _Stream or Equaler")
   }
   return nil
 }

@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 171011 - license see µU.go
+// (c) Christian Maurer   v. 180813 - license see µU.go
 
 import (
   "µU/spc"
@@ -312,7 +312,7 @@ func depositByte (b byte) {
 
 func wait (b bool) bool {
   c0, d0:= lastcommand, lastdepth
-  var ( c Comm; d uint )
+  var (c Comm; d uint)
   for {
     c, d = Command()
     if b {
@@ -323,6 +323,15 @@ func wait (b bool) bool {
   }
   lastcommand, lastdepth = c0, d0
   return d == 0
+}
+
+func waitFor (command Comm, depth uint) {
+  c0, d0:= lastcommand, lastdepth
+  for {
+    c, d := Command()
+    if c == command && d == depth { break }
+  }
+  lastcommand, lastdepth = c0, d0
 }
 
 func confirmed (w bool) bool {

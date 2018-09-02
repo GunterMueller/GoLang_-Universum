@@ -3,18 +3,18 @@ package font
 // (c) Christian Maurer   v. 170328 - license see µU.go
 
 var (
-  sign = []string { "r", "b", "s", "i" }
-  size = []string { "t", "s", "n", "b", "h" }
-  width = []uint { 5, 6, 8, 12, 16 }
-  height = []uint { 7, 10, 16, 24, 32 }
+  sign = []string {"r", "b", "s", "i"}
+  size = []string {"t", "s", "n", "b", "h"}
+  width  = []uint {5,  6,  8, 12, 16}
+  height = []uint {7, 10, 16, 24, 32}
 )
 
 func init() {
-  Name = []string { "tiny  ", "small ", "normal", "big   ", "huge  " }
+  Name = []string {"tiny  ", "small ", "normal", "big   ", "huge  "}
 }
 
 func code (f Font, s Size) string {
-  x, y:= "?", "?"
+  x, y := "?", "?"
   if f < NFonts {
     x = sign[f]
   }

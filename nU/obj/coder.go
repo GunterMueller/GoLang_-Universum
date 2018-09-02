@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180212 - license see nU.go
+// (c) Christian Maurer   v. 180902 - license see nU.go
 
 import ("runtime"; "math"; "strconv")
 
@@ -47,7 +47,7 @@ func Decode (a Any, bs Stream) Any { return decode(a,bs) }
 func IsCoder (a Any) bool { return isCoder(a) }
 
 // Returns true, iff a is atomic or implements Coder.
-func AtomicOrCoder (a Any) bool { return atomic(a) || isCoder(a) }
+func AtomicOrCoder (a Any) bool { return Atomic(a) || isCoder(a) }
 
 func isCoder (a Any) bool {
   _, c := a.(Coder)
@@ -64,8 +64,9 @@ func c0() uint {
     return 8
   case "386":
     return 4
+  default:
+    panic ("$GOARCH not treated") // Wer hilft mir mit MAC-OS ?
   }
-  panic ("$GOARCH not treated") // Wer hilft mir mit MAC-OS ?
 }
 
 func codelen (a Any) uint {
@@ -89,6 +90,8 @@ func codelen (a Any) uint {
     return uint(len(a.(BoolStream)))
   case Stream:
     return uint(len(a.(Stream)))
+  case IntStream:
+    return c0() * uint(len(a.(IntStream)) + 1)
   case UintStream:
     return c0() * uint(len(a.(UintStream)) + 1)
   case AnyStream:
@@ -218,6 +221,17 @@ func encode (a Any) Stream {
     copy (bs, ys)
   case Stream:
     return a.(Stream)
+  case IntStream:
+    us := a.(IntStream)
+    n := len(us)
+    c := int(c0())
+    bs = make(Stream, c * (n + 1))
+    copy (bs[:c], encode(n))
+    i := c
+    for j := 0; j < n; j++ {
+      copy (bs[i:i+c], encode(us[j]))
+      i += c
+    }
   case UintStream:
     us := a.(UintStream)
     n := uint(len(us))
@@ -466,6 +480,16 @@ func decode (a Any, bs Stream) Any {
   case Stream:
     return bs
     copy (a.(Stream), bs)
+  case IntStream:
+    c := c0()
+    n := decode(0, bs[:c]).(int)
+    us := make(IntStream, n)
+    i := c
+    for j := 0; j < n; j++ {
+      us[j] = decode(0, bs[i:i+c]).(int)
+      i += c
+    }
+    return us
   case UintStream:
     c := c0()
     n := decode(uint(0), bs[:c]).(uint)

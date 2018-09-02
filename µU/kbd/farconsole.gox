@@ -1,0 +1,511 @@
+package kbd
+
+// (c) Christian Maurer   v. 171221
+
+// #include <stdio.h>
+// #include <termios.h>
+// #include <linux/kd.h>
+import
+  "C"
+import (
+//  "time"
+  "syscall"
+  "µU/xwin"
+)
+type
+  termios struct {
+           iflag,
+           oflag,
+           cflag,
+           lflag uint32
+            line byte
+              cc [19]byte
+                 }
+const (
+  KonsoleLokal = iota
+  KonsoleFern
+)
+var (
+  Fall int
+//  t, t0 termios
+  t, t0 C.struct_termios
+)
+
+func Ord (C byte) uint {
+  return uint(C - byte('0'))
+}
+
+func getChar() byte {
+  return byte(C.getchar())
+}
+
+func input1 (b *byte, c *Comm, d *uint) bool {
+  *b, *c, *d = 0, None, 0
+  C := getChar()
+  if 32 <= C && C <= 126 || 128 <= C {
+    *b = C
+    goto end
+  }
+  switch C {
+//  case 1: // A
+//    c = 
+//  case 2: // B
+//    c = 
+  case 3: // C
+//    os.Exit() // signalisieren (SIGINT)
+  case 4: // D
+    *c = Right
+  case 5: // E
+    *c = Up
+  case 6: // F
+    *c = Right
+    *d = 1
+  case 7: // G
+    *c = Del
+  case 8: // H
+    *c = Del
+//  case 9: // I
+//    *c = 
+  case 10: // J
+    *c = Enter
+//  case 11: // K
+//    *c = 
+  case 12: // L
+    *c = Enter
+    *d = 1
+  case 13: // M
+    *c = Enter
+//  case 14: // N
+//    *c = 
+//  case 15: // O
+//    *c = 
+//  case 16: // P
+//    *c = 
+//  case 17: // Q
+//    *c = 
+  case 18: // R
+    *c = Up
+  case 19: // S
+    *c = Left
+  case 20: // T
+    *c = Del
+    *d = 1
+  case 21: // U
+    *c = Del
+  case 22: // V
+    *c = Ins
+//  case 23: // W
+//    *c = 
+  case 24: // X
+    *c = Down
+  case 25: // Y
+   *c = Del
+   *d = 2
+//  case 26: // Z
+//    *c = 
+  case 27: // [ == Esc
+    C = getChar()
+    switch C {
+    case 9: // Tab
+      *c = Tab
+      *d = 1
+    case 27: // Esc
+      *c = Esc
+    case '[':
+      C = getChar()
+      switch C {
+      case '1':
+        C = getChar()
+        switch C {
+        case '~':
+          *c = Pos1
+        case '7': // F6  Alternative: Umschalt + Einfg ?
+          if getChar() == '~' {
+            *c, *d = Demark, 0
+          }
+        case '8': // F7
+          if getChar() == '~' {
+            *c, *d = Cut, 0
+          }
+        case '9': // F8
+          if getChar() == '~' {
+            *c, *d = Copy, 0
+          }
+        default:
+          return false
+        }
+      case '2':
+        C = getChar()
+        switch C {
+        case '~':
+          *c = Ins
+        case '0': // F9
+          if getChar() == '~' {
+            *c, *d = Paste, 0
+          }
+        case '1': // F10
+          if getChar() == '~' {
+            *c, *d = Red, 0
+          }
+        case '2': // F9
+          if getChar() == '~' {
+            *c, *d = Paste, 1
+          }
+        case '3': // F11
+          if getChar() == '~' {
+            *c, *d = Green, 0
+          }
+        case '4': // F12
+          if getChar() == '~' {
+            *c, *d = Blue, 0
+          }
+
+        case '5': // F1
+          if getChar() == '~' {
+            *c, *d = Help, 1
+          }
+        case '6': // F2
+          if getChar() == '~' {
+            *c, *d = Search, 1
+          }
+        case '7': // F10
+          if getChar() == '~' {
+            *c, *d = Red, 1
+          }
+        case '8': // F3
+          if getChar() == '~' {
+            *c, *d = Act, 1
+          }
+        case '9': // F4
+          if getChar() == '~' {
+            *c, *d = Cfg, 1
+          }
+        default:
+          return false
+        }
+      case '3':
+        C = getChar()
+        switch C {
+        case '~':
+          *c = Del
+        case '0': // F11
+          if getChar() == '~' {
+            *c, *d = Green, 1
+          }
+        case '1': // F5
+          if getChar() == '~' {
+            *c, *d = Mark, 1
+          }
+        case '2': // F6
+          if getChar() == '~' {
+            *c, *d = Demark, 1
+          }
+        case '3': // F7
+          if getChar() == '~' {
+            *c, *d = Cut, 1
+          }
+        case '4': // F8
+          if getChar() == '~' {
+            *c, *d = Copy, 1
+          }
+        case '5': // F12
+          if getChar() == '~' {
+            *c, *d = Blue, 1
+          }
+        case '6', '7', '8', '9':
+          if getChar() == '~' {
+            *c, *d = Esc, Ord(C) - 5
+          }
+        case 'A', 'B', 'C', 'D', 'E', 'F':
+          if getChar() == '~' {
+            *c, *d = Enter, Ord(C) - Ord('A')
+          }
+        default:
+          return false
+        }
+      case '4': C = getChar()
+        switch C {
+        case '~':
+          *c = End
+        case '1', '2', '3', '4':
+          if getChar() == '~' {
+            *c, *d = Back, Ord(C)
+          }
+//        case '6', '7', '8', '9':
+//          if getChar() == '~' {
+//            *c, *d = schalte, Ord(C) - 5
+//          }
+        default:
+          return false
+        }
+      case '5':
+        C = getChar()
+        switch C {
+        case '~':
+          *c = Up
+          *d = 2
+        case '1', '2', '3', '4':
+          if getChar() == '~' {
+            *c, *d = Up, Ord(C)
+          }
+        default:
+          return false
+        }
+      case '6': C = getChar()
+        switch C {
+        case '~':
+          *c = Down
+          *d = 2
+        case '1', '2', '3', '4':
+          if getChar() == '~' {
+            *c, *d = Down, Ord(C)
+          }
+        default:
+          return false
+        }
+      case '7': C = getChar()
+        switch C {
+        case '1', '2', '3', '4':
+          if getChar() == '~' {
+            *c, *d = Left, Ord(C)
+          }
+        case '6', '7', '8', '9':
+          if getChar() == '~' {
+            *c, *d = Right, Ord(C) - 5
+          }
+        default:
+          return false
+        }
+      case '8': C = getChar()
+        switch C {
+        case '1', '2', '3', '4':
+          if getChar() == '~' {
+            *c, *d = Pos1, Ord(C)
+          }
+        case '6', '7', '8', '9':
+          if getChar() == '~' {
+            *c, *d = End, Ord(C) - 5
+          }
+        default:
+          return false
+        }
+      case '9': C = getChar()
+        switch C {
+        case '1', '2', '3', '4':
+          if getChar() == '~' {
+            *c, *d = Ins, Ord(C)
+          }
+        case '6', '7', '8', '9':
+          if getChar() == '~' {
+            *c, *d = Del, Ord(C) - 5
+          }
+        default:
+          return false
+        }
+      case 'F':
+        C = getChar()
+        switch C {
+        case '1':
+          if getChar() == '~' {
+            *c, *d = Help, 2
+          }
+        case '2':
+          if getChar() == '~' {
+            *c, *d = Search, 2
+          }
+        case '3':
+          if getChar() == '~' {
+            *c, *d = Act, 2
+          }
+        case '4':
+          if getChar() == '~' {
+            *c, *d = Cfg, 2
+          }
+        case '5':
+          if getChar() == '~' {
+            *c, *d = Mark, 2
+          }
+        case '6':
+          if getChar() == '~' {
+            *c, *d = Demark, 2
+          }
+        case '7':
+          if getChar() == '~' {
+            *c, *d = Cut, 2
+          }
+        case '8':
+          if getChar() == '~' {
+            *c, *d = Copy, 2
+          }
+        case '9':
+          if getChar() == '~' {
+            *c, *d = Paste, 2
+          }
+        case 'A':
+          if getChar() == '~' {
+            *c, *d = Red, 2
+          }
+        case 'B':
+          if getChar() == '~' {
+            *c, *d = Green, 2
+          }
+        case 'C':
+          if getChar() == '~' {
+            *c, *d = Blue, 2
+          }
+        default:
+          return false
+        }
+      case 'X':
+        C = getChar()
+        switch C {
+        case '0', '1', '2', '3':
+          if getChar() == '~' {
+            *c, *d = Print, Ord(C)
+          }
+        default:
+          return false
+        }
+      case 'Y':
+        C = getChar()
+        switch C {
+        case '0', '1', '2', '3':
+          if getChar() == '~' {
+            *c, *d = Roll, Ord(C)
+          }
+//        case '5', '6':
+//          Konsole (Ord (i) - 5)
+////          restaurieren
+//          return false
+        default:
+          return false
+        }
+      case 'Z':
+        C = getChar()
+        switch C {
+        case '0', '1', '2', '3':
+          if getChar() == '~' {
+            *c, *d = Pause, Ord(C)
+          }
+        default:
+          return false
+        }
+      case '[':
+        C = getChar()
+        switch C {
+        case 'A': // F1
+          *c = Help
+        case 'B': // F2
+          *c = Search
+        case 'C': // F3
+          *c = Act
+        case 'D': // F4
+          *c = Cfg
+        case 'E': // F5   Alternative: Umschalt + Einfg ?
+          *c = Mark
+        default:
+          return false
+        }
+      case 'A':
+        *c = Up
+      case 'B':
+        *c = Down
+      case 'C':
+        *c = Right
+      case 'D':
+        *c = Left
+      case 'P':
+        *c = Pause
+      default:
+        return false
+      }
+    default:
+      return false
+    }
+//   28: // \
+//     *c = 
+//   29: // ]
+//     *c = 
+//   30: // EOL ==
+//     *c = Enter
+//   31: // _
+//     *c =
+  case 127:
+    *c = Back
+  default:
+    return false
+  }
+end:
+  lastbyte = *b
+  lastcommand = *c
+  lastdepth = *d
+  return true
+}
+
+func eingegeben() (byte, Comm, uint) {
+  var (b byte; c Comm; d uint)
+  switch Fall {
+  case KonsoleLokal:
+    if true { // scr.graphikfaehig() // schlecht
+      input (&b, &c, &d)
+    } else {
+      input1 (&b, &c, &d)
+    }
+  case KonsoleFern:
+    input1 (&b, &c, &d)
+  }
+  return b, c, d
+}
+
+/*
+func fin() {
+  switch Fall {
+  case KonsoleLokal:
+    syscall.Syscall (SYS_IOCTL, 0, C.KDSKBMODE, C.K_XLATE)
+  case KonsoleFern:
+    ;
+  }
+  switch Fall {
+  case KonsoleLokal, KonsoleFern:
+    C.tcsetattr (0, 0, &t0)
+  }
+}
+*/
+
+func init() {
+  var mode uintptr
+  syscall.Syscall (syscall.SYS_IOCTL, 0, C.KDGKBMODE, mode)
+// println ("\n\n\nmode", mode, "\n\n\n"); time.Sleep (3e9); return
+  if mode == C.K_RAW {
+    if xwin.UnderX() {
+//      Fall = UnterX
+    } else {
+      Fall = KonsoleFern
+    }
+  } else {
+    Fall = KonsoleLokal
+ // Vor.: inkludiert: /usr/share/kbd/keymaps/i386/qwertz/murus1.map 
+  }
+  tfd := C.int(0) // is' wohl so ... wenn nicht, /dev/tty überprüfen
+  switch Fall {
+  case KonsoleFern:
+    C.tcgetattr (tfd, &t0)
+    C.tcgetattr (tfd, &t)
+/*
+    t.iflag = 0
+    if (t.lflag / syscall.ICANON) % 2 > 0 { t.lflag -= syscall.ICANON }
+    if (t.lflag / syscall.ECHO) % 2 > 0 { t.lflag -= syscall.ECHO }
+    if (t.lflag / syscall.ISIG) % 2 > 0 { t.lflag -= syscall.ISIG }
+    if Fall == KonsoleLokal {
+      t.cc[syscall.VTIME] = 1 // 0 oder 1 ?
+      t.cc[syscall.VMIN] = 18 // 3 oder 18 ?
+    } else { // KonsoleFern
+      t.cc[syscall.VTIME] = 0
+      t.cc[syscall.VMIN] = 1
+    }
+*/
+    C.tcsetattr (tfd, C.TCSAFLUSH, &t)
+    syscall.Syscall (syscall.SYS_IOCTL, 0, C.KDSKBMODE, C.K_MEDIUMRAW)
+  }
+//  ker.InstallTermination (fin)
+}

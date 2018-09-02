@@ -1,9 +1,11 @@
 package env
 
-// (c) Christian Maurer   v. 171202 - license see µU.go
+// (c) Christian Maurer   v. 180813 - license see µU.go
 
-import
+import (
   "os"
+  "strconv"
+)
 
 func set (Variable string, content *string) {
   for i:= 0; i < len (Variable); i++ {
@@ -56,6 +58,15 @@ func arg (i uint) string {
     return os.Args[i]
   }
   return ""
+}
+
+func n (i uint) uint {
+  if uint(len (os.Args)) > i {
+		if x, err := strconv.Atoi(os.Args[i]); err == nil && x > 0 {
+      return uint(x)
+    }
+  }
+  return 0
 }
 
 func call() string {

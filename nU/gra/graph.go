@@ -367,7 +367,7 @@ func (x *graph) ClrMarked() {
 
 func (x *graph) Mark (v Any) {
   if x.local == x.vAnchor { return }
-  if ! x.Ex (v) { panic("bluse"); return }
+  if ! x.Ex (v) { panic("Mark fails: ! x.Ex(v)"); return }
   x.local.bool = true
 }
 

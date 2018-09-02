@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 170818 - license see µU.go
+// (c) Christian Maurer   v. 180421 - license see µU.go
 
 // >>> This package only serves the implementations of µU/mouse,
 //     mu/kbd and mu/cons; it must not no be used elsewhere.
@@ -94,6 +94,9 @@ type
 
   InfLine (x, y, x1, y1 int); InfLineInv (x, y, x1, y1 int)
   OnInfLine (x, y, x1, y1, a, b int, d uint) bool
+
+  Triangle (x, y, x1, y1, x2, y2 int); TriangleInv (x, y, x1, y1, x2, y2 int)
+  TriangleFull (x, y, x1, y1, x2, y2 int); TriangleFullInv (x, y, x1, y1, x2, y2 int)
 
   Rectangle (x, y, x1, y1 int); RectangleInv (x, y, x1, y1 int)
   RectangleFull (x, y, x1, y1 int); RectangleFullInv (x, y, x1, y1 int)

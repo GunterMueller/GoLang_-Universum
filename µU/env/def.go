@@ -1,6 +1,6 @@
 package env
 
-// (c) Christian Maurer   v. 171202 - license see µU.go
+// (c) Christian Maurer   v. 180113 - license see µU.go
 
 // Pre: v does not contain characters, that must not be contained
 //      in an environment variable, as e.g. ' ' or '='.
@@ -40,6 +40,10 @@ func NArgs() uint { return nArgs() }
 // Returns the i-th argument of the program call,
 // if that was given; otherwise "".
 func Arg (i uint) string { return arg(i) }
+
+// Returns the value of the i-th argument of the program call,
+// if that was given as natural number; otherwise 0.
+func N (i uint) uint { return n(i) }
 
 // Returns the name of the call.
 func Call() string { return call() }

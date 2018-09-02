@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 171011 - license see µU.go
+// (c) Christian Maurer   v. 180725 - license see µU.go
 
 import (
   . "µU/obj"
@@ -123,8 +123,8 @@ type
   Inc (p Period)
 
 // If x is empty or the effect would lead outside the range
-// of the implemenation, nothing has happened. Otherwise
-// nothing has happened. Otherwise x is increased by d days.
+// of the implemenation, nothing has happened.
+// Otherwise x is increased by d days.
   Inc1 (d uint)
 
 // If x is empty or the effect would lead outside the range

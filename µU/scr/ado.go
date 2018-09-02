@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 170915 - license see µU.go
+// (c) Christian Maurer   v. 180421 - license see µU.go
 
 import (
   "µU/mode"
@@ -90,6 +90,10 @@ func OnSegments (xs, ys []int, a, b int, t uint) bool { return actual.OnSegments
 func InfLine (x, y, x1, y1 int) { actual.InfLine (x,y,x1,y1) }
 func InfLineInv (x, y, x1, y1 int) { actual.InfLineInv (x,y,x1,y1) }
 func OnInfLine (x, y, x1, y1, a, b int, t uint) bool { return actual.OnInfLine(x,y,x1,y1,a,b,t) }
+func Triangle (x, y, x1, y1, x2, y2 int) { actual.Triangle(x,y,x1,y1,x2,y2) }
+func TriangleInv (x, y, x1, y1, x2, y2 int) { actual.TriangleInv(x,y,x1,y1,x2,y2) }
+func TriangleFull (x, y, x1, y1, x2, y2 int) { actual.TriangleFull(x,y,x1,y1,x2,y2) }
+func TriangleFullInv (x, y, x1, y1, x2, y2 int) { actual.TriangleFullInv(x,y,x1,y1,x2,y2) }
 func Rectangle (x, y, x1, y1 int) { actual.Rectangle(x,y,x1,y1) }
 func RectangleInv (x, y, x1, y1 int) { actual.RectangleInv(x,y,x1,y1) }
 func RectangleFull (x, y, x1, y1 int) { actual.RectangleFull(x,y,x1,y1) }

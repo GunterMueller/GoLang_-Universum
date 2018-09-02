@@ -121,6 +121,11 @@ type
   InfLineInv (x, y, x1, y1 int)
   OnInfLine (x, y, x1, y1, a, b int, d uint) bool
 
+  Triangle (x, y, x1, y1, x2, y2 int)
+  TriangleInv (x, y, x1, y1, x2, y2 int)
+  TriangleFull (x, y, x1, y1, x2, y2 int)
+  TriangleFullInv (x, y, x1, y1, x2, y2 int)
+
   Rectangle (x, y, x1, y1 int)
   RectangleInv (x, y, x1, y1 int)
   RectangleFull (x, y, x1, y1 int)

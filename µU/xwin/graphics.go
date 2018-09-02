@@ -248,6 +248,22 @@ func (X *xwindow) OnInfLine (x, y, x1, y1, a, b int, t uint) bool {
   return near (a, b, a, y + int(m * float64(a - x) + 0.5), t)
 }
 
+func (X *xwindow) Triangle (x, y, x1, y1, x2, y2 int) {
+  X.Polygon ([]int{x, x1, x2}, []int{y, y1, y2})
+}
+
+func (X *xwindow) TriangleInv (x, y, x1, y1, x2, y2 int) {
+  X.PolygonInv ([]int{x, x1, x2}, []int{y, y1, y2})
+}
+
+func (X *xwindow) TriangleFull (x, y, x1, y1, x2, y2 int) {
+  X.PolygonFull ([]int{x, x1, x2}, []int{y, y1, y2})
+}
+
+func (X *xwindow) TriangleFullInv (x, y, x1, y1, x2, y2 int) {
+  X.PolygonFullInv ([]int{x, x1, x2}, []int{y, y1, y2})
+}
+
 func (X *xwindow) rectangle (x, y, w, h int, n, f bool) {
   if f {
     if ! n { C.XSetFunction (dpy, X.gc, C.GXinvert) } // C.GXcopyInverted ? 

@@ -38,7 +38,7 @@ func others (u uint) (uint, uint) {
 
 func init() {
   if env.Call() == "smokers" {
-    scr.NewMax() // bluse    scr.New(0, 50, mode.VGA)
+    scr.NewMax() // XXX  scr.New(0, 50, mode.VGA)
     xm, ym, r = int(scr.Wd()) / 2, int(scr.Ht()) / 2, scr.Wd() / 4
     la, ca = scr.NLines() / 2, scr.NColumns() / 2
     r0, r1 = int (r), (866 * int(r)) / 1000

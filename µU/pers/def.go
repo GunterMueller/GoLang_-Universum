@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 180725 - license see µU.go
 
 import (
   . "µU/obj"
@@ -38,6 +38,9 @@ type
 
 // Returns true, if x is at most 18 years old.
   FullAged() bool
+
+// Returns the age of x (in years) at the time of the call.
+  Age() uint
 
   RotOrder()
 }

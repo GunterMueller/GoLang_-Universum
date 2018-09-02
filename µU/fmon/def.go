@@ -44,7 +44,13 @@ func New (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
 }
 
 // See above. Additionally, st is executed by the server before it starts serving.
-func NewS (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
+func New1 (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
            h string, p uint16, s bool, stmt Stmt) FarMonitor {
-  return news(a, n, fs, ps, h, p, s, stmt)
+  return new1(a, n, fs, ps, h, p, s, stmt)
+}
+
+// Spec is trade secret.
+func New2 (a, b Any, n uint, fs FuncSpectrum, ps PredSpectrum,
+           h string, p uint16, s bool, stmt Stmt) FarMonitor {
+  return new2(a, b, n, fs, ps, h, p, s, stmt)
 }

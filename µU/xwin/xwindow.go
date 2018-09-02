@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 170920 - license see µU.go
+// (c) Christian Maurer   v. 180804 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL
 // #include <stdio.h>
@@ -470,17 +470,18 @@ func sendEvents() {
       event.C, event.S = 0, 0
       eventtype = C.evtyp (&xev)
       event.T = uint(eventtype)
-// println (txt[eventtype])
+// print (txt[eventtype] + "  ")
       switch eventtype {
       case C.Expose:
         w = C.exposeWin (&xev)
-        W = imp (w) // w == W.win
+//        W.buf2win()
+				W.win2buf() // XXX
         if W.firstExpose {
           W.firstExpose = false
-//          C.waitForLastContExpose (dpy, &xev)
-//          C.wait (dpy, &xev)
+//          C.waitForLastContExpose (dpy, &xev) // XXX
+//          C.wait (dpy, &xev) // XXX
         }
-        W.buf2win()
+//      W.win2buf() // XXX
       case C.KeyPress:
 // println ("#chars in buffer:", C.lookupString(xev))
         w = C.keyWin (&xev)
@@ -501,21 +502,26 @@ func sendEvents() {
         event.C, event.S = uint(C.buttonButt (&xev)), uint(C.buttonState (&xev))
         W.xM, W.yM = int(C.buttonX (&xev)), int(C.buttonY (&xev))
       case C.MotionNotify:
+// print (txt[eventtype] + "  ")
         w = C.motionWin (&xev)
         W = imp (w) // w == W.win
         event.C, event.S = uint(0), uint(C.motionState (&xev))
         W.xM, W.yM = int(C.motionX (&xev)), int(C.motionY (&xev))
       case C.EnterNotify: case C.LeaveNotify:
+// print (txt[eventtype] + "  ")
         w = C.enterLeaveWin (&xev)
         W = imp (w) // w == W.win
       case C.FocusIn:
+// print (txt[eventtype] + "  ")
         w = C.buttonWin (&xev)
         W = imp (w) // w == W.win
         actual = W
+        W.buf2win() // XXX
       case C.FocusOut:
+// print (txt[eventtype] + "  ")
         w = C.buttonWin (&xev)
         W = imp (w) // w == W.win
-//        xwindow = imp (rootWin)
+//        xwindow = imp (rootWin) // XXX
       case C.KeymapNotify:
         ;
       case C.GraphicsExpose:

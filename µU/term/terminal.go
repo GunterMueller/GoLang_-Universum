@@ -1,10 +1,10 @@
 package term
 
-// (c) Christian Maurer   v. 180106 - license see µU.go
+// (c) Christian Maurer   v. 180608 - license see µU.go
 
 // #include <termios.h>
 // #include <unistd.h>
-// #include <asm-generic/ioctls.h>
+// #include <sys/ioctl.h>
 // #include <linux/kd.h>
 /*
 struct termios t;
@@ -21,12 +21,12 @@ void new (void) {
   ioctl (0, KDSKBMODE, K_MEDIUMRAW);
 }
 
-void fin (void) {
+void fin_(void) {
   ioctl (0, KDSKBMODE, K_XLATE);
   ioctl (0, TCSETS, &t);
 }
 
-char read_(void) {
+char read__(void) {
   char b;
   read (0, &b, 1);
   return b;
@@ -51,13 +51,13 @@ func new_() Terminal {
 }
 
 func (x *terminal) Read() byte {
-  x.byte = byte(C.read_())
+  x.byte = byte(C.read__())
   return x.byte
 }
 
 func (x *terminal) Fin() {
   if x.bool {
-    C.fin()
+    C.fin_()
     x.bool = false
   }
 }

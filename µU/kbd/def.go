@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 170916 - license see µU.go
+// (c) Christian Maurer   v. 180813 - license see µU.go
 
 // >>> implements only a german keyboard !
 
@@ -125,11 +125,16 @@ func DepositCommand (c Comm) { depositCommand(c) }
 // Not yet documented.
 func DepositByte (b byte) { depositByte(b) }
 
-// The calling process was blocked, until until the keyboard buffer contained one of
-// the commands Enter or Here (for b = true) resp. Back or There (for b = false).
+// The calling process was blocked, until until the keyboard buffer contained
+// one of the commands Enter (for b = true) resp. Esc or Back (for b = false).
 // This command is now removed from the keyboard buffer.
 // Returns true, iff the depth of the command was == 0. 
 func Wait (b bool) bool { return wait(b) }
+
+// The calling process was blocked,
+// until until the keyboard buffer contained command c with depth d.
+// This command is now removed from the keyboard buffer.
+func WaitFor (c Comm, d uint) { waitFor(c,d) }
 
 // Returns true, if the keyboard buffer contained one of the commands Enter or Here,
 // and false, if it contained one of the commands // Back or There,

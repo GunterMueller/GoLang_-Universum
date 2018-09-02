@@ -28,7 +28,7 @@ type
   Fin()
 }
 
-func New1() LeftRight { return new1() }
+func NewMutex() LeftRight { return newM() }
 func NewSemaphore() LeftRight { return newS() }
 func NewCriticalSection1() LeftRight { return newCS1() }
 func NewCriticalSection2() LeftRight { return newCS2() }
@@ -41,6 +41,7 @@ func NewConditionedMonitor1() LeftRight { return newCM1() }
 func NewConditionedMonitor2() LeftRight { return newCM2() }
 func NewConditionedMonitorBounded (l, r uint) LeftRight { return newCMB(l,r) }
 func NewChannel() LeftRight { return newCh() }
+func NewChannelBounded(l, r uint) LeftRight { return newChB(l, r) }
 func NewGuardedSelect() LeftRight { return newGS() }
 
 func NewFarMonitor (h string, p uint16, s bool) LeftRight { return newFMon(h,p,s) }

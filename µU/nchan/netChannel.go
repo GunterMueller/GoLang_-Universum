@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 180212 - license see µU.go
+// (c) Christian Maurer   v. 180812 - license see µU.go
 
 import (
 //  "strconv"
@@ -56,11 +56,12 @@ func new_(a Any, me, i uint, n string, p uint16) NetChannel {
     x.panicIfErr()
     x.Conn, x.error = x.Listener.Accept()
   } else { // client
+    dialaddr := naddr.New2 (h, port).String()
     for {
-      if x.Conn, x.error = net.Dial (network, naddr.New2 (h, port).String()); x.error == nil {
+      if x.Conn, x.error = net.Dial (network, dialaddr); x.error == nil {
         break
       }
-      errh.Hint (x.error.Error())
+      errh.Hint(x.error.Error())
       time.Msleep (500)
     }
   }
@@ -70,53 +71,39 @@ func new_(a Any, me, i uint, n string, p uint16) NetChannel {
 func (x *netChannel) Send (a Any) {
   if x.Conn == nil { panic("no Conn") }
   if x.Any == nil {
-    _, x.error = x.Conn.Write (append (Encode (Codelen(a)), Encode(a)...))
-    if x.error != nil { println (x.error.Error()) }
+    bs := Encode(a)
+    bs = append (Encode(Codelen(a)), bs...)
+    _, x.error = x.Conn.Write (bs)
+    if x.error != nil { println ("1. " + x.error.Error()) }
   } else {
     CheckTypeEq (x.Any, a)
-    _, x.error = x.Conn.Write (Encode(a))
+    _, x.error = x.Conn.Write(Encode(a))
   }
-/*
-  n := uint(len(bs)) / maxWidth
-  for i := uint(0); i < n; i++ {
-    _, x.err = x.Conn.Write (bs[i*maxWidth:(i+1)*maxWidth])
-    if x.err != nil { println ("2. " + x.err.Error()) }
-  }
-  if uint(len(bs)) % maxWidth > 0 {
-    s, x.err = x.Conn.Write (bs[n*maxWidth:])
-    if x.err != nil { println ("3. (" + strconv.Itoa(s) + ") " + x.err.Error()) }
-  }
-*/
 }
 
 func (x *netChannel) Recv() Any {
-//  var r int
   if x.Conn == nil { panic("no Conn") }
   if x.Any == nil {
-    _, x.error = x.Conn.Read (x.Stream[:C0])
+    _, x.error = x.Conn.Read(x.Stream[:C0])
     if x.error != nil {
-//      println (x.error.Error())
-      return nil
+      return Clone(x.Any)
     }
     x.uint = Decode (uint(0), x.Stream[:C0]).(uint)
     _, x.error = x.Conn.Read (x.Stream[C0:C0+x.uint])
-    if x.error != nil { return nil }
+    if x.error != nil {
+      println ("5. " + x.error.Error())
+      return Clone(x.Any)
+    }
     return x.Stream[C0:C0+x.uint]
   }
-//  bs := make(Stream, x.uint)
-//  _, x.errR = x.Conn.Read(x.Stream)
-//  if x.errR != nil {
-//    println ("6. " + x.errR.Error())
-//    return Clone(x.Any)
-//  }
-//  copy (bs, x.Stream[:])
   _, x.error = x.Conn.Read (x.Stream)
-  return Decode (Clone(x.Any), x.Stream)
-//  return Decode(Clone(x.Any), bs)
+  return Decode(Clone(x.Any), x.Stream)
 }
 
 func (x *netChannel) Fin() {
-  x.Conn.Close()
+  if x.Conn != nil {
+    x.Conn.Close()
+  }
   if x.isServer {
     x.Listener.Close()
     if ! x.oneOne {

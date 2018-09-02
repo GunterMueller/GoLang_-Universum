@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180212 - license see µU.go
+// (c) Christian Maurer   v. 180812 - license see µU.go
 
 import (
   "runtime"
@@ -94,6 +94,8 @@ func codelen (a Any) uint {
     return uint(len(a.(BoolStream)))
   case Stream:
     return uint(len(a.(Stream)))
+  case IntStream:
+    return c0() * uint(len(a.(IntStream)) + 1)
   case UintStream:
     return c0() * uint(len(a.(UintStream)) + 1)
   case AnyStream:
@@ -223,6 +225,17 @@ func encode (a Any) Stream {
     copy (bs, ys)
   case Stream:
     return a.(Stream)
+  case IntStream:
+    us := a.(IntStream)
+    n := len(us)
+    c := int(c0())
+    bs = make(Stream, c * (n + 1))
+    copy (bs[:c], encode(n))
+    i := c
+    for j := 0; j < n; j++ {
+      copy (bs[i:i+c], encode(us[j]))
+      i += c
+    }
   case UintStream:
     us := a.(UintStream)
     n := uint(len(us))
@@ -471,6 +484,16 @@ func decode (a Any, bs Stream) Any {
   case Stream:
     return bs
     copy (a.(Stream), bs)
+  case IntStream:
+    c := int(c0())
+    n := decode(0, bs[:c]).(int)
+    us := make(IntStream, n)
+    i := c
+    for j := 0; j < n; j++ {
+      us[j] = decode(0, bs[i:i+c]).(int)
+      i += c
+    }
+    return us
   case UintStream:
     c := c0()
     n := decode(uint(0), bs[:c]).(uint)

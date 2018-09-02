@@ -507,6 +507,26 @@ func (X *console) OnInfLine (x, y, x1, y1, a, b int, t uint) bool {
   return X.incident
 }
 
+func (X *console) Triangle (x, y, x1, y1, x2, y2 int) {
+  X.Line (x, y, x1, y1)
+  X.Line (x1, y1, x2, y2)
+  X.Line (x2, y2, x, y)
+}
+
+func (X *console) TriangleInv (x, y, x1, y1, x2, y2 int) {
+  X.LineInv (x, y, x1, y1)
+  X.LineInv (x1, y1, x2, y2)
+  X.LineInv (x2, y2, x, y)
+}
+
+func (X *console) TriangleFull (x, y, x1, y1, x2, y2 int) {
+  X.PolygonFull ([]int{x, x1, x2}, []int{y, y1, y2})
+}
+
+func (X *console) TriangleFullInv (x, y, x1, y1, x2, y2 int) {
+  X.PolygonFullInv ([]int{x, x1, x2}, []int{y, y1, y2})
+}
+
 func (X *console) rectang (x, y, x1, y1 int, f pointFunc) {
   if ! X.rectangOk (&x, &y, &x1, &y1) { return }
   if x == x1 {
@@ -633,10 +653,11 @@ func (X *console) PolygonFull (xs, ys []int) {
     }
   }
 */
+  ker.Panic ("not yet implemented") // TODO
 }
 
 func (X *console) PolygonFullInv (xs, ys []int) {
-  X.PolygonInv (xs, ys) // TODO
+  ker.Panic ("not yet implemented") // TODO
 }
 
 func (X *console) OnPolygon (xs, ys []int, a, b int, t uint) bool {

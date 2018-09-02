@@ -1,11 +1,12 @@
 package scr
 
-// (c) Christian Maurer   v. 180101 - license see nU.go
+// (c) Christian Maurer   v. 180812 - license see nU.go
 
 // #include <stdlib.h>
 // #include <string.h>
 // #include <unistd.h>
 // #include <fcntl.h>
+// #include <sys/ioctl.h>
 // #include <linux/fb.h>
 // #include <linux/vt.h>
 /*

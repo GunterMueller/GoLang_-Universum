@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 170814 - license see µU.go
+// (c) Christian Maurer   v. 180421 - license see µU.go
 
 import
   . "µU/linewd"
@@ -150,6 +150,38 @@ func (X *screen) OnInfLine (x, y, x1, y1, a, b int, t uint) bool {
     return X.XWindow.OnInfLine (x, y, x1, y1, a, b, t)
   }
   return X.Console.OnInfLine (x, y, x1, y1, a, b, t)
+}
+
+func (X *screen) Triangle (x, y, x1, y1, x2, y2 int) {
+  if underX {
+    X.XWindow.Triangle (x, y, x1, y1, x2, y2)
+  } else {
+    X.Console.Triangle (x, y, x1, y1, x2, y2)
+  }
+}
+
+func (X *screen) TriangleInv (x, y, x1, y1, x2, y2 int) {
+  if underX {
+    X.XWindow.TriangleInv (x, y, x1, y1, x2, y2)
+  } else {
+    X.Console.TriangleInv (x, y, x1, y1, x2, y2)
+  }
+}
+
+func (X *screen) TriangleFull (x, y, x1, y1, x2, y2 int) {
+  if underX {
+    X.XWindow.TriangleFull (x, y, x1, y1, x2, y2)
+  } else {
+    X.Console.TriangleFull (x, y, x1, y1, x2, y2)
+  }
+}
+
+func (X *screen) TriangleFullInv (x, y, x1, y1, x2, y2 int) {
+  if underX {
+    X.XWindow.TriangleFullInv (x, y, x1, y1, x2, y2)
+  } else {
+    X.Console.TriangleFullInv (x, y, x1, y1, x2, y2)
+  }
 }
 
 func (X *screen) Rectangle (x, y, x1, y1 int) {

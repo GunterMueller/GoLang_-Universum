@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 171212 - license see µU.go
+// (c) Christian Maurer   v. 180812 - license see µU.go
 
 import
   . "µU/obj"
@@ -29,9 +29,6 @@ type
 // returns an empty object otherwise.
 // The calling process was blocked, until an object was received.
   Recv() Any
-
-// Returns the error of the last Recv()-call.
-//  RecvError() error
 
 // The port used by x is not used by a network service on the calling host.
   Fin()

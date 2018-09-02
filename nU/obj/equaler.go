@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 171227 - license see nU.go
+// (c) Christian Maurer   v. 180813 - license see nU.go
 
 import "reflect"
 
@@ -29,7 +29,7 @@ func Clone (a Any) Any { return clone(a) }
 func IsEqualer (a Any) bool { return isEqualer(a) }
 
 // Returns true, iff a is atomic or implements Equaler.
-func AtomicOrEqualer (a Any) bool { return atomic(a) || isEqualer(a) }
+func AtomicOrEqualer (a Any) bool { return Atomic(a) || isEqualer(a) }
 
 func isEqualer (a Any) bool {
   _, e := a.(Equaler)
@@ -42,7 +42,7 @@ func eq (a, b Any) bool {
   if ! TypeEq (a, b) {
     return false
   }
-  if atomic(a) {
+  if Atomic(a) {
     return a == b
   }
   switch a.(type) {
@@ -66,6 +66,24 @@ func eq (a, b Any) bool {
       }
       return true
     }
+  case IntStream:
+    n := len(a.(IntStream))
+    if n != len(b.(IntStream)) { return false }
+    for i, y := range a.(IntStream) {
+      if ! eq (b.(IntStream)[i], y) {
+        return false
+      }
+      return true
+    }
+  case UintStream:
+    n := len(a.(UintStream))
+    if n != len(b.(UintStream)) { return false }
+    for i, y := range a.(UintStream) {
+      if ! eq (b.(UintStream)[i], y) {
+        return false
+      }
+      return true
+    }
   case AnyStream:
     n := len(a.(AnyStream))
     if n != len(b.(AnyStream)) { return false }
@@ -85,25 +103,45 @@ func clone (a Any) Any {
   if a == nil {
     return nil
   }
-  if atomic (a) {
+  if Atomic (a) {
     return a
   }
   switch a.(type) {
   case Equaler:
     return a.(Equaler).Clone()
-  case Stream:
-    b := make (Stream, len (a.(Stream)))
-    copy (b, a.(Stream))
-    return b
   case BoolStream:
     n := len(a.(BoolStream))
     b := make(BoolStream, n)
     for i := 0; i < n; i++ {
       b[i] = a.(BoolStream)[i]
     }
+  case Stream:
+    b := make (Stream, len (a.(Stream)))
+    copy (b, a.(Stream))
+    return b
+  case IntStream:
+    n := len(a.(IntStream))
+    b := make(IntStream, n)
+    for i := 0; i < n; i++ {
+      b[i] = a.(IntStream)[i]
+    }
+    return b
+  case UintStream:
+    n := len(a.(UintStream))
+    b := make(UintStream, n)
+    for i := 0; i < n; i++ {
+      b[i] = a.(UintStream)[i]
+    }
+    return b
+  case AnyStream:
+    n := len(a.(AnyStream))
+    b := make(AnyStream, n)
+    for i := 0; i < n; i++ {
+      b[i] = a.(AnyStream)[i]
+    }
     return b
   default:
-    panic ("nU only clones atomic types and objects of type string, Stream, BoolStream or Equaler")
+    panic ("nU only clones atomic types and objects of type string, __Stream or Equaler")
   }
   return nil
 }

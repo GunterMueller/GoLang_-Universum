@@ -1,6 +1,6 @@
 package fmon
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 180813 - license see nU.go
 
 import . "nU/obj"
 
@@ -45,4 +45,11 @@ type FarMonitor interface {
 func New (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
           h string, p uint16, s bool) FarMonitor {
   return new_(a,n,fs,ps,h,p,s)
+}
+
+// Spezifikation s. oben;
+// die Ergebnisswerte von F sind vom Typ des Wertes von b.
+func New2 (a, b Any, n uint, fs FuncSpectrum, ps PredSpectrum,
+           h string, p uint16, s bool) FarMonitor {
+  return new2(a,b,n,fs,ps,h,p,s)
 }
