@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 180902 - license see µU.go
 
 type
   Editor interface { // Objects, that can be printed to a particular
@@ -16,36 +16,25 @@ type
                      // vertical direction. In both cases (0, 0)
                      // denotes the top left corner of the screen.
                      //
-                     // So particularly any Editor is an
-//  Object             // (details see µU/obj/object.go).
+                     // So particularly any Editor is an Object
+                     // (details see µU/obj/object.go).
 
 // Pre: l, c have to be "small enough", i.e.
-//      l + height (object) < scr.NoLines,
-//      c + width (object) < scr.NoColums.
+//      l + height of x < scr.NLines, c + width of x < scr.NColums.
 // x is written to the screen with
-// its left top corner at line, column = l, c.
+// its left top corner at line/column = l/c.
   Write (l, c uint)
 
 // Pre: see Write.
 // x has the value, that was edited at line/column l/c.
 // Hint: A "new" object is "read" by editing an empty one.
   Edit (l, c uint)
+}
 
-// >>>  eventually new version:
-
-// Pre: If there are position parameters p[0], p[1],
-//      then they have to be "small enough", i.e.
-//      p[0] + height (object) < scr.NoLines,
-//      p[1] + width (object) < scr.NoColums.
-// x is written to the screen
-// [ with its left top corner at line/column p[0]/p[1]) ].
-//  Write (... uint)
-
-// Precondition: see Write.
-// x has the value, that was edited
-// [ at line/column p[0]/p[1] (see Write) ].
-// Hint: A "new" object is "read" by editing an empty one.
-//  Edit (... uint)
+func isEditor (a Any) bool {
+  if a == nil { return false }
+  _, ok := a.(Editor)
+  return ok
 }
 
 type
@@ -53,6 +42,13 @@ type
 
   Editor
 
+// see above. x, y are pixel coordinates.
   WriteGr (x, y int)
   EditGr (x, y int)
+}
+
+func isEditorGr (a Any) bool {
+  if a == nil { return false }
+  _, ok := a.(EditorGr)
+  return ok
 }

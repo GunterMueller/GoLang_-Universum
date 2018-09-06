@@ -1,10 +1,11 @@
 package euro
 
-// (c) Christian Maurer   v. 170817 - license see µU.go
+// (c) Christian Maurer   v. 180902 - license see µU.go
 
 import (
   "math"
   . "µU/obj"
+  . "µU/add"
   "µU/str"
   "µU/col"
   "µU/scr"
@@ -120,17 +121,8 @@ func (x *euro) SetReal (r float64) bool {
   return x.cent < undefined
 }
 
-func (x *euro) Null() bool {
+func (x *euro) Zero() bool {
   return x.cent == 0
-}
-
-func (x *euro) Sum (Y, Z Adder) {
-  x.cent = undefined
-  y, z := x.imp (Y), x.imp (Z)
-  if y.cent == undefined || z.cent == undefined { return }
-  if y.cent + z.cent < undefined {
-    x.cent = undefined
-  }
 }
 
 func (x *euro) Add (Y ...Adder) {
@@ -144,15 +136,6 @@ func (x *euro) Add (Y ...Adder) {
       x.cent = undefined
       break
     }
-  }
-}
-
-func (x *euro) Diff (Y, Z Adder) {
-  x.cent = undefined
-  y, z := x.imp (Y), x.imp (Z)
-  if y.cent == undefined || z.cent == undefined { return }
-  if y.cent >= z.cent {
-    x.cent = y.cent - z.cent
   }
 }
 

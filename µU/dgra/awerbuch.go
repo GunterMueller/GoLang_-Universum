@@ -3,7 +3,7 @@ package dgra
 // (c) Christian Maurer   v. 171130 - license see µU.go
 //
 // >>> simplified version of the algorithm of B. Awerbuch:
-//     A New Distributed Depth-First-Search Algorithm, Inf, Proc. Letters 28 (1985) 147-160 
+//     A New Distributed Depth-First-Search Algorithm, Inf. Proc. Letters 28 (1985) 147-160 
 
 import (
   . "µU/obj"
@@ -30,7 +30,7 @@ func (x *distributedGraph) awerbuch (o Op) {
   if x.me == x.root {
     x.parent = x.root
     for k := uint(0); k < x.n; k++ {
-x.log ("call visit", x.nr[k])
+// x.log ("call visit", x.nr[k])
       x.mon[k].F(x.me, visit)
     }
     for k := uint(0); k < x.n; k++ {
@@ -38,7 +38,7 @@ x.log ("call visit", x.nr[k])
         x.visited[k] = true
         x.child[k] = true
 // x.log ("child", x.nr[k])
-x.log ("call discover", x.nr[k])
+// x.log ("call discover", x.nr[k])
         x.mon[k].F(x.me, discover)
       }
     }
@@ -60,7 +60,7 @@ func (x *distributedGraph) a (a Any, i uint) Any {
 // x.log ("parent", x.nr[j])
     for k := uint(0); k < x.n; k++ {
       if k != j {
-x.log ("call visit", x.nr[k])
+// x.log ("call visit", x.nr[k])
         x.mon[k].F(x.me, visit)
       }
     }
@@ -69,7 +69,7 @@ x.log ("call visit", x.nr[k])
         x.visited[k] = true
         x.child[k] = true
 // x.log ("child", x.nr[k])
-x.log ("call discover", x.nr[k])
+// x.log ("call discover", x.nr[k])
         x.mon[k].F(x.me, discover)
       }
     }

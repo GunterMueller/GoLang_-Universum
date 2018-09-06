@@ -1,8 +1,9 @@
 package vnset
 
-// (c) Christian Maurer   v. 170817 - license see µU.go
+// (c) Christian Maurer   v. 180902 - license see µU.go
 
 import (
+  . "µU/add"
   . "µU/obj"
   "µU/str"
 )
@@ -176,7 +177,7 @@ func (x *set) Doubleton (Y VonNeumannSet) VonNeumannSet {
   return z
 }
 
-func (x *set) Null() bool {
+func (x *set) Zero() bool {
   return x.Empty()
 }
 
@@ -194,11 +195,6 @@ func (x *set) Add (Y ...Adder) {
       }
     }
   }
-}
-
-func (x *set) Diff (Y, Z Adder) {
-  x.Copy (Y)
-  x.Sub (Z)
 }
 
 func (x *set) Sub (Y ...Adder) {

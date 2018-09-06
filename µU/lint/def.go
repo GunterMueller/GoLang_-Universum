@@ -1,9 +1,11 @@
 package lint
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 180902 - license see µU.go
 
 import (
   . "µU/obj"
+  . "µU/add"
+  . "µU/mul"
   "µU/col"
 )
 type

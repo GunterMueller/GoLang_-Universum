@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 170424 - license see µU.go
+// (c) Christian Maurer   v. 180902 - license see µU.go
 
 type
   Iterator interface {
@@ -97,4 +97,10 @@ type
 // one and for f == false the former first element in x is now
 // the last one. The actual element of x is the same as before.
 //  Rotate () // ? TODO
+}
+
+func IsIterator (a Any) bool {
+  if a == nil { return false }
+  _, ok := a.(Iterator)
+  return ok
 }

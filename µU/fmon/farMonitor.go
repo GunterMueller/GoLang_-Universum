@@ -28,8 +28,8 @@ func new1 (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
   x := new(farMonitor)
   x.input = Clone(a)
   x.uint = n
-  x.ch = make([]nchan.NetChannel, x.uint)
   x.bool = s
+  x.ch = make([]nchan.NetChannel, x.uint)
   for i := uint(0); i < x.uint; i++ {
     x.ch[i] = nchan.NewN (x.input, h, p + uint16(i), s)
   }
@@ -43,8 +43,8 @@ func new2 (a, b Any, n uint, fs FuncSpectrum, ps PredSpectrum,
   x.input = Clone(a)
 	x.output = Clone(b)
   x.uint = n
-  x.ch = make([]nchan.NetChannel, x.uint)
   x.bool = s
+  x.ch = make([]nchan.NetChannel, x.uint)
   for i := uint(0); i < x.uint; i++ {
     x.ch[i] = nchan.NewN (nil, h, p + uint16(i), s)
   }

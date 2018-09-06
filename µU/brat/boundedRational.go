@@ -1,10 +1,12 @@
 package brat
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 180902 - license see µU.go
 
 import (
   "math"
   . "µU/obj"
+  . "µU/add"
+  . "µU/mul"
   "µU/str"
   "µU/col"
   "µU/scr"
@@ -252,7 +254,7 @@ func (x *rational) Integer() bool {
   return x.denom == 1
 }
 
-func (x *rational) Null() bool {
+func (x *rational) Zero() bool {
   if x.denom == 0 { return false }
   return x.num == 0
 }
@@ -288,17 +290,6 @@ func gcd (a, b uint64) uint64 {
 
 const
   max64 = uint64(1<<64 - 1)
-
-/*
-func (x *rational) Plus (Y Adder) {
-  x.Add (x, Y)
-}
-*/
-
-func (x *rational) Sum (Y, Z Adder) {
-  x.Copy (Y)
-  x.Add (Z)
-}
 
 func (x *rational) add (Y Adder) {
   y := x.imp(Y)
@@ -370,11 +361,6 @@ func (x *rational) changeSign() {
   if x.num == 0 { x.geq0 = true }
 }
 
-func (x *rational) Diff (Y, Z Adder) {
-  x.Copy (Y)
-  x.Sub (Z)
-}
-
 func (x *rational) Sub (Y ...Adder) {
   for i, _ := range Y {
     y := x.imp(Y[i])
@@ -383,11 +369,6 @@ func (x *rational) Sub (Y ...Adder) {
     x.Add (y)
     y.geq0 = yg
   }
-}
-
-func (x *rational) Prod (Y, Z Multiplier) {
-  x.Copy (Y)
-  x.Mul (Z)
 }
 
 func (x *rational) mul (Y Multiplier) {
@@ -422,7 +403,7 @@ func (x *rational) Mul (Y ...Multiplier) {
 }
 
 func (x *rational) Sqr() {
-  x.Mul (x, x)
+  x.Mul (x)
 }
 
 func (x *rational) Invert() {
@@ -456,11 +437,11 @@ func (x *rational) Operate (Y ...Rational, op Operation) { // TODO Rational -> .
   case ADD:
     x.Sum (Y...)
   case SUB:
-    x.Diff (Y)
+    x.Difference (Y)
   case MUL:
-    x.Prod (Y)
+    x.Product (Y)
   case DIV:
-    x.Quot (Y)
+    x.Quotient (Y)
   }
 }
 */

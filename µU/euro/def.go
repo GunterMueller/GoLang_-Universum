@@ -1,9 +1,10 @@
 package euro
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 180901 - license see µU.go
 
 import (
   . "µU/obj"
+  . "µU/add"
   "µU/col"
 )
 type

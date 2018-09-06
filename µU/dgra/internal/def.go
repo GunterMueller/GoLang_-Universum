@@ -1,37 +1,36 @@
 package internal
 
-// (c) Christian Maurer   v. 171219 - license see µU.go
+// (c) Christian Maurer   v. 180819 - license see µU.go
 
 import
   . "µU/obj"
 const (
-  Candidate = byte(iota) // Type of message
+  Candidate = byte(iota) // types of messages
   Reply
   Leader
 )
 type
-  Message interface { // quintuple (Type, id, num, maxnum, ok)
+  Message interface { // quintuple (type, id, num, maxnum, ok)
 
   Equaler
   Coder
 
-// Returns the type of the message.
+// Returns the type of x.
   Type() byte
 
-// Returns the quadruple (id, num, maxnum, ok) of the message.
+// Returns the quadruple (id, num, maxnum, ok) of x.
   IdNumsOk() (uint, uint, uint, bool)
 
-// The message consists of type Candidate,
-// id i, num n, maxnum n and undefined ok.
-// ok is not changed.
+// x consists of type Candidate, id i, num n and maxnum n.
+// ok of x is not changed.
   SetPass (i, n, m uint)
 
-// The message consists of type Reply and ok b,
-// the other components are unchanged.
+// x consists of type Reply and ok b,
+// the other components of x are unchanged.
   SetReply (b bool)
 
-// The message consists of type Leader and id i,
-// the other components are unchanged.
+// x consists of type Leader and id i,
+// the other components of x are unchanged.
   SetLeader (i uint)
 }
 

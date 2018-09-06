@@ -1,6 +1,6 @@
 package lint
 
-// (c) Christian Maurer   v. 170817 - license see µU.go
+// (c) Christian Maurer   v. 180901 - license see µU.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 
@@ -9,6 +9,8 @@ import (
   . "math/big"
 //  "strconv"
   . "µU/obj"
+  . "µU/add"
+  . "µU/mul"
 //  "µU/str"
   "µU/col"
   "µU/scr"
@@ -278,7 +280,7 @@ func (x *longInteger) SumDigits() uint {
   return a
 }
 
-func (x *longInteger) Null() bool {
+func (x *longInteger) Zero() bool {
   return x.n.Sign() == 0
 }
 
@@ -297,11 +299,6 @@ func (x *longInteger) Inc() {
   x.n.Add (x.n, one.n)
 }
 
-func (x *longInteger) Diff (Y, Z Adder) {
-  x.Copy (Y)
-  x.Sub (Z)
-}
-
 func (x *longInteger) Sub (Y ...Adder) {
   for _, y:= range Y {
     x.n.Sub (x.n, y.(*longInteger).n)
@@ -314,11 +311,6 @@ func (x *longInteger) Dec() {
 
 func (x *longInteger) One() bool {
   return x.Eq (one)
-}
-
-func (x *longInteger) Prod (Y, Z Multiplier) {
-  x.Copy (Y)
-  x.Mul (Z)
 }
 
 func (x *longInteger) Mul (Y ...Multiplier) {

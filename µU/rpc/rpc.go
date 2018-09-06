@@ -14,9 +14,7 @@ type
 
 func new_(a, b Any, h string, port uint16, s bool, g Func) RPC {
   x := new(rpc)
-	f := func (a Any, i uint) Any {
-         return g (a)
-       }
+  f := func (a Any, i uint) Any { return g (a) }
   x.FarMonitor = fmon.New2 (a, b, 1, f, AllTrueSp, h, port, s, Nothing)
   return x
 }

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 170116 - license see µU.go
+// (c) Christian Maurer   v. 180902 - license see µU.go
 
 // Collections of elements of type object or of variables of
 // a concrete atomic type (bool, [u]int.., float.., string, ...).
@@ -20,10 +20,10 @@ type
 //  Clearer // ! included to avoid clash in pseq
 
 // Returns true, iff the actual element of x is undefined.
-  Offc () bool
+  Offc() bool
 
 // Returns the nunber of elements in x.
-  Num () uint
+  Num() uint
 
 // Pre: a has the type of the elements in x. 
 // If x does not carry any order:
@@ -63,7 +63,7 @@ type
   Eoc (f bool) bool
 
 // Returns a copy of the actual element of x, if that is defined; nil otherwise.
-  Get () Any
+  Get() Any
 
 // Pre: a has the type of the elements in x. 
 // If the actual element of x was undefined, a copy of a is appended
@@ -76,7 +76,7 @@ type
 // and the actual element is now the element after it,
 // if the former actual element was not the last element of x.
 // In that case the actual element of x is now undefined.
-  Del () Any
+  Del() Any
 
 // Returns true, iff a is contained in x. In that case
 // case the first such element is the actual element of x;
@@ -84,4 +84,10 @@ type
   Ex (a Any) bool
 
 //  ExPred (p Pred) bool
+}
+
+func IsCollector (a Any) bool {
+  if a == nil { return false }
+  _, ok := a.(Collector)
+  return ok
 }

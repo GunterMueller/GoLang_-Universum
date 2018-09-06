@@ -61,6 +61,7 @@ import (
   "µU/piset"
   "µU/persaddr"
   "µU/pset"
+  "µU/words"
   "µU/schol"
   "µU/gram"
   "µU/audio"
@@ -198,6 +199,7 @@ func main() { // just to get all stuff compiled
   fig2.Touch()
   piset.Touch()
   pset.New(persaddr.New())
+  words.New(0, 0)
   schol.New()
   gram.Touch()
   audio.New()

@@ -1,6 +1,6 @@
 package internal
 
-// (c) Christian Maurer   v. 171219 - license see µU.go
+// (c) Christian Maurer   v. 180902 - license see µU.go
 
 import
   . "µU/obj"
@@ -11,6 +11,12 @@ type
              num,
           maxnum uint
                  bool "reply ok"
+}
+var
+  c0 uint
+
+func init() {
+  c0 = C0()
 }
 
 func new_() Message {
@@ -25,17 +31,14 @@ func (x *message) imp(Y Any) *message {
 
 func (x *message) Eq (Y Any) bool {
   y := x.imp(Y)
-  return x.byte == y.byte &&
-         x.uint == y.uint &&
-         x.num == y.num &&
-         x.maxnum == y.maxnum &&
+  return x.byte == y.byte && x.uint == y.uint &&
+         x.num == y.num && x.maxnum == y.maxnum &&
          x.bool == y.bool
 }
 
 func (x *message) Copy (Y Any) {
   y := x.imp(Y)
-  x.byte = y.byte
-  x.uint = y.uint
+  x.byte, x.uint = y.byte, y.uint
   x.num, x.maxnum = y.num, y.maxnum
   x.bool = y.bool
 }
@@ -47,33 +50,33 @@ func (x *message) Clone() Any {
 }
 
 func (x *message) Codelen() uint {
-  return 1 + 3 * C0 + 1
+  return 1 + 3 * c0 + 1
 }
 
-func (x *message) Encode() []byte {
-  bs := make([]byte, x.Codelen())
-  bs[0] = x.byte
-  i, a := uint(1), C0
-  copy(bs[i:i+a], Encode(x.uint))
-  i += a
-  copy(bs[i:i+a], Encode(x.num))
-  i += a
-  copy(bs[i:i+a], Encode(x.maxnum))
-  i += a
-  bs[i] = 0; if x.bool { bs[i] = 1 }
-  return bs
+func (x *message) Encode() Stream {
+  s := make(Stream, x.Codelen())
+  s[0] = x.byte
+  i := uint(1)
+  copy(s[i:i+c0], Encode(x.uint))
+  i += c0
+  copy(s[i:i+c0], Encode(x.num))
+  i += c0
+  copy(s[i:i+c0], Encode(x.maxnum))
+  i += c0
+  s[i] = 0; if x.bool { s[i] = 1 }
+  return s
 }
 
-func (x *message) Decode (bs []byte) {
-  x.byte = bs[0]
-  i, a := uint(1), C0
-  x.uint = Decode(uint(0), bs[i:i+a]).(uint)
-  i += a
-  x.num = Decode(uint(0), bs[i:i+a]).(uint)
-  i += a
-  x.maxnum = Decode(uint(0), bs[i:i+a]).(uint)
-  i += a
-  x.bool = bs[i] == 1
+func (x *message) Decode (s Stream) {
+  x.byte = s[0]
+  i := uint(1)
+  x.uint = Decode(uint(0), s[i:i+c0]).(uint)
+  i += c0
+  x.num = Decode(uint(0), s[i:i+c0]).(uint)
+  i += c0
+  x.maxnum = Decode(uint(0), s[i:i+c0]).(uint)
+  i += c0
+  x.bool = s[i] == 1
 }
 
 func (x *message) Type() byte {

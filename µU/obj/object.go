@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 171112 - license see µU.go
+// (c) Christian Maurer   v. 180902 - license see µU.go
 
 type
   Object interface {
@@ -23,33 +23,34 @@ type
 }
 
 // Returns true, iff the type of a is bool,
-// [u]int{8|16|32}, float[32|64], complex[64|128],
-// string or Stream (= []byte) (we treat them also as atomic).
-func Atomic (a Any) bool { return atomic(a) }
-
-// Returns true, iff the type of a implements Object.
-func IsObject (a Any) bool { return isObject(a) }
-
-// Returns true, iff a is atomic or implements Object
-// (the types that are particularly supported by µU).
-func AtomicOrObject (a Any) bool {
-  return atomic (a) || isObject (a)
-}
-
-func atomic (a Any) bool {
+// [u]int{8|16|32}, float[32|64], complex[64|128] or string.
+func Atomic (a Any) bool {
   switch a.(type) {
   case bool,
        int8,  int16,  int32,  int,  int64,
        uint8, uint16, uint32, uint, uint64,
        float32, float64, complex64, complex128,
-       string, Stream: // we treat them also as atomic
+       string:
     return true
   }
   return false
 }
 
-func isObject (a Any) bool {
+// Returns true, iff the type of a implements Object.
+func IsObject (a Any) bool {
   _, o := a.(Object)
   _, e := a.(Editor) // Editor implements Object
   return o || e
+}
+
+// Returns true, iff a is atomic or implements Object
+// (the types that are particularly supported by µU).
+func AtomicOrObject (a Any) bool {
+  return Atomic (a) || IsObject (a)
+}
+
+// Returns true, iff a is atomic, streamic or implements Object
+// (the types that are particularly supported by µU).
+func AtomicOrStreamicOrObject (a Any) bool {
+  return Atomic (a) || Streamic(a) || IsObject (a)
 }

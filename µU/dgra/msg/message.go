@@ -1,65 +1,67 @@
 package msg
 
-// (c) Christian Maurer   v. 171119 - license see µU.go
+// (c) Christian Maurer   v. 180829 - license see µU.go
 
 import (
   . "µU/obj"
-  "µU/adj"
+  "µU/dgra/status"
 )
 type
   message struct {
-                 uint "sender"
-                 byte "kind"
-                 adj.AdjacencyMatrix
-}
+                 byte "message type"
+               s status.Status
+                 }
 
-func new_(n uint) Message {
+func new_() Message {
   x := new(message)
-  x.AdjacencyMatrix = adj.New (n, uint(0), uint(0))
+  x.byte = NTypes
+  x.s = status.New()
   return x
 }
 
-func new2 (n, s uint, k byte) Message {
-  x := new_(n).(*message)
-  x.uint = s
-  x.byte = k
-  return x
+func (x *message) imp (Y Any) *message {
+  y, _ := Y.(*message)
+  return y
 }
 
-func new3 (n, s uint, k byte, a adj.AdjacencyMatrix) Message {
-  x := new_(n).(*message)
-  x.uint = s
-  x.byte = k
-  x.AdjacencyMatrix = adj.New (n, uint(0), uint(0))
-  return x
+func (x *message) Set (t byte, s status.Status) {
+  x.byte, x.s = t, s
 }
 
-func (x *message) Codelen() uint {
-  return C0 + 1 + x.AdjacencyMatrix.Codelen()
-}
-
-func (x *message) Encode() Stream {
-  bs := make([]byte, x.Codelen())
-  copy (bs[:C0], Encode(x.uint))
-  bs[C0] = x.byte
-  copy (bs[C0+1:], x.AdjacencyMatrix.Encode())
-  return bs
-}
-
-func (x *message) Decode (bs Stream) {
-  x.uint = Decode(uint(0), bs[:C0]).(uint)
-  x.byte = bs[C0]
-  x.AdjacencyMatrix.Decode (bs[C0+1:])
-}
-
-func (x *message) Sender() uint {
-  return x.uint
-}
-
-func (x *message) Kind() byte {
+func (x *message) Type() byte {
   return x.byte
 }
 
-func (x *message) Matrix() adj.AdjacencyMatrix {
-  return x.AdjacencyMatrix.Clone().(adj.AdjacencyMatrix)
+func (x *message) Eq (Y Any) bool {
+  y := x.imp(Y)
+  return x.byte == y.byte && x.s.Eq (y.s)
+}
+
+func (x *message) Copy (Y Any) {
+  y := x.imp(Y)
+  x.byte = y.byte
+  x.s.Copy (y.s)
+}
+
+func (x *message) Clone() Any {
+  y := new_()
+  y.Set (x.byte, x.s)
+  return y
+}
+
+func (x *message) Status() status.Status {
+  return x.s
+}
+
+func (x *message) Codelen() uint {
+  return 1 + x.s.Codelen()
+}
+
+func (x *message) Encode() Stream {
+  return append(Encode(x.byte), x.s.Encode()...)
+}
+
+func (x *message) Decode (s Stream) {
+  x.byte = s[0]
+  x.s.Decode (s[1:])
 }

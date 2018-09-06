@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 140102 - license see µU.go
+// (c) Christian Maurer   v. 180902 - license see µU.go
 
 type
   Seeker interface { // makes sense only for objects of type Collector
@@ -14,6 +14,12 @@ type
 // The actual object of x is its p-th object, iff p < Num();
 // otherwise Offc() == true.
   Seek (p uint)
+}
+
+func IsSeeker (a Any) bool {
+  if a == nil { return false }
+  _, ok := a.(Seeker)
+  return ok
 }
 
 /*

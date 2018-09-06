@@ -2,8 +2,10 @@ package vnset
 
 // (c) Christian Maurer   v. 170418
 
-import
+import (
   . "µU/obj"
+  . "µU/add"
+)
 type
   Predicate func (s VonNeumannSet) bool
 type

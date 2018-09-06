@@ -1,9 +1,12 @@
 package brat
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 180902 - license see µU.go
 
-import
+import (
   . "µU/obj"
+  . "µU/add"
+  . "µU/mul"
+)
 type
   Rational interface {
 

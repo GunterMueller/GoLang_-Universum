@@ -170,7 +170,7 @@ func equal (as, bs []byte) bool {
 func (x *persistentSequence) e (y *persistentSequence, r Rel) bool {
   if y.name == x.name { return true }
   if x.num != y.num { return false }
-  for i := null; i < x.num; i ++ {
+  for i := null; i < x.num; i++ {
     x.read (x.buf)
     y.read (y.buf)
     if ! r (x.buf, y.buf) {
@@ -214,7 +214,7 @@ func (x *persistentSequence) leq (Y Any) bool { // TODO
   y := x.imp (Y)
   if y.name == x.name { return true }
   if x.num != y.num { return false }
-  for i := null; i < x.num; i ++ {
+  for i := null; i < x.num; i++ {
     x.read (x.buf)
 /*
     for x.pos < x.num {
@@ -246,13 +246,13 @@ func (x *persistentSequence) Num() uint {
 }
 
 func (x *persistentSequence) NumPred (p Pred) uint {
-  n := Zero
+  n := uint(0)
   if x.num == 0 { return 0 }
   x.file.Seek (0)
-  for i := null; i < x.num; i ++ {
+  for i := null; i < x.num; i++ {
     x.read (x.buf)
     if p (x.buf) {
-      n ++
+      n++
     }
   }
   return n
@@ -262,7 +262,7 @@ func (x *persistentSequence) Ex (a Any) bool {
   x.check (a)
   if x.num == 0 { return false }
   x.file.Seek (0)
-  for i := null; i < x.num; i ++ {
+  for i := null; i < x.num; i++ {
     x.read (x.buf)
     if equal (x.buf, Encode (a)) {
       x.pos = i
@@ -275,7 +275,7 @@ func (x *persistentSequence) Ex (a Any) bool {
 func (x *persistentSequence) Step (forward bool) {
   if forward {
     if x.pos * x.size < x.file.Length() {
-      x.pos ++
+      x.pos++
     }
   } else if x.pos > 0 {
     x.pos --
@@ -328,8 +328,8 @@ func (x *persistentSequence) insert (a Any) {
     x.pos = x.num
     x.file.Seek (x.file.Length())
     x.write (Encode (a))
-    x.pos ++
-    x.num ++
+    x.pos++
+    x.num++
     return
   }
 // x.pos < x.num:
@@ -350,8 +350,8 @@ func (x *persistentSequence) insert (a Any) {
       x1.write (x.buf)
     }
   }
-  x.pos ++
-  x.num ++
+  x.pos++
+  x.num++
   n := x.num
   p := x.pos
   x.file.Clr()
@@ -395,7 +395,7 @@ func (x *persistentSequence) insertOrd (a Any) {
       }
     }
     ps.write (x.buf)
-    i ++
+    i++
   }
   x.file.Clr()
   ps.file.Rename (x.name)
@@ -478,7 +478,7 @@ func (x *persistentSequence) ExPred (p Pred, f bool) bool {
       if i == n - 1 {
         break
       } else {
-        i ++
+        i++
       }
     } else if i == 0 {
       break
@@ -504,7 +504,7 @@ func (x *persistentSequence) StepPred (p Pred, f bool) bool {
   } else {
     i = x.pos
     if f {
-      i ++
+      i++
     } else {
       i --
     }
@@ -521,7 +521,7 @@ func (x *persistentSequence) StepPred (p Pred, f bool) bool {
       if i == n - 1 {
         break
       } else {
-        i ++
+        i++
       }
     } else {
       if i == 0 {
@@ -557,7 +557,7 @@ func (x *persistentSequence) Ordered() bool {
       return false
     }
     copy (x.buf, x.buf1)
-    i ++
+    i++
   }
   return true
 }
@@ -600,7 +600,7 @@ func (x *persistentSequence) Filter (Y Iterator, p Pred) {
     x.read (x.buf)
     if p (Decode (Clone (x.emptyObject), x.buf)) {
       y.write (x.buf)
-      y.pos ++
+      y.pos++
     }
   }
   y.file.Fin()
@@ -622,10 +622,10 @@ func (x *persistentSequence) Cut (Y Iterator, p Pred) {
     x.read (x.buf)
     if p (Decode (Clone (x.emptyObject), x.buf)) {
       y.write (x.buf)
-      y.pos ++
+      y.pos++
     } else {
       x2.write (x.buf)
-      x.pos ++
+      x.pos++
     }
   }
   x.file.Clr()
@@ -649,11 +649,11 @@ func (x *persistentSequence) ClrPred (p Pred) {
     x.read (x.buf)
     if p (Decode (Clone (x.emptyObject), x.buf)) {
       if n == i {
-        n ++
+        n++
       }
     } else {
       y.write (x.buf)
-      y.num ++
+      y.num++
     }
   }
   y.file.Fin()
@@ -737,7 +737,7 @@ func (x *persistentSequence) join (Y PersistentSequence) {
     for {
       if Less (x.buf, y.buf) {
         ps.write (x.buf)
-        i ++
+        i++
         if i < x.num {
           x.read (x.buf)
         } else {
@@ -746,7 +746,7 @@ func (x *persistentSequence) join (Y PersistentSequence) {
       } else {
         if Less (y.buf, x.buf) {
           ps.write (y.buf)
-          j ++
+          j++
           if j < y.num {
             y.read (y.buf)
           } else {
@@ -754,11 +754,11 @@ func (x *persistentSequence) join (Y PersistentSequence) {
           }
         } else {
           ps.write (y.buf)
-          i ++
+          i++
           if i < x.num {
             x.read (x.buf)
           }
-          j ++
+          j++
           if j < y.num {
             y.read (y.buf)
           }
@@ -772,7 +772,7 @@ func (x *persistentSequence) join (Y PersistentSequence) {
   for {
     if i == x.num { break }
     ps.write (x.buf)
-    i ++
+    i++
     if i < x.num {
       x.read (x.buf)
     }
@@ -780,7 +780,7 @@ func (x *persistentSequence) join (Y PersistentSequence) {
   for {
     if j == y.num { break }
     ps.write (y.buf)
-    j ++
+    j++
     if j < y.num {
       y.read (y.buf)
     }

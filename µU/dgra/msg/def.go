@@ -1,23 +1,29 @@
 package msg
 
-// (c) Christian Maurer   v. 171119 - license see µU.go
+// (c) Christian Maurer  v. 180829 - license see µU.go
 
 import (
   . "µU/obj"
-  "µU/adj"
+  "µU/dgra/status"
+)
+const (
+  Ask = byte(iota); Accept; Update; YourCitizen; Leader; NTypes // types of messages
 )
 type
-  Message interface {
+  Message interface { // pair of kind and Status
 
+  Equaler
   Coder
 
-//  Set (s uint, kind byte, a adj.AdjacencyMatrix)
+// x has type t and status s.
+  Set (t byte, s status.Status)
 
-  Sender() uint
-  Kind() byte
-  Matrix() adj.AdjacencyMatrix
+// Returns the type of x.
+  Type() byte
+
+// Returns the status of x.
+  Status() status.Status
 }
 
-func New (n uint) Message { return new_(n) }
-func New2 (n, s uint, k byte) Message { return new2(n,s,k) }
-func New3 (n, s uint, k byte, a adj.AdjacencyMatrix) Message { return new3(n,s,k,a) }
+// Returns a new message of undefined type and status.
+func NewMsg() Message { return new_() }

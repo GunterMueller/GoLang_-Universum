@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 140102 - license see µU.go
+// (c) Christian Maurer   v. 180902 - license see µU.go
 
 type
   Marker interface {
@@ -10,4 +10,10 @@ type
 
 // Returns true, iff x is marked.
   Marked () bool
+}
+
+func IsMarker (a Any) bool {
+  if a == nil { return false }
+  _, ok := a.(Marker)
+  return ok
 }

@@ -1,6 +1,6 @@
 package clk
 
-// (c) Christian Maurer   v. 171217 - license see µU.go
+// (c) Christian Maurer   v. 180901 - license see µU.go
 
 import (
   . "µU/ker"
@@ -333,7 +333,7 @@ func SetAttributes(l, c uint, f, b col.Colour) {
 
 func Show() {
   if line >= scr.NLines() {
-    SetAttributes(Zero, scr.NColumns() - textlength[clock.Format], col.HintF(), col.HintB())
+    SetAttributes (uint(0), scr.NColumns() - textlength[clock.Format], col.HintF(), col.HintB())
   }
   for {
     clock.Update()

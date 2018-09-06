@@ -2,7 +2,7 @@ package dgra
 
 // (c) Christian Maurer   v. 180212 - license see µU.go
 
-// >>> Algorithmus von Helary und Raynal
+// >>> Helary, J. M., Raynal, M.:
 //     Depth-first traversal and virtual ring construction in distributed Systems.
 //     Research Rreport RR-0704, INRIA, 1987
 

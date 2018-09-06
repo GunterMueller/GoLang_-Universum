@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171219 - license see µU.go
+// (c) Christian Maurer   v. 180819 - license see µU.go
 //
 // >>> D.S. Hirschberg, J. B. Sinclair: Decentralized Extrema-Finding in
 //     Circular Configuations of Processes. CACM 23 (1980), 627 - 628
@@ -24,7 +24,7 @@ func (x *distributedGraph) hirschbergSinclair() {
   var mutex sync.Mutex
   gotReply := make(chan uint, x.n)
   done := make(chan uint, x.n)
-  for i := uint(0); i < x.n; i++ { // listen on both networkchannels
+  for i := uint(0); i < x.n; i++ { // listen on all networkchannels
     go func (j uint) {
       loop:
       for {
