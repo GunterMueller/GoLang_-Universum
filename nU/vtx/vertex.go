@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 190402 - license see nU.go
 
 import (. "nU/obj"; "nU/col"; "nU/scr")
 
@@ -53,13 +53,15 @@ func (x *vertex) Clone() Any {
   return y
 }
 
+var c0 = C0()
+
 func (x *vertex) Codelen() uint {
-  return 3 * C0
+  return 3 * c0
 }
 
 func (x *vertex) Encode() []byte {
   bs := make ([]byte, x.Codelen())
-  i, a  := uint(0), C0
+  i, a  := uint(0), c0
   copy (bs[i:i+a], Encode(x.uint))
   i += a
   copy (bs[i:i+a], Encode(x.x))
@@ -69,7 +71,7 @@ func (x *vertex) Encode() []byte {
 }
 
 func (x *vertex) Decode (bs []byte) {
-  i, a  := uint(0), C0
+  i, a  := uint(0), c0
   x.uint = Decode (uint(0), bs[i:i+a]).(uint)
   i += a
   x.x = Decode(uint(0), bs[i:i+a]).(uint)

@@ -1,6 +1,6 @@
 package lock
 
-// (c) Christian Maurer   v. 171024 - license see µU.go
+// (c) Christian Maurer   v. 190323 - license see µU.go
 
 import (
   . "µU/obj"
@@ -8,7 +8,7 @@ import (
 )
 type
   xchg struct {
-              uint32 "0 or 1; initially 0"
+              uint "0 or 1; initially 0"
               }
 
 func newXCHG() Locker {
@@ -16,12 +16,12 @@ func newXCHG() Locker {
 }
 
 func (x *xchg) Lock() {
-  local := uint32(1)
-  for Exchange (&x.uint32, local) == 1 {
-    Gothing()
+  local := uint(1)
+  for Exchange (&x.uint, local) == 1 {
+    Nothing()
   }
 }
 
 func (x *xchg) Unlock() {
-  x.uint32 = 0
+  x.uint = 0
 }

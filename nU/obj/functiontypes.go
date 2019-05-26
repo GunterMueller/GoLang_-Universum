@@ -1,7 +1,9 @@
 package obj
 
-// (c) Christian Maurer   v. 171227 - license see nU.go
+// (c) Christian Maurer   v. 190312 - license see nU.go
 
+import
+  "runtime"
 type (
 // statements
   Stmt func()
@@ -31,7 +33,7 @@ type (
 )
 
 // Stmt[Spectrum]
-func Nothing() { }
+func Nothing() { runtime.Gosched() }
 func NothingSp (i uint) { }
 
 // Op[Spectrum]

@@ -1,6 +1,6 @@
 package phil
 
-// (c) Christian Maurer   v. 171105 - license see µU.go
+// (c) Christian Maurer   v. 190321 - license see µU.go
 
 import
   . "µU/lockn"
@@ -26,5 +26,4 @@ func NewCondMonitor() Philos { return newCM() }
 func NewChannel() Philos { return newCh() }
 func NewChannelUnsymmetric() Philos { return newChU() }
 func NewFarMonitor (h string, p uint16, s bool) Philos { return newFM(h,p,s) }
-
-// func NewGuardedSelect() Philos { return newGS() }
+func NewGuardedSelect() Philos { return newGS() }

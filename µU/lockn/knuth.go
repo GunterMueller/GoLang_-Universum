@@ -1,12 +1,14 @@
 package lockn
 
-// (c) Christian Maurer   v. 171025 - license see µU.go
+// (c) Christian Maurer   v. 190323 - license see µU.go
 
 // >>> Knuth, D. E.: Additional Comments on a Problem in Concurrent Programming Control.
 //     CACM 9 (1966) 321-322
 
-import
-  "time"
+import (
+  . "µU/atomic"
+  . "µU/obj"
+)
 const (
   passive = iota
   requesting
@@ -19,7 +21,7 @@ type
           flag []uint
                }
 
-func newK (n uint) LockerN {
+func newKnuth (n uint) LockerN {
   x := new(knuth)
   x.uint = n
   x.favoured = x.uint
@@ -27,34 +29,38 @@ func newK (n uint) LockerN {
   return x
 }
 
-func (x *knuth) test (i uint) bool {
-  for j := uint(0); j < x.uint; j++ {
-    if j != i {
-      if x.flag[j] == active { return false }
+func (x *knuth) test (p uint) bool {
+  for q := uint(0); q < x.uint; q++ {
+    if q != p {
+      if x.flag[q] == active {
+        return false
+      }
     }
   }
   return true
 }
 
-func (x *knuth) Lock (i uint) {
+func (x *knuth) Lock (p uint) {
   for {
-    x.flag[i] = requesting
-    j := x.favoured
-    for j != i {
-      if x.flag[j] == passive {
-        j = (j + x.uint - 1) % x.uint
+    Store (&x.flag[p], requesting)
+    q := x.favoured
+    for q != p {
+      if x.flag[q] == passive {
+        q = (q + x.uint - 1) % x.uint
       } else {
-        j = x.favoured
+        q = x.favoured
       }
-      time.Sleep(1) // runtime.Gosched()
+      Nothing()
     }
-    x.flag[i] = active
-    if x.test (i) { break }
+    Store (&x.flag[p], active)
+    if x.test (p) {
+      break
+    }
   }
-  x.favoured = i
+  Store (&x.favoured, p)
 }
 
-func (x *knuth) Unlock (i uint) {
-  x.favoured = (i + x.uint - 1) % x.uint
-  x.flag[i] = passive
+func (x *knuth) Unlock (p uint) {
+  Store (&x.favoured, (p + x.uint - 1) % x.uint)
+  x.flag[p] = passive
 }

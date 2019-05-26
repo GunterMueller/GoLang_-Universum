@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 180212 - license see µU.go
+// (c) Christian Maurer   v. 180212 - license see nU.go
 
 // >>> Algorithmus von Helary und Raynal
 //     Depth-first traversal and virtual ring construction in distributed Systems.

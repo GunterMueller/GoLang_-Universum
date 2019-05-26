@@ -1,6 +1,6 @@
 package lock
 
-// (c) Christian Maurer   v. 171021 - license see µU.go
+// (c) Christian Maurer   v. 190323 - license see µU.go
 
 import (
   . "µU/obj"
@@ -8,7 +8,7 @@ import (
 )
 type
   cas struct {
-             uint32 "0 or 1, initially 0"
+             uint "0 or 1, initially 0"
              }
 
 func newCAS() Locker {
@@ -16,11 +16,11 @@ func newCAS() Locker {
 }
 
 func (x *cas) Lock() {
-  for ! CompareAndSwap (&x.uint32, 0, 1) {
-    Gothing()
+  for ! CompareAndSwap (&x.uint, 0, 1) {
+    Nothing()
   }
 }
 
 func (x *cas) Unlock() {
-  x.uint32 = 0
+  x.uint = 0
 }

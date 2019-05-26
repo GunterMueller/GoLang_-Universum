@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 180829 - license see µU.go
+// (c) Christian Maurer   v. 190402 - license see µU.go
 
 import (
   "µU/ker"
@@ -67,6 +67,7 @@ const (
   inf = uint(1<<16)
 )
 var (
+  c0 = C0()
   done = make(chan int, 1)
 )
 

@@ -1,6 +1,6 @@
 package msg
 
-// (c) Christian Maurer  v. 180829 - license see µU.go
+// (c) Christian Maurer  v. 181024 - license see µU.go
 
 import (
   . "µU/obj"
@@ -20,6 +20,9 @@ type
 
 // Returns the type of x.
   Type() byte
+
+// Returns the string of x.
+  String() string
 
 // Returns the status of x.
   Status() status.Status

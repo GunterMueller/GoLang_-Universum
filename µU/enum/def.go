@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 181221 - license see µU.go
 
 import (
   . "µU/obj"
@@ -29,6 +29,7 @@ const ( // details s. corresponding files
   Modus
   GenusVerbi
   Comparatio
+  Engine
   NEnums
 )
 type

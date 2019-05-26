@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 180725 - license see µU.go
+// (c) Christian Maurer   v. 190218 - license see µU.go
 
 import (
   . "µU/obj"
@@ -146,6 +146,11 @@ type
 // Otherwise, x is now the easter sunday in the year of x.
   SetEaster()
 
+// If x is empty, nothing has happened.
+// Otherwise, x is now the carnival tuesday in the year of x.
+  SetCarnival()
+
+// Spec is top secret.
   SetCasetta()
 
 // Returns false, if x is empty.

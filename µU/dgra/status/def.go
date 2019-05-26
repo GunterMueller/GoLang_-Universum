@@ -12,10 +12,10 @@ type
   Coder
 
 // x has phase p and id i.
-  Set (p int, i uint)
+  Set (p, i uint)
 
 // Returns the phase of x.
-  Phase() int
+  Phase() uint
 
 // Returns the id of x.
   Id() uint
@@ -24,5 +24,5 @@ type
   Inc()
 }
 
-// Returns a new status with phase -1 and id = ego.Me.
+// Returns a new status with phase 0 and id = ego.Me.
 func New() Status { return new_() }

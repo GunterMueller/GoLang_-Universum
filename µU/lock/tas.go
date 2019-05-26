@@ -1,6 +1,6 @@
 package lock
 
-// (c) Christian Maurer   v. 171024 - license see µU.go
+// (c) Christian Maurer   v. 190312 - license see µU.go
 
 import (
   . "µU/obj"
@@ -17,7 +17,7 @@ func newTAS() Locker {
 
 func (x *tas) Lock() {
   for TestAndSet (&x.bool) {
-    Gothing()
+    Nothing()
   }
 }
 

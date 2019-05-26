@@ -1,6 +1,6 @@
 package phil
 
-// (c) Christian Maurer   v. 171127 - license see µU.go
+// (c) Christian Maurer   v. 190321 - license see µU.go
 
 // >>> Solution with conditioned monitor
 

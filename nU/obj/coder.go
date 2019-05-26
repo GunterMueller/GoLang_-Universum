@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see nU.go
+// (c) Christian Maurer   v. 190402 - license see nU.go
 
 import ("runtime"; "math"; "strconv")
 
@@ -18,8 +18,9 @@ type Coder interface {
 // x.Eq(y); x.Encode() == b, i.e. those slices coincide.
   Decode (Stream)
 }
-var
-  C0 = Codelen(uint(0))
+
+// Returns Codelen(int(0)) (== Codelen(uint(0))).
+func C0() uint { return c0 }
 
 // Pre: a is atomic or implements Object.
 // Returns the codelength of a.
@@ -58,12 +59,14 @@ func fail (a Any) {
   panic ("nU only [en|de]codes atomic types and objects of type string, {[Bool|Uint|Any]}Stream or Coder !")
 }
 
-func c0() uint {
+var c0 uint
+
+func init() {
   switch runtime.GOARCH {
   case "amd64":
-    return 8
+    c0 = 8
   case "386":
-    return 4
+    c0 = 4
   default:
     panic ("$GOARCH not treated") // Wer hilft mir mit MAC-OS ?
   }
@@ -79,7 +82,7 @@ func codelen (a Any) uint {
   case int32, uint32, float32:
     return 4
   case int, uint:
-    return c0()
+    return c0
   case int64, uint64, float64, complex64:
     return 8
   case complex128:
@@ -91,11 +94,11 @@ func codelen (a Any) uint {
   case Stream:
     return uint(len(a.(Stream)))
   case IntStream:
-    return c0() * uint(len(a.(IntStream)) + 1)
+    return c0 * uint(len(a.(IntStream)) + 1)
   case UintStream:
-    return c0() * uint(len(a.(UintStream)) + 1)
+    return c0 * uint(len(a.(UintStream)) + 1)
   case AnyStream:
-    y := c0()
+    y := c0
     for _, b := range a.(AnyStream) {
       y += uint(codelen(b))
     }
@@ -166,8 +169,8 @@ func encode (a Any) Stream {
     }
   case uint:
     x := a.(uint)
-    bs = make (Stream, C0)
-    for i := uint(0); i < C0; i++ {
+    bs = make (Stream, c0)
+    for i := uint(0); i < c0; i++ {
       bs[i] = byte(x)
       x >>= 8
     }
@@ -224,7 +227,7 @@ func encode (a Any) Stream {
   case IntStream:
     us := a.(IntStream)
     n := len(us)
-    c := int(c0())
+    c := int(c0)
     bs = make(Stream, c * (n + 1))
     copy (bs[:c], encode(n))
     i := c
@@ -235,7 +238,7 @@ func encode (a Any) Stream {
   case UintStream:
     us := a.(UintStream)
     n := uint(len(us))
-    c := c0()
+    c := c0
     bs = make(Stream, c * (n + 1))
     copy (bs[:c], encode(n))
     i := c
@@ -246,20 +249,20 @@ func encode (a Any) Stream {
   case AnyStream:
     as := a.(AnyStream)
     n := uint(len(as))
-    c := C0
+    c := c0
     for j := uint(0); j < n; j++ {
-      c += C0 + 1 + codelen(as[j])
+      c += c0 + 1 + codelen(as[j])
     }
     bs = make (Stream, c)
-    copy (bs[:C0], encode(n))
-    i := C0
+    copy (bs[:c0], encode(n))
+    i := c0
     for j := uint(0); j < n; j++ {
       g := gödel(as[j])
       copy(bs[i:i+1], encode(g))
       i++
       k := codelen(as[j])
-      copy(bs[i:i+C0], encode(k))
-      i += C0
+      copy(bs[i:i+c0], encode(k))
+      i += c0
       copy(bs[i:i+k], encode(as[j]))
       i += k
     }
@@ -481,7 +484,7 @@ func decode (a Any, bs Stream) Any {
     return bs
     copy (a.(Stream), bs)
   case IntStream:
-    c := c0()
+    c := c0
     n := decode(0, bs[:c]).(int)
     us := make(IntStream, n)
     i := c
@@ -491,7 +494,7 @@ func decode (a Any, bs Stream) Any {
     }
     return us
   case UintStream:
-    c := c0()
+    c := c0
     n := decode(uint(0), bs[:c]).(uint)
     us := make(UintStream, n)
     i := c
@@ -501,14 +504,14 @@ func decode (a Any, bs Stream) Any {
     }
     return us
   case AnyStream:
-    n := decode(uint(0), bs[:C0]).(uint)
+    n := decode(uint(0), bs[:c0]).(uint)
     as := make(AnyStream, n)
-    i := C0
+    i := c0
     for j := uint(0); j < n; j++ {
       g := degödel(bs[i])
       i++
-      k := decode(uint(0), bs[i:i+C0]).(uint)
-      i += C0
+      k := decode(uint(0), bs[i:i+c0]).(uint)
+      i += c0
       as[j] = decode(g, bs[i:i+k])
       i += k
     }

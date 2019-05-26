@@ -1,6 +1,6 @@
 package rpc
 
-// (c) Christian Maurer   v. 180813 - license see µU.go
+// (c) Christian Maurer   v. 180813 - license see nU.go
 
 import . "nU/obj"
 

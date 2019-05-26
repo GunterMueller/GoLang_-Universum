@@ -13,7 +13,7 @@ var (
 
 func Fin() {
   if finished { return }
-  for _, h:= range (handler) {
+  for _, h:= range handler {
     h()
   }
   finished = true

@@ -1,0 +1,13 @@
+6 ruft Lock auf
+6 verlässt innere Schleife
+6 ! otherCrit[6], 6 in k.A.
+2 ruft Lock auf
+3 ruft Lock auf
+0 ruft Lock auf
+4 ruft Lock auf
+5 ruft Lock auf
+6 verlässt k.A.
+4 verlässt innere Schleife
+0 ! otherCrit[6], 0 in k.A.
+1 ruft Lock auf, 1 hängt
+6 ruft Lock auf, 6 hängt

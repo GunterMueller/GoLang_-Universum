@@ -1,11 +1,11 @@
 package lock
 
-// (c) Christian Maurer   v. 171231 - license see nU.go
+// (c) Christian Maurer   v. 190312 - license see nU.go
 
-import "nU/atomic"
+import (. "nU/obj"; . "nU/atomic")
 
 type tas struct {
-  bool "locked"
+  bool "true, iff locked"
 }
 
 func newTAS() Locker {
@@ -13,8 +13,8 @@ func newTAS() Locker {
 }
 
 func (x *tas) Lock() {
-  for atomic.TestAndSet (&x.bool) {
-    nothing()
+  for TestAndSet (&x.bool) {
+    Nothing()
   }
 }
 

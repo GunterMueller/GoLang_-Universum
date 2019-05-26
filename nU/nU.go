@@ -1,6 +1,6 @@
 package main
 
-/* (c) Christian Maurer   v. 180902
+/* (c) Christian Maurer   v. 190402
        christian.maurer-berlin.eu proprietary - all rights reserved
 
   Dieses Paket - das n(ano)Universum - enthält die Quelltexte aus meinem Lehrbuch
@@ -26,10 +26,13 @@ package main
 
   Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen. */
 
-import ("nU/lockn"; "nU/mbuf"; "nU/mbbuf"; "nU/macc"; "nU/rw"; "nU/lr"; "nU/dgra")
+import ("nU/lock"; "nU/lock2"; "nU/lockn";
+        "nU/mbuf"; "nU/mbbuf"; "nU/macc"; "nU/rw"; "nU/lr"; "nU/dgra")
 
 func main() {
-  lockn.NewDekker()
+  lock.NewTAS()
+  lock2.NewDekker()
+  lockn.NewDijkstra(3)
   mbuf.New(3)
   mbbuf.New(0,3)
   macc.New()

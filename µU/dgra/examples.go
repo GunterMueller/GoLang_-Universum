@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171217 - license see µU.go
+// (c) Christian Maurer   v. 181024 - license see µU.go
 
 import (
   "µU/env"
@@ -206,6 +206,30 @@ func g5 (i uint) DistributedGraph {
   return newg (false, l, c, e, 3, i)
 }
 
+func g5full (i uint) DistributedGraph {
+/*
+2   /-----------------\
+3  0 ------- 2 ------- 4
+4  | \     / |       / |
+5  |   \ /   |     /  /
+6  |   / \   |   /  /
+7  | /     \ | /  /
+8  1 ------- 3  /
+9   \---------/
+
+            1         2
+  0123456789012345678901
+*/
+  l := []int { 2, 8,  2,  8,  2 }
+  c := []int { 1, 1, 11, 11, 21 }
+  e := [][]uint { []uint { 1, 2, 3, 4 },
+                  []uint { 2, 3, 4 },
+                  []uint { 3, 4 },
+                  []uint { 4 },
+                  []uint { }}
+  return newg (false, l, c, e, 2, i)
+}
+
 func g6 (i uint) DistributedGraph {
 /*
 1        /---- 1 ----\
@@ -228,6 +252,32 @@ func g6 (i uint) DistributedGraph {
                   []uint { 5 },
                   []uint { }}
   return newg (false, l, c, e, 2, i)
+}
+
+func g6full (i uint) DistributedGraph {
+/*
+2          /-- 1 --\
+3        /     |     \
+4      /       |       \
+5    /         |         \
+6  0 --------- 3 --------- 5
+7    \       /   \       /
+8     \     /     \     /
+9      \   /       \   /
+10       2 --------- 4 
+
+            1         2
+  01234567890123456789012345
+*/
+  l := []int { 6,  2, 10,  6, 10,  6 }
+  c := []int { 1, 13,  7, 13, 19, 25 }
+  e := [][]uint { []uint { 1, 2, 3, 4, 5 },
+                  []uint { 2, 3, 4, 5 },
+                  []uint { 3, 4, 5 },
+                  []uint { 4, 5 },
+                  []uint { 5 },
+                  []uint { }}
+  return newg (false, l, c, e, 1, i)
 }
 
 func g8a (i uint) DistributedGraph {

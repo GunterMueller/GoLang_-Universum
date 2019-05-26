@@ -1,6 +1,6 @@
 package phil
 
-// (c) Christian Maurer   v. 171127 - license see µU.go
+// (c) Christian Maurer   v. 190321 - license see µU.go
 
 // >>> Solution with synchronous message-passing
 //     Ben-Ari: Principles of Concurrent and Distributed Programming 2nd edition, p. 188

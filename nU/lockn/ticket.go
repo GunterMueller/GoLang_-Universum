@@ -1,26 +1,29 @@
 package lockn
 
-// (c) Christian Maurer   v. 171231 - license see nU.go
+// (c) Christian Maurer   v. 190323 - license see nU.go
 
-// >>> Ticket-Algorithm using FetchAndAddUint32
+// >>> Ticket-Algorithm using FetchAndIncrement
 
-import "nU/atomic"
+import (
+  . "nU/obj"
+  . "nU/atomic"
+)
+type
+  ticket struct {
+   turn, ticket uint
+                }
 
-type ticket struct {
-  ticket, turn uint32
-}
-
-func newT (n uint) LockerN {
+func newTicket (n uint) LockerN {
   return new(ticket)
 }
 
 func (x *ticket) Lock (p uint) {
-  t := atomic.FetchAndAdd (&x.ticket, uint32(1))
-  for t != x.ticket {
-    nothing()
+  t := FetchAndIncrement (&x.ticket)
+  for t != x.turn {
+    Nothing()
   }
 }
 
 func (x *ticket) Unlock (p uint) {
-  x.turn++
+  FetchAndIncrement (&x.turn)
 }

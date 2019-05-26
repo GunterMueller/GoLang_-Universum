@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 180804 - license see µU.go
+// (c) Christian Maurer   v. 190314 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL
 // #include <stdio.h>
@@ -245,10 +245,6 @@ func (X *xwindow) clear() {
   C.XSetForeground (dpy, X.gc, cc (X.scrF))
 }
 
-func pause() {
-  time.Sleep (time.Duration (1e7))
-}
-
 func (X *xwindow) mousePointer (on bool) {
   if on {
 //    C.XUndefineCursor (dpy, X.win)
@@ -306,19 +302,28 @@ func new_(x, y uint, m mode.Mode) XWindow {
   C.glXMakeCurrent (dpy, C.GLXDrawable(X.win), cx)
   X.buffer = C.XCreatePixmap (dpy, C.Drawable(X.win), X.wd, X.ht, planes)
   X.shadow = C.XCreatePixmap (dpy, C.Drawable(X.win), X.wd, X.ht, planes)
-  const mask = (C.KeyPressMask + // C.KeyReleaseMask +
-                C.ButtonPressMask + C.ButtonReleaseMask + // C.ButtonMotionMask +
-                C.PointerMotionMask + // C.PointerMotionHintMask +
-//                C.EnterWindowMask + C.LeaveWindowMask +
-                C.FocusChangeMask + C.ExposureMask + C.VisibilityChangeMask +
-//                C.ResizeRedirectMask + C.PropertyChangeMask +
-                C.StructureNotifyMask)
+  const mask = C.KeyPressMask + // C.KeyReleaseMask +
+               C.ButtonPressMask + C.ButtonReleaseMask +
+               C.EnterWindowMask + C.LeaveWindowMask +
+               C.PointerMotionMask + // C.PointerMotionHintMask +
+//               C.Button1MotionMask + C.Button2MotionMask + C.Button3MotionMask +
+//               C.Button4MotionMask + C.Button5MotionMask +
+//               C.ButtonMotionMask +
+               C.KeymapStateMask +
+               C.ExposureMask +
+               C.VisibilityChangeMask +
+               C.StructureNotifyMask +
+               C.ResizeRedirectMask +
+               C.SubstructureNotifyMask + C.SubstructureRedirectMask +
+               C.FocusChangeMask +
+               C.PropertyChangeMask // +
+//               C.ColormapChangeMask + C.OwnerGrabButtonMask
   C.XSelectInput (dpy, X.win, mask)
   X.mousePointer (true)
   if X.wd == monitorWd && X.ht == monitorHt { C.fullscreen (dpy, X.win, rootWin, _NET_WM_STATE_ADD) }
   winList = append (winList, X)
   defer X.doBlink()
-  X.firstExpose = true
+//  X.firstExpose = true
   if first {
     first = false
 /*
@@ -463,27 +468,16 @@ func sendEvents() {
   )
   <-startSendEvents
   startSendEvents = nil
-  pause()
+  time.Sleep(1e7)
   for {
     for C.XPending (dpy) > 0 {
       C.XNextEvent (dpy, &xev)
       event.C, event.S = 0, 0
       eventtype = C.evtyp (&xev)
       event.T = uint(eventtype)
-// print (txt[eventtype] + "  ")
+// println (txt[eventtype])
       switch eventtype {
-      case C.Expose:
-        w = C.exposeWin (&xev)
-//        W.buf2win()
-				W.win2buf() // XXX
-        if W.firstExpose {
-          W.firstExpose = false
-//          C.waitForLastContExpose (dpy, &xev) // XXX
-//          C.wait (dpy, &xev) // XXX
-        }
-//      W.win2buf() // XXX
       case C.KeyPress:
-// println ("#chars in buffer:", C.lookupString(xev))
         w = C.keyWin (&xev)
         W = imp (w)
         event.C, event.S = uint(C.keyCode (&xev)), uint(C.keyState (&xev))
@@ -502,47 +496,49 @@ func sendEvents() {
         event.C, event.S = uint(C.buttonButt (&xev)), uint(C.buttonState (&xev))
         W.xM, W.yM = int(C.buttonX (&xev)), int(C.buttonY (&xev))
       case C.MotionNotify:
-// print (txt[eventtype] + "  ")
         w = C.motionWin (&xev)
         W = imp (w) // w == W.win
         event.C, event.S = uint(0), uint(C.motionState (&xev))
         W.xM, W.yM = int(C.motionX (&xev)), int(C.motionY (&xev))
       case C.EnterNotify: case C.LeaveNotify:
-// print (txt[eventtype] + "  ")
         w = C.enterLeaveWin (&xev)
         W = imp (w) // w == W.win
       case C.FocusIn:
-// print (txt[eventtype] + "  ")
         w = C.buttonWin (&xev)
         W = imp (w) // w == W.win
         actual = W
-        W.buf2win() // XXX
       case C.FocusOut:
-// print (txt[eventtype] + "  ")
         w = C.buttonWin (&xev)
         W = imp (w) // w == W.win
-//        xwindow = imp (rootWin) // XXX
       case C.KeymapNotify:
         ;
+      case C.Expose:
+        w = C.exposeWin (&xev)
+        W = imp(w)
+        if W.firstExpose {
+          W.firstExpose = false
+          C.waitForLastContExpose (dpy, &xev)
+          C.wait (dpy, &xev)
+        }
+        W.buf2win()
       case C.GraphicsExpose:
         ;
       case C.NoExpose:
         ;
       case C.VisibilityNotify:
-        W.win2buf()
-        ;
+        w = C.visibilityWin (&xev)
+        W = imp (w) // w == W.win
+        W.buf2win()
       case C.CreateNotify:
         ;
       case C.DestroyNotify:
         ;
       case C.UnmapNotify:
         w = C.unmapWin (&xev)
-//        println ("unmapped xwindow", int(w))
         W = imp (w) // w == W.win
         W.win2buf()
       case C.MapNotify:
         w = C.mapWin (&xev)
-//        println ("mapped xwindow", int(w))
         W = imp (w) // w == W.win
         W.buf2win()
       case C.MapRequest:
@@ -560,7 +556,7 @@ func sendEvents() {
 /*
         w = C.resizeWin (&xev)
         W = imp (w)
-        W.buf1win()
+        W.buf2win()
 */
       case C.CirculateNotify:
         ;
@@ -583,8 +579,8 @@ func sendEvents() {
         ;
       case C.GenericEvent:
         ;
-      default:
-        panic ("xwin.sendEvents got " + txt[eventtype] + " Xevent")
+      case C.LASTEvent:
+        ;
       }
       switch eventtype {
       case C.KeyRelease: // ignore
@@ -595,7 +591,7 @@ func sendEvents() {
       case C.ButtonPress, C.ButtonRelease, C.MotionNotify:
         Eventpipe <- event
       default:
-//        println (txt[typ])
+//        println (txt[eventtype])
       }
     }
   }

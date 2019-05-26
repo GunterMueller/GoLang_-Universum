@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 171122 - license see µU.go
+// (c) Christian Maurer   v. 190402 - license see µU.go
 
 import (
 //  "µU/ker"
@@ -174,7 +174,7 @@ func (x *vertex) Edit() {
   x.EditorGr.EditGr (x.x - int(w1) / 2 + 1, x.y - int(h1) / 2)
 }
 
-var c0 = Codelen(0)
+var c0 = C0()
 
 func (x *vertex) Codelen() uint {
   return x.EditorGr.(Object).Codelen() +
@@ -210,7 +210,7 @@ func (x *vertex) Encode() []byte {
 
 func (x *vertex) Decode (bs []byte) {
   i, a  := uint(0), x.EditorGr.(Object).Codelen()
-//  if a + 2 + 2 * C0 + 4 * col.Codelen() >= uint(len(bs)) { return false }
+//  if a + 2 + 2 * c0 + 4 * col.Codelen() >= uint(len(bs)) { return false }
   x.EditorGr.(Object).Decode (bs[i:i+a])
   i += a
   x.width = uint(bs[i])

@@ -1,15 +1,15 @@
 package z
 
-// (c) Christian Maurer   v. 170204 - license see µU.go
+// (c) Christian Maurer   v. 180917 - license see µU.go
 
 const
   delta = 'a' - 'A'
 
 func init() {
   ord := []byte(" 0123456789Aa  BbCcDdEeFfGgHhIiJjKkLlMmNnOo  PpQqRrSs TtUu  VvWwXxYyZz")
-//                           ÄAe                            ÖOe        ß    ÜUe
-//              0         1         2         3         4         5         6
-//              0123456789012345678901234567890123456789012345678901234567890123456789
+//                            Ää                            Öö        ß    Üü
+//               0         1         2         3         4         5         6
+//               0123456789012345678901234567890123456789012345678901234567890123456789
   ord[13] = Ä
   ord[14] = Ae
   ord[43] = Ö
@@ -240,4 +240,64 @@ func postscript (b byte) string {
 */
   }
   return ""
+}
+
+func Latin1Byte (r rune) byte {
+  switch r {
+  case 'A': // C3 84
+    return Ä
+  case 'Ö': // C3 96
+    return Ö
+  case 'Ü': // C3 9C
+    return Ü
+  case 'ä': // C3 A4
+    return Ae
+  case 'ö': // C3 B6
+    return Oe
+  case 'ü': // C3 BC
+    return Ue
+  case 'ß': // C3 9F
+    return Sz
+  case '€': // E2 82 AC
+    return Euro
+  case '¢': // C2 A2
+    return Cent
+  case '£': // C2 A3
+    return Pound
+  case '§': // C2 A7
+    return Paragraph
+  case '°': // C2 B0
+    return Degree
+  case '©': // C2 A9
+    return Copyright
+  case '®': // C2 AE
+    return Registered
+  case '±': // C2 B1
+    return PlusMinus
+  case 'µ': // C2 B5
+    return Mu
+  case '×': // C3 97
+    return Times
+  case '÷': // C3 B7
+    return Division
+  case '·': // C2 B7
+    return Dot
+  case '¬': // C2 AC
+    return Negate
+  case '¹': // C2 B9
+    return ToThe1
+  case '²': // C2 B3
+    return ToThe2
+  case '³': // C2 B2
+    return ToThe3
+  case '¼': // C2 BC
+    return Quarter
+  case '½': // C2 BD
+    return Half
+  case 'ª': // C2 AA
+    return Female
+  case 'º': // C2 BA
+    return Male
+  }
+  return 0
 }

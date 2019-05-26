@@ -37,4 +37,4 @@ func NewBarz (n uint) Semaphore { return newBarz(n) }
 func NewChannel (n uint) Semaphore { return newCh(n) }
 
 // Solution with guarded select
-func NewGSelect (n uint) Semaphore { return newGS(n) }
+func NewGSel (n uint) Semaphore { return newGS(n) }

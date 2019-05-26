@@ -1,188 +1,218 @@
 package dgra
 
-// (c) Christian Maurer  v. 180819 - license see µU.go
+// (c) Christian Maurer  v. 190402 - license see µU.go
 //
-// >>> Korach, E., Moran, S., Zaks, S.: Tight Lower and Upper Bounds for
-//     Some Distributed Algorithms for a Complete Network of Processors.
-//     PODC '84, ACM symposion (1984) 199-207
-//
-// >>> attempt to port this algorithm to Go XXX but still a lot of work TODO
+// >>> Algorithmus von Korach, Moran und Zaks
+// >>> Diese Portierung ist noch in Arbeit !
 
 import (
+  "strconv"
+  "time"
   . "nU/obj"
   "nU/dgra/status"
-  . "nU/dgra/msgkmz"
+  . "nU/dgra/msg"
 )
 const (
-  King = uint(iota)
+  King = byte(iota)
   Citizen
 )
-var (
-  state uint // King or Citizen
-  pik status.Status // phase and identity of the king of the calling process
-  unused []bool
-  sons = make([]uint, 0)
-  father_edge uint // channel-number to parent
-  msgchan = make(chan Stream)
-)
 
-func (x *distributedGraph) recv() {
+func (x *distributedGraph) channelKmz (s Stream, m *Message) uint {
+  j := Decode(uint(0), s[:C0()]).(uint) // number of channel on which m was received
+  (*m).Decode (s[C0():])
+  return j
+}
+
+func (x *distributedGraph) logKmz (recv bool, m Message, b byte, i uint) {
+  if m.Type() != b { panic(m.String() + " error") }
+  ft := "->"; if recv { ft = "<-" }
+  println (strconv.FormatInt ((time.Now().UnixNano() % 10000000000), 10),
+           x.me, m.String(), ft, x.nr[i])
+}
+
+func (x *distributedGraph) korachMoranZaks() {
+  x.msgchan = make([]chan Stream, NTypes)
+  for i := byte(0); i < NTypes; i++ {
+    x.msgchan[i] = make(chan Stream)
+  }
+  m := NewMsg()
+  x.connect(m)
   for i := uint(0); i < x.n; i++ {
     go func (j uint) {
-      m := x.ch[i].Recv().(Message)
-      msgchan <- append (Encode(i), m.Encode()...)
+      m  = x.ch[j].Recv().(Message)
+      k := m.Type()
+      x.msgchan[k] <- append(Encode(j), m.Encode()...)
     }(i)
   }
-}
-
-func (x *distributedGraph) ssearch (kind byte) {
-  // TODO
-}
-
-func (x *distributedGraph) king() {
-  if state != King { panic("no king") }
-  pik = status.New (0, x.me)
+  x.pik = status.New()
+  x.unused = make([]bool, x.n)
   for i := uint(0); i < x.n; i++ {
-    unused[i] = true
+    x.unused[i] = true
   }
-  m := NewMsg (NKinds, status.New(0, 0))
-  for state == King {
+  var j uint
+// algorithm for a King:
+  for x.state == King {
     u := x.n
     for i := uint(0); i < x.n; i++ {
-      if unused[i] {
+      if x.unused[i] {
         u = i
         break
       }
     }
     if u == x.n { break }
-    unused[u] = false
-    x.ch[u].Send (NewMsg (Ask, pik))
-  label:
-    s := <-msgchan
-    j := Decode(uint(0), s[:C0]).(uint) // channel number from which the message was received
-    m.Decode (s[C0:])
-    switch m.Kind() { case Ask:
-      if m.Status().Less (pik) {
+    x.unused[u] = false
+    m.Set (Ask, x.pik)
+    x.ch[u].Send (m)
+x.logKmz (false, m, Ask, u)
+    var bs Stream
+    label: select {
+    case bs = <-x.msgchan[Ask]:
+      j = x.channelKmz (bs, &m)
+x.logKmz (true, m, Ask, j)
+      if m.Status().Less (x.pik) {
         goto label
       } else {
-        state = Citizen
+        x.state = Citizen
       }
-    case Accept:
-      sons = append (sons, j)
-      if m.Status().Phase() < pik.Phase() {
-        x.ch[j].Send (NewMsg (Update, pik))
-      } else { // pik.Phase() <= m.Status().Phase()
-        pik.Inc()
-        for i := range sons {
-          x.ch[i].Send (NewMsg (Update, pik))
+    case bs = <-x.msgchan[Accept]:
+      j = x.channelKmz (bs, &m)
+x.logKmz (true, m, Accept, j)
+      x.child[j] = true
+      if m.Status().Phase() < x.pik.Phase() {
+        m.Set (Update, x.pik)
+        x.ch[j].Send (m)
+x.logKmz (false, m, Update, j)
+      } else { // pik.Phase() == m.Status().Phase()
+               // as Acc only iff m.Status.Phase() <= x.phik.Phase()
+               // => x.me < m.Status().Id()
+        x.pik.Inc()
+        for i := uint(0); i < x.n; i++ {
+          if x.child[i] {
+            m.Set (Update, x.pik)
+            x.ch[i].Send (m)
+x.logKmz (false, m, Update, i)
+          }
         }
       }
-    case YourCitizen:
+    case bs = <-x.msgchan[YourCitizen]:
+      j = x.channelKmz (bs, &m)
+x.logKmz (true, m, YourCitizen, j)
       // do nothing and enter the for-loop agains
-    default:
-      panic ("should not happen")
+    case bs = <-x.msgchan[Update]:
+      panic ("kmz Update")
+    case bs = <-x.msgchan[Leader]:
+      panic ("kmz Leader")
     }
   }
-  if state == Citizen {
-    x.citizen (m)
-  } else { // no more unused neighbours
+  if x.state == King { // no more unused neighbours
     x.leader = x.me
-    m := NewMsg (Leader, pik)
-// send m to all vertices in the graph
+    m.Set (Leader, x.pik)
     for i := uint(0); i < x.n; i++ {
       x.ch[i].Send (m)
-// TODO transfer the message by traversing the whole graph
+x.logKmz (false, m, Leader, i)
     }
+    return
   }
-}
-
-func (x *distributedGraph) processAsk (m Message) {
-// just received an Ask(s)-message along edge e.
-  e := uint(97) // XXX
-  p := m.Status()
-  if pik.Less (p) {
-    x.ch[father_edge].Send (m)
-    var m1 Message // ssearch (Update, Accept)
-    switch m1.Kind() { case Update:
-/*
-// just received an Update(s)-message along father_edge.
-//  pik.Set (s) // phase of pik increased by >= 1
-      m := msgkmz.New (msgkmz.Update, pik)
-      for i := range sons {
-        x.ch[i].Send (m)
-      }
-*/
-      if m.Status().Eq (pik) { // XXX && e is not a tree edge { // TODO
-        x.ch[e].Send (NewMsg(YourCitizen, pik))
-      }
-    case Accept:
-// just received an Accept(s)-message along edge e'.
-    }
+// algorithm for a Citizen:
+// received an Ask(s)-message along edge j, which changed status from King to Citizen.
+  x.child[j] = false
+  x.parentChannel = j
+  m.Set (Accept, x.pik)
+  x.ch[j].Send (m)
+x.logKmz (false, m, Accept, j)
+  select {
+  case bs := <-x.msgchan[Update]:
+    j = x.channelKmz (bs, &m)
+x.logKmz (true, m, Update, j)
   }
-  if m.Status().Eq (pik) { // XXX && e is not a tree edge { // TODO
-    x.ch[e].Send (NewMsg(YourCitizen, pik))
-  }
-  if m.Status().Less (pik) { // XXX && e is not a tree edge { // TODO
-    // Ask-message is ignored
-  }
-}
-
-func (x *distributedGraph) citizen (m Message) {
-// just received an Ask(s)-message along edge e,
-// which changed status from King to Citizen.
-  e := uint(97) // XXX
+  x.pik.Copy (m.Status()) // phase of pik increased by >= 1
+  m.Set (Update, x.pik)
   for i := uint(0); i < x.n; i++ {
-    if sons[i] == e {
-      sons = append (sons[:i], sons[i+1:]...)
-      break
+    if x.child[i] {
+      x.ch[i].Send (m)
+x.logKmz (false, m, Update, i)
     }
   }
-  father_edge = e
-  x.ch[e].Send (NewMsg (Accept, pik))
-//  m = x.ssearch (Update) // XXX
-// now m = Update(s) was sent along e
-  s := m.Status()
-  pik = status.New (s.Phase(), s.Id()) // phase of pik increased by >= 1
-  for i := range sons { // send Update to all sons
-    x.ch[i].Send (NewMsg (Update, pik))
-  }
+  jAsk := x.n
   for {
-//    receive (m) // m will be one of Ask, Update, Accept, Leader
-    switch m.Kind() {
-    case Ask:
-      x.processAsk (m)
-    case Update:
-// just received an Update(s)-message along father_edge.
-      pik = status.New (m.Status().Phase(), m.Status().Id()) // phase of pik increased by >= 1
-      m := NewMsg (Update, pik)
-      for i := range sons {
-        x.ch[i].Send (m)
-      }
-    case Accept:
-      if false { // e' is not a tree edge { // XXX what is e' XXX ?
-// just received an Accept(s)-message along edge e which is not a tree edge.
-        e := uint(97) // XXX
-        sons = append (sons, e)
-        m := NewMsg (Update, pik)
-        x.ch[e].Send (m)
-      } else {
-// just received an Accept(s)-message along father_edge.
-// This Accept must be a response to an Ask-Message received along edge e.
-        e := uint(97) // XXX
-        father_edge = e
-        sons = append (sons, father_edge)
-        var m2 Message //      m2 := x.ssearch (Update)
-// just received an Update(s)-message along father_edge.
-        s := m2.Status()
-        pik = status.New (s.Phase(), s.Id()) // phase of pik increased by >= 1
-        m := NewMsg (Update, pik)
-        for i := range sons {
-          x.ch[i].Send (m)
+    select {
+    case bs := <-x.msgchan[Ask]:
+      j = x.channelKmz (bs, &m)
+x.logKmz (true, m, Ask, j)
+      jAsk = j
+      s := m.Status()
+      if x.pik.Less (s) {
+        x.ch[x.parentChannel].Send (m)
+x.logKmz (false, m, Ask, x.parentChannel)
+        for x.pik.Less (s) {
+          select {
+          case bs := <-x.msgchan[Update]:
+            j = x.channelKmz (bs, &m)
+x.logKmz (true, m, Update, j)
+            if j != x.parentChannel { panic("kmz j != parent") }
+            x.pik.Copy (m.Status()) // phase of pik increased by >= 1
+            m.Set (Update, x.pik)
+            for i := uint(0); i < x.n; i++ {
+              if x.child[i] {
+                x.ch[i].Send (m)
+x.logKmz (false, m, Update, i)
+              }
+            }
+          }
         }
       }
-    }
-    if m.Kind() == Leader {
-      break
+      if s.Eq(x.pik) && j != x.parentChannel { // && j is not a tree edge
+        m.Set (YourCitizen, x.pik)
+        x.ch[j].Send (m)
+x.logKmz (false, m, YourCitizen, j)
+      }
+      if s.Less (x.pik) && j != x.parentChannel { // && j is not a tree edge
+        // Ask-message is ignored
+      }
+    case bs := <-x.msgchan[Update]:
+      j = x.channelKmz (bs, &m)
+x.logKmz (true, m, Update, j)
+      x.pik.Copy (m.Status) // phase of pik increased by >= 1
+      m.Set (Update, x.pik)
+      for i := uint(0); i < x.n; i++ {
+        if x.child[i] {
+          x.ch[i].Send (m)
+x.logKmz (false, m, Update, i)
+        }
+      }
+    case bs := <-x.msgchan[Accept]:
+      j = x.channelKmz (bs, &m)
+x.logKmz (true, m, Accept, j)
+      if j == x.parentChannel {
+// received an Accept(s)-message on parentChannel
+// this Accept must be a response to an Ask-Message received on channel jAsk
+        x.child[j] = true
+        x.parentChannel = jAsk
+        select {
+        case bs := <-x.msgchan[Update]:
+          j = x.channelKmz (bs, &m)
+          x.pik.Copy (m.Status) // phase of pik increased by >= 1
+          m.Set (Update, x.pik)
+          for i := uint(0); i < x.n; i++ {
+            if x.child[i] {
+              x.ch[i].Send (m)
+x.logKmz (false, m, Update, i)
+            }
+          }
+        }
+      } else { // j != x.parentChannel <=> j is not a tree edge
+        x.child[j] = true
+        m.Set (Update, x.pik)
+        x.ch[j].Send (m)
+x.logKmz (false, m, Update, j)
+      }
+    case bs := <-x.msgchan[Leader]:
+      j = x.channelKmz (bs, &m)
+x.logKmz (true, m, Leader, j)
+      x.leader = m.Status().Id()
+      return
+    case <-x.msgchan[YourCitizen]:
+      panic("kmz YourCitizen")
     }
   }
 }

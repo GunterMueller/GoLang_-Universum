@@ -1,12 +1,12 @@
 package pseq
 
-// (c) Christian Maurer   v. 170509 - license see µU.go
+// (c) Christian Maurer   v. 190314 - license see µU.go
 
 // >>> still a lot of things TODO
 
 import (
   "io"
-// "reflect"
+  "reflect"
   . "µU/ker"
   . "µU/obj"
   "µU/str"
@@ -67,10 +67,10 @@ func new_(a Any) PersistentSequence {
   case Equaler, Coder:
     ; // ok
   default:
-    if Atomic(a) {
+    if Atomic(a) || Streamic(a) {
       ; // ok
     } else {
-      panic("not Atomic or Equaler and Coder")
+      panic("not Atomic or Streamic or Equaler and Coder, but" + reflect.TypeOf(a).String())
     }
   }
   x := new(persistentSequence)

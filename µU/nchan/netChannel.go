@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 190402 - license see µU.go
 
 import (
 //  "strconv"
@@ -32,11 +32,8 @@ type
                     error
                     }
 var
-  c0 uint
-
-func init() {
   c0 = C0()
-}
+
 
 func (x *netChannel) panicIfErr() {
   if x.error != nil {

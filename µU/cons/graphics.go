@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 190314 - license see µU.go
 
 import (
   "math"
@@ -953,7 +953,10 @@ func (X *console) OnEllipse (x, y int, a, b uint, A, B int, t uint) bool {
 
 func (X *console) curve (xs, ys []int, f pointFunc) {
   m := len (xs)
-  if m == 0 || m != len (ys) { return }
+  if m == 0 || m != len (ys) {
+panic ("curve: wrong m")
+    return
+  }
   n := ker.ArcLen (xs, ys)
   xs1, ys1 := make ([]int, n), make ([]int, n)
   for i := uint(0); i < n; i++ {
@@ -974,7 +977,10 @@ func (X *console) CurveInv (xs, ys []int) {
 }
 
 func (X *console) OnCurve (xs, ys []int, a, b int, t uint) bool {
-  if ! ok2 (xs, ys) { return false }
+  if ! ok2 (xs, ys) {
+panic ("OnCurve: ! ok2")
+    return false
+  }
   X.xx_, X.yy_, X.tt_, X.incident = a, b, int(t * t), false
   X.curve (xs, ys, X.onPoint)
   return X.incident

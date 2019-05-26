@@ -1,6 +1,6 @@
 package internal
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 190402 - license see nU.go
 
 import . "nU/obj"
 
@@ -9,6 +9,11 @@ type message struct {
   uint "identity"
   num, maxnum uint
   bool "reply ok"
+}
+var c0 uint
+
+func init() {
+  c0 = C0()
 }
 
 func new_() Message {
@@ -45,13 +50,13 @@ func (x *message) Clone() Any {
 }
 
 func (x *message) Codelen() uint {
-  return 1 + 3 * C0 + 1
+  return 1 + 3 * c0 + 1
 }
 
 func (x *message) Encode() []byte {
   bs := make([]byte, x.Codelen())
   bs[0] = x.byte
-  i, a := uint(1), C0
+  i, a := uint(1), c0
   copy(bs[i:i+a], Encode(x.uint))
   i += a
   copy(bs[i:i+a], Encode(x.num))
@@ -64,7 +69,7 @@ func (x *message) Encode() []byte {
 
 func (x *message) Decode (bs []byte) {
   x.byte = bs[0]
-  i, a := uint(1), C0
+  i, a := uint(1), c0
   x.uint = Decode(uint(0), bs[i:i+a]).(uint)
   i += a
   x.num = Decode(uint(0), bs[i:i+a]).(uint)

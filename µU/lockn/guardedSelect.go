@@ -1,26 +1,26 @@
 package lockn
 
-// (c) Christian Maurer   v. 171105 - license see µU.go
+// (c) Christian Maurer   v. 190331 - license see µU.go
 
-// >>> Ticket-Algorithm using FetchAndAddUint32
+// >>> Implementation with guarded select
 
 import
   "µU/sem"
 type
-   guardedSelect struct {
-                        sem.Semaphore
-                        }
+  gs struct {
+            sem.Semaphore
+            }
 
 func newGS (n uint) LockerN {
-  x := new(guardedSelect)
+  x := new(gs)
   x.Semaphore = sem.NewGSel (n)
   return x
 }
 
-func (x *guardedSelect) Lock (p uint) {
-  x.Semaphore.P()
+func (x *gs) Lock (p uint) {
+  x.P()
 }
 
-func (x *guardedSelect) Unlock (p uint) {
-  x.Semaphore.V()
+func (x *gs) Unlock (p uint) {
+  x.V()
 }

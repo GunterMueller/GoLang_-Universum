@@ -1,6 +1,6 @@
 package achan
 
-// (c) Christian Maurer   v. 171106 - license see µU.go
+// (c) Christian Maurer   v. 171106 - license see nU.go
 
 import ("sync"; . "nU/obj"; "nU/buf")
 

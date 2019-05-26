@@ -1,12 +1,14 @@
 package lockn
 
-// (c) Christian Maurer   v. 171025 - license see µU.go
+// (c) Christian Maurer   v. 190323 - license see µU.go
 
 // >>> Szymanski, B. K.: A Simple Solution to Lamport's Concurrent Programming Problem with Linear Wait.
 //     In: Lenfant, J. (ed.): ICS '88, New York. ACM Press (1988) 621-626
 
-import
-  "runtime"
+import (
+  . "µU/atomic"
+  . "µU/obj"
+)
 const (
   outsideCS = uint(iota)
   interested
@@ -20,77 +22,84 @@ type
               flag []uint
                    }
 
-func newS (n uint) LockerN {
+func newSzymanski (n uint) LockerN {
   x := new(szymanski)
-  x.uint = n
+  x.uint = uint(n)
   x.flag = make([]uint, n)
   return x
 }
 
-func (x *szymanski) allLeqWaitingForOthers (i uint) bool {
-  for j := uint(0); j < x.uint; j++ {
-    if x.flag[j] > waitingForOthers { return false }
+func (x *szymanski) allLeqWaitingForOthers() bool {
+  for q := uint(0); q < x.uint; q++ {
+    if x.flag[q] > waitingForOthers {
+      return false
+    }
   }
   return true
 }
 
 func (x *szymanski) exists (i, k uint) bool {
   for j := uint(0); j < x.uint; j++ {
-    if x.flag[j] == k { return true }
+    if x.flag[j] == k {
+      return true
+    }
   }
   return false
 }
 
-func (x *szymanski) allLeqInterested (i uint) bool {
-  for j := uint(0); j < i; j++ {
-    if x.flag[j] > interested { return false }
-  }
-  return true
-}
-
-func (x *szymanski) allOutsideWaitingRoom (i uint) bool {
-  for j := i + 1; j < x.uint; j++ {
-    if x.flag[j] == waitingForOthers ||
-       x.flag[j] == inWaitingRoom { return false }
-  }
-  return true
-}
-
-func (x *szymanski) Lock (i uint) {
-  x.flag[i] = interested
-  for { // wait until for all j: flag[j] <= waitingForOthers
-    if x.allLeqWaitingForOthers (i) { break }
-    runtime.Gosched()
-  }
-  x.flag[i] = inWaitingRoom
-  if x.exists (i, interested) { // if exists j: flag[j] == interested {
-    x.flag[i] = waitingForOthers
-    for { // wait until exists j: flag[j] == behindWaitingRoom }
-      if x.exists (i, behindWaitingRoom) { break }
-      runtime.Gosched()
+func (x *szymanski) allLeqInterested (p uint) bool {
+  for q := uint(0); q < p; q++ {
+    if x.flag[q] > interested {
+      return false
     }
   }
-  x.flag[i] = behindWaitingRoom
+  return true
+}
 
-  for { // wait until for all j > i: flag[j] <= interested ||
-        //                           flag[j] = leftWaitingRomm
-    if x.allOutsideWaitingRoom (i) { break }
-//    runtime.Gosched()
+func (x *szymanski) allOutsideWaitingRoom (p uint) bool {
+  for q := p + 1; q < x.uint; q++ {
+    if x.flag[q] == waitingForOthers ||
+       x.flag[q] == inWaitingRoom {
+      return false
+    }
   }
+  return true
+}
 
-  for { // wait until for all j < i: flag[j] <= interested 
-    if x.allLeqInterested (i) { break }
-    runtime.Gosched()
+func (x *szymanski) Lock (p uint) {
+  Store (&x.flag[p], interested)
+  for { // wait until for all j: flag[j] <= waitingForOthers
+    if x.allLeqWaitingForOthers () {
+      break
+    }
+    Nothing()
+  }
+  Store (&x.flag[p], inWaitingRoom)
+  if x.exists (p, interested) { // if exists j: flag[j] == interested {
+    Store (&x.flag[p], waitingForOthers)
+    for { // wait until exists j: flag[j] == behindWaitingRoom }
+      if x.exists (p, behindWaitingRoom) {
+        break
+      }
+      Nothing()
+    }
+  }
+  Store (&x.flag[p], behindWaitingRoom)
+  for { // wait until for all j > p: flag[j] <= interested ||
+        //                           flag[j] = leftWaitingRomm
+    if x.allOutsideWaitingRoom (p) {
+      break
+    }
+    Nothing()
+  }
+  for { // wait until for all j < p: flag[j] <= interested 
+    if x.allLeqInterested (p) {
+      break
+    }
+    Nothing()
   }
 }
 
-func (x *szymanski) Unlock (i uint) {
-/*
-  for { // wait until for all j > i: flag[j] <= interested ||
-        //                           flag[j] = leftWaitingRomm
-    if x.allOutsideWaitingRoom (i) { break }
-//    runtime.Gosched()
-  }
-*/
-  x.flag[i] = outsideCS
+func (x *szymanski) Unlock (p uint) {
+  Store (&x.flag[p], outsideCS)
 }

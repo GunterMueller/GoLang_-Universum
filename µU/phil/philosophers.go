@@ -146,8 +146,8 @@ func Start() {
   }
 }
 
-func changeStatus (i uint, s int) {
+func changeStatus (p uint, s int) {
   mutex.Lock(); defer mutex.Unlock()
-  status[i] = s
-  _write (i)
+  status[p] = s
+  _write (p)
 }

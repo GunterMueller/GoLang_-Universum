@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171124 - license see µU.go
+// (c) Christian Maurer   v. 181024 - license see µU.go
 
 import
   "µU/gra"
@@ -48,7 +48,9 @@ func G4 (i uint) DistributedGraph { return g4(i) }
 func G4flat (i uint) DistributedGraph { return g4flat(i) }
 func G4full (i uint) DistributedGraph { return g4full(i) }
 func G5 (i uint) DistributedGraph { return g5(i) }
+func G5full (i uint) DistributedGraph { return g5full(i) }
 func G6 (i uint) DistributedGraph { return g6(i) }
+func G6full (i uint) DistributedGraph { return g6full(i) }
 func G8a (i uint) DistributedGraph { return g8a(i) }
 func G8 (i uint) DistributedGraph { return g8(i) }
 func G8dir (i uint) DistributedGraph { return g8dir(i) }

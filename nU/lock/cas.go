@@ -1,11 +1,11 @@
 package lock
 
-// (c) Christian Maurer   v. 171231 - license see nU.go
+// (c) Christian Maurer   v. 190323 - license see nU.go
 
-import "sync/atomic"
+import (. "nU/obj"; . "nU/atomic")
 
 type cas struct {
-  uint32 "0 or 1, initially 0"
+  uint "0 or 1, initially 0"
 }
 
 func newCAS() Locker {
@@ -13,11 +13,11 @@ func newCAS() Locker {
 }
 
 func (x *cas) Lock() {
-  for ! atomic.CompareAndSwapUint32 (&x.uint32, 0, 1) {
-    nothing()
+  for ! CompareAndSwap (&x.uint, 0, 1) {
+    Nothing()
   }
 }
 
 func (x *cas) Unlock() {
-  x.uint32 = 0
+  x.uint = 0
 }

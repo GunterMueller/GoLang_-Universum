@@ -1,11 +1,14 @@
 package lock
 
-// (c) Christian Maurer   v. 171231 - license see nU.go
+// (c) Christian Maurer   v. 161216 - license see nU.go
+
+// >>> Algorithm of Udding
 
 import "sync"
 
 type udding struct {
-  mutex, door, queue sync.Mutex
+  mutex, door,
+  queue sync.Mutex
   n0, n uint
 }
 

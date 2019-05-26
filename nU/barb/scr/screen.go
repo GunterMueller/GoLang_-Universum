@@ -2,8 +2,6 @@ package scr
 
 // (c) Christian Maurer   v. 170919 - license see nU.go
 
-// TODO ausdünnen, um µU loszuwerden
-
 import ( "time"; "math/rand"; "nU/col"; "nU/scr")
 
 const (

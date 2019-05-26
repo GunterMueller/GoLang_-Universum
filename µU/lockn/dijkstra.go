@@ -1,80 +1,82 @@
 package lockn
 
-// (c) Christian Maurer   v. 171026 - license see µU.go
+// (c) Christian Maurer   v. 190323 - license see µU.go
 
 // >>> Algorithm of Dijkstra
 //     Cooperating Sequential Processes, 0 -> true, 1 -> false
 
-import
-  "time"
+import (
+  . "µU/atomic"
+  . "µU/obj"
+)
 type
   dijkstra struct {
        nProcesses,
          favoured uint
        interested,
-         critical []bool
+         critical []uint
                   }
 
-func newD (n uint) LockerN {
+func newDijkstra (n uint) LockerN {
   x := new(dijkstra)
-  x.nProcesses = n
-  x.interested, x.critical = make([]bool, n + 1), make([]bool, n)
+  x.nProcesses = uint(n)
+  x.interested, x.critical = make([]uint, n + 1), make([]uint, n)
   x.favoured = x.nProcesses
   return x
 }
 
-func (x *dijkstra) LockGoto (i uint) {
-  x.interested[i] = true
+func (x *dijkstra) LockGoto (p uint) {
+  Store (&x.interested[p], 1)
 L:
-  if x.favoured != i {
-    x.critical[i] = false
-    if ! x.interested[x.favoured] {
-      x.favoured = i
+  if x.favoured != p {
+    Store (&x.critical[p], 0)
+    if x.interested[x.favoured] == 0 {
+      x.favoured = p
       goto L
     }
   }
-  time.Sleep(1)
-  x.critical[i] = true
-  time.Sleep(1)
+  Nothing()
+  Store (&x.critical[p], 1)
+  Nothing() // iff more cpus are working, otherwise no mutual exclusion
   for j := uint(0); j < x.nProcesses; j++ {
-    if j != i && x.critical[j] {
+    if j != p && x.critical[j] == 1 {
       goto L
     }
   }
 }
 
-func (x *dijkstra) UnlockGoto (i uint) {
-  x.favoured = (i + 1) % x.nProcesses
-  x.interested[i] = false
-  x.critical[i] = false
+func (x *dijkstra) UnlockGoto (p uint) {
+  x.Unlock (p)
 }
 
-func (x *dijkstra) otherCritical (i uint) bool {
+func (x *dijkstra) otherCritical (p uint) bool {
   for j := uint(0); j < x.nProcesses; j++ {
-    if j != i {
-      if x.critical[j] { return true }
+    if j != p && x.critical[j] == 1 {
+      return true
     }
   }
   return false
 }
 
-func (x *dijkstra) Lock (i uint) {
-  x.interested[i] = true
+func (x *dijkstra) Lock (p uint) {
+  Store (&x.interested[p], 1)
   for {
-    for x.favoured != i {
-      x.critical[i] = false
-      if ! x.interested[x.favoured] {
-        x.favoured = i
+    for x.favoured != p {
+      Store (&x.critical[p], 0)
+      if x.interested[x.favoured] == 0 {
+        Store (&x.favoured, p)
       }
-      time.Sleep(1) // oder runtime.Gosched()
+      Nothing()
     }
-    x.critical[i] = true
-    if ! x.otherCritical (i) { break }
+    Store (&x.critical[p], 1)
+    if ! x.otherCritical (p) {
+      break
+    }
   }
 }
 
-func (x *dijkstra) Unlock (i uint) {
-  x.favoured = (i + 1) % x.nProcesses
-  x.interested[i] = false
-  x.critical[i] = false
+func (x *dijkstra) Unlock (p uint) {
+  Store (&x.favoured, (p + 1) % x.nProcesses)
+  Store (&x.interested[p], 0)
+  Store (&x.critical[p], 0)
 }

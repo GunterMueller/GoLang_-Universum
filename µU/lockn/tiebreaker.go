@@ -1,18 +1,20 @@
 package lockn
 
-// (c) Christian Maurer   v. 171022 - license see µU.go
+// (c) Christian Maurer   v. 190323 - license see µU.go
 
 // >>> Tiebreaker-Algorithm of Peterson
 
-import
+import (
+  . "µU/atomic"
   . "µU/obj"
+)
 type
   tiebreaker struct {
                     uint "number of processes"
      achieved, last []uint
                     }
 
-func newTb (n uint) LockerN {
+func newTiebreaker (n uint) LockerN {
   if n < 2 { return nil }
   x := new(tiebreaker)
   x.uint = n
@@ -21,20 +23,20 @@ func newTb (n uint) LockerN {
   return x
 }
 
-func (x *tiebreaker) Lock (i uint) {
-  for j := uint(1); j < x.uint; j++ {
-    x.achieved[i] = j
-    x.last[j] = uint(i)
+func (x *tiebreaker) Lock (p uint) {
+  for q := uint(1); q < x.uint; q++ {
+    Store (&x.achieved[p], q)
+    Store (&x.last[q], p)
     for k := uint(0); k < x.uint; k++ {
-      if i != k {
-        for j <= x.achieved[k] && i == x.last[j] {
-          Gothing()
+      if p != k {
+        for q <= x.achieved[k] && p == x.last[q] {
+          Nothing()
         }
       }
     }
   }
 }
 
-func (x *tiebreaker) Unlock (i uint) {
-  x.achieved[i] = 0
+func (x *tiebreaker) Unlock (p uint) {
+  Store (&x.achieved[p], 0)
 }

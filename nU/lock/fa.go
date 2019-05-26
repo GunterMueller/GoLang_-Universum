@@ -1,11 +1,11 @@
 package lock
 
-// (c) Christian Maurer   v. 171231 - license see nU.go
+// (c) Christian Maurer   v. 190312 - license see nU.go
 
-import "nU/atomic"
+import ("nU/atomic"; . "nU/obj")
 
 type fa struct {
-  uint32
+  uint
 }
 
 func newFA() Locker {
@@ -13,11 +13,11 @@ func newFA() Locker {
 }
 
 func (x *fa) Lock() {
-  for atomic.FetchAndAdd (&x.uint32, 1) != 0 {
-    nothing()
+  for atomic.FetchAndAdd (&x.uint, 1) != 0 {
+    Nothing()
   }
 }
 
 func (x *fa) Unlock() {
-  x.uint32 = 0
+  x.uint = 0
 }

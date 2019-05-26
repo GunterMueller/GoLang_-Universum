@@ -1,6 +1,6 @@
 package lock
 
-// (c) Christian Maurer   v. 171024 - license see µU.go
+// (c) Christian Maurer   v. 190323 - license see µU.go
 
 import (
   . "µU/obj"
@@ -8,19 +8,19 @@ import (
 )
 type
   dec struct {
-             int32
+             int
              }
 
 func newDEC() Locker {
-  return &dec { int32: 1 }
+  return &dec { int: 1 }
 }
 
 func (x *dec) Lock() {
-  for Decrement (&x.int32) {
-    Gothing()
+  for Decrement (&x.int) {
+    Nothing()
   }
 }
 
 func (x *dec) Unlock() {
-  x.int32 = 1
+  x.int = 1
 }

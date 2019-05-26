@@ -32,6 +32,22 @@ func (x *message) Type() byte {
   return x.byte
 }
 
+func (x *message) String() string {
+  switch x.byte {
+  case 0:
+    return "Ask   "
+  case 1:
+    return "Accept"
+  case 2:
+    return "Update"
+  case 3:
+    return "YourC."
+  case 4:
+    return "Leader"
+  }
+  return "NTypes"
+}
+
 func (x *message) Eq (Y Any) bool {
   y := x.imp(Y)
   return x.byte == y.byte && x.s.Eq (y.s)

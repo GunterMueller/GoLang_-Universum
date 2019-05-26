@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 171217 - license see µU.go
+// (c) Christian Maurer   v. 190308 - license see µU.go
 
 import (
   . "µU/ker"
@@ -738,6 +738,9 @@ func computeHolidays() { // Quelle: S. Deschauer, Die Osterfestberechnung. DdM 1
   if actualHolidayYear == 2017 { // 500. Reformationstag
     holiday [31][10] = true
   }
+  if actualHolidayYear >= 2019 { // Weltfrauentag (Berlin)
+    holiday [8][3] = true
+  }
 }
 
 func (x *calendarday) IsHoliday() bool {
@@ -773,6 +776,14 @@ func (x *calendarday) SetEaster() {
   } else {
     x.day = maxday
     x.month = 3
+  }
+}
+
+func (x *calendarday) SetCarnival() {
+  if x.year == emptyYear { return }
+  x.SetEaster()
+  for i := 0; i < 47; i++ {
+    x.Dec (Daily)
   }
 }
 

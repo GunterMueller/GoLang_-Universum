@@ -1,51 +1,52 @@
 package lockn
 
-// (c) Christian Maurer   v. 171026 - license see µU.go
+// (c) Christian Maurer   v. 190323 - license see µU.go
 
-// >>> Algorithm of Dijkstra
-//     Cooperating Sequential Processes, 0 -> true, 1 -> false
+// >>> Algorithm of Burns
 
+import
+  . "µU/atomic"
 type
   burns struct {
      nProcesses,
        favoured uint
-     interested []bool
+     interested []uint
                 }
 
-func newBu (n uint) LockerN {
+func newBurns (n uint) LockerN {
   x := new(burns)
-  x.nProcesses = n
-  x.interested = make([]bool, n + 1)
+  x.nProcesses = uint(n)
+  x.interested = make([]uint, n + 1)
   x.favoured = x.nProcesses
   return x
 }
 
-func (x *burns) Lock (i uint) {
-  x.interested[i] = true
-  x.favoured = i
-  var j uint
+func (x *burns) Lock (p uint) {
+  x.interested[p] = 1
+  Store (&x.favoured, p)
+  var q uint
   for {
-    for x.favoured != i {
-      x.interested[i] = false
-      j = 1
-      for j < x.nProcesses && (j == i || ! x.interested[j]) {
-        j++
+    for x.favoured != p {
+      x.interested[p] = 0
+      q = 1
+      for q < x.nProcesses && (q == p || x.interested[q] == 0) {
+        q++
       }
-      if j >= x.nProcesses {
-        x.interested[i] = true
-        x.favoured = i
+      if q >= x.nProcesses {
+        x.interested[p] = 1
+        Store (&x.favoured, p)
       }
     }
-    j = 1
-    for j < x.nProcesses && (j == i || ! x.interested[j]) {
-      j++
+    q = 1
+    for q < x.nProcesses && (q == p || x.interested[q] == 0) {
+      q++
     }
-    if j >= x.nProcesses {
+    if q >= x.nProcesses {
       break
     }
   }
 }
 
-func (x *burns) Unlock (i uint) {
-  x.interested[i] = false
+func (x *burns) Unlock (p uint) {
+  x.interested[p] = 0
 }

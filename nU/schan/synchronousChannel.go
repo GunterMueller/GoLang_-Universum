@@ -1,6 +1,6 @@
 package schan
 
-// (c) Christian Maurer   v. 171104 - license see µU.go
+// (c) Christian Maurer   v. 171104 - license see nU.go
 
 import ("sync"; . "nU/obj")
 

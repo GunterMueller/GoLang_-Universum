@@ -1,6 +1,6 @@
 package main
 
-/* (c) 1986-2018  Christian Maurer
+/* (c) 1986-2019  Christian Maurer
        christian.maurer-berlin.eu proprietary - all rights reserved
 
   Die Quellen von µU sind nur zum Einsatz in der Lehre konstruiert  und haben deshalb einen
@@ -61,7 +61,7 @@ import (
   "µU/piset"
   "µU/persaddr"
   "µU/pset"
-  "µU/words"
+//  "µU/words"
   "µU/schol"
   "µU/gram"
   "µU/audio"
@@ -75,6 +75,7 @@ import (
   "µU/barr"
   "µU/rw"
   "µU/lr"
+  "µU/lock2"
   "µU/lockn"
 //  "µU/phil"
 //  "µU/smok"
@@ -199,7 +200,7 @@ func main() { // just to get all stuff compiled
   fig2.Touch()
   piset.Touch()
   pset.New(persaddr.New())
-  words.New(0, 0)
+//  words.New(0, 0)
   schol.New()
   gram.Touch()
   audio.New()
@@ -211,7 +212,8 @@ func main() { // just to get all stuff compiled
   barr.New(2)
   rw.New1()
   lr.NewMutex()
-  lockn.NewPeterson()
+  lock2.NewPeterson()
+  lockn.NewTiebreaker(2)
 //  phil.TouchPhil()
 //  smok.TouchSmok()
   barb.NewDir()
@@ -228,7 +230,7 @@ func main() { // just to get all stuff compiled
   x, y := int(screen.Wd()), int(screen.Ht()) / 2
   cf, cl, cb := v.Colours()
   circ (cb, x / 2, y); circ (cl, x - y, y); circ (cf, y, y)
-  errh.MuLicense (ker.Mu, v.String(), "1986-2018  Christian Maurer   https://maurer-berlin.eu/mu", cf, cl, cb)
+  errh.MuLicense (ker.Mu, v.String(), "1986-2019  Christian Maurer   https://maurer-berlin.eu/mu", cf, cl, cb)
   screen.ScrColourB (cb)
   done := make(chan bool)
   go drive (cf, cl, cb, done)

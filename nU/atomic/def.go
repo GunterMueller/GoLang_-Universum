@@ -1,34 +1,36 @@
 package atomic
 
-// (c) Christian Maurer   v. 171231 - license see nU.go
+// (c) Christian Maurer   v. 190323 - license see nU.go
 
-// Die Ausführung jeder Funktion kann nicht durch den Aufruf der
-// gleichen Funktion von einem anderen Prozess unterbrochen werden.
+// Tools for the construction of locking algorithms.
+// The execution of any of these cannot be interrupted
+// by other goroutines that call the same function.
 
-import "sync/atomic"
+// *a = true. Returns the former value of *a.
+func TestAndSet (a *bool) bool
 
-// *n = k. Liefert den vorigen Wert von n.
-func Exchange (n *uint32, k uint32) uint32 {
-  return atomic.SwapUint32 (n, k)
-}
+// *n = k. Returns the former value of n
+func Exchange (n *uint, k uint) uint
 
-//// Liefert true, wenn vorher *n = k war.
-//// In diesem Fall gilt jetzt *n = m, andernfalls ist nichts verändert.
-//func CompareAndSwap (n *uint32, k, m uint32) bool {
-//  return atomic.CompareAndSwapUint32 (n, k, m)
-//}
+// Returns true, if *n = k formerly.
+// In this case now *n = m, otherwise nothing has changed.
+func CompareAndSwap (n *uint, k, m uint) bool
 
-// Vor.: n + 1 < math.MaxUint32.
-// n ist um 1 erhöht. Liefert den vorigen Wert von n.
-func FetchAndIncrement (n *uint32) uint32 { return atomic.AddUint32 (n, 1) - 1 }
+// Pre: *n + 1 < math.MaxUint32 resp math.MaxUint64.
+// *n is incremented by 1. Returns the former value of *n.
+func FetchAndIncrement (n *uint) uint
 
-// a = true. b ist der vorherige Wert von a.
-func TestAndSet (a *bool) (b bool)
+// Pre: n + k < math.MaxUint32 resp. < math.MaxUint64.
+// *n is incremented by k.
+func Add (n *uint, k uint)
 
-// Vor.: n + k < math.MaxUint32.
-// n ist um k erhöht. m ist der vorige Wert von n.
-func FetchAndAdd (n *uint32, k uint32) (m uint32)
+// Pre: n + k < math.MaxUint32 resp. < math.MaxUint64.
+// *n is incremented by k. Returns the former value of *n.
+func FetchAndAdd (n *uint, k uint) uint
 
-// Vor.: n > math.MinInt32.
-// n ist um 1 erniedrigt. b ist genau dann true, wenn jetzt n < 0 ist.
-func Decrement (n *int32) (b bool)
+// Pre: n > math.MinInt32 resp. n > math.MinInt64.
+// *n is decremented by 1. Returns true iff now *n < 0.
+func Decrement (n *int) bool
+
+// *n = k.
+func Store (n *uint, k uint)

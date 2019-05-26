@@ -1,36 +1,38 @@
-
 package lockn
 
-// (c) Christian Maurer   v. 171231 - license see nU.go
+// (c) Christian Maurer   v. 190316 - license see nU.go
 
-type doranthomas struct {
-  interested [2]bool
-  uint "Identität des begünstigten Prozesses, 0 oder 1"
-}
+// >>> s. Ben-Ari S. 65
 
-func newDT() LockerN {
+import
+  . "nU/obj"
+type
+  doranthomas struct {
+          interested [2]bool
+                     uint "identity of the favoured process < 2"
+                     }
+
+func newDoranThomas() LockerN {
   return new(doranthomas)
 }
 
-// Vor.: p < 2
+// Pre: p < 2
 func (x *doranthomas) Lock (p uint) {
-  if p > 1 { return }
   x.interested[p] = true
   if x.uint == 1 - p {
     x.interested[p] = false
     for x.uint != p {
-      nothing()
+      Nothing()
     }
     x.interested[p] = true
   }
   for x.interested[1-p] {
-    nothing()
+    Nothing()
   }
 }
 
-// Vor.: p < 2
+// Pre: p < 2
 func (x *doranthomas) Unlock (p uint) {
-  if p > 1 { return }
   x.interested[p] = false
   x.uint = 1 - p
 }

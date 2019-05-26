@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 171022 - license see µU.go
+// (c) Christian Maurer   v. 190312 - license see µU.go
 
 import
   "runtime"
@@ -32,8 +32,7 @@ type (
 )
 
 // Stmt[Spectrum]
-func Nothing() { }
-func Gothing() { runtime.Gosched() }
+func Nothing() { runtime.Gosched() }
 func Something (n uint) { print(n, " ") }
 func NothingSp (i uint) { Nothing() }
 

@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer  v. 180902 - license see µU.go
+// (c) Christian Maurer  v. 190402 - license see µU.go
 
 import (
   . "µU/obj"
@@ -12,11 +12,7 @@ type
               id uint // identity of king"
                 }
 var
-  c0 uint
-
-func init() {
   c0 = C0()
-}
 
 func new_() Colour {
   x := new(colour)

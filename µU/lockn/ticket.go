@@ -1,8 +1,8 @@
 package lockn
 
-// (c) Christian Maurer   v. 171024 - license see µU.go
+// (c) Christian Maurer   v. 190323 - license see µU.go
 
-// >>> Ticket-Algorithm using FetchAndAddUint32
+// >>> Ticket-Algorithm using FetchAndIncrement
 
 import (
   . "µU/obj"
@@ -10,17 +10,17 @@ import (
 )
 type
   ticket struct {
-   turn, ticket uint32
+   turn, ticket uint
                 }
 
-func newT (n uint) LockerN {
+func newTicket (n uint) LockerN {
   return new(ticket)
 }
 
 func (x *ticket) Lock (p uint) {
   t := FetchAndIncrement (&x.ticket)
   for t != x.turn {
-    Gothing()
+    Nothing()
   }
 }
 

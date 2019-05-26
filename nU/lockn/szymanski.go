@@ -1,91 +1,104 @@
 package lockn
 
-// (c) Christian Maurer   v. 171231 - license see nU.go
+// (c) Christian Maurer   v. 190323 - license see nU.go
 
-// Szymanski, B. K: A Simple Solution to Lamport's Concurrent Programming Problem with Linear Wait.
-// In: Lenfant, J. (ed.): ICS '88, New York. ACM Press (1988) 621-626
+// >>> Algorithmus von Szymanski
 
-type szymanski struct {
-  uint "Anzahl der beteiligten Prozesse"
-  intent, doorIn, doorOut []bool
-}
+import (
+  . "nU/atomic"
+  . "nU/obj"
+)
+const (
+  outsideCS = uint(iota)
+  interested
+  waitingForOthers
+  inWaitingRoom
+  behindWaitingRoom
+)
+type
+  szymanski struct {
+                   uint "number of processes"
+              flag []uint
+                   }
 
-func newSz (n uint) LockerN {
-  if n < 2 { return nil }
+func newSzymanski (n uint) LockerN {
   x := new(szymanski)
-  x.uint = n
-  x.intent = make([]bool, n)
-  x.doorIn, x.doorOut = make([]bool, n), make([]bool, n)
+  x.uint = uint(n)
+  x.flag = make([]uint, n)
   return x
 }
 
-func (x *szymanski) Lock (i uint) { // < x.uint
-// P10: flag[i] = 1
-  x.intent[i] = true
-// P11: wait until for all j: flag[j] <= 2
-  j := uint(0)
-  for j < x.uint {
-    if x.intent[j] && x.doorIn[j] {
-      j = 0
-    } else {
-      j++
+func (x *szymanski) allLeqWaitingForOthers() bool {
+  for q := uint(0); q < x.uint; q++ {
+    if x.flag[q] > waitingForOthers {
+      return false
     }
   }
-// P20: flag[i] = 3
-  x.doorIn[i] = true
-P21: // if exists j: flag[j] == 1 {
-  j = 0
-  for (!x.intent[j] || x.doorIn[j]) && j + 1 < x.uint {
-    j++
+  return true
+}
+
+func (x *szymanski) exists (i, k uint) bool {
+  for j := uint(0); j < x.uint; j++ {
+    if x.flag[j] == k {
+      return true
+    }
   }
-  if x.intent[j] && !x.doorIn[j] {
-//  flag[i] = 2
-    x.intent[i] = false
-// P22: wait until exists j: flag[j] == 4 }
-/*
-    for !x.doorOut[j] &&
-        (j + 1 < N || f = x.intent[j] && !doorIn[j] || f && j > 0) {
-*/
-    for !x.doorOut[j] {
-      f := x.intent[j]
-      if j + 1 >= x.uint && (!f || x.doorIn[j]) && (!f || j == 0) {
+  return false
+}
+
+func (x *szymanski) allLeqInterested (p uint) bool {
+  for q := uint(0); q < p; q++ {
+    if x.flag[q] > interested {
+      return false
+    }
+  }
+  return true
+}
+
+func (x *szymanski) allOutsideWaitingRoom (p uint) bool {
+  for q := p + 1; q < x.uint; q++ {
+    if x.flag[q] == waitingForOthers ||
+       x.flag[q] == inWaitingRoom {
+      return false
+    }
+  }
+  return true
+}
+
+func (x *szymanski) Lock (p uint) {
+  Store (&x.flag[p], interested)
+  for { // wait until for all j: flag[j] <= waitingForOthers
+    if x.allLeqWaitingForOthers () {
+      break
+    }
+    Nothing()
+  }
+  Store (&x.flag[p], inWaitingRoom)
+  if x.exists (p, interested) { // if exists j: flag[j] == interested {
+    Store (&x.flag[p], waitingForOthers)
+    for { // wait until exists j: flag[j] == behindWaitingRoom }
+      if x.exists (p, behindWaitingRoom) {
         break
       }
-
-      if j + 1 == x.uint {
-        j = 0
-      } else {
-        j++
-      }
-    }
-    x.intent[i] = true
-    if !x.doorOut[i] {
-      goto P21
+      Nothing()
     }
   }
-// P30: flag[i] = 4
-  x.doorOut[i] = true
-// P31: wait until for all j: j >= i || flag[j] <= 1
-  j = 0
-  for j < i {
-    if x.doorIn[j] {
-      j = 0
-    } else {
-      j++
+  Store (&x.flag[p], behindWaitingRoom)
+  for { // wait until for all j > p: flag[j] <= interested ||
+        //                           flag[j] = leftWaitingRomm
+    if x.allOutsideWaitingRoom (p) {
+      break
     }
+    Nothing()
+  }
+  for { // wait until for all j < p: flag[j] <= interested 
+    if x.allLeqInterested (p) {
+      break
+    }
+    Nothing()
   }
 }
 
-func (x *szymanski) Unlock (i uint) {
-// E0: wait until for all j: j <= i || flag[j] <= 1 || flag[j] == 4
-  j := i + 1
-  for j < x.uint {
-    if x.doorIn[j] && !x.doorOut[j] {
-      j = i + 1
-    } else {
-      j++
-    }
-  }
-// E1: flag[i] = 0
-  x.intent[i], x.doorIn[i], x.doorOut[i] = false, false, false
+func (x *szymanski) Unlock (p uint) {
+  Store (&x.flag[p], outsideCS)
 }

@@ -1,11 +1,11 @@
 package lr
 
-// (c) Christian Maurer   v. 171127 - license see µU.go
+// (c) Christian Maurer   v. 190329 - license see µU.go
 
 type
   LeftRight interface { // protocols for the left right problem
 
-// Pre: The calling goroutine is notr a rightie.
+// Pre: The calling goroutine is not a rightie.
 // The calling goroutine is a leftie; no goroutine is a rightie.
 // If at the time of the call there were active righties,
 // the calling goroutine has been delayed, until there was no active rightie.

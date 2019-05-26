@@ -1,29 +1,30 @@
 package lock
 
-// (c) Christian Maurer   v. 171231 - license see nU.go
+// (c) Christian Maurer   v. 190323 - license see nU.go
 
-// Die Funktionen Lock und Unlock können durch Aufrufe von
-// Lock oder Unlock durch andere Goroutinen nicht unterbrochen werden.
+// Secures the access to a critical section.
+// The functions Lock and Unlock cannot be interrupted
+// by calls of Lock or Unlock of other goroutines.
 
-type Locker interface {
+type
+  Locker interface {
 
-// Vor.: Der aufrufende Prozess ist nicht im kritischen Abschnitt.
-// Er ist jetzt als einziger im kritischen Abschnitt.
+// Pre: The calling goroutine is not in the critical section.
+// It is the only one in the critical section.
   Lock()
 
-// Vor.: Der aufrufende Prozess ist im kritischen Abschnitt.
-// Er ist nicht im kritischen Abschnitt.
+// Pre: The calling goroutine is in the critical section.
+// It is not in the critical section.
   Unlock()
 }
 
-// Liefern neue unverschlossene Schlösser für n Prozesse
-// mit einer Implementierung, die ihr Name verrät.
-func NewCAS() Locker { return newCAS() }
+// Return new unlocked locks
+// with an implementation revealed by their names.
 func NewChannel() Locker { return newChan() }
-func NewDEC() Locker { return newDEC() }
-func NewFA() Locker { return newFA() }
-func NewMorris() Locker { return newMorris() }
-func NewMutex() Locker { return newMutex() }
 func NewTAS() Locker { return newTAS() }
-func NewUdding() Locker { return newUdding() }
 func NewXCHG() Locker { return newXCHG() }
+func NewCAS() Locker { return newCAS() }
+func NewDEC() Locker { return newDEC() }
+func NewMutex() Locker { return newMutex() }
+func NewUdding() Locker { return newUdding() }
+func NewMorris() Locker { return newMorris() }

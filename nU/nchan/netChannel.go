@@ -22,6 +22,11 @@ type netChannel struct {
   Stream "Puffer zur Datenübertragung"
   error
 }
+var c0 uint
+
+func init() {
+  c0 = C0()
+}
 
 func new_(a Any, me, i uint, n string, p uint16) NetChannel {
   if me == i { panic("me == i") }
@@ -63,12 +68,12 @@ func (x *netChannel) Send (a Any) {
 func (x *netChannel) Recv() Any {
   if x.Conn == nil { panic("no Conn") }
   if x.Any == nil {
-    _, x.error = x.Conn.Read (x.Stream[:C0])
+    _, x.error = x.Conn.Read (x.Stream[:c0])
     if x.error != nil { return nil }
-    x.uint = Decode (uint(0), x.Stream[:C0]).(uint)
-    _, x.error = x.Conn.Read (x.Stream[C0:C0+x.uint])
+    x.uint = Decode (uint(0), x.Stream[:c0]).(uint)
+    _, x.error = x.Conn.Read (x.Stream[c0:c0+x.uint])
     if x.error != nil { return nil }
-    return x.Stream[C0:C0+x.uint]
+    return x.Stream[c0:c0+x.uint]
   }
   x.Conn.Read (x.Stream)
   return Decode(Clone(x.Any), x.Stream)

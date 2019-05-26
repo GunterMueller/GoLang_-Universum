@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 171227 - license see nU.go
+// (c) Christian Maurer   v. 190402 - license see nU.go
 
 import ("strconv"; "time"; "net"; . "nU/obj")
 
@@ -16,8 +16,8 @@ func (x *netChannel) serve (c net.Conn) {
       break
     }
     if x.Any == nil {
-      x.uint = uint(Decode (uint(0), x.Stream[:C0]).(uint))
-      x.in <- x.Stream[C0:C0+x.uint]
+      x.uint = uint(Decode (uint(0), x.Stream[:c0]).(uint))
+      x.in <- x.Stream[c0:c0+x.uint]
       a := <-x.out
       _, x.error = c.Write(append(Encode(Codelen(a)), Encode(a)...))
     } else {

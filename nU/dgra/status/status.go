@@ -1,17 +1,19 @@
 package status
 
-// (c) Christian Maurer  v. 180819 - license see µU.go
+// (c) Christian Maurer  v. 190402 - license see nU.go
 
-import
+import (
   . "nU/obj"
-type
-  status struct {
-      phase, id uint // of king
-                }
+  "nU/ego"
+)
 
-func new_(p, i uint) Status {
+type status struct {
+  phase, id uint // of king
+}
+
+func new_() Status {
   x := new(status)
-  x.phase, x.id = p, i
+  x.phase, x.id = 0, ego.Me()
   return x
 }
 
@@ -31,7 +33,9 @@ func (x *status) Copy (Y Any) {
 }
 
 func (x *status) Clone() Any {
-  return new_(x.phase, x.id)
+  y := new_()
+  y.Set (x.phase, x.id)
+  return y
 }
 
 func (x *status) Less (Y Any) bool {
@@ -40,6 +44,10 @@ func (x *status) Less (Y Any) bool {
     return x.id < y.id
   }
   return x.phase < y.phase
+}
+
+func (x *status) Set (p, i uint) {
+  x.phase, x.id = p, i
 }
 
 func (x *status) Phase() uint {
@@ -54,8 +62,10 @@ func (x *status) Inc() {
   x.phase++
 }
 
+var c0 = C0()
+
 func (x *status) Codelen() uint {
-  return 2 * C0
+  return 2 * c0
 }
 
 func (x *status) Encode() Stream {
@@ -63,5 +73,5 @@ func (x *status) Encode() Stream {
 }
 
 func (x *status) Decode (s Stream) {
-  x.phase, x.id = Decode (0, s[:C0]).(uint), Decode (0, s[C0:]).(uint)
+  x.phase, x.id = Decode (0, s[:c0]).(uint), Decode (0, s[c0:]).(uint)
 }

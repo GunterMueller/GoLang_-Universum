@@ -1,12 +1,16 @@
 package lock
 
-// (c) Christian Maurer   v. 171231 - license see nU.go
+// (c) Christian Maurer   v. 171024 - license see nU.go
+
+// >>> Algorithm of Morris
 
 import "sync"
 
 type morris struct {
-  door0, door, mutex sync.Mutex
-  n0, n uint
+  door0, door,
+  mutex sync.Mutex // to protect n0
+  n0,    // number of processes blocked on door0
+  n uint // number of processes blocked on door
 }
 
 func newMorris() Locker {

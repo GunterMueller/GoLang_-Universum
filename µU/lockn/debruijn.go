@@ -1,12 +1,13 @@
 package lockn
 
-// (c) Christian Maurer   v. 171025 - license see µU.go
+// (c) Christian Maurer   v. 190323 - license see µU.go
 
-// >>> DeBruijn, J. G.: Additional Comments on a Problem in Concurrent Programming Control.
-//     CACM 10 (1967) 137-138
+// >>> Algorithm of J. G. DeBruijn, J. G.
 
-import
-  "runtime"
+import (
+  . "µU/atomic"
+  . "µU/obj"
+)
 type
   deBruijn struct {
                   uint "number of processes"
@@ -14,42 +15,47 @@ type
              flag []uint
                   }
 
-func newDB (n uint) LockerN {
+func newDeBruijn (n uint) LockerN {
   x := new(deBruijn)
-  x.uint = n
+  x.uint = uint(n)
   x.flag = make([]uint, x.uint)
   return x
 }
 
-func (x *deBruijn) test (i uint) bool {
-  for j := uint(0); j < x.uint; j++ {
-    if j != i {
-      if x.flag[j] == active { return false }
+func (x *deBruijn) test (p uint) bool {
+  for q := uint(0); q < x.uint; q++ {
+    if q != p {
+      if x.flag[q] == active {
+        return false
+      }
     }
   }
   return true
 }
 
-func (x *deBruijn) Lock (i uint) {
+func (x *deBruijn) Lock (p uint) {
   for {
-    x.flag[i] = requesting
-    j := x.favoured
-    for j != i {
-      if x.flag[j] != passive {
-        j = x.favoured
+    Store (&x.flag[p], requesting)
+    q := x.favoured
+    for q != p {
+      if x.flag[q] != passive {
+        q = x.favoured
       } else {
-        j = (j + x.uint - 1) % x.uint
+        q = (q + x.uint - 1) % x.uint
       }
-      runtime.Gosched()
+      Nothing()
     }
-    x.flag[i] = active
-    if x.test (i) { break }
+    Store (&x.flag[p], active)
+    if x.test (p) {
+      break
+    }
+    Nothing()
   }
 }
 
-func (x *deBruijn) Unlock (i uint) {
-  if x.flag[x.favoured] == passive || x.favoured == i {
-    x.favoured = (x.favoured + x.uint - 1) % x.uint
+func (x *deBruijn) Unlock (p uint) {
+  if x.flag[x.favoured] == passive || x.favoured == p {
+    Store (&x.favoured, (x.favoured + x.uint - 1) % x.uint)
   }
-  x.flag[i] = passive
+  Store (&x.flag[p], passive)
 }

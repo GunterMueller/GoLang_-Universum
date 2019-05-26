@@ -1,65 +1,74 @@
 package lockn
 
-// (c) Christian Maurer   v. 171026 - license see µU.go
+// (c) Christian Maurer   v. 190326 - license see µU.go
 
 // >>> Algorithm of Habermann
 
-import
-  "time"
+import (
+  . "µU/atomic"
+  . "µU/obj"
+)
 type
   habermann struct {
         nProcesses,
           favoured uint
         interested,
-          critical []bool
+          critical []uint
                    }
 
-func newH (n uint) LockerN {
+func newHabermann (n uint) LockerN {
   x := new(habermann)
-  x.nProcesses = n
+  x.nProcesses = uint(n)
   x.favoured = 0
-  x.interested = make([]bool, n)
-  x.critical = make([]bool, n)
+  x.interested = make([]uint, n)
+  x.critical = make([]uint, n)
   return x
 }
 
-func (x *habermann) Lock (i uint) {
+func (x *habermann) Lock (p uint) {
   for {
-    x.interested[i] = true
+    Store (&x.interested[p], 1)
     for {
-      x.critical[i] = false
+      Store (&x.critical[p], 0)
       f := x.favoured
-      otherInterested := false
-      for f != i {
-        otherInterested = x.interested[f] || otherInterested
+      otherInterested := uint(0)
+      for f != p {
+        otherInterested += x.interested[f]
         if f + 1 < x.nProcesses {
           f++
         } else {
           f = 0
         }
+       }
+      if otherInterested == 0 {
+        break
       }
-      if ! otherInterested { break }
-      time.Sleep(1) // oder runtime.Gosched()
+      Nothing()
     }
-    x.critical[i] = true
-    otherCritical := false
-    for j := uint(0); j < x.nProcesses; j++ {
-      if j != i {
-        otherCritical = otherCritical || x.critical[j]
+    Store (&x.critical[p], 1)
+    otherCritical := uint(0)
+    for q := uint(0); q < x.nProcesses; q++ {
+      if q != p {
+        otherCritical += x.critical[q]
       }
     }
-    if ! otherCritical { break }
-    time.Sleep(1) // oder runtime.Gosched()
+    if otherCritical == 0 {
+      break
+    }
+    Nothing()
   }
-  x.favoured = i
+  Store (&x.favoured, p)
 }
 
-func (x *habermann) Unlock (i uint) {
-  f := i
+func (x *habermann) Unlock (p uint) {
+  f := p
   for {
     f = (f + 1) % x.nProcesses
-    if x.interested[i] || f == i { break }
+    if x.interested[p] == 1 || f == p {
+      break
+    }
   }
-  x.favoured = f
-  x.interested[i], x.critical[i] = false, false
+  Store (&x.favoured, f)
+  Store (&x.interested[p], 0)
+  Store (&x.critical[p], 0)
 }

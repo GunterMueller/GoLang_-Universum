@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171130 - license see µU.go
+// (c) Christian Maurer   v. 181023 - license see µU.go
 
 type
   ElectAlg byte; const (
@@ -12,6 +12,7 @@ type
   Maurerfm
   DFSelect
   DFSelectfm
+  KMZ // XXX
 )
 
 func (x *distributedGraph) SetElectAlgorithm (a ElectAlg) {
@@ -40,6 +41,8 @@ func (x *distributedGraph) Leader() uint {
     x.dfselect()
   case DFSelectfm:
     x.dfselectfm()
+  case KMZ:
+    x.korachMoranZaks()
   }
   return x.leader
 }
