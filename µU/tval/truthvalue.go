@@ -1,6 +1,6 @@
 package tval
 
-// (c) Christian Maurer   v. 170810 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   . "µU/obj"
@@ -61,7 +61,7 @@ func (x *truthValue) SetFormat (f, t string) {
   x.representation [trueVal] = t
   n := str.ProperLen (x.representation[falseVal])
   if n > x.uint { x.uint = n }
-  x.representation [undecidable] = str.Clr (x.uint)
+  x.representation [undecidable] = str.New (x.uint)
 }
 
 func (x *truthValue) Empty() bool {

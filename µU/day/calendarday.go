@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 190308 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   . "µU/ker"
@@ -572,23 +572,55 @@ func (x *calendarday) Dec (p Period) {
 }
 
 func (x *calendarday) Change (c kbd.Comm, d uint) {
-  if x.year == emptyYear { return }
-  if Period(d) >= NPeriods { d = uint(NPeriods) - 1 }
-  p := NPeriods
-  if Period(d) < p { p = Period(d) }
-  switch c { case kbd.Enter, kbd.Esc:
+  if x.year == emptyYear {
+    return
+  }
+  switch c {
+  case kbd.Enter, kbd.Esc:
     return
   case kbd.Right, kbd.Down:
+    p := Monthly
+    switch d {
+    case 0:
+      p = Daily
+    case 1:
+      p = Weekly
+    }
     x.Inc (p)
   case kbd.Left, kbd.Up:
+    p := Monthly
+    switch d {
+    case 0:
+      p = Daily
+    case 1:
+      p = Weekly
+    }
     x.Dec (p)
-  case kbd.Pos1:
-    x.SetBeginning (p)
-  case kbd.End:
-    x.SetEnd (p)
-  case kbd.Here:
-    x.Update()
-    x.SetBeginning (p)
+  case kbd.PgRight, kbd.PgDown:
+    p := Yearly
+    if d == 0 {
+      p = Monthly
+    }
+    x.Inc (p)
+  case kbd.PgLeft, kbd.PgUp:
+    p := Yearly
+    if d == 0 {
+      p = Monthly
+    }
+    x.Dec (p)
+  case kbd.Pos1, kbd.End:
+    p := Yearly
+    switch d {
+    case 1:
+      p = Weekly
+    case 2:
+      p = Monthly
+    }
+    if c == kbd.Pos1 {
+      x.SetBeginning (p)
+    } else {
+      x.SetEnd (p)
+    }
   }
 }
 
@@ -890,7 +922,7 @@ func (x *calendarday) Weeknumber() uint {
 
 func (x *calendarday) String() string {
   if x.year == emptyYear {
-    return str.Clr (wd[x.Format])
+    return str.New (wd[x.Format])
   }
   const mitNullen = true
   s := ""
@@ -1216,10 +1248,10 @@ func (x *calendarday) writeYearMask (l, c uint) {
   y.Write (l, c + 80 - 4)
   bx.Colours (MonthF, MonthB)
   bx.Wd (X - 4 /* - c */)
-  T1 := str.Clr (X - 4 /* - c */)
+  T1 := str.New (X - 4 /* - c */)
   bx.Write (T1, l, c + 4)
   bx.Wd (X /* - c */)
-  T1 = str.Clr (X /* - c */)
+  T1 = str.New (X /* - c */)
   bx.Write (T1, l + 8, c)
   bx.Write (T1, l + 16, c)
   y.Format = M
@@ -1276,9 +1308,9 @@ func (x *calendarday) printYearMask (l, c uint) {
   y.Format, y.Font = Yyyy, font.Bold
   y.Print (l, c)
   y.Print (l, X - 4)
-  pbx.Print (str.Clr (X - 4 - c), l, c + 4)
-  pbx.Print (str.Clr (X - c), l + 8, c)
-  pbx.Print (str.Clr (X - c), l + 16, c)
+  pbx.Print (str.New (X - 4 - c), l, c + 4)
+  pbx.Print (str.New (X - c), l + 8, c)
+  pbx.Print (str.New (X - c), l + 16, c)
   y.Format, y.Font = M, font.Italic
   var l1, c1 uint
   for m := uint(1); m <= maxmonth; m++ {

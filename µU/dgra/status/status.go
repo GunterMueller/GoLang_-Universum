@@ -44,7 +44,7 @@ func (x *status) Less (Y Any) bool {
   if x.phase == y.phase {
     return x.id < y.id
   }
-  return x.phase < y.phase // XXX not x.id < y.id
+  return x.phase < y.phase
 }
 
 func (x *status) Set (p, i uint) {

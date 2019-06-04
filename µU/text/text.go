@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 170810 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   "µU/rand"
@@ -31,7 +31,7 @@ func new_(n uint) Text {
   if n == 0 { return nil }
   x := new (text)
   x.uint = n
-  x.string = str.Clr (n)
+  x.string = str.New (n)
   x.cF, x.cB = scr.StartCols()
   x.Font = font.Normal
   return x
@@ -94,7 +94,7 @@ func (x *text) Empty() bool {
 }
 
 func (x *text) Clr() {
-  x.string = str.Clr (x.uint)
+  x.string = str.New (x.uint)
 }
 
 func (x *text) Copy (Y Any) {
@@ -170,7 +170,7 @@ func (x *text) Decode (b []byte) {
     x.string = string(b)
 //    str.Lat1 (&x.string)
   } else {
-    x.string = str.Clr (x.uint)
+    x.string = str.New (x.uint)
   }
 }
 

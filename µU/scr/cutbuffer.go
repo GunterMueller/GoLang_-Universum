@@ -1,13 +1,22 @@
 package scr
 
-// (c) Christian Maurer   v. 170814 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
-func (X *screen) Cut (s string) {
-  if len (s) == 0 { return }
+import
+  "µU/str"
+
+func (X *screen) Cut (s *string) {
+  n := uint(len(*s))
+  if n == 0 { return }
+  X.Copy (*s)
+  *s = str.New (n)
+}
+
+func (X *screen) Copy (s string) {
   if underX {
-    X.XWindow.Cut (s)
+    X.XWindow.Copy (s)
   } else {
-    X.Console.Cut (s)
+    X.Console.Copy (s)
   }
 }
 

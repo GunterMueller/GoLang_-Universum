@@ -1,6 +1,6 @@
 package set
 
-// (c) Christian Maurer   v. 140407 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   "µU/obj"
@@ -30,7 +30,7 @@ func (x *set) Write (x0, x1, y, dy uint, f func (obj.Any) string) {
 func (x *tree) write1 (d uint, f func (obj.Any) string) {
   if x == nil { return }
   x.right.write1 (d + 1, f)
-  println (str.Clr(6 * d) + f (x.Any))
+  println (str.New (6 * d) + f (x.Any))
   x.left.write1 (d + 1, f)
 }
 

@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 170417 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 //     latin-1-strings (without any bloody UTF-8-stuff)
 
@@ -8,7 +8,10 @@ package str
 func DevilsDung (s *string) bool { return devilsDung(s) }
 
 // Returns a string of n spaces.
-func Clr (n uint) string { return clr(n) }
+func New (n uint) string { return new_(n) }
+
+// s consists only of spaces (in its original length).
+func Clr (s *string) { clr(s) }
 
 // Returns a string, then coincides with s up to certain UTF-8-runes
 // (see constants in z.go), that are changed to latin1-bytes.

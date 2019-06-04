@@ -1,6 +1,6 @@
 package clk
 
-// (c) Christian Maurer   v. 180901 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   . "µU/ker"
@@ -184,7 +184,7 @@ func (x *clocktime) Colours (f, b col.Colour) {
 
 func (x *clocktime) String() string {
   if x.Empty() {
-    return str.Clr(textlength[x.Format])
+    return str.New (textlength[x.Format])
   }
   s := nat.StringFmt(x.minute, 2, true)
   if x.Format <= Hh_mm_ss {
@@ -235,7 +235,7 @@ func (x *clocktime) Defined(t string) bool {
   return x.defined(h, m, s)
 }
 
-func (x *clocktime) Set(h, m, s uint) bool {
+func (x *clocktime) Set (h, m, s uint) bool {
   if h < hd && m < ms && s < ms {
     x.hour, x.minute, x.second = h, m, s
     return true
@@ -244,7 +244,7 @@ func (x *clocktime) Set(h, m, s uint) bool {
   return false
 }
 
-func (x *clocktime) SetSeconds(s uint) bool {
+func (x *clocktime) SetSeconds (s uint) bool {
   if s < sd {
     m := s % ms
     h := m % ms
@@ -256,25 +256,26 @@ func (x *clocktime) SetSeconds(s uint) bool {
   return false
 }
 
-func (x *clocktime) Write(l, c uint) {
+func (x *clocktime) Write (l, c uint) {
   bx.Wd(textlength[x.Format])
-  bx.Colours(x.cF, x.cB)
-  bx.Write(x.String(), l, c)
+  bx.Colours (x.cF, x.cB)
+  bx.Write (x.String(), l, c)
 }
 
-func (x *clocktime) Edit(l, c uint) {
-  x.Write(l, c)
+func (x *clocktime) Edit (l, c uint) {
+  x.Write (l, c)
   s := x.String()
   err := uint(0)
   for {
-    bx.Edit(&s, l, c)
-    if x.Defined(s) {
+    bx.Edit (&s, l, c)
+    if x.Defined (s) {
       s = x.String()
-      bx.Write(s, l, c)
+      bx.Write (s, l, c)
       return
     } else {
-      err ++
-      switch err { case 1: // --> errh.WriteError
+      err++
+      switch err {
+      case 1: // --> errh.WriteError
         errh.Error0("Die Uhrzeitangabe ist unverständlich!") // , l + 1, c)
       case 2:
         errh.Error0("Die Angabe ist immer noch unklar!") // , l + 1, c)
@@ -283,24 +284,24 @@ func (x *clocktime) Edit(l, c uint) {
       case 4:
         errh.Error0("Was soll der Quatsch? Ist das eine Uhrzeit?") // l + 1, c)
       case 5:
-        errh.Error0("Bist Du zu doof, eine Uhrzeit einzugeben?") // l + 1, c)
+        errh.Error0("Bist Du zu dusslig, eine Uhrzeit einzugeben?") // l + 1, c)
       default:
         errh.Error0("Vergiss es ...") // , l + 1, c)
         x.Update()
-        x.Write(l, c)
+        x.Write (l, c)
         return
       }
     }
   }
 }
 
-func (x *clocktime) SetFont(f font.Font) {
+func (x *clocktime) SetFont (f font.Font) {
   x.Font = f
 }
 
 func (x *clocktime) Print(l, c uint) {
-  pbx.SetFont(x.Font)
-  pbx.Print(x.String(), l, c)
+  pbx.SetFont (x.Font)
+  pbx.Print (x.String(), l, c)
 }
 
 func (x *clocktime) Codelen() uint {
@@ -309,7 +310,7 @@ func (x *clocktime) Codelen() uint {
 
 func (x *clocktime) Encode() []byte {
   bs := make([]byte, x.Codelen())
-  copy(bs, Encode(uint32(x.internalCode())))
+  copy (bs, Encode(uint32(x.internalCode())))
   return bs
 }
 

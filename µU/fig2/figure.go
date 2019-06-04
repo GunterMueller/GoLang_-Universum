@@ -1,6 +1,6 @@
 package fig2
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   . "µU/obj"
@@ -655,7 +655,7 @@ func (f *figure2) editText() {
   if y1 >= yy { y1 = yy - 1 }
   scr.SaveGr (f.x[0], f.y[0], x1, y1)
   bx.Transparence (false)
-  f.string = str.Clr (lenText) // wörkeraunt
+  f.string = str.New (lenText) // wörkeraunt
   bx.EditGr (&f.string, f.x[0], f.y[0])
   bx.Transparence (true)
   scr.RestoreGr (f.x[0], f.y[0], x1, y1)
@@ -670,7 +670,7 @@ func (f *figure2) editText() {
     f.y[1] = f.y[0] + int(scr.Ht1()) - 1
     scr.WarpMouseGr (f.x[0], f.y[1])
   } else {
-//    f.string = str.Clr (lenText)
+//    f.string = str.New (lenText)
 //    bx.WriteGr (f.string, f.x[0], f.y[0])
 //    f.string = ""
 //    f.x, f.y = nil, nil
@@ -684,7 +684,7 @@ func (f *figure2) editImage() {
   errh.Hint ("Name des Bildes eingeben")
   bx.Wd (32) // reine Willkür
   bx.Colours (f.colour, scr.ScrColB())
-  f.string = str.Clr (BB)
+  f.string = str.New (BB)
   bx.EditGr (&f.string, f.x[0], f.y[0])
   str.OffSpc (&f.string)
   W, H := img.Size (f.string)

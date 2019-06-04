@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 170917 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -485,7 +485,10 @@ type
 // At the time being - only implemented for use under X
 
 // TODO Spec
-  Cut (s string)
+  Cut (s *string)
+
+// TODO Spec
+  Copy (s string)
 
 // TODO Spec
   Paste() string

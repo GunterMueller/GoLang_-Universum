@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 190218 - license see µU.go
+// (c) Christian Maurer   v. 190524 - license see µU.go
 
 import (
   . "µU/obj"
@@ -133,7 +133,7 @@ type
   Dec (p Period)
 
 // TODO Spec
-  Change (k kbd.Comm, d uint)
+  Change (c kbd.Comm, d uint)
 
 // Returns the weekday of the first day within the period p of x.
   Weekday (p Period) Weekday

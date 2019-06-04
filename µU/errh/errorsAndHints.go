@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 180608 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
 //  "µU/env"
@@ -278,7 +278,7 @@ func writeLicense (project, version, author string, f, cl, b col.Colour, g []str
   scr.Save (l0, c0, w, h)
   licenseBox.Wd (w)
   licenseBox.Colours (cl, b)
-  emptyLine := str.Clr (w)
+  emptyLine := str.New (w)
   licenseBox.Write (emptyLine, l, c); l ++
   s := str.Lat1 (project + " v. " + version)
   *t = s
@@ -303,7 +303,7 @@ func writeLicense (project, version, author string, f, cl, b col.Colour, g []str
   } else {
     line = env.Parameter (0)
     if line == "µU" {
-      line = str.Clr (w)
+      line = str.New (w)
     } else {
       line = str.Lat1 ("kurze Bedienungshinweise: F1-Taste")
     }
@@ -352,7 +352,7 @@ func help (H []string) {
   }
   Save (l, c, w + 4, h + 2)
   hintbox.Wd (w + 4)
-  T := str.Clr (w + 4)
+  T := str.New (w + 4)
   for i := uint(0); i <= h + 1; i++ {
     hintbox.Write (T, l + i, c)
   }
@@ -382,7 +382,7 @@ func help1() {
     c = (NColumns() - w - 4) / 2
   }
   hintbox.Wd (w + 4)
-  t := str.Clr (w + 4)
+  t := str.New (w + 4)
   Save (l, c, w + 4, 3)
   for i := uint(0); i <= 2; i++ { hintbox.Write (t, l + i, c) }
   hintbox.Wd (w)

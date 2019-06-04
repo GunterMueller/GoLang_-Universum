@@ -1,8 +1,12 @@
 package cons
 
-// (c) Christian Maurer   v. 150124 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
-func (x *console) Cut (s string) {
+func (x *console) Cut (s *string) {
+// TODO
+}
+
+func (x *console) Copy (s string) {
 // TODO
 }
 

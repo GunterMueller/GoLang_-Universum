@@ -53,8 +53,8 @@ func inputX (B *byte, C *Comm, T *uint) {
     *B, *C, *T = 0, None, 0
     e, ok = <-xpipe
     ch <- 0
-    if ! ok { println ("xwin.inputX: ! ok") }
-if e.S == 64 { panic("S H R I E K   !") }
+    if ! ok { println ("x.inputX: ! ok") }
+if e.S == 64 { panic("x.inputX: shriek !") }
     shiftX := isSet (shiftBit, e.S)
     shiftFix := isSet (shiftLockBit, e.S)
     if shiftFix { shiftX = false } // weg isser

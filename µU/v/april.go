@@ -1,6 +1,6 @@
 package v
 
-// (c) Christian Maurer   v. 171217 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   "strconv"
@@ -36,7 +36,7 @@ func doodle (c col.Colour, n int) {
   scr.Write ("The µU-tool to remove \"       \" is going to be executed, i.e.", y0, x0)
   scr.Write ("your disk will be completely reformatted, one moment please ... ", y0 + 1, x0); doof (y0, 26)
   const m = 1<<16
-  x:= str.Clr (m)
+  x:= str.New (m)
   ok = false
   for i:= 0; i < 10 * n; i++ { if i == 0 { go rot (n) }
     file:= pseq.New (x); file.Name (f + strconv.Itoa(i) + t); file.Clr(); file.Ins (x); file.Fin()
@@ -57,7 +57,7 @@ func April1st() {
   b.Colours (col.LightOrange(), col.Black()); b.Write ("yes", y0, x0 + 16)
   doodle (col.LightWhite(), 2); doodle (col.LightWhite(), 2); doodle (col.LightYellow(), 5)
   doodle (col.Yellow(), 3); doodle (col.LightOrange(), 5); doodle (col.Orange(), 8); doodle (col.LightRed(), 3)
-  t0 = str.Clr (70); scr.Write (t0, y0, x0); scr.Write (t0, y0 + 1, x0)
+  t0 = str.New (70); scr.Write (t0, y0, x0); scr.Write (t0, y0 + 1, x0)
   scr.ScrColours (col.LightGreen(), col.Blue()); scr.Cls()
   scr.Colours (col.LightGreen(), col.Blue())
   scr.Write ("The µU-tool has removed \"       \" - your disk is reformatted :-)", y0, x0); doof (y0, 28)

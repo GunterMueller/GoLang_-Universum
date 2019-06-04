@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 180608 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 // #include <stdio.h>
 // #include <stdlib.h>
@@ -8,32 +8,25 @@ package xwin
 // #include <X11/Xlib.h>
 // #include <X11/Xlibint.h>
 /*
-void cut (Display *d, char* s, int n) {
-  int r0, r1, r2;
-  r0 = XStoreBytes (d, s, n);
-  r1 = XStoreBuffer (d, s, n, 1);
-  r2 = XStoreBuffer (d, s, n, 2);
-  printf ("%d, %d, %d\n", r0, r1, r2);
+void copy (Display *d, char* s, int n) {
+  XStoreBytes (d, s, n);
 }
-char *global;
 char *paste (Display *d, int* n) {
-  global = XFetchBytes (d, n);
-  return global;
+  return XFetchBytes (d, n);
 }
-void xfree () {
-  Xfree (global);
+void xfree (char* s) {
+  Xfree (s);
 }
 */
 import
   "C"
-import (
+import
   "unsafe"
-)
 
-func (X *xwindow) Cut (s string) {
+func (X *xwindow) Copy (s string) {
   cs, n := C.CString (s), C.int(len (s))
   defer C.free (unsafe.Pointer (cs))
-  C.cut (dpy, cs, n)
+  C.copy (dpy, cs, n)
 }
 
 func (X *xwindow) Paste() string {
@@ -41,7 +34,7 @@ func (X *xwindow) Paste() string {
   defer C.free (unsafe.Pointer (cs))
   cs = C.paste (dpy, &n)
   s := C.GoStringN (cs, n)
-  C.xfree()
+  C.xfree (cs)
   X.Flush()
   return s
 }

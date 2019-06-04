@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 // >>> This package only serves the implementations of µU/mouse,
 //     µU/kbd and µU/cons; it must not be used anywhere else.
@@ -193,7 +193,7 @@ type
 
 // cut buffer //////////////////////////////////////////////////////////
 
-  Cut (s string)
+  Copy (s string)
   Paste() string
 }
 

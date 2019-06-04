@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 180421 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 // >>> This package only serves the implementations of µU/mouse,
 //     mu/kbd and mu/cons; it must not no be used elsewhere.
@@ -141,7 +141,9 @@ type
 // cut buffer //////////////////////////////////////////////////////////
 
 // not yet implemented TODO
-  Cut (s string)
+  Cut (s *string)
+// not yet implemented TODO
+  Copy (s string)
 // not yet implemented TODO
   Paste() string
 }

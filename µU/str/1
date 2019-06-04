@@ -365,7 +365,7 @@ func center (s *string, n uint) {
     return
   }
   k := (n - l) / 2 // + (n - l) % 2
-  *s = new_(k) + *s + new_(n - (l + k))
+  *s = clr (k) + *s + clr (n - (l + k))
 }
 
 func offNondigits (s *string) {
@@ -385,7 +385,7 @@ func offNondigits (s *string) {
     i ++
     j ++
   }
-  *s = string(b[:i]) + new_(l - i)
+  *s = string(b[:i]) + clr (l - i)
 }
 
 func split (s string) (uint, []string, []uint) {

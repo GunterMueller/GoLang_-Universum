@@ -1,6 +1,6 @@
 package euro
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   "math"
@@ -192,7 +192,7 @@ func (x *euro) Round (Y Euro) {
 }
 
 func (x *euro) String() string {
-  if x.Empty() { return str.Clr (length) }
+  if x.Empty() { return str.New (length) }
   return nat.StringFmt (x.cent / hundred, nDigits, false) + "," +
          nat.StringFmt (x.cent % hundred, 2, true)
 }

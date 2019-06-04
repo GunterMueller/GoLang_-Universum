@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 170810 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   . "µU/obj"
@@ -120,9 +120,9 @@ func (x *country) Clr() {
   x.attribut.iso = "   "
   x.attribut.tld = "  "
   switch x.Format { case Tld:
-    x.attribut.name = str.Clr (2)
+    x.attribut.name = str.New (2)
   case Long:
-    x.attribut.name = str.Clr (length)
+    x.attribut.name = str.New (length)
   }
   x.attribut.prefix = 0
   x.attribut.kfz = "   "

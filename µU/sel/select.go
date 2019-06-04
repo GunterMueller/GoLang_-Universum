@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 180804 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   "µU/ker"
@@ -163,7 +163,7 @@ func names (mask, suffix string, n uint, l, c uint, f, b col.Colour) (string, st
   errh.Hint ("falls Dateien vorhanden, auswählen F2-, dann Pfeil-/Eingabetaste, ggf. Esc")
   name:= env.Arg(1)
   if name == "" {
-    name = str.Clr (n) // Wörkeraunt um Fehler in box/imp.go
+    name = str.New (n) // Wörkeraunt um Fehler in box/imp.go
   }
   if p, ok:= str.Pos (name, '.'); ok {
     name = str.Part (name, 0, p)
@@ -177,14 +177,14 @@ func names (mask, suffix string, n uint, l, c uint, f, b col.Colour) (string, st
   a:= files.NumPred (hasSuffix)
   if a > 0 {
     switch C, _:= kbd.LastCommand(); C { case kbd.Esc:
-      return "", "" // str.Clr (n), ""
+      return "", "" // str.New (n), ""
     case kbd.Enter:
       // entered
     case kbd.Search:
       i:= uint(0)
       select_ (aus, a, a, n, &i, l, c + t1, b, f)
       if i == a {
-        return "", "" // str.Clr (n), ""
+        return "", "" // str.New (n), ""
       } else {
         filename = str.Lat1 (files.NamePred (hasSuffix, i))
       }

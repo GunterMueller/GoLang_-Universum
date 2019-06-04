@@ -1,6 +1,6 @@
 package breal
 
-// (c) Christian Maurer   v. 170810 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 // TODO: more than 2 digits after the decimal point
 
@@ -126,7 +126,7 @@ func (x *breal) Defined (s string) bool {
 
 func (x *breal) String() string {
   if x.float64 == x.invalid {
-    return str.Clr (x.wd)
+    return str.New (x.wd)
   }
   s := real.String (x.float64)
   str.OffSpc (&s)

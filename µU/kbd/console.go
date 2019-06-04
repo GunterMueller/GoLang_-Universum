@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 180106 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   "os"
@@ -18,7 +18,7 @@ var (
 
 func catch() {
   shiftC, ctrlC, altC, altGrC, fn = false, false, false, false, false
-  defer ker.Fin() // Hilft nix. Warum nicht ???
+  defer ker.Fin() // hilft nich
   for {
     b := term.Read()
     switch b { // case 0:
@@ -116,11 +116,11 @@ func input (b *byte, c *Comm, d *uint) {
       case 2:
         *b = aa[k]
       default:
-//        if altGr {
+        if altGrC {
 //          *b = aA[k]
-//        } else {
-        *b = aa[k]
-//        }
+        } else {
+//          *b = aa[k]
+        }
       }
     case k == esc || k == numEnter || isCmd (k):
       *c = kK[k]

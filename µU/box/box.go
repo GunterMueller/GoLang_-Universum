@@ -1,6 +1,6 @@
 package box
 
-// (c) Christian Maurer   v. 170423 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   "strconv"
@@ -28,6 +28,7 @@ overwritable,
        index uint
              kbd.Comm
        depth uint
+      marked string
              }
 var
   edited bool = true
@@ -120,7 +121,7 @@ func (x *box) Clr (l, c uint) {
   scr.Lock()
   f, b := scr.Cols()
   scr.Colours (scr.ScrCols())
-  scr.WriteGr (Clr (x.width), int(scr.Wd1() * c), int(scr.Ht1() * l))
+  scr.WriteGr (New (x.width), int(scr.Wd1() * c), int(scr.Ht1() * l))
   scr.Colours (f, b)
   scr.Unlock()
 }
@@ -147,8 +148,26 @@ func (b *box) write (s string, x, y uint) {
 }
 
 func (b *box) done (s *string, x, y uint) bool {
-  switch b.Comm { case kbd.Enter, kbd.Esc:
+  switch b.Comm {
+  case kbd.Enter, kbd.Esc:
     return true
+  case kbd.Back:
+    switch b.depth { case 0:
+      if b.index > 0 {
+        b.index--
+        Rem (s, b.index, 1)
+        *s += " "
+      }
+    case 1:
+      b.index = 0
+      *s = New (b.width)
+      if b.overwritable {
+        b.overwritable = ! b.overwritable
+      }
+    default:
+      return true
+    }
+    b.write (*s, x, y)
   case kbd.Left:
     if b.depth == 0 {
       if b.index > 0 {
@@ -165,7 +184,9 @@ func (b *box) done (s *string, x, y uint) bool {
     } else {
       return true
     }
-  case kbd.Down, kbd.Up:
+  case kbd.Up, kbd.Down:
+    return true
+  case kbd.PgLeft, kbd.PgRight, kbd.PgUp, kbd.PgDown:
     return true
   case kbd.Pos1:
     if b.depth == 0 {
@@ -189,23 +210,6 @@ func (b *box) done (s *string, x, y uint) bool {
     }
   case kbd.Tab:
     return true
-  case kbd.Back:
-    switch b.depth { case 0:
-      if b.index > 0 {
-        b.index--
-        Rem (s, b.index, 1)
-        *s += " "
-      }
-    case 1:
-      b.index = 0
-      *s = Clr (b.width)
-      if b.overwritable {
-        b.overwritable = ! b.overwritable
-      }
-    default:
-      return true
-    }
-    b.write (*s, x, y)
   case kbd.Del:
     switch b.depth { case 0:
       if b.index < ProperLen (*s) {
@@ -215,7 +219,7 @@ func (b *box) done (s *string, x, y uint) bool {
     case 1:
       if b.overwritable {
         b.index = 0
-        *s = Clr (b.width)
+        *s = New (b.width)
       } else {
         return true
       }
@@ -229,11 +233,33 @@ func (b *box) done (s *string, x, y uint) bool {
     } else {
       return true
     }
-  case kbd.Help, kbd.Search, kbd.Act, kbd.Cfg, kbd.Mark, kbd.Demark, kbd.Cut, kbd.Copy, kbd.Paste:
+  case kbd.Help, kbd.Search:
+    return true
+  case kbd.Act, kbd.Cfg:
+    return true
+  case kbd.Mark:
+    b.marked = *s
+    return true
+  case kbd.Demark:
+    b.marked = ""
+    return true
+  case kbd.Cut:
+    scr.Cut (s)
+    *s = New (b.width)
+    return true
+  case kbd.Copy:
+    scr.Copy (*s)
+    return true
+  case kbd.Paste:
+    *s = scr.Paste ()
     return true
   case kbd.Red, kbd.Green, kbd.Blue:
     return true
-  case kbd.Print, kbd.Roll, kbd.Pause:
+  case kbd.Print:
+    return true
+  case kbd.Roll:
+    return true
+  case kbd.Pause:
     return true
   case kbd.Go:
     ;
@@ -428,7 +454,7 @@ func (b *box) doneNumerical (s *string, x, y uint) bool {
         *s = " " + *s
       }
     case 1:
-      *s = Clr (b.width)
+      *s = New (b.width)
       status = start
       b.index = b.width
     default:
@@ -460,7 +486,7 @@ func (b *box) doneNumerical (s *string, x, y uint) bool {
         *s = " " + *s
       }
     case 1:
-      *s = Clr (b.width)
+      *s = New (b.width)
       b.index = b.width
     default:
       return true
@@ -574,7 +600,7 @@ func (B *box) editNumber (imGraphikmodus bool, s *string, x, y uint) {
       case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
         if B.TRnumerical {
           if firstTime {
-            *s = Clr (B.width)
+            *s = New (B.width)
             status = start
             firstTime = false
             edited = true

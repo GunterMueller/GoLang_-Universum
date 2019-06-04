@@ -1,6 +1,6 @@
 package bnat
 
-// (c) Christian Maurer   v. 170810 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   . "µU/obj"
@@ -98,7 +98,7 @@ func (x *natural) Defined (s string) bool {
 
 func (x *natural) String() string {
   if x.n == x.invalid {
-    return str.Clr (x.wd)
+    return str.New (x.wd)
   }
   return nat.StringFmt (uint(x.n), x.wd, false)
 }

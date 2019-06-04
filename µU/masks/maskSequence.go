@@ -1,6 +1,6 @@
 package masks
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 190526 - license see µU.go
 
 import (
   . "µU/obj"
@@ -172,7 +172,7 @@ func (x *maskSequence) Decode (b []byte) { // TODO cF, cB
     n := uint(Decode (uint32(0), b[i:i+a]).(uint32))
     i += a
     a = n
-    x.mask[i] = Decode (str.Clr (n), b[i:i+a]).(string)
+    x.mask[i] = Decode (str.New (n), b[i:i+a]).(string)
     i += a
     a = uint(4)
     n = uint(Decode (uint32(0), b[i:i+a]).(uint32))
