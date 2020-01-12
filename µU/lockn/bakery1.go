@@ -1,11 +1,13 @@
 package lockn
 
-// (c) Christian Maurer   v. 190321 - license see µU.go
+// (c) Christian Maurer   v. 190815 - license see µU.go
 
 // >>> Bakery-Algorithm of Lamport, corrected version
 
-import
+import (
   . "µU/obj"
+  . "µU/atomic"
+)
 type
   bakery1 struct {
                  uint "number of processes"
@@ -16,7 +18,7 @@ type
 func (x *bakery1) max() uint {
   m := uint(0)
   for i := uint(0); i < x.uint; i++ {
-    if x.number[i] > m {
+    if m < x.number[i] {
       m = x.number[i]
     }
   }
@@ -42,8 +44,8 @@ func newBakery1 (n uint) LockerN {
 }
 
 func (x *bakery1) Lock (p uint) {
-  x.number[p] = 1
-  x.number[p] = x.max() + 1
+  Store (&x.number[p], 1)
+  Store (&x.number[p], x.max() + 1)
   for q := uint(0); q < x.uint; q++ {
     if q != p {
       for x.number[q] > 0 && x.less (q, p) {
@@ -54,5 +56,5 @@ func (x *bakery1) Lock (p uint) {
 }
 
 func (x *bakery1) Unlock (p uint) {
-  x.number[p] = 0
+  Store (&x.number[p], 0)
 }

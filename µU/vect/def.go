@@ -1,11 +1,10 @@
 package vect
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 191019 - license see µU.go
 
 import (
   . "µU/obj"
-  . "µU/spc"
-  "µU/col"
+  . "µU/add"
 )
 const // For float64's a, b "a quasi equals b" means |a - b| < epsilon.
   epsilon = 1.0E-6
@@ -14,27 +13,35 @@ type
 
 // A vector is "Empty", iff it is quasi the null vector in this sense;
 // Clear sets a vector to the null vector.
-  Editor
-  col.Colourer
-  Stringer
-  Printer
+  Object
   Adder
+  Stringer
 
 // x = (x0, x1, x2).
   Set3 (x0, x1, x2 float64)
 
-// x = (c[Right], c[Top], c[Front]).
-  Set (c Coord)
+// Pre: 0 <= i < 3.
+// The i-th coordinate of x is c, the others are unchanged.
+  Set (i int, x0 float64) // where x1 and x2 are not changed.
 
-// Returns the coordinates of x (in direction d).
-  Coord3 () (float64, float64, float64)
-  Coord (d Direction) float64
+// Returns the coordinates of x.
+  Coord3() (float64, float64, float64)
+
+// Pre: 0 <= i < 3.
+// Returns the coordinate of x in direction i.
+  Coord (i int) float64
 
 // x = (x0 + r * cos(phi) * sin(theta),
 //      x1 + r * sin(phi) * sin(theta),
 //      x2 + r * cos(theta)),
 // where the coordinates are those of x before.
   SetPolar (x, y, z, r, phi, theta float64)
+
+// x = a + b
+  Sum (a, b Vector)
+
+// x = a - b
+  Diff (a, b Vector)
 
 //  x = ((a0, 0, 0), (0, b1, 0), (0, 0, c2)).
   Project (a, b, c Vector)
@@ -64,7 +71,7 @@ type
   Parametrize (y, z Vector, t float64)
 
 // Returns |x| = sqrt (<x, x>),
-  Len () float64
+  Len() float64
 
 // Returns |x - y|.
   Distance (y Vector) float64

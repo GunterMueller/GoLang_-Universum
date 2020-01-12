@@ -1,11 +1,11 @@
 package kbd
 
-// (c) Christian Maurer   v. 180813 - license see µU.go
+// (c) Christian Maurer   v. 191009 - license see µU.go
 
 // >>> implements only a german keyboard !
 
-import
-  "µU/spc"
+//import
+//  "µU/spc"
 
 /* We distinguish between three groups of keys to operate and control a system with keyboard and mouse:
 
@@ -43,6 +43,7 @@ type
   This; Move; Thus        // and to "drag and drop" them
 //^^^^  ^^^^  ^^^^ TODO names
   Nav                     // to navigate in space with a 3d-mouse
+  Expose                  // only for openGL3G
   NComms                  // number of commands
 )
 
@@ -108,7 +109,7 @@ func (c Comm) String() string { return text[c] }
 
 // Returns the movement- and rotationvalues of the last command Navigate.
 // The velues are all 0, if there is no 3d-mouse or this command was not given,.
-func ReadNavi() (spc.GridCoord, spc.GridCoord) { return readNavi() }
+// func ReadNavi() (spc.GridCoord, spc.GridCoord) { return readNavi() }
 
 // Precondition: A byte or command was read.
 // Returns the last read byte, if there is one, otherwise 0.

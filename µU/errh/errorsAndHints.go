@@ -1,13 +1,12 @@
 package errh
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 190821 - license see µU.go
 
 import (
 //  "µU/env"
   "µU/z"
   "µU/str"
   "µU/kbd"
-  "µU/scr"
   "µU/col"
   . "µU/scr"
   "µU/box"
@@ -21,24 +20,25 @@ var (
 //           1         2         3         4         5         6         7         8         9
 // 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
   license = []string {
-  " Die Quellen von µU sind nur zum Einsatz in der Lehre konstruiert  und haben deshalb einen ",
-  " rein akademischen Charakter. Sie liefern u.a. eine Reihe von Beispielen für die 3.Auflage ",
-  " meines Lehrbuchs \"Nichtsequentielle und Verteilte Programmierung mit Go\" (Springer 2018). ",
-  " Für Lehrzwecke in Universitäten und Schulen  sind die Quellen uneingeschränkt verwendbar; ",
-  " jegliche weitergehende - insbesondere kommerzielle - Nutzung ist jedoch strikt untersagt. ",
+  " Das Mikrouniversum µU ist nur zum Einsatz in der Lehre konstruiert  und hat deshalb einen ",
+  " rein akademischen Charakter.  Es liefert u.a. eine Reihe von Beispielen für mein Lehrbuch ",
+  " \"Nichtsequentielle und Verteilte Programmierung mit Go\"  (Springer Vieweg 2018 und 2019). ",
+  " Für Zwecke der Lehre an Universitäten und in Schulen sind die Quellen des Mikrouniversums ",
+  " uneingeschränkt verwendbar; jede Form weitergehender Nutzung ist jedoch strikt untersagt. ",
   "                                                                                           ",
   " THIS SOFTWARE IS PROVIDED BY THE AUTHORS  \"AS IS\"  AND ANY EXPRESS OR IMPLIED WARRANTIES, ",
   " INCLUDING,  BUT NOT LIMITED TO,  THE IMPLIED WARRANTIES  OF MERCHANTABILITY  AND  FITNESS ",
-  " FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY ",
+  " FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL the authors BE LIABLE FOR ANY ",
   " DIRECT, INDIRECT,  INCIDENTAL, SPECIAL,  EXEMPLARY, OR CONSEQUENTIAL DAMAGES  (INCLUDING, ",
   " BUT NOT LIMITED TO,  PROCUREMENT OF SUBSTITUTE GOODS  OR SERVICES;  LOSS OF USE, DATA, OR ",
   " PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER ",
   " IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY ",
   " WAY OUT OF THE USE OF THIS SOFTWARE,  EVEN IF ADVISED  OF THE POSSIBILITY OF SUCH DAMAGE. ",
+  "                                                                                           ",
   " APART FROM THIS  THE TEXT IN GERMAN ABOVE AND BELOW  IS A MANDATORY PART  OF THE LICENSE. ",
   "                                                                                           ",
   " Die Quelltexte von µU sind äußerst sorgfältig entwickelt und werden laufend überarbeitet. ",
-  " ABER: Es gibt keine fehlerfreie Software - dies gilt natürlich auch für diese Quelltexte. ",
+  " ABER:  Es gibt keine fehlerfreie Software - dies gilt natürlich auch für _diese_ Quellen. ",
   " Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, z. B. zum Abfackeln von Rechnern, ",
   " zur Entgleisung von Eisenbahnen, zum GAU in Atomkraftwerken  oder zum Absturz des Mondes. ",
   " Deshalb wird vor der Verwendung irgendwelcher Quellen von µU in Programmen zu ernsthaften ",
@@ -275,7 +275,7 @@ func writeLicense (project, version, author string, f, cl, b col.Colour, g []str
   w, h := uint(len (g[0])), uint(len(license)) /* == len (license), see func init */ + 6
   l, c := (NLines() - h) / 2, (NColumns() - w) / 2
   l0, c0 := l, c
-  scr.Save (l0, c0, w, h)
+  Save (l0, c0, w, h)
   licenseBox.Wd (w)
   licenseBox.Colours (cl, b)
   emptyLine := str.New (w)

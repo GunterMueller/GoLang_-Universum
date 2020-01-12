@@ -1,12 +1,12 @@
 package lock2
 
-// (c) Christian Maurer   v. 190325 - license see µU.go
+// (c) Christian Maurer   v. 190815 - license see µU.go
 //
 // >>> Algorithm of Kessels
 
 import (
-  . "µU/atomic"
   . "µU/obj"
+  . "µU/atomic"
 )
 type
   kessels struct {

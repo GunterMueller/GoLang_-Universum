@@ -1,15 +1,15 @@
 package lock2
 
-// (c) Christian Maurer   v. 190323 - license see µU.go
+// (c) Christian Maurer   v. 190815 - license see µU.go
 
 import (
-  . "µU/atomic"
   . "µU/obj"
+  . "µU/atomic"
 )
 type
   peterson struct {
        interested [2]uint
-         favoured uint "identity of the favoured process"
+         favoured uint // identity of the favoured process
                   }
 
 func newPeterson() Locker2 {

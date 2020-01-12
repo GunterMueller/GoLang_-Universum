@@ -1,6 +1,6 @@
 package atomic
 
-// (c) Christian Maurer   v. 190331 - license see µU.go
+// (c) Christian Maurer   v. 190816 - license see µU.go
 
 // Tools for the construction of locking algorithms.
 // The execution of any of these cannot be interrupted

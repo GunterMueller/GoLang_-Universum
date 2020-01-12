@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 181024 - license see µU.go
+// (c) Christian Maurer   v. 190707 - license see µU.go
 
 import (
   "µU/env"
@@ -206,28 +206,82 @@ func g5 (i uint) DistributedGraph {
   return newg (false, l, c, e, 3, i)
 }
 
-func g5full (i uint) DistributedGraph {
+func g5ring (i uint) DistributedGraph {
 /*
-2   /-----------------\
-3  0 ------- 2 ------- 4
-4  | \     / |       / |
-5  |   \ /   |     /  /
-6  |   / \   |   /  /
-7  | /     \ | /  /
-8  1 ------- 3  /
-9   \---------/
+1            3
+2          /   \
+3       /         \
+4    /               \
+5  0                   1
+6  |                   |
+7   \                 /
+8    \               /
+9     \             /
+10     4 --------- 2
 
             1         2
   0123456789012345678901
 */
-  l := []int { 2, 8,  2,  8,  2 }
-  c := []int { 1, 1, 11, 11, 21 }
+  l := []int {  1, 5, 10, 18,  5 }
+  c := []int { 11, 1,  5, 17, 21 }
+  e := [][]uint { []uint { 3, 4 },
+                  []uint { 2, 3 },
+                  []uint { 1, 4 },
+                  []uint { 0, 1 },
+                  []uint { 0, 2 } }
+  return newg (false, l, c, e, 4, i)
+}
+
+func g5ringdir (i uint) DistributedGraph {
+/*
+1            3
+2          /   \
+3       /         \
+4    /               \
+5  0                   1
+6  |                   |
+7   \                 /
+8    \               /
+9     \             /
+10     4 --------- 2
+
+            1         2
+  0123456789012345678901
+*/
+  l := []int {  1, 5, 10, 18,  5 }
+  c := []int { 11, 1,  5, 17, 21 }
+  e := [][]uint { []uint { 4 },
+                  []uint { 3 },
+                  []uint { 1 },
+                  []uint { 0 },
+                  []uint { 2 } }
+  return newg (false, l, c, e, 4, i)
+}
+
+func g5full (i uint) DistributedGraph {
+/*
+1            0
+2          // \\
+3       /  /   \  \
+4    /    /     \    \
+5  1 ----/-------\---- 4
+6  |  \ /         \ /  |
+7   \  / \       / \  /
+8    \ |    \ /    | /
+9     \|  /     \  |/
+10     2 --------- 3
+
+            1         2
+  0123456789012345678901
+*/
+  l := []int {  1, 5, 10, 18,  5 }
+  c := []int { 11, 1,  5, 17, 21 }
   e := [][]uint { []uint { 1, 2, 3, 4 },
                   []uint { 2, 3, 4 },
                   []uint { 3, 4 },
                   []uint { 4 },
-                  []uint { }}
-  return newg (false, l, c, e, 2, i)
+                  []uint { } }
+  return newg (false, l, c, e, 1, i)
 }
 
 func g6 (i uint) DistributedGraph {

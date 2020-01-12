@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 190528 - license see µU.go
 
 import (
   "µU/mode"
@@ -148,6 +148,8 @@ func P6Decode (x, y uint, ps []byte) { actual.P6Decode(x,y,ps) }
 
 // func WriteGlx() { actual.WriteGlx() }
 
-func Cut (s *string) { actual.Cut(s) }
+// func Cut (s *string) { actual.Cut(s) }
 func Copy (s string) { actual.Copy(s) }
 func Paste() string { return actual.Paste() }
+func Copy7 (s string, i int) { actual.Copy7 (s, i) }
+func Paste7 (i int) string { return actual.Paste7 (i) }

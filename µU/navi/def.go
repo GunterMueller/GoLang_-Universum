@@ -7,8 +7,8 @@ package navi
 // SYSFS{idVendor}=="046d", SYSFS{idProduct}=="c626", MODE="444", SYMLINK+="input/navi"
 // then a Space Navigator of 3dconnexion is initialized.
 
-import
-  "µU/spc"
+//import
+//  "µU/spc"
 type
   Command byte
 
@@ -16,4 +16,4 @@ func Exists () bool { return exists() }
 
 func Channel () (chan Command) { return navipipe }
 
-func Read () (spc.GridCoord, spc.GridCoord) { return read() }
+// func Read () (spc.GridCoord, spc.GridCoord) { return read() }

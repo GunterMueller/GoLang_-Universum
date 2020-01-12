@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 190805 - license see µU.go
 
 import (
   "µU/rand"
@@ -115,6 +115,10 @@ func (x *text) Eq (Y Any) bool {
 
 func (x *text) Less (Y Any) bool {
   return str.Less (x.string, x.imp (Y).string)
+}
+
+func (x *text) Leq (Y Any) bool {
+  return x.Eq(Y) || x.Less(Y)
 }
 
 func (x *text) Equiv (Y Text) bool {

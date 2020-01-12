@@ -1,6 +1,6 @@
 package piset
 
-// (c) Christian Maurer   v. 171106 - license see µU.go
+// (c) Christian Maurer   v. 190805 - license see µU.go
 
 import (
   . "µU/obj"
@@ -190,10 +190,6 @@ func (x *persistentIndexedSet) Sort() {
   x.Jump (false)
 }
 
-func (x *persistentIndexedSet) leq (a, b Object) bool {
-  return b.Less (a)
-}
-
 func (x *persistentIndexedSet) Ordered() bool {
   ordered := true
   if x.Set.Empty() { return ordered }
@@ -205,7 +201,7 @@ func (x *persistentIndexedSet) Ordered() bool {
     if first {
       first = false
     } else {
-      if ! x.leq (former, x.Object) {
+      if ! Leq (former, x.Object) {
         ordered = false
       }
     }
@@ -275,7 +271,7 @@ func (x *persistentIndexedSet) Trav (op Op) {
     if first {
       first = false
     } else {
-      if ! x.leq (former, x.Object) { ker.Panic ("Pre of Trav not met: op is not monotone") }
+      if ! Leq (former, x.Object) { ker.Panic ("Pre of Trav not met: op is not monotone") }
     }
     former = x.Object.Clone().(Object)
   })

@@ -1,6 +1,6 @@
 package euro
 
-// (c) Christian Maurer   v. 180901 - license see µU.go
+// (c) Christian Maurer   v. 191107 - license see µU.go
 
 import (
   . "µU/obj"
@@ -28,3 +28,6 @@ type
 
 // Returns a new empty Euro.
 func New() Euro { return new_() }
+
+// Returns a new Euro with Val2 = (e,c).
+func New2 (e, c uint) Euro { return new2(e,c) }

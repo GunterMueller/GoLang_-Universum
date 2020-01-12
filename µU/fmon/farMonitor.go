@@ -1,6 +1,6 @@
 package fmon
 
-// (c) Christian Maurer   v. 180813 - license see µU.go
+// (c) Christian Maurer   v. 190822 - license see µU.go
 
 import (
   . "µU/ker"
@@ -37,18 +37,18 @@ func new1 (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
 }
 
 func new2 (a, b Any, n uint, fs FuncSpectrum, ps PredSpectrum,
-           h string, p uint16, s bool, stmt Stmt) FarMonitor {
+           h string, p uint16, s bool) FarMonitor {
   if n == 0 { Panic ("fmon.New2 must be called with 2nd arg > 0") }
   x := new(farMonitor)
   x.input = Clone(a)
-	x.output = Clone(b)
+  x.output = Clone(b)
   x.uint = n
   x.bool = s
   x.ch = make([]nchan.NetChannel, x.uint)
   for i := uint(0); i < x.uint; i++ {
     x.ch[i] = nchan.NewN (nil, h, p + uint16(i), s)
   }
-  return x.common (fs, ps, stmt)
+  return x.common (fs, ps, Nothing)
 }
 
 func (x *farMonitor) common (fs FuncSpectrum, ps PredSpectrum, stmt Stmt) FarMonitor {

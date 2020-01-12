@@ -1,16 +1,16 @@
 package xwin
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 191019 - license see µU.go
 
 // >>> This package only serves the implementations of µU/mouse,
 //     µU/kbd and µU/cons; it must not be used anywhere else.
 
-// #include <X11/Xlib.h>
 import
   "C"
 import (
   . "µU/linewd"
   . "µU/shape"
+  "µU/show"
   . "µU/ptr"
   . "µU/mode"
   "µU/col"
@@ -26,8 +26,6 @@ var
   Eventpipe chan Event = make (chan Event)
 type
   XWindow interface {
-
-  Display() C.struct__XDisplay
 
   Fin()
   Flush()
@@ -185,23 +183,23 @@ type
 
 // openGL //////////////////////////////////////////////////////////////
 
-  Start (a, b, c, dx, dy, dz float64)
-  Move (d int, a float64)
-  TurnAroundFocus (d int, a float64)
-  Draw (draw func())
-  Look (draw func())
+  Start (m show.Mode, draw func(), ex, ey, ez, fx, fy, fz, nx, ny, nz float64)
+  Go()
 
 // cut buffer //////////////////////////////////////////////////////////
 
   Copy (s string)
   Paste() string
+// Pre: 0 <= i <= 7.3G
+  Copy7 (s string, i int)
+  Paste7 (i int) string
 }
-
-func SwitchShow() { switchShow() }
 
 // Returns a new window with left upper Corner (x, y)
 // in the size of m (see mode/def.go).
 func New (x, y uint, m Mode) XWindow { return new_(x,y,m) }
+
+func NewWH (x, y, w, h uint) XWindow { return newWH(x,y,w,h) }
 
 // Returns a new window with left upper Corner (0, 0)
 // in the maximal possible size (depending on the actual screen).

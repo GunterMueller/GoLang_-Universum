@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 191107 - license see µU.go
 
 import (
   . "µU/obj"
@@ -17,10 +17,13 @@ const (
 type
   colour struct {
         r, g, b byte
+                string
                 }
 var (
   bitDepth uint
   depth uint
+  all = make([]uint, 0)
+  name = make([]string, 0)
 )
 
 func new_() Colour {
@@ -29,17 +32,12 @@ func new_() Colour {
   return x
 }
 
-func new3 (r, g, b byte) Colour {
+func new3 (n string, r, g, b byte) Colour {
   x := new(colour)
+  x.string = n
   x.r, x.g, x.b = r, g, b
   return x
 }
-
-//func colour3 (r, g, b uint) Colour {
-//  var c Colour
-//  c.R, c.G, c.B = byte(r % m), byte(g % m), byte(b % m)
-//  return c
-//}
 
 func (c *colour) imp (Y Any) *colour {
   y, ok := Y.(*colour)
@@ -99,9 +97,7 @@ func (c *colour) IsLightWhite() bool {
 }
 
 func (c *colour) Empty() bool {
-  return c.r == 0 &&
-         c.g == 0 &&
-         c.b == 0
+  return c.IsBlack()
 }
 
 func (c *colour) Clr() {
@@ -130,12 +126,12 @@ func (c *colour) Clone() Any {
   return y
 }
 
-func (c *colour) Real() (float32, float32, float32) {
+func (c *colour) Float32() (float32, float32, float32) {
   const f = float32(m1)
   return float32(c.r) / f, float32(c.g) / f, float32(c.b) / f
 }
 
-func (c *colour) Double() (float64, float64, float64) {
+func (c *colour) Float64() (float64, float64, float64) {
   const f = m1
   return float64(c.r) / f, float64(c.g) / f, float64(c.b) / f
 }
@@ -145,6 +141,13 @@ func random() Colour {
   y.r, y.g, y.b = byte (rand.Natural (m)), byte (rand.Natural (m)), byte (rand.Natural (m))
   return y
 }
+
+var (
+  black = Black()
+  white = White()
+  lightWhite = LightWhite()
+  red = Red()
+)
 
 func startCols() (Colour, Colour) {
   return white, black
@@ -166,57 +169,6 @@ func (c *colour) ansiEncode() uint { // 0..15 // doch vielleicht Mist
   if r >= m3 && g >= m3 && b >= m3 { n += light }
   return n
 }
-
-/*
-func changeRand (c *Colour) {
-  const (N = 32; N2 = N / 2)
-  n := byte(rand.Natural (N))
-  if n < N2 {
-    if c.R >= n {
-      c.R -= n
-    } else {
-      c.R = 0
-    }
-  } else { // n >= N2
-    n -= N2
-    if c.R + n <= m1 {
-      c.R += n
-    } else {
-      c.R = light
-    }
-  }
-  n = byte(rand.Natural (N))
-  if n < N2 {
-    if c.G >= n {
-      c.G -= n
-    } else {
-      c.G = 0
-    }
-  } else {
-    n -= N2
-    if c.G + n <= m1 {
-      c.G += n
-    } else {
-      c.G = light
-    }
-  }
-  n = byte(rand.Natural (N))
-  if n < N2 {
-    if c.B >= n {
-      c.B -= n
-    } else {
-      c.B = 0
-    }
-  } else {
-    n -= N2
-    if c.B + n <= m1 {
-      c.B += n
-    } else {
-      c.B = light
-    }
-  }
-}
-*/
 
 func (c *colour) Invert() {
   c.r, c.g, c.b = m1 - c.r, m1 - c.g, m1 - c.b
@@ -253,37 +205,6 @@ func value (b byte) uint{
   return 0
 }
 
-/*
-func change (c *Colour, rgb, d byte, lighter bool) {
-  if rgb > 2 || d > 127 { return }
-  switch rgb { case 0:
-    if lighter {
-      if c.R <= m1 - d {
-        c.R += d
-      }
-    } else if c.R >= d {
-      c.R -= d
-    }
-  case 1:
-    if lighter {
-      if c.G <= m1 - d {
-        c.G += d
-      }
-    } else if c.G >= d {
-
-    }
-  case 2:
-    if lighter {
-      if c.B <= m1 - d {
-        c.B += d
-      }
-    } else if c.B >= d {
-      c.B -= d
-    }
-  }
-}
-*/
-
 func char (n uint) string {
   if n < 10 {
     return string (n + uint('0'))
@@ -295,12 +216,21 @@ func char (n uint) string {
 }
 
 func (c *colour) String() string {
+  return c.string
+}
+
+func (c *colour) Defined (s string) bool {
+  c.string = s
+  return true
+}
+
+func (c *colour) String1() string {
   return char (uint(c.r) / 16) + char (uint(c.r) % 16) +
          char (uint(c.g) / 16) + char (uint(c.g) % 16) +
          char (uint(c.b) / 16) + char (uint(c.b) % 16)
 }
 
-func (c *colour) Defined (s string) bool {
+func (c *colour) Defined1 (s string) bool {
   if len(s) != 6 { return false }
   for i := 0; i < 6; i++ {
     if ! ok (s[i]) { return false }
@@ -373,135 +303,3 @@ func (c *colour) Code() uint {
   }
   return 0
 }
-
-// Pre: len(bs) == int(depth)
-func cd (bs Stream) uint { // inverse of cc
-  n := uint(0)
-  if len(bs) == int(depth) {
-    for i := int(depth) - 1; i >= 0; i-- {
-      n = n * 1<<8 + uint(bs[i])
-    }
-  }
-  return n
-}
-
-var (
-  headF = lightWhite
-  headB = blue
-  hintF = lightWhite
-  hintB = magenta
-  errorF = flashYellow
-  errorB = red
-  menuF = lightWhite
-  menuB = red
-  muF =           new3 (  0,  16,  64)
-  muB =           new3 (231, 238, 255)
-
-  black =            new3 (  0,   0,   0)
-
-  brown =            new3 ( 95,  53,  34)
-  blackBrown =       new3 ( 30,  16,  12)
-  darkBrown =        new3 ( 60,  33,  24)
-  mediumBrown =      new3 (149, 106,   0)
-  lightBrown =       new3 (160,  88,  63)
-  whiteBrown =       new3 (221, 153, 106)
-//  whiteBrown =       new3 (255, 212, 149)
-  brownWhite =       new3 (249, 202, 160)
-
-  siena =            new3 (153,  85,  42)
-  lightSiena =       new3 (191, 127,  42)
-//  redBrown =        new3 (170,  64,  64)
-//  umbrabraun =       new3 (149, 135,   0)
-  oliveBrown =       new3 (127, 127,   0)
-  lightOliveBrown =  new3 (170, 170,  85)
-//  orangeBrown1 =     new3 (127, 106,  42)
-//  Dark Ocker =      new3 (170, 127,  21)
-//  Ocker =            new3 (255, 170,  64)
-//  Light Ocker =        new3 (255, 191, 106)
-//  Rosabraun =        new3 (255, 191, 149)
-//  Hellbeige =        new3 (234, 212, 170)
-//  Beige2 =           new3 (212, 191, 149)
-//  VeryLightBrown =    new3 (206, 170, 127)
-
-  blackRed =         new3 ( 46,  18,  26)
-  darkRed =          new3 ( 85,   0,   0)
-  red =              new3 (170,   0,   0)
-  flashRed =         new3 (255,   0,   0)
-  lightRed =         new3 (255,  85,  85)
-  whiteRed =         new3 (255, 187, 170)
-//  dunkelrosa =       new3 (234,  0,  127)
-//  rosa =             new3 (255, 170, 170)
-//  hellrosa =         new3 (255, 191, 191)
-  pompejiRed =       new3 (187,  68,  68)
-  cinnabarRed =      new3 (238,  64,   0)
-  carmine =          new3 (125,   0,  42)
-  brickRed =         new3 (205,  63,  51)
-
-  flashOrange =      new3 (255, 127,   0)
-  darkOrange =       new3 (221, 127,  68)
-  orange =           new3 (255, 153,  51)
-  lightOrange =      new3 (255, 164,  31)
-  whiteOrange =      new3 (255, 170,   0)
-//  blutOrange1 =      new3 (255, 112,  85)
-
-  flashYellow =      new3 (255, 255,   0)
-  darkYellow =       new3 (255, 187,   0)
-  yellow =           new3 (255, 255,  34)
-  lightYellow =      new3 (255, 255, 102)
-  whiteYellow =      new3 (255, 255, 153)
-  sandGelb1 =        new3 (234, 206, 127)
-  zitronenGelb1 =    new3 (191, 255,  85)
-
-  flashGreen =       new3 (  0, 255,   0)
-  blackGreen =       new3 (  0,  51,   0)
-  darkGreen =        new3 (  0,  85,   0)
-  green =            new3 (  0, 170,   0)
-  lightGreen =       new3 ( 85, 255,  85)
-  whiteGreen =       new3 (170, 255, 170)
-  birchGreen =       new3 ( 42, 153,  42)
-  grassGreen =       new3 (  0, 144,   0)
-//  chromeGreen =    new3 ( 85, 170,   0)
-//  lightChromeGreen =    new3 ( 85, 170,   0)
-  oliveGreen =       new3 ( 85, 170,   0)
-//  lightOliveGreen =     new3 (170, 196,  85)
-  yellowGreen =         new3 (170, 255,  85)
-//  wiesenGreen =       new3 (106, 212, 106)
-
-  blackCyan =        new3 (  0,  51,  51)
-  darkCyan =         new3 (  0,  85,  85)
-  cyan =             new3 (  0, 170, 170)
-  lightCyan =        new3 ( 85, 255, 255)
-  whiteCyan =        new3 (170, 255, 255)
-  flashCyan =        new3 (  0, 255, 255)
-
-  flashBlue =        new3 (  0,   0, 255)
-  blackBlue =        new3 (  0,   0,  51)
-  prussianBlue =     new3 (  0, 102, 170)
-  darkBlue =         new3 (  0,   0,  85)
-  blue =             new3 (  0,   0, 170)
-  lightBlue =        new3 ( 51, 102, 255)
-  whiteBlue =        new3 (153, 221, 255)
-//  whiteBlue =        new3 (170, 170, 255)
-  gentianBlue =      new3 (  0,   0, 212)
-  skyBlue =          new3 (  0, 170, 255)
-  ultramarine =      new3 ( 68,   0, 153)
-
-  blackMagenta =     new3 ( 51,  0,  51)
-  darkMagenta =      new3 ( 85,  0,  85)
-  magenta =          new3 (170,  0, 170)
-  lightMagenta =     new3 (255, 85, 255)
-  flashMagenta =     new3 (255,  0, 255)
-  whiteMagenta =     new3 (255,187, 255)
-  pink =             new3 (255,   0, 170)
-  deepPink =         new3 (255,  17,  51)
-
-  blackGray =        new3 ( 34,  34,  34)
-  darkGray =         new3 ( 51,  51,  51)
-  gray =             new3 ( 85,  85,  85)
-  lightGray =        new3 (136, 136, 136)
-  whiteGray =        new3 (204, 204, 204)
-  silver =           new3 (212, 212, 212)
-
-  white =            new3 (170, 170, 170)
-  lightWhite =       new3 (255, 255, 255)
-)

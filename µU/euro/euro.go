@@ -1,6 +1,6 @@
 package euro
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 191107 - license see µU.go
 
 import (
   "math"
@@ -43,6 +43,12 @@ func new_() Euro {
   x := new(euro)
   x.Clr()
   x.cF, x.cB = scr.StartCols()
+  return x
+}
+
+func new2 (e, c uint) Euro {
+  x := new(euro)
+  x.Set2 (e,c)
   return x
 }
 

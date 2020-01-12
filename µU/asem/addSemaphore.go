@@ -1,6 +1,6 @@
 package asem
 
-// (c) Christian Maurer   v. 170410 - license see µU.go
+// (c) Christian Maurer   v. 190823 - license see µU.go
 
 import (
   . "sync"
@@ -10,15 +10,15 @@ const
   M = 20
 type
   addSemaphore struct {
-                  int "number of processes allowed to use the critical section, that shall be protected by the semaphore"
+                 uint "number of processes allowed to use the critical section, that shall be protected by the semaphore"
                    me Mutex
                     b [M]sem.Semaphore
-                   nB [M]int
+                   nB [M]uint
                       }
 
 func new_(n uint) *addSemaphore {
   x := new(addSemaphore)
-  x.int = int(n)
+  x.uint = n
   for i := 0; i < M; i++ {
     x.b[i] = sem.New (0)
   }
@@ -27,8 +27,8 @@ func new_(n uint) *addSemaphore {
 
 func (x *addSemaphore) P (n uint) {
   x.me.Lock()
-  if x.int >= int(n) {
-    x.int -= int(n)
+  if x.uint >= n {
+    x.uint -= n
     x.me.Unlock()
   } else {
     x.nB[n]++
@@ -39,11 +39,11 @@ func (x *addSemaphore) P (n uint) {
 
 func (x *addSemaphore) V (n uint) {
   x.me.Lock()
-  x.int += int(n)
-  i:= x.int
+  x.uint += n
+  i := x.uint
   for i > 0 {
-    for x.nB[i] > 0 && i < x.int {
-      x.int -= i // x.int--
+    for x.nB[i] > 0 && i < x.uint {
+      x.uint -= i // x.uint--
       x.nB[i]--
       x.b[i].V()
     }

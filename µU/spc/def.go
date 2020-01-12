@@ -1,32 +1,23 @@
 package spc
 
-// (c) Christian Maurer   v. 121204 - license see µU.go
+// (c) Christian Maurer   v. 191019 - license see µU.go
 
-type
-  Direction byte
-// the unit vectors of an orthonormal rightoriented coordinate-system in 3-space
-const (
-  Right = Direction(iota)
-  Front
-  Top
-  NDirs
-)
-const (
-  D0 = Right
-)
-type (
-  Coord [NDirs]float64
-  GridCoord [NDirs]int16
-)
-// Pre: The values of Origin and Unit must not be changed.
-// Origin = (0, 0, 0), Unit[right] = (1, 0, 0), Unit[front] = (0, 1, 0), Unit[top] = (0, 0, 1).
-var (
-  Origin Coord
-  Unit [NDirs]Coord
-)
+func Set (ex, ey, ez, fx, fy, fz, nx, ny, nz float64) { set (ex,ey,ez,fx,fy,fz,nx,ny,nz) }
 
-// Returns Front/Top/Right for d = Right/Front/Top.
-func Next (d Direction) Direction { return next(d) }
+func Get() (float64, float64, float64, float64, float64, float64, float64, float64, float64) {
+  return get()
+}
 
-// Returns Top/Right/Front for d = Right/Front/Top (vectorproduct of d and Next).
-func Prev (d Direction) Direction { return prev(d) }
+// func Distance() float64 { return distance() }
+
+func Move (i int, d float64) { move(i,d) }
+
+func Turn (i int, a float64) { turn(i,a) }
+
+func Invert() { invert() }
+
+// func Focus (d float64) { foc(d) }
+
+func TurnAroundFocus (i int, a float64) { turnAroundFocus(i,a) }
+
+func SetLight (n uint) { setLight(n) }

@@ -1,6 +1,6 @@
 package host
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 190820 - license see µU.go
 
 import (
   "os"; "net"

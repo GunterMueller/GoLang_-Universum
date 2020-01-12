@@ -40,9 +40,9 @@ func (X *xwindow) SetFontsize (s font.Size) {
     if s <= font.Small { name = mf } else { name = te }
     panic (name + "-font is not installed !")
   }
-  X.ht1 = C.uint(h)
-  X.wd1, X.bl1 = C.uint(X.fsp.max_bounds.width), C.uint(X.fsp.max_bounds.ascent)
-  if X.bl1 + C.uint(X.fsp.max_bounds.descent) != X.ht1 { panic ("xwin: font bl + d != ht") }
+  X.ht1 = uint(h)
+  X.wd1, X.bl1 = uint(X.fsp.max_bounds.width), uint(X.fsp.max_bounds.ascent)
+  if X.bl1 + uint(X.fsp.max_bounds.descent) != X.ht1 { panic ("xwin: font bl + d != ht") }
 //  C.XSetFont (dpy, X.gc, C.Font(X.fsp.fid))
 //  X.nLines, X.nColumns = X.ht / X.ht1, X.wd / X.wd1
 }
@@ -52,7 +52,7 @@ func (X *xwindow) Wd1() uint {
 }
 
 func (X *xwindow) Ht1() uint {
-  return uint(X.ht1)
+  return X.ht1
 }
 
 func (X *xwindow) NLines() uint {

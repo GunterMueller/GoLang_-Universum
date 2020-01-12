@@ -1,8 +1,11 @@
 package xwin
 
-// (c) Christian Maurer   v. 170920 - license see µU.go
+// (c) Christian Maurer   v. 191103 - license see µU.go
 
-// #cgo LDFLAGS: -lGLU
+// #cgo LDFLAGS: -lX11 -lGL -lGLU
+// #include <stdlib.h>
+// #include <stdio.h>
+// #include <X11/Xlib.h>
 // #include <GL/gl.h>
 // #include <GL/glx.h>
 // #include <GL/glu.h>
@@ -12,124 +15,299 @@ package xwin
 import
   "C"
 import (
-  . "math"
+//  "fmt"
+  "math"
+//  "time"
+//  "µU/ker"
+  "µU/show"
+  "µU/gl"
+  "µU/glu"
+  "µU/col"
+  "µU/spc"
 )
 const (
-  um = Pi / 180; epsilon = 1e-6
-  esc = 9; enter = 36; back = 22; tab = 23
-  left = 113; right = 114; up = 111; down = 116
-  pgUp = 112; pgDown = 117; pgLeft = 113; pgRight = 114
-  pos1 = 110; end = 115; ins = 118; del = 119; prt = 107; roll = 78; paus = 127
-  f1 = 67; f2 = 68; /* ... */ f10 = 76; f11 = 95; f12 = 96
+  um = math.Pi / 180
+  epsilon = 1e-6
 )
+type
+  d = C.GLdouble
 var
-  show = true
-var
-  matrix [3][3]f
+  firstWrite = true
 
-func switchShow() { show = ! show }
+func (X *xwindow) Start (m show.Mode, draw func(), ex, ey, ez, fx, fy, fz, nx, ny, nz float64) {
+  X.mode = m
+  X.draw = draw
+  X.eye.Set3 (ex, ey, ez)
+  X.focus.Set3 (fx, fy, fz)
+  X.delta = X.eye.Distance (X.focus)
+  X.normal.Set3 (nx, ny, nz)
+  X.normal.Norm()
+}
 
-func (X *xwindow) Start (e0, e1, e2, f0, f1, f2 float) {
-  C.glEnable (C.GL_DEPTH_TEST)
-  C.glMatrixMode (C.GL_PROJECTION)
-  C.glLoadIdentity()
-  near, far := f(0.2), f(100)
-  p := C.GLdouble(X.wd) / C.GLdouble(X.ht)
-//  C.glFrustum (-near, near, -near/p, near/p, near, far
-  C.gluPerspective (45, p, near, far)
-  X.eye = vector {e0, e1, e2}
-  X.focus = vector {f0, f1, f2}
-  X.delta = X.distance (X.eye, X.focus)
-//  C.glViewport (C.GLint(0), C.GLint(0), C.GLsizei(X.wd), C.GLsizei(X.ht))
+/*/
+func (X *xwindow) fly() {
+  for {
+    time.Sleep (1e8)
+    spc.Move (1, 1)
+    X.write()
+  }
+}
+/*/
 
-//  C.glMatrixMode (C.GL_MODELVIEW)
-  X.vec[1] = X.diff (X.focus, X.eye); X.norm (1)
-  if eq (e2, f2) {
-    X.vec[2] = vector {0, 0, 1}
-    X.vec[0] = X.ext (X.vec[1], X.vec[2]); X.norm(0)
-println("gleiche Höhe")
-  } else { // e2 != f2
-    if eq (e0, f0) && eq (e1, f1) {
-      X.vec[0] = vector {1, 0, 0}
-      if e2 > f2 {
-println("von oben")
-        X.vec[1] = vector { 0, 0,-1}
-        X.vec[2] = vector { 0, 1, 0}
-      } else {
-println("von unten")
-        X.vec[1] = vector { 0, 0, 1}
-        X.vec[2] = vector { 0,-1, 0}
+func (X *xwindow) write() {
+  gl.ClearColor (col.White())
+  gl.Clear()
+  gl.Enable (gl.Depthtest)
+  gl.ShadeModel (gl.Flat)
+  ex, ey, ez, fx, fy, fz, nx, ny, nz := spc.Get()
+  if math.Abs(fx) < epsilon { fx = 0 }; if math.Abs(fy) < epsilon { fy = 0 }
+  gl.MatrixMode (gl.Projection)
+  gl.LoadIdentity()
+//  gl.Viewport (0, 0, X.wd, X.ht)
+  glu.Perspective (60, X.proportion, 0.1, 1000.)
+//  gl.MatrixMode (gl.Modelview) // implies, that gluLookAt does not work
+  C.gluLookAt (d(ex), d(ey), d(ez), d(fx), d(fy), d(fz), d(nx), d(ny), d(nz))
+  X.draw()
+// if err := C.glGetError(); err != C.GL_NO_ERROR {println (err-1280)); ker.Panic ("openGL error")}
+  C.glXSwapBuffers (dpy, C.GLXDrawable(X.win))
+  C.glFinish()
+//  gl.MatrixMode (gl.Modelview) // obviously superfluous
+//  print("eye    "); fmt.Println (ex, ey, ez)
+//  print("focus  "); fmt.Println (fx, fy, fz)
+//  print("normal "); fmt.Println (nx, ny, nz)
+}
+
+func (X *xwindow) Go() {
+  const (
+    right = 0; front = 1; top = 2
+    Esc = 9; Enter = 36; Back = 22; Tab = 23
+    Left = 113; Right = 114; Up = 111; Down = 116; PgUp = 112; PgDown = 117
+    Pos1 = 110; End = 115; Ins = 118; Del = 119
+    F1 = 67; F2 = 68; F3 = 69; F4 = 70; F9 = 75; F10 = 76; F11 = 96; F12 = 96
+    Shift = 1; Strg = 4; Alt = 8; AltGr = 128
+  )
+//  gl.ShowLight (true)
+  ex, ey, ez := X.eye.Coord3()
+  fx, fy, fz := X.focus.Coord3()
+  nx, ny, nz := X.normal.Coord3()
+  spc.Set (ex, ey, ez, fx, fy, fz, nx, ny, nz)
+//  dfe := X.eye.Distance (X.focus)
+//  delta := dfe / 500.
+//  const nSteps = 3
+//  Phi, Delta := [nSteps]float64 { 1, 9, 90 }, [nSteps]float64 { 1, 10, 100 }
+  phi, delta0 := 3., 0.1
+//  step := 1
+  var xev C.XEvent
+  redraw := true
+//  if X.mode == show.Fly { go X.fly() }
+
+  for {
+//    phi, delta := float64 (Phi[step]), delta0 * Delta[step]
+    if redraw {
+      X.write()
+    }
+    redraw = true
+    C.XNextEvent (dpy, &xev)
+    et := C.etyp (&xev)
+    switch et {
+    case C.KeyPress:
+      c, t := C.kCode (&xev), C.kState (&xev)
+// println (c, t)
+      switch c {
+      case Esc:
+        return
+      case Left:
+        switch X.mode {
+        case show.Look:
+          switch t {
+          case 0:
+            spc.TurnAroundFocus (top, phi) // pan
+          case Shift:
+            spc.Move (right, delta0) // move
+          case Strg:
+            spc.Turn (front, phi) // roll
+          case Alt, AltGr:
+            // TODO
+          }
+        case show.Walk:
+          switch t {
+          case 0:
+            spc.Turn (top, phi) // pan
+          case Shift:
+            spc.Move (right, -delta0) // move
+          case Strg:
+            spc.Turn (front, phi) // roll
+          }
+        case show.Fly:
+          if t == 0 {
+            spc.Turn (top, phi) // pan
+          } else {
+            spc.Turn (front, phi) // roll
+          }
+        }
+      case Right:
+        switch X.mode {
+        case show.Look:
+          switch t {
+          case 0:
+            spc.TurnAroundFocus (top, -phi) // pan
+          case Shift:
+            spc.Move (right, -delta0) // move
+          case Strg:
+            spc.Turn (front, -phi) // roll
+          case Alt, AltGr:
+            // TODO
+          }
+        case show.Walk:
+          switch t {
+          case 0:
+            spc.Turn (top, -phi) // pan
+          case Shift:
+            spc.Move (right, delta0) // move
+          case Strg:
+            spc.Turn (front, -phi) // roll
+          }
+        case show.Fly:
+          if t == 0 {
+            spc.Turn (top, -phi) // pan
+          } else {
+            spc.Turn (front, -phi) // roll
+          }
+        }
+      case Up:
+        switch X.mode {
+        case show.Look:
+          switch t {
+          case 0:
+            spc.TurnAroundFocus (right, phi) // tilt
+          case Shift:
+            spc.Move (top, delta0) // move
+          case Strg:
+
+          case Alt, AltGr:
+
+          }
+        case show.Walk:
+          switch t {
+          case 0:
+            spc.Turn (right, phi) // tilt
+          case Shift:
+            spc.Move (top, delta0) // move
+          }
+        case show.Fly:
+          spc.Turn (right, phi) // tilt
+        }
+      case Down:
+        switch X.mode {
+        case show.Look:
+        switch t {
+          case 0:
+            spc.TurnAroundFocus (right, -phi) // tilt
+          case Shift:
+            spc.Move (top, -delta0) // move
+          case Strg:
+
+          case Alt, AltGr:
+
+          }
+        case show.Walk:
+          switch t {
+          case 0:
+            spc.Turn (right, -phi) // tilt
+          case Shift:
+            spc.Move (top, -delta0) // move
+          }
+        case show.Fly:
+          spc.Turn (right, -phi) // tilt
+        }
+      case Enter:
+        switch X.mode {
+        case show.Look:
+          if t == 0 {
+            spc.Move (front, delta0) // move ahead
+          } else {
+            spc.Move (front, -delta0) // move back
+          }
+        case show.Walk:
+          if t == 0 {
+            spc.Move (front, delta0) // move ahead
+          } else {
+            spc.Move (front, -delta0) // move back
+            // spc.Move (front, delta0) // move TODO translate focus ?
+          }
+        case show.Fly:
+          // TODO increase speed
+        }
+      case Back:
+        switch X.mode {
+        case show.Look:
+          spc.Move (front, -delta0) // move
+        case show.Walk:
+          if t == 0 {
+            spc.Move (front, -delta0) // move
+          } else {
+            spc.Move (front, -delta0) // move TODO translate focus ?
+          }
+        case show.Fly:
+          // TODO decrease speed
+        }
+      case Tab:
+        spc.Invert() // pan 180°
+      case Pos1:
+        spc.Turn (front, phi)
+      case End:
+        spc.Turn (front, -phi)
+/*/
+      case F1: // quicker
+        if step + 1 < nSteps {
+          step++
+        }
+      case F2: // slow down
+        if step > 0 {
+          step --
+        }
+      case F3:
+        if X.mode == show.Walk {
+          if t == 0 {
+            spc.Invert() // pan 180°
+          } else { // TODO
+            dfe = X.eye.Distance (X.focus)
+            spc.Move (front, 2 * dfe)
+            spc.Invert()
+          }
+        }
+      case F4:
+        dfe = X.eye.Distance (X.focus)
+        spc.Move (front, dfe)
+        if t == 0 {
+          spc.Move (right, dfe)
+          spc.Turn (top, 90.)
+        } else {
+          spc.Move (right, -dfe)
+          spc.Turn (top, -90.)
+        }
+      case Del: // TODO
+        dfe = X.eye.Distance (X.focus)
+        spc.Move (top, dfe)
+        spc.Move (front, dfe)
+        spc.Turn (right, -90) // x -> rechts, y -> oben
+        if t != 0 { // y -> rechts, x -> unten
+          spc.Turn (front, -90)
+        }
+      case F9:
+        spc.SetLight (0)
+      case F10:
+        spc.SetLight (1)
+      case F11:
+        spc.SetLight (2)
+      case F12:
+        spc.SetLight (3)
+/*/
+      default:
+        redraw = false
       }
-    } else {
-println("von Seite")
-      X.vec[2] = X.clone (X.vec[1])
-      v2 := X.vec[1][2]
-      if e2 < f2 { v2 = -v2 }
-      X.vec[2][2] -= 1 / v2; X.norm(2)
-      X.vec[0] = X.ext (X.vec[1], X.vec[2]); X.norm(0)
+    default:
+      redraw = false
     }
   }
-  X.chk()
 }
-
-func (X *xwindow) anfang() {
-  return
-  C.glMatrixMode (C.GL_MODELVIEW)
-  C.glLoadIdentity()
-  for i := 0; i < 3; i++ {
-    matrix[i][0] = f(X.vec[0][i])
-    matrix[i][1] = f(X.vec[1][i])
-    matrix[i][2] = f(-X.vec[2][i])
-  }
-  C.glMultMatrixd (&matrix[0][0])
-  C.glTranslated (f(-X.eye[0]), f(-X.eye[1]), f(-X.eye[2]))
-}
-
-func (X *xwindow) Draw (draw func()) {
-  C.glClear (C.GL_COLOR_BUFFER_BIT + C.GL_DEPTH_BUFFER_BIT)
-  C.glMatrixMode (C.GL_MODELVIEW)
-  C.glLoadIdentity()
-  C.glTranslated (0, 0, -5)
-/*
-  C.gluLookAt (f(X.eye[0]),    f(X.eye[1]),    f(X.eye[2]),
-               f(X.focus[0]),  f(X.focus[1]),  f(X.focus[2]),
-               f(X.vec[2][0]), f(X.vec[2][1]), f(X.vec[2][2]))
-*/
-//               0, 0, 1)
-// C.glTranslated (f(X.vec[1][0]), f(X.vec[1][1]), f(X.vec[1][2]))
-  X.anfang()
-  draw()
-  C.glXSwapBuffers (dpy, C.GLXDrawable(X.win))
-}
-
-func (X *xwindow) rotate (d int, a float) {
-  n := (d + 1) % 3
-  X.vec[n] = X.rot (X.vec[d], X.vec[n], a)
-  X.vec[n] = X.normv (X.vec[n])
-  X.vec[(d + 2) % 3] = X.ext (X.vec[d], X.vec[n])
-}
-
-func (X *xwindow) adjustEye() {
-  X.eye = X.diff (X.focus, X.dilate (X.delta, X.vec[1]))
-//  C.glTranslated (0, -f(X.delta), 0)
-}
-
-func (X *xwindow) TurnAroundFocus (d int, a float) {
-  X.rotate (d, a)
-  X.chk(); println ("rotated", d)
-}
-
-func (X *xwindow) Move (d int, a float) {
-/*
-  temp := X.vec[2]
-  X.vec[2] = X.ext (X.vec[0], X.vec[1]); X.norm(2)
-  if ! X.eq (temp, X.vec[2]) { println ("Käse") }
-*/
-  X.eyeOld = X.clone (X.eye)
-  X.eye = X.sum (X.eye, X.dilate (a, X.vec[d]))
-  X.delta = X.distance (X.eye, X.focus)
-//  X.adjustFocus()
-  X.chk(); println ("moved")
-}
-
-func (X *xwindow) Look (draw func()) {}

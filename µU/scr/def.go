@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 191019 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -20,6 +20,7 @@ package scr
 import (
   . "µU/shape"
   . "µU/linewd"
+  "µU/show"
   "µU/mode"
   "µU/cons"
   "µU/ptr"
@@ -75,7 +76,7 @@ func Act() Screen { return act() }
 // Scr (NAct()) == Act().
 // func NAct() uint { return nAct() }
 
-func New (x, y uint, m mode.Mode) Screen { return newScr(x,y,m) }
+func New (x, y uint, m mode.Mode) Screen { return new_(x,y,m) }
 
 func NewMax() Screen { return newMax() }
 
@@ -476,11 +477,6 @@ type
 // TODO Spec
   P6Decode (x, y uint, bs []byte)
 
-// openGL //////////////////////////////////////////////////////////////
-// Only for use in µU/gl
-
-//  WriteGlx()
-
 // cut buffer //////////////////////////////////////////////////////////
 // At the time being - only implemented for use under X
 
@@ -492,14 +488,15 @@ type
 
 // TODO Spec
   Paste() string
+
+// TODO Spec
+  Copy7 (s string, b int)
+
+// TODO Spec
+  Paste7 (b int) string
+
+// openGL //////////////////////////////////////////////////////////////
+
+  Start (m show.Mode, draw func(), ex, ey, ez, fx, fy, fz, nx, ny, nz float64)
+  Go()
 }
-
-func Start (x, y, z, xf, yf, zf float64) { start (x,y,z,xf,yf,zf) }
-
-func TurnAroundFocus (d int, a float64) { turnAroundFocus(d,a) }
-
-func Move (d int, a float64) { move(d,a) }
-
-func Draw (d func()) { draw(d) }
-
-func Look (d func()) { look(d) }

@@ -1,12 +1,14 @@
 package lock
 
-// (c) Christian Maurer   v. 171024 - license see µU.go
+// (c) Christian Maurer   v. 190823 - license see µU.go
 
 // >>> Algorithm of Morris: A starvation-free Solution to the Mutual Exclusion Problem
 //     Inf. Proc. Letters 8 (1979), 76-80
 
-import
+import (
   "sync"
+  . "µU/atomic"
+)
 type
   morris struct {
     door0, door,
@@ -23,12 +25,12 @@ func newMorris() Locker {
 
 func (x *morris) Lock() {
   x.mutex.Lock()
-  x.n0++
+  Store (&x.n0, x.n0 + 1)
   x.mutex.Unlock()
   x.door0.Lock()
-  x.n++
+  Store (&x.n, x.n + 1)
   x.mutex.Lock()
-  x.n0--
+  Store (&x.n0, x.n0 - 1)
   if x.n0 > 0 {
     x.mutex.Unlock()
     x.door0.Unlock()
@@ -37,7 +39,7 @@ func (x *morris) Lock() {
     x.door.Unlock()
   }
   x.door.Lock()
-  x.n--
+  Store (&x.n, x.n - 1)
 }
 
 func (x *morris) Unlock() {

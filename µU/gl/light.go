@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 170910 - license see µU.go
+// (c) Christian Maurer   v. 191105 - license see µU.go
 
 // #cgo LDFLAGS: -lGL
 // #include <GL/gl.h> 
@@ -9,6 +9,7 @@ import
 import (
   "math"
   "µU/col"
+  "µU/vect"
 )
 const
   nLamp = 12
@@ -18,23 +19,21 @@ var (
   lightSource [MaxL][3]float64
   lightColour /* diffus */ [MaxL]col.Colour
   lightInitialized [MaxL]bool
-  lightVis bool
+lightVis bool
   aa, dd [MaxL][4]C.GLfloat
+//  nL uint
 )
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
 func init() {
-  for l := 0; l < MaxL; l++ {
-    lightSource[l] = [3]float64{0, 0, 0}
-  }
-  w := 2.0 * math.Pi / float64 (nLamp)
   sinL[0], cosL[0] = C.GLdouble(0.0), C.GLdouble(1.0)
+  w := 2 * math.Pi / float64 (nLamp)
   for g := 1; g < nLamp; g++ {
     sinL[g] = C.GLdouble(math.Sin (float64 (g) * w))
     cosL[g] = C.GLdouble(math.Cos (float64 (g) * w))
   }
-  sinL[nLamp], cosL[nLamp] = C.GLdouble(0.0), C.GLdouble(1.0)
+  sinL[nLamp], cosL[nLamp] = C.GLdouble(0), C.GLdouble(1)
   sinL[nLamp+1], cosL[nLamp+1] = sinL[1], cosL[1]
   C.glDepthFunc (C.GL_LESS) // default
   C.glEnable (C.GL_DEPTH_TEST)
@@ -58,26 +57,25 @@ func init() {
 //  C.glEnable (C.GL_LIGHTING)
 }
 
-var nL uint
-
-func initLight (v, v1, v2, h, h1, h2 float64, r, g, b byte) {
-  if nL >= MaxL { panic ("gl.initLight: too many lights") }
+func initLight (nnn uint, v, h vect.Vector, r, g, b byte) {
+  if nnn >= MaxL { panic ("gl.initLight: too many lights") }
   lightVis = true
   // Arbeitsdrumrum, weil die Punkte bisher nur eine Farbe transportieren, hier die diffuse.
   // In L wird die ambiente Farbe geliefert.
-  aa[nL][0], aa[nL][1], aa[nL][2] = C.GLfloat(h), C.GLfloat(h1), C.GLfloat(h2)
-  aa[nL][3] = C.GLfloat(1)
-  lightColour[nL] = col.New3 (r, g, b)
-  d0, d1, d2 := float64(r), float64(g), float64(b)
-  dd[nL][0], dd[nL][1], dd[nL][2] = C.GLfloat(d0), C.GLfloat(d1), C.GLfloat(d2)
-  dd[nL][3] = C.GLfloat(1)
-  lightSource[nL][0], lightSource[nL][1], lightSource[nL][2] = v, v1, v2
-  ActualizeLight (nL)
+  x, x1, x2 := h.Coord3()
+  aa[nnn][0], aa[nnn][1], aa[nnn][2] = C.GLfloat(x), C.GLfloat(x1), C.GLfloat(x2)
+  aa[nnn][3] = C.GLfloat(1)
+  lightColour[nnn] = col.New3 ("", r, g, b)
+  dd[nnn][0], dd[nnn][1], dd[nnn][2] = C.GLfloat(r), C.GLfloat(g), C.GLfloat(b)
+  dd[nnn][3] = C.GLfloat(1)
+  lightSource[nnn][0], lightSource[nnn][1], lightSource[nnn][2] = v.Coord3()
+  actLight (nnn)
 }
 
-func posLight (n uint, v, v1, v2 float64) {
-  if n < nL {
-    lightSource[n][0], lightSource[n][1], lightSource[n][2] = v, v1, v2
+func posLight (n uint, v vect.Vector) {
+  if true { // n < nL { // XXX
+    x, x1, x2 := v.Coord3()
+    lightSource[n][0], lightSource[n][1], lightSource[n][2] = x, x1, x2
   }
 }
 
@@ -93,11 +91,11 @@ func actLight (n uint) { // n < MaxL
 }
 
 func lamp (n uint) {
-  if ! lightInitialized[n] { return }
+//  if ! lightIni /* initialized[n] */ { return }
   xx, yy, zz := lightSource[n][0], lightSource[n][1], lightSource[n][2]
   x, y, z := C.GLdouble(xx), C.GLdouble(yy), C.GLdouble(zz)
   r := C.GLdouble(0.1)
-  C.glBegin (TRIANGLE_FAN)
+  begin (TriangleFan)
   C.glColor3ub (C.GLubyte(lightColour[n].R()), C.GLubyte(lightColour[n].G()), C.GLubyte(lightColour[n].B()))
   C.glNormal3d (C.GLdouble(0.0), C.GLdouble(0.0), C.GLdouble(-1.0))
   C.glVertex3d (C.GLdouble(x), C.GLdouble(y), C.GLdouble(z + r))
@@ -106,8 +104,8 @@ func lamp (n uint) {
     C.glNormal3d (-sinL[1] * cosL[l], -sinL[1] * sinL[l], -cosL[1])
     C.glVertex3d (x + r0 * cosL[l],   y + r0 * sinL[l],   z0)
   }
-  C.glBegin (QUAD_STRIP)
-  begin (QUAD_STRIP)
+  end()
+  begin (QuadStrip)
   var r1, z1 C.GLdouble
   for b := 1; b <= nLamp / 2 - 2; b++ {
     r0, z0 = r * sinL[b],   z + r * cosL[b]
@@ -119,8 +117,8 @@ func lamp (n uint) {
       C.glVertex3d (x + r0 * cosL[l], y + r0 * sinL[l], z0)
     }
   }
-  C.glEnd()
-  C.glBegin (TRIANGLE_FAN)
+  end()
+  begin (TriangleFan)
   C.glNormal3d (0., 0., 1.)
   C.glVertex3d (x, y, z - r)
   r0, z0 = r * sinL[1], z - r * cosL[1]
@@ -129,5 +127,5 @@ func lamp (n uint) {
     C.glNormal3d (-sinL[b] * cosL[l], -sinL[b] * sinL[l], -cosL[b])
     C.glVertex3d (x + r0 * cosL[l], y + r0 * sinL[l], z0)
   }
-  C.glEnd()
+  end()
 }

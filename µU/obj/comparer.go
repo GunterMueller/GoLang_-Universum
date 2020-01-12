@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 190905 - license see µU.go
 
 type
   Comparer interface {
@@ -14,4 +14,5 @@ func IsComparer (a Any) bool { return isComparer(a) }
 
 func Less (a, b Any) bool { return less(a,b) }
 
-func Leq (a, b Any) bool { return leq(a,b) }
+// Pre: a and b implement Equaler.
+func Leq (a, b Any) bool { return Less (a, b) || Eq (a, b) }

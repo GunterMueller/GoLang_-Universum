@@ -10,8 +10,8 @@ import (
 )
 const ( // v.
   yy = 19
-  mm =  5
-  dd = 26
+  mm = 11
+  dd =  7
 )
 var
   v day.Calendarday = day.New()
@@ -25,7 +25,7 @@ func colours() (col.Colour, col.Colour, col.Colour) {
   return col.LightWhite(), col.LightGreen(), col.BlackGreen()
   return col.LightWhite(), col.WhiteBlue(), col.DarkBlue()
   return col.FlashYellow(), col.WhiteYellow(), col.DarkBlue()
-  return col.MuF(), col.New3 (0, 16, 128), col.MuB()
+  return col.MUF(), col.New3 ("", 0, 16, 128), col.MUB()
 }
 
 func want (y, m, d uint) {

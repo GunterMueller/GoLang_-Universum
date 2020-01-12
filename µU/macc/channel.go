@@ -1,6 +1,6 @@
 package macc
 
-// (c) Christian Maurer   v. 171020 - license see µU.go
+// (c) Christian Maurer   v. 190823 - license see µU.go
 
 // XXX funzt nicht
 
@@ -15,7 +15,7 @@ type (
                     }
 )
 
-func newCh() MAccount {
+func newChannel() MAccount {
   var ps []pair
   x := new(maccountCh)
   go func() {

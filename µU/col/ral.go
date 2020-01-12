@@ -1,208 +1,198 @@
 package col
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 191105 - license see µU.go
 
-var ( // RAL-Farben
-  grünbeige =        new3 (214, 199, 148)
-  beige =            new3 (217, 186, 140)
-  sandgelb =         new3 (214, 176, 117)
-  signalgelb =       new3 (252, 163,  41)
-  goldgelb =         new3 (227, 150,  36)
-  honiggelb =        new3 (201, 135,  33)
-  maisgelb =         new3 (224, 130,  31)
-  narzissengelb =    new3 (227, 122,  31)
-  braunbeige =       new3 (173, 122,  79)
-  zitronengelb =     new3 (227, 184,  56)
-  perlweiß =         new3 (255, 245, 227)
-  elfenbein =        new3 (240, 214, 171)
-  hellelfenbein =    new3 (252, 235, 204)
-  schwefelgelb =     new3 (255, 245,  66)
-  safrangelb =       new3 (255, 171,  89)
-  zinkgelb =         new3 (255, 214,  77)
-  graubeige =        new3 (163, 140, 122)
-  olivgelb =         new3 (156, 143,  97)
-  rapsgelb =         new3 (252, 189,  31)
-  verkehrsgelb =     new3 (252, 184,  33)
-  ockergelb =        new3 (181, 140,  79)
-  leuchtgelb =       new3 (255, 255,  10)
-  currygelb =        new3 (153, 117,  33)
-  melonengelb =      new3 (255, 140,  26)
-  ginstergelb =      new3 (227, 163,  41)
-  dahliengelb =      new3 (255, 148,  54)
-  pastellgelb =      new3 (247, 153,  92)
-
-  gelborange =       new3 (224,  94,  31)
-  rotorange =        new3 (186,  46,  33)
-  blutorange =       new3 (204,  36,  28)
-  pastellorange =    new3 (255,  99,  54)
-  reinorange =       new3 (242,  59,  28)
-  leuchtorange =     new3 (252,  28,  20)
-  leuchthellorange = new3 (255, 117,  33)
-  hellrotorange =    new3 (250,  79,  41)
-  verkehrsorange =   new3 (235,  59,  28)
-  signalorange =     new3 (212,  69,  41)
-  tieforange =       new3 (237,  92,  41)
-  lachsorange =      new3 (222,  82,  71)
-
-  feuerrot =         new3 (171,  31,  28)
-  signalrot =        new3 (163,  23,  26)
-  karminrot =        new3 (163,  26,  26)
-  rubinrot =         new3 (138,  18,  20)
-  purpurrot =        new3 (105,  15,  20)
-  weinrot =          new3 ( 79,  18,  26)
-  schwarzrot =       new3 ( 46,  18,  26)
-  oxidrot =          new3 ( 94,  33,  33)
-  braunrot =         new3 (120,  20,  23)
-  beigerot =         new3 (204, 130, 115)
-  tomatenrot =       new3 (150,  31,  28)
-  altrosa =          new3 (217, 102, 117)
-  hellrosa =         new3 (232, 156, 181)
-  korallenrot =      new3 (166,  36,  38)
-  rose =             new3 (209,  54,  84)
-  erdbeerrot =       new3 (207,  41,  66)
-  verkehrsrot =      new3 (199,  23,  18)
-  lachsrot =         new3 (217,  89,  79)
-  leuchtrot =        new3 (252,  10,  28)
-  leuchthellrot =    new3 (252,  20,  20)
-  himbeerrot =       new3 (181,  18,  51)
-  orientrot =        new3 (166,  28,  46)
-
-  rotlila =          new3 (130,  64, 128)
-  rotmagenta =       new3 (143,  38,  64)
-  erikamagenta =     new3 (201,  56, 140)
-  bordeauxmagenta =  new3 ( 92,   8,  43)
-  blaulila =         new3 ( 99,  61, 156)
-  verkehrspurpur =   new3 (145,  15, 102)
-  purpurmagenta =    new3 ( 56,  10,  46)
-  signalviolett =    new3 (125,  31, 122)
-  pastellviolett =   new3 (158, 115, 148)
-  telemagenta =      new3 (191,  23, 115)
-
-  violettblau =      new3 ( 23,  51, 107)
-  grünblau =         new3 ( 10,  51,  84)
-  ultramarinblau =   new3 (  0,  15, 117)
-  saphirblau =       new3 (  0,  23,  69)
-  schwarzblau =      new3 (  3,  13,  31)
-  signalblau =       new3 (  0,  46, 122)
-  brillantblau =     new3 ( 38,  79, 135)
-  graublau =         new3 ( 26,  41,  56)
-  azurblau =         new3 ( 23,  69, 112)
-  enzianblau =       new3 (  0,  43, 112)
-  stahlblau =        new3 (  3,  20,  46)
-  lichtblau =        new3 ( 41, 115, 184)
-  kobaltblau =       new3 (  0,  18,  69)
-  taubenblau =       new3 ( 77, 105, 153)
-  himmelblau =       new3 ( 23,  97, 171)
-  verkehrsblau =     new3 (  0,  59, 128)
-  türkisblau =       new3 ( 56, 148, 130)
-  capriblau =        new3 ( 10,  66, 120)
-  ozeanblau =        new3 (  5,  51,  51)
-  wasserblau =       new3 ( 26, 122,  99)
-  nachtblau =        new3 (  0,   8,  79)
-  fernblau =         new3 ( 46,  82, 143)
-  pastellblau =      new3 ( 87, 140, 181)
-
-  patinagrün =       new3 ( 51, 120,  84)
-  smaragdgrün =      new3 ( 38, 102,  41)
-  laubgrün =         new3 ( 38,  87,  33)
-  olivgrün =         new3 ( 61,  69,  46)
-  blaugrün =         new3 ( 13,  59,  46)
-  moosgrün =         new3 ( 10,  56,  31)
-  grauoliv =         new3 ( 41,  43,  36)
-  flaschengrün =     new3 ( 28,  38,  23)
-  braungrün =        new3 ( 33,  33,  26)
-  tannengrün =       new3 ( 23,  41,  28)
-  grasgrün =         new3 ( 54, 105,  38)
-  resedagrün =       new3 ( 94, 125,  79)
-  schwarzgrün =      new3 ( 31,  46,  43)
-  schilfgrün =       new3 (117, 115,  79)
-  gelboliv =         new3 ( 51,  48,  38)
-  schwarzoliv =      new3 ( 41,  43,  38)
-  cyangrün =         new3 ( 15, 112,  51)
-  maigrün =          new3 ( 64, 130,  54)
-  gelbgrün =         new3 ( 79, 168,  51)
-  weißgrün =         new3 (191, 227, 186)
-  chromoxidgrün =    new3 ( 38,  56,  41)
-  blassgrün =        new3 (133, 166, 122)
-  braunoliv =        new3 ( 43,  38,  28)
-  verkehrsgrün =     new3 ( 36, 145,  64)
-  farngrün =         new3 ( 74, 110,  51)
-  opalgrün =         new3 ( 10,  92,  51)
-  lichtgrün =        new3 (125, 204, 189)
-  kieferngrün =      new3 ( 38,  74,  51)
-  minzgrün =         new3 ( 18, 120,  38)
-  signalgrün =       new3 ( 41, 138,  64)
-  minttürkis =       new3 ( 66, 140, 120)
-  pastelltürkis =    new3 (125, 189, 181)
-
-  fehgrau =          new3 (115, 133, 145)
-  silbergrau =       new3 (135, 148, 166)
-  olivgrau =         new3 (122, 117,  97)
-  moosgrau =         new3 (112, 112,  97)
-  signalgrau =       new3 (156, 156, 166)
-  mausgrau =         new3 ( 97, 105, 105)
-  beigegrau =        new3 (107,  97,  87)
-  khakigrau =        new3 (105,  84,  56)
-  grüngrau =         new3 ( 77,  82,  74)
-  zeltgrau =         new3 ( 74,  79,  74)
-  eisengrau =        new3 ( 64,  74,  84)
-  basaltgrau =       new3 ( 74,  84,  89)
-  braungrau =        new3 ( 71,  66,  56)
-  schiefergrau =     new3 ( 61,  66,  82)
-  anthrazitgrau =    new3 ( 38,  46,  56)
-  schwarzgrau =      new3 ( 26,  33,  41)
-  umbragrau =        new3 ( 61,  61,  59)
-  betongrau =        new3 (122, 125, 117)
-  graphitgrau =      new3 ( 48,  56,  69)
-  granitgrau =       new3 ( 38,  51,  56)
-  steingrau =        new3 (145, 143, 135)
-  blaugrau =         new3 ( 77,  92, 107)
-  kieselgrau =       new3 (189, 186, 171)
-  zementgrau =       new3 (122, 130, 117)
-  gelbgrau =         new3 (143, 135, 112)
-  lichtgrau =        new3 (212, 217, 219)
-  platingrau =       new3 (158, 150, 156)
-  staubgrau =        new3 (122, 125, 128)
-  achatgrau =        new3 (186, 189, 186)
-  quarzgrau =        new3 ( 97,  94,  89)
-  fenstergrau =      new3 (158, 163, 176)
-  verkehrsgrauA =    new3 (143, 150, 153)
-  verkehrsgrauB =    new3 ( 64,  69,  69)
-  seidengrau =       new3 (194, 191, 184)
-  telegrau1 =        new3 (143, 148, 158)
-  telegrau2 =        new3 (120, 130, 140)
-  telegrau4 =        new3 (217, 214, 219)
-
-  grünbraun =        new3 (125,  92,  56)
-  ockerbraun =       new3 (145,  82,  46)
-  signalbraun =      new3 (110,  59,  48)
-  lehmbraun =        new3 (115,  59,  36)
-  kupferbraun =      new3 (133,  56,  43)
-  rehbraun =         new3 ( 94,  51,  31)
-  olivbraun =        new3 ( 99,  61,  36)
-  nussbraun =        new3 ( 71,  38,  28)
-  rotbraun =         new3 ( 84,  31,  31)
-  sepiabraun =       new3 ( 56,  38,  28)
-  kastanienbraun =   new3 ( 77,  31,  28)
-  mahagonibraun =    new3 ( 61,  31,  28)
-  schokoladenbraun = new3 ( 46,  28,  28)
-  graubraun =        new3 ( 43,  38,  41)
-  schwarzbraun =     new3 ( 13,   8,  13)
-  orangebraun =      new3 (156,  69,  41)
-  beigebraun =       new3 (110,  64,  48)
-  blassbraun =       new3 (102,  74,  61)
-  terrabraun =       new3 ( 64,  46,  33)
-
-  cremeweiß =        new3 (255, 252, 240)
-  grauweiß =         new3 (240, 237, 230)
-  signalweiß =       new3 (255, 255, 255)
-  signalschwarz =    new3 ( 28,  28,  33)
-  tiefschwarz =      new3 (  3,   5,  10)
-  aluminiumweiß =    new3 (166, 171, 181)
-  aluminiumgrau =    new3 (125, 122, 120)
-  reinweiß =         new3 (250, 255, 255)
-  graphitschwarz =   new3 ( 13,  18,  26)
-  verkehrsweiß =     new3 (252, 255, 255)
-  verkehrsschwarz =  new3 ( 20,  23,  28)
-  papyrusweiß =      new3 (219, 227, 222)
-)
+func Grünbeige() Colour {        return new3 ("grünbeige",        214, 199, 148) }
+func Beige() Colour {            return new3 ("beige",            217, 186, 140) }
+func Sandgelb() Colour {         return new3 ("sandgelb",         214, 176, 117) }
+func Signalgelb() Colour {       return new3 ("signalgelb ",      252, 163,  41) }
+func Goldgelb() Colour {         return new3 ("goldgelb",         227, 150,  36) }
+func Honiggelb() Colour {        return new3 ("honiggelb",        201, 135,  33) }
+func Maisgelb() Colour {         return new3 ("maisgelb",         224, 130,  31) }
+func Narzissengelb() Colour {    return new3 ("narzissengelb",    227, 122,  31) }
+func Braunbeige() Colour {       return new3 ("braunbeige",       173, 122,  79) }
+func Zitronengelb() Colour {     return new3 ("zitronengelb",     227, 184,  56) }
+func Perlweiß() Colour {         return new3 ("perlweiß",         255, 245, 227) }
+func Elfenbein() Colour {        return new3 ("elfenbein",        240, 214, 171) }
+func Hellelfenbein() Colour {    return new3 ("hellelfenbein",    252, 235, 204) }
+func Schwefelgelb() Colour {     return new3 ("schwefelgelb",     255, 245,  66) }
+func Safrangelb() Colour {       return new3 ("safrangelb",       255, 171,  89) }
+func Zinkgelb() Colour {         return new3 ("zinkgelb",         255, 214,  77) }
+func Graubeige() Colour {        return new3 ("graubeige",        163, 140, 122) }
+func Olivgelb() Colour {         return new3 ("olivgelb",         156, 143,  97) }
+func Rapsgelb() Colour {         return new3 ("rapsgelb",         252, 189,  31) }
+func Verkehrsgelb() Colour {     return new3 ("verkehrsgelb",     252, 184,  33) }
+func Ockergelb() Colour {        return new3 ("ockergelb",        181, 140,  79) }
+func Leuchtgelb() Colour {       return new3 ("leuchtgelb",       255, 255,  10) }
+func Currygelb() Colour {        return new3 ("currygelb",        153, 117,  33) }
+func Melonengelb() Colour {      return new3 ("melonengelb",      255, 140,  26) }
+func Ginstergelb() Colour {      return new3 ("ginstergelb",      227, 163,  41) }
+func Dahliengelb() Colour {      return new3 ("dahliengelb",      255, 148,  54) }
+func Pastellgelb() Colour {      return new3 ("pastellgelb",      247, 153,  92) }
+func Gelborange() Colour {       return new3 ("gelborange",       224,  94,  31) }
+func Rotorange() Colour {        return new3 ("rotorange",        186,  46,  33) }
+func Blutorange() Colour {       return new3 ("blutorange",       204,  36,  28) }
+func Pastellorange() Colour {    return new3 ("pastellorange",    255,  99,  54) }
+func Reinorange() Colour {       return new3 ("reinorange",       242,  59,  28) }
+func Leuchtorange() Colour {     return new3 ("leuchtorange",     252,  28,  20) }
+func Leuchthellorange() Colour { return new3 ("leuchthellorange", 255, 117,  33) }
+func Hellrotorange() Colour {    return new3 ("hellrotorange",    250,  79,  41) }
+func Verkehrsorange() Colour {   return new3 ("verkehrsorange",   235,  59,  28) }
+func Signalorange() Colour {     return new3 ("signalorange",     212,  69,  41) }
+func Tieforange() Colour {       return new3 ("tieforange",       237,  92,  41) }
+func Lachsorange() Colour {      return new3 ("lachsorange",      222,  82,  71) }
+func Feuerrot() Colour {         return new3 ("feuerrot",         171,  31,  28) }
+func Signalrot() Colour {        return new3 ("signalrot",        163,  23,  26) }
+func Karminrot() Colour {        return new3 ("karminrot",        163,  26,  26) }
+func Rubinrot() Colour {         return new3 ("rubinrot",         138,  18,  20) }
+func Purpurrot() Colour {        return new3 ("purpurrot",        105,  15,  20) }
+func Weinrot() Colour {          return new3 ("weinrot",           79,  18,  26) }
+func Schwarzrot() Colour {       return new3 ("schwarzrot",        46,  18,  26) }
+func Oxidrot() Colour {          return new3 ("oxidrot",           94,  33,  33) }
+func Braunrot() Colour {         return new3 ("braunrot",         120,  20,  23) }
+func Beigerot() Colour {         return new3 ("beigerot",         204, 130, 115) }
+func Tomatenrot() Colour {       return new3 ("tomatenrot",       150,  31,  28) }
+func Altrosa() Colour {          return new3 ("altrosa",          217, 102, 117) }
+func Hellrosa() Colour {         return new3 ("hellrosa",         232, 156, 181) }
+func Korallenrot() Colour {      return new3 ("korallenrot",      166,  36,  38) }
+func Rose() Colour {             return new3 ("rose",             209,  54,  84) }
+func Erdbeerrot() Colour {       return new3 ("erdbeerrot",       207,  41,  66) }
+func Verkehrsrot() Colour {      return new3 ("verkehrsrot",      199,  23,  18) }
+func Lachsrot() Colour {         return new3 ("lachsrot",         217,  89,  79) }
+func Leuchtrot() Colour {        return new3 ("leuchtrot",        252,  10,  28) }
+func Leuchthellrot() Colour {    return new3 ("leuchthellrot",    252,  20,  20) }
+func Himbeerrot() Colour {       return new3 ("himbeerrot",       181,  18,  51) }
+func Orientrot() Colour {        return new3 ("orientrot",        166,  28,  46) }
+func Rotlila() Colour {          return new3 ("rotlila",          130,  64, 128) }
+func Rotmagenta() Colour {       return new3 ("rotmagenta",       143,  38,  64) }
+func Erikamagenta() Colour {     return new3 ("erikamagenta",     201,  56, 140) }
+func Bordeauxmagenta() Colour {  return new3 ("bordeauxmagenta",   92,   8,  43) }
+func Blaulila() Colour {         return new3 ("blaulila",          99,  61, 156) }
+func Verkehrspurpur() Colour {   return new3 ("verkehrspurpur",   145,  15, 102) }
+func Purpurmagenta() Colour {    return new3 ("purpurmagenta",     56,  10,  46) }
+func Signalviolett() Colour {    return new3 ("signalviolett",    125,  31, 122) }
+func Pastellviolett() Colour {   return new3 ("pastellviolett",   158, 115, 148) }
+func Telemagenta() Colour {      return new3 ("telemagenta",      191,  23, 115) }
+func Violettblau() Colour {      return new3 ("violettblau",       23,  51, 107) }
+func Grünblau() Colour {         return new3 ("grünblau",          10,  51,  84) }
+func Ultramarinblau() Colour {   return new3 ("ultramarinblau",     0,  15, 117) }
+func Saphirblau() Colour {       return new3 ("saphirblau",         0,  23,  69) }
+func Schwarzblau() Colour {      return new3 ("schwarzblau",        3,  13,  31) }
+func Signalblau() Colour {       return new3 ("signalblau",         0,  46, 122) }
+func Brillantblau() Colour {     return new3 ("brillantblau",      38,  79, 135) }
+func Graublau() Colour {         return new3 ("graublau",          26,  41,  56) }
+func Azurblau() Colour {         return new3 ("azurblau",          23,  69, 112) }
+func Enzianblau() Colour {       return new3 ("enzianblau",         0,  43, 112) }
+func Stahlblau() Colour {        return new3 ("stahlblau",          3,  20,  46) }
+func Lichtblau() Colour {        return new3 ("lichtblau",         41, 115, 184) }
+func Kobaltblau() Colour {       return new3 ("kobaltblau",         0,  18,  69) }
+func Taubenblau() Colour {       return new3 ("taubenblau",        77, 105, 153) }
+func Himmelblau() Colour {       return new3 ("himmelblau",        23,  97, 171) }
+func Verkehrsblau() Colour {     return new3 ("verkehrsblau",       0,  59, 128) }
+func Türkisblau() Colour {       return new3 ("türkisblau",        56, 148, 130) }
+func Capriblau() Colour {        return new3 ("capriblau",         10,  66, 120) }
+func Ozeanblau() Colour {        return new3 ("ozeanblau",          5,  51,  51) }
+func Wasserblau() Colour {       return new3 ("wasserblau",        26, 122,  99) }
+func Nachtblau() Colour {        return new3 ("nachtblau",          0,   8,  79) }
+func Fernblau() Colour {         return new3 ("fernblau",          46,  82, 143) }
+func Pastellblau() Colour {      return new3 ("pastellblau",       87, 140, 181) }
+func Patinagrün() Colour {       return new3 ("patinagrün",        51, 120,  84) }
+func Smaragdgrün() Colour {      return new3 ("smaragdgrün",       38, 102,  41) }
+func Laubgrün() Colour {         return new3 ("laubgrün",          38,  87,  33) }
+func Olivgrün() Colour {         return new3 ("olivgrün",          61,  69,  46) }
+func Blaugrün() Colour {         return new3 ("blaugrün",          13,  59,  46) }
+func Moosgrün() Colour {         return new3 ("moosgrün",          10,  56,  31) }
+func Grauoliv() Colour {         return new3 ("grauoliv",          41,  43,  36) }
+func Flaschengrün() Colour {     return new3 ("flaschengrün",      28,  38,  23) }
+func Braungrün() Colour {        return new3 ("braungrün",         33,  33,  26) }
+func Tannengrün() Colour {       return new3 ("tannengrün",        23,  41,  28) }
+func Grasgrün() Colour {         return new3 ("grasgrün",          54, 105,  38) }
+func Resedagrün() Colour {       return new3 ("resedagrün",        94, 125,  79) }
+func Schwarzgrün() Colour {      return new3 ("schwarzgrün",       31,  46,  43) }
+func Schilfgrün() Colour {       return new3 ("schilfgrün",       117, 115,  79) }
+func Gelboliv() Colour {         return new3 ("gelboliv",          51,  48,  38) }
+func Schwarzoliv() Colour {      return new3 ("schwarzoliv",       41,  43,  38) }
+func Cyangrün() Colour {         return new3 ("cyangrün",          15, 112,  51) }
+func Maigrün() Colour {          return new3 ("maigrün",           64, 130,  54) }
+func Gelbgrün() Colour {         return new3 ("gelbgrün",          79, 168,  51) }
+func Weißgrün() Colour {         return new3 ("weißgrün",         191, 227, 186) }
+func Chromoxidgrün() Colour {    return new3 ("chromoxidgrün",     38,  56,  41) }
+func Blassgrün() Colour {        return new3 ("blassgrün",        133, 166, 122) }
+func Braunoliv() Colour {        return new3 ("braunoliv",         43,  38,  28) }
+func Verkehrsgrün() Colour {     return new3 ("verkehrsgrün",      36, 145,  64) }
+func Farngrün() Colour {         return new3 ("farngrün",          74, 110,  51) }
+func Opalgrün() Colour {         return new3 ("opalgrün",          10,  92,  51) }
+func Lichtgrün() Colour {        return new3 ("lichtgrün",        125, 204, 189) }
+func Kieferngrün() Colour {      return new3 ("kieferngrün",       38,  74,  51) }
+func Minzgrün() Colour {         return new3 ("minzgrün",          18, 120,  38) }
+func Signalgrün() Colour {       return new3 ("signalgrün",        41, 138,  64) }
+func Minttürkis() Colour {       return new3 ("minttürkis",        66, 140, 120) }
+func Pastelltürkis() Colour {    return new3 ("pastelltürkis",      0,   0,   0) }
+func Fehgrau() Colour {          return new3 ("fehgrau",          115, 133, 145) }
+func Silbergrau() Colour {       return new3 ("silbergrau",       135, 148, 166) }
+func Olivgrau() Colour {         return new3 ("olivgrau",         122, 117,  97) }
+func Moosgrau() Colour {         return new3 ("moosgrau",         112, 112,  97) }
+func Signalgrau() Colour {       return new3 ("signalgrau",       156, 156, 166) }
+func Mausgrau() Colour {         return new3 ("mausgrau",          97, 105, 105) }
+func Beigegrau() Colour {        return new3 ("beigegrau",        107,  97,  87) }
+func Khakigrau() Colour {        return new3 ("khakigrau",        105,  84,  56) }
+func Grüngrau() Colour {         return new3 ("grüngrau",          77,  82,  74) }
+func Zeltgrau() Colour {         return new3 ("zeltgrau",          74,  79,  74) }
+func Eisengrau() Colour {        return new3 ("eisengrau",         64,  74,  84) }
+func Basaltgrau() Colour {       return new3 ("basaltgrau",        74,  84,  89) }
+func Braungrau() Colour {        return new3 ("braungrau",         71,  66,  56) }
+func Schiefergrau() Colour {     return new3 ("schiefergrau",      61,  66,  82) }
+func Anthrazitgrau() Colour {    return new3 ("anthrazitgrau",     38,  46,  56) }
+func Schwarzgrau() Colour {      return new3 ("schwarzgrau",       26,  33,  41) }
+func Umbragrau() Colour {        return new3 ("umbragrau",         61,  61,  59) }
+func Betongrau() Colour {        return new3 ("betongrau",        122, 125, 117) }
+func Graphitgrau() Colour {      return new3 ("graphitgrau",       48,  56,  69) }
+func Granitgrau() Colour {       return new3 ("granitgrau",        38,  51,  56) }
+func Steingrau() Colour {        return new3 ("steingrau",        145, 143, 135) }
+func Blaugrau() Colour {         return new3 ("blaugrau",          77,  92, 107) }
+func Kieselgrau() Colour {       return new3 ("kieselgrau",       189, 186, 171) }
+func Zementgrau() Colour {       return new3 ("zementgrau",       122, 130, 117) }
+func Gelbgrau() Colour {         return new3 ("gelbgrau",         143, 135, 112) }
+func Lichtgrau() Colour {        return new3 ("lichtgrau",        212, 217, 219) }
+func Platingrau() Colour {       return new3 ("platingrau",       158, 150, 156) }
+func Staubgrau() Colour {        return new3 ("staubgrau",        122, 125, 128) }
+func Achatgrau() Colour {        return new3 ("achatgrau",        186, 189, 186) }
+func Quarzgrau() Colour {        return new3 ("quarzgrau",         97,  94,  89) }
+func Fenstergrau() Colour {      return new3 ("fenstergrau",      158, 163, 176) }
+func VerkehrsgrauA() Colour {    return new3 ("verkehrsgrauA",    143, 150, 153) }
+func VerkehrsgrauB() Colour {    return new3 ("verkehrsgrauB",     64,  69,  69) }
+func Seidengrau() Colour {       return new3 ("seidengrau",       194, 191, 184) }
+func Telegrau1() Colour {        return new3 ("telegrau1",        143, 148, 158) }
+func Telegrau2() Colour {        return new3 ("telegrau2",        120, 130, 140) }
+func Telegrau4() Colour {        return new3 ("telegrau4",        217, 214, 219) }
+func Grünbraun() Colour {        return new3 ("grünbraun",        125,  92,  56) }
+func Ockerbraun() Colour {       return new3 ("ockerbraun",       145,  82,  46) }
+func Signalbraun() Colour {      return new3 ("signalbraun",      110,  59,  48) }
+func Lehmbraun() Colour {        return new3 ("lehmbraun",        115,  59,  36) }
+func Kupferbraun() Colour {      return new3 ("kupferbraun",      133,  56,  43) }
+func Rehbraun() Colour {         return new3 ("rehbraun",          94,  51,  31) }
+func Olivbraun() Colour {        return new3 ("olivbraun",         99,  61,  36) }
+func Nussbraun() Colour {        return new3 ("nussbraun",         71,  38,  28) }
+func Rotbraun() Colour {         return new3 ("rotbraun",          84,  31,  31) }
+func Sepiabraun() Colour {       return new3 ("sepiabraun",        56,  38,  28) }
+func Kastanienbraun() Colour {   return new3 ("kastanienbraun",    77,  31,  28) }
+func Mahagonibraun() Colour {    return new3 ("mahagonibraun",     61,  31,  28) }
+func Schokoladenbraun() Colour { return new3 ("schokoladenbraun",  46,  28,  28) }
+func Graubraun() Colour {        return new3 ("graubraun",         43,  38,  41) }
+func Schwarzbraun() Colour {     return new3 ("schwarzbraun",      13,   8,  13) }
+func Orangebraun() Colour {      return new3 ("orangebraun",      156,  69,  41) }
+func Beigebraun() Colour {       return new3 ("beigebraun",       110,  64,  48) }
+func Blassbraun() Colour {       return new3 ("blassbraun",       102,  74,  61) }
+func Terrabraun() Colour {       return new3 ("terrabraun",        64,  46,  33) }
+func Cremeweiß() Colour {        return new3 ("cremeweiß",        255, 252, 240) }
+func Grauweiß() Colour {         return new3 ("grauweiß",         240, 237, 230) }
+func Signalweiß() Colour {       return new3 ("signalweiß",       255, 255, 255) }
+func Signalschwarz() Colour {    return new3 ("signalschwarz",     28,  28,  33) }
+func Tiefschwarz() Colour {      return new3 ("tiefschwarz",        3,   5,  10) }
+func Aluminiumweiß() Colour {    return new3 ("aluminiumweiß",    166, 171, 181) }
+func Aluminiumgrau() Colour {    return new3 ("aluminiumgrau",    125, 122, 120) }
+func Reinweiß() Colour {         return new3 ("reinweiß",         250, 255, 255) }
+func Graphitschwarz() Colour {   return new3 ("graphitschwarz",    13,  18,  26) }
+func Verkehrsweiß() Colour {     return new3 ("verkehrsweiß",     252, 255, 255) }
+func Verkehrsschwarz() Colour {  return new3 ("verkehrsschwarz",   20,  23,  28) }
+func Papyrusweiß() Colour {      return new3 ("papyrusweiß",      219, 227, 222) }

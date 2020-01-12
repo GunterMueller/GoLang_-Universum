@@ -1,12 +1,12 @@
 package lockn
 
-// (c) Christian Maurer   v. 190326 - license see µU.go
+// (c) Christian Maurer   v. 190815 - license see µU.go
 
 // >>> Algorithm of Habermann
 
 import (
-  . "µU/atomic"
   . "µU/obj"
+  . "µU/atomic"
 )
 type
   habermann struct {

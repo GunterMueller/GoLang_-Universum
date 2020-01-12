@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 190906 - license see µU.go
 
 import (
   . "µU/ker"
@@ -932,16 +932,17 @@ func (x *calendarday) String() string {
     s = nat.StringFmt (x.day, 2, mitNullen)
     if x.Format == Dd { return s }
     s += "."
-    switch x.Format { case Dd_M, Dd_M_yyyy:
+    switch x.Format {
+    case Dd_M, Dd_M_yyyy:
       s += " " + nameMonth [x.month]
       str.OffSpc (&s)
-      s = " " + s
       if x.Format == Dd_M { return s }
       s += " "
     default:
       s += nat.StringFmt (x.month, 2, mitNullen) + "."
     }
-    switch x.Format { case Dd_mm_:
+    switch x.Format {
+    case Dd_mm_:
       ;
     case Dd_mm_yy:
       s += nat.StringFmt (x.year % 100, 2, true)

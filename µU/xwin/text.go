@@ -51,8 +51,10 @@ func (X *xwindow) WriteGr (s string, x, y int) {
   n := C.uint(len (s))
   if ! X.transparent {
     C.XSetForeground (dpy, X.gc, cc (X.cB))
-    if ! X.buff { C.XFillRectangle (dpy, C.Drawable(X.win), X.gc, C.int(x), C.int(y), n * X.wd1, X.ht1) }
-    C.XFillRectangle (dpy, C.Drawable(X.buffer), X.gc, C.int(x), C.int(y), n * X.wd1, X.ht1)
+    if ! X.buff { C.XFillRectangle (dpy, C.Drawable(X.win), X.gc,
+                                    C.int(x), C.int(y), n * C.uint(X.wd1), C.uint(X.ht1)) }
+    C.XFillRectangle (dpy, C.Drawable(X.buffer), X.gc,
+                      C.int(x), C.int(y), n * C.uint(X.wd1), C.uint(X.ht1))
     C.XSetForeground (dpy, X.gc, cc (X.cF))
   }
   cs := C.CString (s); defer C.free (unsafe.Pointer (cs))

@@ -1,9 +1,9 @@
 package lock
 
-// (c) Christian Maurer   v. 190323 - license see µU.go
+// (c) Christian Maurer   v. 190811 - license see µU.go
 
 import (
-  . "µU/obj"
+  "µU/obj"
   . "µU/atomic"
 )
 type
@@ -17,7 +17,7 @@ func newDEC() Locker {
 
 func (x *dec) Lock() {
   for Decrement (&x.int) {
-    Nothing()
+    obj.Nothing()
   }
 }
 

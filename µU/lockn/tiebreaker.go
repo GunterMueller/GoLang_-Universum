@@ -1,12 +1,12 @@
 package lockn
 
-// (c) Christian Maurer   v. 190323 - license see µU.go
+// (c) Christian Maurer   v. 190815 - license see µU.go
 
 // >>> Tiebreaker-Algorithm of Peterson
 
 import (
-  . "µU/atomic"
   . "µU/obj"
+  . "µU/atomic"
 )
 type
   tiebreaker struct {

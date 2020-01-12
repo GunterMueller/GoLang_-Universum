@@ -1,0 +1,27 @@
+These functions have to appear in the applications
+
+glutTimerFunc( unsigned int time, void (* callback)( int ), int value );
+glutIdleFunc( void (* callback)( void ) );
+glutKeyboardFunc( void (* callback)( unsigned char, int, int ) );
+glutSpecialFunc( void (* callback)( int, int, int ) );
+glutReshapeFunc( void (* callback)( int, int ) );
+glutVisibilityFunc( void (* callback)( int ) );
+glutDisplayFunc( void (* callback)( void ) );
+glutMouseFunc( void (* callback)( int, int, int, int ) );
+glutMotionFunc( void (* callback)( int, int ) );
+glutPassiveMotionFunc( void (* callback)( int, int ) );
+glutEntryFunc( void (* callback)( int ) );
+glutKeyboardUpFunc( void (* callback)( unsigned char, int, int ) );
+glutSpecialUpFunc( void (* callback)( int, int, int ) );
+glutJoystickFunc( void (* callback)( unsigned int, int, int, int ), int pollInterval );
+glutMenuStateFunc( void (* callback)( int ) );
+glutMenuStatusFunc( void (* callback)( int, int, int ) );
+glutOverlayDisplayFunc( void (* callback)( void ) );
+glutWindowStatusFunc( void (* callback)( int ) );
+glutSpaceballMotionFunc( void (* callback)( int, int, int ) );
+glutSpaceballRotateFunc( void (* callback)( int, int, int ) );
+glutSpaceballButtonFunc( void (* callback)( int, int ) );
+glutButtonBoxFunc( void (* callback)( int, int ) );
+glutDialsFunc( void (* callback)( int, int ) );
+glutTabletMotionFunc( void (* callback)( int, int ) );
+glutTabletButtonFunc( void (* callback)( int, int, int, int ) );

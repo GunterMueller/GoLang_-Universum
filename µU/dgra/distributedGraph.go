@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 190402 - license see µU.go
+// (c) Christian Maurer   v. 190707 - license see µU.go
 
 import (
   "µU/ker"
@@ -16,8 +16,6 @@ import (
   "µU/gra"
   "µU/adj"
   "µU/ego"
-  "µU/dgra/status"
-  "µU/dgra/col"
 )
 type
   distributedGraph struct {
@@ -52,15 +50,6 @@ diameter, distance,
             leader uint
                    PulseAlg; ElectAlg; TravAlg
                    Op
-// for Korach/Moran/Zaks:
-             state byte // King or Citizen
-               pik status.Status // phase and identity of the king of the calling process
-            unused []bool
-     parentChannel uint // channel-number to parent
-           msgchan []chan Stream
-// for Johansen/Joergensen/Nielsen/Nielsen/Skyum:
-               lik col.Colour // level and identity of the king of the calling process
-          msgchanJ []chan Stream
                    }
 const (
   p0 = nchan.Port0

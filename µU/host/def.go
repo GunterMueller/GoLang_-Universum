@@ -1,6 +1,6 @@
 package host
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 190820 - license see µU.go
 
 import (
   . "µU/obj"
@@ -12,7 +12,7 @@ const ( // Format
   NFormats
 )
 type
-  Host interface { // Hostnames and their IPv6-numbers
+  Host interface { // Hostnames and their IPv4-numbers
 
   Object
   col.Colourer
@@ -22,7 +22,7 @@ type
 //  Printer TODO
   Marker
 
-// Returns the IP-number of x as byte sequence.
+// Returns the IPv4-number of x as byte sequence.
   IP() []byte
 
 // Returns true, if x has the name s.
@@ -40,3 +40,5 @@ func New() Host { return new_() }
 func NewS (s string) Host { return news(s) }
 
 func Localhost() Host { return localhost() }
+
+func LocalName() string { return localname }

@@ -1,9 +1,8 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 190815 - license see µU.go
 
 import (
-  "runtime"
   "math"
   "strconv"
   "µU/ker"
@@ -12,13 +11,9 @@ var
   c0 uint
 
 func init() {
-  switch runtime.GOARCH {
-  case "amd64":
+  c0 = 4
+  if ker.Is64bit() {
     c0 = 8
-  case "386":
-    c0 = 4
-  default:
-    panic ("$GOARCH not treated")
   }
 }
 
@@ -211,14 +206,13 @@ func encode (a Any) Stream {
     n := uint(len(as))
     c := c0
     for j := uint(0); j < n; j++ {
-      c += c0 + 1 + codelen(as[j])
+      c += 1 + c0 + codelen(as[j])
     }
     bs = make (Stream, c)
     copy (bs[:c0], encode(n))
     i := c0
     for j := uint(0); j < n; j++ {
-      g := gödel(as[j])
-      copy(bs[i:i+1], encode(g))
+      bs[i] = gödel(as[j])
       i++
       k := codelen(as[j])
       copy(bs[i:i+c0], encode(k))
@@ -442,25 +436,22 @@ func decode (a Any, bs Stream) Any {
     return y
   case Stream:
     return bs
-    copy (a.(Stream), bs)
   case IntStream:
-    c := int(c0)
-    n := decode(0, bs[:c]).(int)
+    n := decode(0, bs[:c0]).(int)
     us := make(IntStream, n)
-    i := c
+    i := c0
     for j := 0; j < n; j++ {
-      us[j] = decode(0, bs[i:i+c]).(int)
-      i += c
+      us[j] = decode(0, bs[i:i+c0]).(int)
+      i += c0
     }
     return us
   case UintStream:
-    c := c0
-    n := decode(uint(0), bs[:c]).(uint)
+    n := decode(uint(0), bs[:c0]).(uint)
     us := make(UintStream, n)
-    i := c
+    i := c0
     for j := uint(0); j < n; j++ {
-      us[j] = decode(uint(0), bs[i:i+c]).(uint)
-      i += c
+      us[j] = decode(uint(0), bs[i:i+c0]).(uint)
+      i += c0
     }
     return us
   case AnyStream:

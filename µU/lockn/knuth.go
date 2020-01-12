@@ -1,13 +1,13 @@
 package lockn
 
-// (c) Christian Maurer   v. 190323 - license see µU.go
+// (c) Christian Maurer   v. 190816 - license see µU.go
 
 // >>> Knuth, D. E.: Additional Comments on a Problem in Concurrent Programming Control.
 //     CACM 9 (1966) 321-322
 
 import (
-  . "µU/atomic"
   . "µU/obj"
+  . "µU/atomic"
 )
 const (
   passive = iota
@@ -56,11 +56,12 @@ func (x *knuth) Lock (p uint) {
     if x.test (p) {
       break
     }
+    Nothing()
   }
   Store (&x.favoured, p)
 }
 
 func (x *knuth) Unlock (p uint) {
   Store (&x.favoured, (p + x.uint - 1) % x.uint)
-  x.flag[p] = passive
+  Store (&x.flag[p], passive)
 }

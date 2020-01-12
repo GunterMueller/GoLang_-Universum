@@ -1,9 +1,9 @@
 package lock
 
-// (c) Christian Maurer   v. 190323 - license see µU.go
+// (c) Christian Maurer   v. 190811 - license see µU.go
 
 import (
-  . "µU/obj"
+  "µU/obj"
   . "µU/atomic"
 )
 type
@@ -18,7 +18,7 @@ func newXCHG() Locker {
 func (x *xchg) Lock() {
   local := uint(1)
   for Exchange (&x.uint, local) == 1 {
-    Nothing()
+    obj.Nothing()
   }
 }
 

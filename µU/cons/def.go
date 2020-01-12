@@ -24,6 +24,7 @@ func Lock() { lock() }; func Unlock() { unlock() }
 func ActIndex() int { return actIndex() }
 
 func New (x, y uint, m Mode) Console { return newCons(x,y,m) }
+func NewWH (x, y, w, h uint) Console { return newConsWH(x,y,w,h) }
 
 func NewMax() Console { return newMax() }
 
@@ -141,9 +142,8 @@ type
 // cut buffer //////////////////////////////////////////////////////////
 
 // not yet implemented TODO
-  Cut (s *string)
-// not yet implemented TODO
   Copy (s string)
-// not yet implemented TODO
   Paste() string
+  Copy7 (s string, b int)
+  Paste7 (b int) string
 }

@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 190314 - license see µU.go
+// (c) Christian Maurer   v. 191019 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL
 // #include <stdio.h>
@@ -122,6 +122,7 @@ import (
   "sync"
   "time"
   . "µU/shape"
+  "µU/show"
   "µU/ptr"
   ."µU/linewd"
   "µU/env"
@@ -130,6 +131,7 @@ import (
   "µU/col"
   "µU/font"
   "µU/navi"
+  "µU/vect"
 )
 const ( // standards.freedesktop.org/wm-spec:
   _NET_WM_STATE_REMOVE = C.int(0) // remove/unset property
@@ -137,12 +139,11 @@ const ( // standards.freedesktop.org/wm-spec:
   _NET_WM_STATE_TOGGLE = C.int(2) // toggle property
 )
 type
-  vector = [3]float64
-type
   xwindow struct {
              win C.Window // C.XID = C.ulong
             x, y int
-          wd, ht C.uint // window
+          wd, ht uint // window
+      proportion float64
               gc C.GC
   buffer, shadow C.Pixmap
             buff bool
@@ -151,7 +152,7 @@ cF, cB, cFA, cBA,
           lineWd Linewidth
              fsp *C.XFontStruct
         fontsize font.Size
-   wd1, ht1, bl1 C.uint // font baseline
+   wd1, ht1, bl1 uint // font baseline
      transparent bool
      cursorShape,
     consoleShape,
@@ -164,12 +165,12 @@ cF, cB, cFA, cBA,
 //       pointer ptr.Pointer
           xM, yM int
       subWindows []C.Window
-             eye, // only for openGL
-          eyeOld,
-           focus vector
-             vec [3]vector // coord system of eye
+            mode show.Mode // only for openGL
+            draw func()
+             eye,
+           focus,
+          normal vect.Vector
            delta float64 // invariant: delta == distance (origin, focus)
-           angle [3]float64
                  }
 var (
   dspl string = env.Val ("DISPLAY")
@@ -177,7 +178,7 @@ var (
   dpy *C.struct__XDisplay
   rootWin C.Window
   screen C.int
-  monitorWd, monitorHt C.uint // full screen
+  monitorWd, monitorHt uint // full screen
   fullScreen mode.Mode
   planes C.uint
   fdNavi uint
@@ -216,16 +217,12 @@ func initX() {
   d := C.CString(dspl); defer C.free (unsafe.Pointer(d))
   dpy = C.XOpenDisplay (d); if dpy == nil { panic ("dpy == nil") }
   screen := C.XDefaultScreen (dpy)
-  monitorWd, monitorHt = C.uint(C.XDisplayWidth (dpy, screen)),
-                         C.uint(C.XDisplayHeight (dpy, screen))
+  monitorWd, monitorHt = uint(C.XDisplayWidth (dpy, screen)),
+                         uint(C.XDisplayHeight (dpy, screen))
   fullScreen = mode.ModeOf (uint(monitorWd), uint(monitorHt))
   planes = C.uint(C.XDefaultDepth (dpy, screen))
   col.SetDepth (uint(planes))
   initialized = true
-}
-
-func (X *xwindow) Display() C.struct__XDisplay {
-  return *dpy
 }
 
 func cc (c col.Colour) C.ulong {
@@ -239,9 +236,9 @@ func (X *xwindow) Name (n string) {
 
 func (X *xwindow) clear() {
   C.XSetForeground (dpy, X.gc, cc (X.scrB))
-  C.XFillRectangle (dpy, C.Drawable(X.win), X.gc, 0, 0, X.wd, X.ht)
-  C.XFillRectangle (dpy, C.Drawable(X.buffer), X.gc, 0, 0, X.wd, X.ht)
-  C.XFillRectangle (dpy, C.Drawable(X.shadow), X.gc, 0, 0, X.wd, X.ht)
+  C.XFillRectangle (dpy, C.Drawable(X.win), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
+  C.XFillRectangle (dpy, C.Drawable(X.buffer), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
+  C.XFillRectangle (dpy, C.Drawable(X.shadow), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
   C.XSetForeground (dpy, X.gc, cc (X.scrF))
 }
 
@@ -267,17 +264,23 @@ func (X *xwindow) mousePointerOn() bool {
 }
 
 func new_(x, y uint, m mode.Mode) XWindow {
+  return newWH (x, y, mode.Wd(m), mode.Ht(m))
+}
+
+func newWH (x, y, w, h uint) XWindow {
   initX()
   X := new(xwindow)
   actual = X
   X.x, X.y = int(x), int(y)
-  X.wd, X.ht = C.uint(mode.Wd(m)), C.uint(mode.Ht(m))
+  X.wd, X.ht = w, h
   if X.wd > monitorWd || X.ht > monitorHt { panic ("win too large: " +
                          strconv.Itoa(int(X.wd)) + " x " + strconv.Itoa(int(X.ht))) }
+  X.proportion = float64(X.wd)/float64(X.ht)
   X.scrF, X.scrB = col.StartCols()
   X.cF, X.cB = col.StartCols()
   X.cFA, X.cBA = col.StartColsA()
-  a := [12]C.int{ 4, 8, 1, 9, 1, 10, 1, 12, 16, 5, 0 }
+  a := [11]C.int{ C.GLX_RGBA, C.GLX_DOUBLEBUFFER, C.GLX_DEPTH_SIZE, 16,
+                  C.GLX_RED_SIZE, 1, C.GLX_GREEN_SIZE, 1, C.GLX_BLUE_SIZE, 1, C.None }
   vi := C.glXChooseVisual (dpy, screen, &a[0] )
   cx := C.glXCreateContext (dpy, vi, C.GLXContext(nil), C.True)
   rootWin = C.XRootWindow (dpy, vi.screen)
@@ -285,10 +288,12 @@ func new_(x, y uint, m mode.Mode) XWindow {
   swa.colormap = C.XCreateColormap (dpy, rootWin, vi.visual, C.AllocNone)
   swa.border_pixel = 8
   swa.event_mask = C.KeyPressMask | C.KeyReleaseMask | C.ButtonPressMask | C.ButtonReleaseMask |
-                   C.FocusChangeMask | C.ExposureMask | C.VisibilityChangeMask | C.StructureNotifyMask
+                   C.FocusChangeMask | C.ExposureMask | C.VisibilityChangeMask |
+                   C.StructureNotifyMask
 //  swa.override_redirect = C.True
-  X.win = C.XCreateWindow (dpy, rootWin, C.int(x), C.int(y), X.wd, X.ht, 0, vi.depth, C.InputOutput,
-                           vi.visual, C.CWBorderPixel | C.CWColormap | C.CWEventMask, &swa)
+  X.win = C.XCreateWindow (dpy, rootWin, C.int(x), C.int(y), C.uint(X.wd), C.uint(X.ht), 0,
+                           vi.depth, C.InputOutput, vi.visual,
+                           C.CWBorderPixel | C.CWColormap | C.CWEventMask, &swa)
   X.gc = C.XDefaultGC (dpy, screen)
   C.XSetGraphicsExposures (dpy, X.gc, C.False)
   s := C.CString(env.Call()); defer C.free(unsafe.Pointer(s))
@@ -300,8 +305,8 @@ func new_(x, y uint, m mode.Mode) XWindow {
   C.XSetStandardProperties (dpy, X.win, s, s, C.None, &s, 1, &sh)
 //  C.glXMakeContextCurrent (dpy, C.GLXDrawable(X.win), C.GLXDrawable(X.win), cx)
   C.glXMakeCurrent (dpy, C.GLXDrawable(X.win), cx)
-  X.buffer = C.XCreatePixmap (dpy, C.Drawable(X.win), X.wd, X.ht, planes)
-  X.shadow = C.XCreatePixmap (dpy, C.Drawable(X.win), X.wd, X.ht, planes)
+  X.buffer = C.XCreatePixmap (dpy, C.Drawable(X.win), C.uint(X.wd), C.uint(X.ht), planes)
+  X.shadow = C.XCreatePixmap (dpy, C.Drawable(X.win), C.uint(X.wd), C.uint(X.ht), planes)
   const mask = C.KeyPressMask + // C.KeyReleaseMask +
                C.ButtonPressMask + C.ButtonReleaseMask +
                C.EnterWindowMask + C.LeaveWindowMask +
@@ -359,6 +364,10 @@ func new_(x, y uint, m mode.Mode) XWindow {
   }
   X.clear()
 */
+  X.eye = vect.New()
+  X.focus = vect.New()
+  X.normal = vect.New()
+//  X.draw() = obj.Nothing()
   return X
 }
 
@@ -416,26 +425,15 @@ func (X *xwindow) catchNavi() {
   }
 }
 
-// TODO
 func (x *xwindow) Fin() {
   C.XFreePixmap (dpy, x.buffer)
   C.XFreePixmap (dpy, x.shadow)
   C.XUnmapWindow (dpy, x.win)
+//  C.XFreeGC (dpy, x.gc)
+//  C.XCloseDisplay (dpy) // XXX "BadDrawable (invalid .. Window parameter)"
   C.XDestroyWindow (dpy, x.win)
-/*
-// mouse.showCursor (true)
-  C.glXMakeCurrent (dpy, C.None, nil)
-  C.glXDestroyContext (dpy, X.cx)
-  X.cx = nil
-*/
-  C.XCloseDisplay (dpy)
-}
-
-func fin() {
-//  C.XFreeGC (dpy, X.gc)
-  C.XDestroyWindow (dpy, rootWin)
-  C.XCloseDisplay (dpy)
   initialized = false
+// mouse.showCursor (true)
 }
 
 func (X *xwindow) Win2buf() {
@@ -443,12 +441,12 @@ func (X *xwindow) Win2buf() {
 }
 
 func (X *xwindow) win2buf() {
-  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.buffer), X.gc, 0, 0, X.wd, X.ht, 0, 0)
+  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.buffer), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht), 0, 0)
   C.XFlush (dpy)
 }
 
 func (X *xwindow) buf2win() {
-  C.XCopyArea (dpy, C.Drawable(X.buffer), C.Drawable(X.win), X.gc, 0, 0, X.wd, X.ht, 0, 0)
+  C.XCopyArea (dpy, C.Drawable(X.buffer), C.Drawable(X.win), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht), 0, 0)
   C.XFlush (dpy)
 }
 
@@ -500,7 +498,7 @@ func sendEvents() {
         W = imp (w) // w == W.win
         event.C, event.S = uint(0), uint(C.motionState (&xev))
         W.xM, W.yM = int(C.motionX (&xev)), int(C.motionY (&xev))
-      case C.EnterNotify: case C.LeaveNotify:
+      case C.EnterNotify, C.LeaveNotify:
         w = C.enterLeaveWin (&xev)
         W = imp (w) // w == W.win
       case C.FocusIn:
@@ -521,6 +519,10 @@ func sendEvents() {
           C.wait (dpy, &xev)
         }
         W.buf2win()
+/*/
+        event.C, event.S = uint(C.keyCode (&xev)), uint(C.keyState (&xev))
+        Eventpipe <- event
+/*/
       case C.GraphicsExpose:
         ;
       case C.NoExpose:
@@ -546,8 +548,8 @@ func sendEvents() {
       case C.ReparentNotify:
         ;
       case C.ConfigureNotify:
-//          C.glViewport (C.GLint(0), C.GLint(0), C.GLsizei(C.configureWd(&xev)),
-//                                                C.GLsizei(C.configureHt(&xev)))
+        C.glViewport (C.GLint(0), C.GLint(0),
+                      C.GLsizei(C.configureHt(&xev)), C.GLsizei(C.configureWd(&xev)))
       case C.ConfigureRequest:
         ;
       case C.GravityNotify:

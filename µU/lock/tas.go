@@ -3,7 +3,7 @@ package lock
 // (c) Christian Maurer   v. 190312 - license see µU.go
 
 import (
-  . "µU/obj"
+  "µU/obj"
   . "µU/atomic"
 )
 type
@@ -17,7 +17,7 @@ func newTAS() Locker {
 
 func (x *tas) Lock() {
   for TestAndSet (&x.bool) {
-    Nothing()
+    obj.Nothing()
   }
 }
 

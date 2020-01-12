@@ -1,0 +1,11 @@
+/*
+func (x *vector) Sum (Y, Z Adder) {
+  x.Copy (Y)
+  x.Add (Z)
+}
+
+func (x *vector) Diff (Y, Z Adder) {
+  x.Copy (Y)
+  x.Sub (Z)
+}
+*/

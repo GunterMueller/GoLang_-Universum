@@ -1,6 +1,6 @@
 package lockn
 
-// (c) Christian Maurer   v. 190331 - license see µU.go
+// (c) Christian Maurer   v. 190815 - license see µU.go
 
 // >>> Algorithm of Kessels
 
@@ -33,7 +33,7 @@ func (x *kessels) Lock (p uint) {
     for x.interested[k][1-m] == 1 && (x.favoured[k][1-m] + m) % 2 == x.favoured[k][m] {
       Nothing()
     }
-    x.edge[k] = m
+    Store (&x.edge[k], m)
   }
 }
 

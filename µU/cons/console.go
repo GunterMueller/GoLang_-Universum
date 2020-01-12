@@ -102,6 +102,42 @@ func newCons (x, y uint, m Mode) Console {
   return X
 }
 
+func newConsWH (x, y, w, h uint) Console {
+  X := new(console)
+  actual = X
+  mouseConsole = X
+  X.x, X.y = int(x), int(y)
+  X.wd, X.ht = w, h
+  X.cF, X.cB = col.StartCols()
+  X.cFA, X.cBA = col.StartColsA()
+  if ! framebufferOk() {
+    return nil
+  }
+  if ! X.ok() {
+    ker.Panic ("new console too large: " +
+               strconv.Itoa(X.x) + " + " + strconv.Itoa(int(X.wd)) + " > " + strconv.Itoa (int(width)) + " or " +
+               strconv.Itoa(X.y) + " + " + strconv.Itoa(int(X.ht)) + " > " + strconv.Itoa (int(height)))
+  }
+  X.archive = make([]byte, fbmemsize)
+  X.shadow = make([][]byte, X.ht)
+  for i := 0; i < int(X.ht); i++ {
+    X.shadow[i] = make([]byte, X.wd * colourdepth)
+  }
+  X.initMouse()
+  X.pg = make([][]bool, X.ht)
+  for i := 0; i < int(X.ht); i++ { X.pg[i] = make ([]bool, X.wd) }
+  X.ScrColours (X.cF, X.cB)
+  X.Cls()
+  if first { defer goMouse(); first = false }
+  X.SetFontsize (font.Normal)
+  X.doBlink()
+  actMutex.Lock()
+  consList = append (consList, X)
+  actMutex.Unlock()
+  return X
+}
+
+
 func newMax() Console {
   return newCons (0, 0, ModeOf(maxRes()))
 }

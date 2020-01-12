@@ -1,6 +1,6 @@
 package fmon
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 190822 - license see µU.go
 
 import
   . "µU/obj"
@@ -8,9 +8,7 @@ type
   FarMonitor interface { // x always denotes the calling object.
 
 // Pre: i < number of monitor functions of x.
-// The calling process was delayed, if the predicate of x
-// for the i-th monitor function is not true.
-// The monitor function fs(_, i) is executed on the server;
+// The monitor function fs(_, i) of x is executed on the server;
 // if necessary, the calling process was delayed until ps(a, i) == true.
 // The value of a is sent to the server with this call.
 // It returns the value (of the type of x), that the server returns.
@@ -51,6 +49,6 @@ func New1 (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
 
 // Spec is trade secret.
 func New2 (a, b Any, n uint, fs FuncSpectrum, ps PredSpectrum,
-           h string, p uint16, s bool, stmt Stmt) FarMonitor {
-  return new2(a, b, n, fs, ps, h, p, s, stmt)
+           h string, p uint16, s bool) FarMonitor {
+  return new2(a, b, n, fs, ps, h, p, s)
 }

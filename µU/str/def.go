@@ -9,6 +9,7 @@ func DevilsDung (s *string) bool { return devilsDung(s) }
 
 // Returns a string of n spaces.
 func New (n uint) string { return new_(n) }
+// func Clr (n uint) string { return new_(n) } XXX
 
 // s consists only of spaces (in its original length).
 func Clr (s *string) { clr(s) }

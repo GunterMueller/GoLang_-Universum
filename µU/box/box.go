@@ -1,6 +1,6 @@
 package box
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 190528 - license see µU.go
 
 import (
   "strconv"
@@ -16,6 +16,7 @@ const
   space = byte(' ')
 type
   box struct {
+             string
        width,
        start uint
       cF, cB col.Colour
@@ -28,7 +29,6 @@ overwritable,
        index uint
              kbd.Comm
        depth uint
-      marked string
              }
 var
   edited bool = true
@@ -71,6 +71,14 @@ func (x *box) ColourF (f col.Colour) {
 
 func (x *box) ColourB (b col.Colour) {
   x.cB = b
+}
+
+func (b *box) String() string {
+  return b.string
+}
+
+func (b *box) Defined (s string) bool {
+  return uint(len(b.string)) < b.width
 }
 
 func (x *box) Write (s string, l, c uint) {
@@ -238,13 +246,13 @@ func (b *box) done (s *string, x, y uint) bool {
   case kbd.Act, kbd.Cfg:
     return true
   case kbd.Mark:
-    b.marked = *s
+//    b.marked = *s
     return true
   case kbd.Demark:
-    b.marked = ""
+//    b.marked = ""
     return true
   case kbd.Cut:
-    scr.Cut (s)
+    scr.Copy (*s)
     *s = New (b.width)
     return true
   case kbd.Copy:
@@ -399,7 +407,8 @@ func getStatus (s *string) {
 }
 
 func (b *box) doneNumerical (s *string, x, y uint) bool {
-  switch b.Comm { case kbd.Enter, kbd.Esc:
+  switch b.Comm {
+  case kbd.Enter, kbd.Esc:
     return true
 /*
   case kbd.Left:
@@ -808,4 +817,22 @@ func (b *box) EditGr (s *string, x, y int) {
 
 func Edited() bool {
   return edited
+}
+
+func (b *box) Copy() {
+  scr.Copy (b.string)
+}
+
+func (b *box) Paste() {
+  b.string = scr.Paste()
+  Norm (&b.string, b.width)
+}
+
+func (b *box) Copy7 (i int) {
+  scr.Copy7 (b.string, i)
+}
+
+func (b *box) Paste7 (i int) {
+  b.string = scr.Paste7 (i)
+  Norm (&b.string, b.width)
 }

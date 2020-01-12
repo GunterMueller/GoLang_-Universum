@@ -1,12 +1,12 @@
 package lockn
 
-// (c) Christian Maurer   v. 190321 - license see µU.go
+// (c) Christian Maurer   v. 190815 - license see µU.go
 
 // >>> Bakery-Algorithm of Lamport
 
 import (
-  . "µU/atomic"
   . "µU/obj"
+  . "µU/atomic"
 )
 type
   bakery struct {
@@ -18,7 +18,7 @@ type
 func (x *bakery) max() uint {
   m := uint(0)
   for i := uint(0); i < x.uint; i++ {
-    if x.number[i] > m {
+    if m < x.number[i] {
       m = x.number[i]
     }
   }
@@ -44,9 +44,9 @@ func newBakery (n uint) LockerN {
 }
 
 func (x *bakery) Lock (p uint) {
-  x.draws[p] = 1
+  Store (&x.draws[p], 1)
   Store (&x.number[p], x.max() + 1)
-  x.draws[p] = 0
+  Store (&x.draws[p], 0)
   for j := uint(0); j < x.uint; j++ {
     for x.draws[j] == 1 {
       Nothing()

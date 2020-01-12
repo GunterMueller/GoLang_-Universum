@@ -1,12 +1,12 @@
 package lockn
 
-// (c) Christian Maurer   v. 190323 - license see µU.go
+// (c) Christian Maurer   v. 190816 - license see µU.go
 
 // >>> Algorithm of J. G. DeBruijn, J. G.
 
 import (
-  . "µU/atomic"
   . "µU/obj"
+  . "µU/atomic"
 )
 type
   deBruijn struct {

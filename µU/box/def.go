@@ -2,10 +2,14 @@ package box
 
 // (c) Christian Maurer   v. 190526 - license see µU.go
 
-import
+import (
+  . "µU/obj"
   "µU/col"
+)
 type
   Box interface { // Boxes within one line of the screen to print and edit strings.
+
+  Stringer
 
 // Pre: n > 0.
 // x has the width n.
@@ -68,10 +72,16 @@ type
 //  Cut (s *string)
 
 // TODO Spec
-//  Copy (s string)
+  Copy ()
 
 // TODO Spec
-//  Paste() string
+  Paste()
+
+// TODO Spec
+  Copy7 (b int)
+
+// TODO Spec
+  Paste7 (b int)
 }
 
 // Returns an new box of width 0,

@@ -1,573 +1,558 @@
 package col
 
 // (c) X-Consortium
-
+//
 //   /usr/share/X11/rgb.txt
-func Snow() Colour            { return new3 (255, 250, 250) }
-func GhostWhite() Colour      { return new3 (248, 248, 255) }
-func WhiteSmoke() Colour      { return new3 (245, 245, 245) }
-func Gainsboro() Colour       { return new3 (220, 220, 220) }
-func FloralWhite() Colour     { return new3 (255, 250, 240) }
-func OldLace() Colour         { return new3 (253, 245, 230) }
-func Linen() Colour           { return new3 (250, 240, 230) }
-func AntiqueWhite() Colour    { return new3 (250, 235, 215) }
-func PapayaWhip() Colour      { return new3 (255, 239, 213) }
-func BlanchedAlmond() Colour  { return new3 (255, 235, 205) }
-func Bisque() Colour          { return new3 (255, 228, 196) }
-func PeachPuff() Colour       { return new3 (255, 218, 185) }
-func NavajoWhite() Colour     { return new3 (255, 222, 173) }
-func Moccasin() Colour        { return new3 (255, 228, 181) }
-func Cornsilk() Colour        { return new3 (255, 248, 220) }
-func Ivory() Colour           { return new3 (255, 255, 240) }
-func LemonChiffon() Colour    { return new3 (255, 250, 205) }
-func Seashell() Colour        { return new3 (255, 245, 238) }
-func Honeydew() Colour        { return new3 (240, 255, 240) }
-func MintCream() Colour       { return new3 (245, 255, 250) }
-func Azure() Colour           { return new3 (240, 255, 255) }
-func AliceBlue() Colour       { return new3 (240, 248, 255) }
-func Lavender() Colour        { return new3 (230, 230, 250) }
-func LavenderBlush() Colour   { return new3 (255, 240, 245) }
-func MistyRose() Colour       { return new3 (255, 228, 225) }
-func DarkSlateGray() Colour   { return new3 ( 47,  79,  79) }
-func DimGray() Colour         { return new3 (105, 105, 105) }
-func SlateGray() Colour       { return new3 (112, 128, 144) }
-func LightSlateGray() Colour  { return new3 (119, 136, 153) }
-// func Gray() Colour            { return new3 (190, 190, 190) }
-func X11Gray() Colour         { return new3 (190, 190, 190) }
-func WebGray() Colour         { return new3 (128, 128, 128) }
-// func LightGray() Colour       { return new3 (211, 211, 211) }
-func MidnightBlue() Colour    { return new3 ( 25,  25, 112) }
-func Navy() Colour            { return new3 (  0,   0, 128) }
-func NavyBlue() Colour        { return new3 (  0,   0, 128) }
-func CornflowerBlue() Colour  { return new3 (100, 149, 237) }
-func DarkSlateBlue() Colour   { return new3 ( 72,  61, 139) }
-func SlateBlue() Colour       { return new3 (106,  90, 205) }
-func MediumSlateBlue() Colour { return new3 (123, 104, 238) }
-func LightSlateBlue() Colour  { return new3 (132, 112, 255) }
-func MediumBlue() Colour      { return new3 (  0,   0, 205) }
-func RoyalBlue() Colour       { return new3 ( 65, 105, 225) }
-// func Blue() Colour            { return new3 (  0,   0, 255) }
-func DodgerBlue() Colour      { return new3 ( 30, 144, 255) }
-func DeepSkyBlue() Colour     { return new3 (  0, 191, 255) }
-// func SkyBlue() Colour         { return new3 (135, 206, 235) }
-func LightSkyBlue() Colour    { return new3 (135, 206, 250) }
-func SteelBlue() Colour       { return new3 ( 70, 130, 180) }
-func LightSteelBlue() Colour  { return new3 (176, 196, 222) }
-// func LightBlue() Colour       { return new3 (173, 216, 230) }
-func PowderBlue() Colour      { return new3 (176, 224, 230) }
-func PaleTurquoise() Colour   { return new3 (175, 238, 238) }
-func DarkTurquoise() Colour   { return new3 (  0, 206, 209) }
-func MediumTurquoise() Colour { return new3 ( 72, 209, 204) }
-func TTurquoise() Colour      { return new3 ( 64, 224, 208) }
-func TCyan() Colour           { return new3 (  0, 255, 255) }
-func TAqua() Colour           { return new3 (  0, 255, 255) }
-func TLightCyan() Colour      { return new3 (224, 255, 255) }
-func TCadetBlue() Colour      { return new3 ( 95, 158, 160) }
-func TMediumAquamarine() Colour { return new3 (102, 205, 170) }
-func TAquamarine() Colour     { return new3 (127, 255, 212) }
-func TDarkGreen() Colour      { return new3 (  0, 100,   0) }
-func TDarkOliveGreen() Colour { return new3 ( 85, 107,  47) }
-func TDarkSeaGreen() Colour   { return new3 (143, 188, 143) }
-func TSeaGreen() Colour       { return new3 ( 46, 139,  87) }
-func TMediumSeaGreen() Colour { return new3 ( 60, 179, 113) }
-func TLightSeaGreen() Colour  { return new3 ( 32, 178, 170) }
-func TPaleGreen() Colour      { return new3 (152, 251, 152) }
-func TSpringGreen() Colour    { return new3 (  0, 255, 127) }
-func TLawnGreen() Colour      { return new3 (124, 252,   0) }
-func TGreen() Colour          { return new3 (  0, 255,   0) }
-func TLime() Colour           { return new3 (  0, 255,   0) }
-func TX11Green() Colour       { return new3 (  0, 255,   0) }
-func TWebGreen() Colour       { return new3 (  0, 128,   0) }
-func TChartreuse() Colour     { return new3 (127, 255,   0) }
-func TMediumSpringGreen() Colour { return new3 (  0, 250, 154) }
-func TGreenYellow() Colour    { return new3 (173, 255,  47) }
-func TLimeGreen() Colour      { return new3 ( 50, 205,  50) }
-func TYellowGreen() Colour    { return new3 (154, 205,  50) }
-func TForestGreen() Colour    { return new3 ( 34, 139,  34) }
-func TOliveDrab() Colour      { return new3 (107, 142,  35) }
-/*
-func () Colour { return new3 (189, 183, 107)TDarkKhaki
-func () Colour { return new3 (240, 230, 140)TKhaki
-func () Colour { return new3 (238, 232, 170)TPaleGoldenrod
-func () Colour { return new3 (250, 250, 210)TLightGoldenrodYellow
-func () Colour { return new3 (255, 255, 224)TLightYellow
-func () Colour { return new3 (255, 255,   0)TYellow
-func () Colour { return new3 (255, 215,   0)TGold
-func () Colour { return new3 (238, 221, 130)TLightGoldenrod
-func () Colour { return new3 (218, 165,  32)Tgoldenrod
-func () Colour { return new3 (184, 134,  11)TDarkGoldenrod
-func () Colour { return new3 (188, 143, 143)TRosyBrown
-func () Colour { return new3 (205,  92,  92)TIndianRed
-func () Colour { return new3 (139,  69,  19)TSaddleBrown
-func () Colour { return new3 (160,  82,  45)TSienna
-func () Colour { return new3 (205, 133,  63)TPeru
-func () Colour { return new3 (222, 184, 135)TBurlywood
-func () Colour { return new3 (245, 245, 220)TBeige
-func () Colour { return new3 (245, 222, 179)TWheat
-func () Colour { return new3 (244, 164,  96)TSandyBrown
-func () Colour { return new3 (210, 180, 140)TTan
-func () Colour { return new3 (210, 105,  30)TChocolate
-func () Colour { return new3 (178,  34,  34)TFirebrick
-func () Colour { return new3 (165,  42,  42)TBrown
-func () Colour { return new3 (233, 150, 122)TDarkSalmon
-func () Colour { return new3 (250, 128, 114)TSalmon
-func () Colour { return new3 (255, 160, 122)TLightSalmon
-func () Colour { return new3 (255, 165,   0)TOrange
-func () Colour { return new3 (255, 140,   0)TDarkOrange
-func () Colour { return new3 (255, 127,  80)TCoral
-func () Colour { return new3 (240, 128, 128)TLightCoral
-func () Colour { return new3 (255,  99,  71)TTomato
-func () Colour { return new3 (255,  69,   0)TOrangeRed
-func () Colour { return new3 (255,   0,   0)TRed
-func () Colour { return new3 (255, 105, 180)THotPink
-func () Colour { return new3 (255,  20, 147)TDeepPink
-func () Colour { return new3 (255, 192, 203)TPink
-func () Colour { return new3 (255, 182, 193)TLightPink
-func () Colour { return new3 (219, 112, 147)TPaleVioletRed
-func () Colour { return new3 (176,  48,  96)TMaroon
-func () Colour { return new3 (176,  48,  96)TX11Maroon
-func () Colour { return new3 (128,   0,   0)TWebMaroon
-func () Colour { return new3 (199,  21, 133)TMediumVioletRed
-func () Colour { return new3 (208,  32, 144)TVioletRed
-func () Colour { return new3 (255,   0, 255)TMagenta
-func () Colour { return new3 (255,   0, 255)TFuchsia
-func () Colour { return new3 (238, 130, 238)TViolet
-func () Colour { return new3 (221, 160, 221)TPlum
-func () Colour { return new3 (218, 112, 214)TOrchid
-func () Colour { return new3 (186,  85, 211)TMediumOrchid
-func () Colour { return new3 (153,  50, 204)TDarkOrchid
-func () Colour { return new3 (148,   0, 211)TDarkViolet
-func () Colour { return new3 (138,  43, 226)TBlueViolet
-func () Colour { return new3 (160,  32, 240)Tpurple
-func () Colour { return new3 (160,  32, 240)TX11Purple
-func () Colour { return new3 (128,   0, 128)TWebPurple
-func () Colour { return new3 (147, 112, 219)TMediumPurple
-func () Colour { return new3 (216, 191, 216)Tthistle
-func () Colour { return new3 (255, 250, 250)TSnow1
-func () Colour { return new3 (238, 233, 233)TSnow2
-func () Colour { return new3 (205, 201, 201)TSnow3
-func () Colour { return new3 (139, 137, 137)TSnow4
-func () Colour { return new3 (255, 245, 238)TSeashell1
-func () Colour { return new3 (238, 229, 222)TSeashell2
-func () Colour { return new3 (205, 197, 191)TSeashell3
-func () Colour { return new3 (139, 134, 130)TSeashell4
-func () Colour { return new3 (255, 239, 219)TAntiqueWhite1
-func () Colour { return new3 (238, 223, 204)TAntiqueWhite2
-func () Colour { return new3 (205, 192, 176)TAntiqueWhite3
-func () Colour { return new3 (139, 131, 120)TAntiqueWhite4
-func () Colour { return new3 (255, 228, 196)TBisque1
-func () Colour { return new3 (238, 213, 183)TBisque2
-func () Colour { return new3 (205, 183, 158)TBisque3
-func () Colour { return new3 (139, 125, 107)TBisque4
-func () Colour { return new3 (255, 218, 185)TPeachPuff1
-func () Colour { return new3 (238, 203, 173)TPeachPuff2
-func () Colour { return new3 (205, 175, 149)TPeachPuff3
-func () Colour { return new3 (139, 119, 101)TPeachPuff4
-func () Colour { return new3 (255, 222, 173)TNavajoWhite1
-func () Colour { return new3 (238, 207, 161)TNavajoWhite2
-func () Colour { return new3 (205, 179, 139)TNavajoWhite3
-func () Colour { return new3 (139, 121,  94)TNavajoWhite4
-func () Colour { return new3 (255, 250, 205)TLemonChiffon1
-func () Colour { return new3 (238, 233, 191)TLemonChiffon2
-func () Colour { return new3 (205, 201, 165)TLemonChiffon3
-func () Colour { return new3 (139, 137, 112)TLemonChiffon4
-func () Colour { return new3 (255, 248, 220)TCornsilk1
-func () Colour { return new3 (238, 232, 205)TCornsilk2
-func () Colour { return new3 (205, 200, 177)TCornsilk3
-func () Colour { return new3 (139, 136, 120)TCornsilk4
-func () Colour { return new3 (255, 255, 240)TIvory1
-func () Colour { return new3 (238, 238, 224)TIvory2
-func () Colour { return new3 (205, 205, 193)TIvory3
-func () Colour { return new3 (139, 139, 131)TIvory4
-func () Colour { return new3 (240, 255, 240)THoneydew1
-func () Colour { return new3 (224, 238, 224)THoneydew2
-func () Colour { return new3 (193, 205, 193)THoneydew3
-func () Colour { return new3 (131, 139, 131)THoneydew4
-func () Colour { return new3 (255, 240, 245)TLavenderBlush1
-func () Colour { return new3 (238, 224, 229)TLavenderBlush2
-func () Colour { return new3 (205, 193, 197)TLavenderBlush3
-func () Colour { return new3 (139, 131, 134)TLavenderBlush4
-func () Colour { return new3 (255, 228, 225)TMistyRose1
-func () Colour { return new3 (238, 213, 210)TMistyRose2
-func () Colour { return new3 (205, 183, 181)TMistyRose3
-func () Colour { return new3 (139, 125, 123)TMistyRose4
-func () Colour { return new3 (240, 255, 255)TAzure1
-func () Colour { return new3 (224, 238, 238)TAzure2
-func () Colour { return new3 (193, 205, 205)TAzure3
-func () Colour { return new3 (131, 139, 139)TAzure4
-func () Colour { return new3 (131, 111, 255)TSlateBlue1
-func () Colour { return new3 (122, 103, 238)TSlateBlue2
-func () Colour { return new3 (105,  89, 205)TSlateBlue3
-func () Colour { return new3 ( 71,  60, 139)TSlateBlue4
-func () Colour { return new3 ( 72, 118, 255)TRoyalBlue1
-func () Colour { return new3 ( 67, 110, 238)TRoyalBlue2
-func () Colour { return new3 ( 58,  95, 205)TRoyalBlue3
-func () Colour { return new3 ( 39,  64, 139)TRoyalBlue4
-func () Colour { return new3 (  0,   0, 255)TBlue1
-func () Colour { return new3 (  0,   0, 238)TBlue2
-func () Colour { return new3 (  0,   0, 205)TBlue3
-func () Colour { return new3 (  0,   0, 139)TBlue4
-func () Colour { return new3 ( 30, 144, 255)TDodgerBlue1
-func () Colour { return new3 ( 28, 134, 238)TDodgerBlue2
-func () Colour { return new3 ( 24, 116, 205)TDodgerBlue3
-func () Colour { return new3 ( 16,  78, 139)TDodgerBlue4
-func () Colour { return new3 ( 99, 184, 255)TSteelBlue1
-func () Colour { return new3 ( 92, 172, 238)TSteelBlue2
-func () Colour { return new3 ( 79, 148, 205)TSteelBlue3
-func () Colour { return new3 ( 54, 100, 139)TSteelBlue4
-func () Colour { return new3 (  0, 191, 255)TDeepSkyBlue1
-func () Colour { return new3 (  0, 178, 238)TDeepSkyBlue2
-func () Colour { return new3 (  0, 154, 205)TDeepSkyBlue3
-func () Colour { return new3 (  0, 104, 139)TDeepSkyBlue4
-func () Colour { return new3 (135, 206, 255)TSkyBlue1
-func () Colour { return new3 (126, 192, 238)TSkyBlue2
-func () Colour { return new3 (108, 166, 205)TSkyBlue3
-func () Colour { return new3 ( 74, 112, 139)TSkyBlue4
-func () Colour { return new3 (176, 226, 255)TLightSkyBlue1
-func () Colour { return new3 (164, 211, 238)TLightSkyBlue2
-func () Colour { return new3 (141, 182, 205)TLightSkyBlue3
-func () Colour { return new3 ( 96, 123, 139)TLightSkyBlue4
-func () Colour { return new3 (198, 226, 255)TSlateGray1
-func () Colour { return new3 (185, 211, 238)TSlateGray2
-func () Colour { return new3 (159, 182, 205)TSlateGray3
-func () Colour { return new3 (108, 123, 139)TSlateGray4
-func () Colour { return new3 (202, 225, 255)TLightSteelBlue1
-func () Colour { return new3 (188, 210, 238)TLightSteelBlue2
-func () Colour { return new3 (162, 181, 205)TLightSteelBlue3
-func () Colour { return new3 (110, 123, 139)TLightSteelBlue4
-func () Colour { return new3 (191, 239, 255)TLightBlue1
-func () Colour { return new3 (178, 223, 238)TLightBlue2
-func () Colour { return new3 (154, 192, 205)TLightBlue3
-func () Colour { return new3 (104, 131, 139)TLightBlue4
-*/
-func TLightCyan1() Colour     { return new3 (224, 255, 255) }
-func LightCyan2() Colour      { return new3 (209, 238, 238) }
-func LightCyan3() Colour      { return new3 (180, 205, 205) }
-func LightCyan4() Colour      { return new3 (122, 139, 139) }
-func PaleTurquoise1() Colour  { return new3 (187, 255, 255) }
-func PaleTurquoise2() Colour  { return new3 (174, 238, 238) }
-func PaleTurquoise3() Colour  { return new3 (150, 205, 205) }
-func PaleTurquoise4() Colour  { return new3 (102, 139, 139) }
-func CadetBlue1() Colour      { return new3 (152, 245, 255) }
-func CadetBlue2() Colour      { return new3 (142, 229, 238) }
-func CadetBlue3() Colour      { return new3 (122, 197, 205) }
-func CadetBlue4() Colour      { return new3 ( 83, 134, 139) }
-func Turquoise1() Colour      { return new3 (  0, 245, 255) }
-func Turquoise2() Colour      { return new3 (  0, 229, 238) }
-func Turquoise3() Colour      { return new3 (  0, 197, 205) }
-func Turquoise4() Colour      { return new3 (  0, 134, 139) }
-func Cyan1() Colour           { return new3 (  0, 255, 255) }
-func Cyan2() Colour           { return new3 (  0, 238, 238) }
-func Cyan3() Colour           { return new3 (  0, 205, 205) }
-func Cyan4() Colour           { return new3 (  0, 139, 139) }
-func DarkSlateGray1() Colour  { return new3 (151, 255, 255) }
-func DarkSlateGray2() Colour  { return new3 (141, 238, 238) }
-func DarkSlateGray3() Colour  { return new3 (121, 205, 205) }
-func DarkSlateGray4() Colour  { return new3 ( 82, 139, 139) }
-func Aquamarine1() Colour     { return new3 (127, 255, 212) }
-func Aquamarine2() Colour     { return new3 (118, 238, 198) }
-func Aquamarine3() Colour     { return new3 (102, 205, 170) }
-func Aquamarine4() Colour     { return new3 ( 69, 139, 116) }
-func DarkSeaGreen1() Colour   { return new3 (193, 255, 193) }
-func DarkSeaGreen2() Colour   { return new3 (180, 238, 180) }
-func DarkSeaGreen3() Colour   { return new3 (155, 205, 155) }
-func DarkSeaGreen4() Colour   { return new3 (105, 139, 105) }
-func SeaGreen1() Colour       { return new3 ( 84, 255, 159) }
-func SeaGreen2() Colour       { return new3 ( 78, 238, 148) }
-func SeaGreen3() Colour       { return new3 ( 67, 205, 128) }
-func SeaGreen4() Colour       { return new3 ( 46, 139,  87) }
-func PaleGreen1() Colour      { return new3 (154, 255, 154) }
-func PaleGreen2() Colour      { return new3 (144, 238, 144) }
-func PaleGreen3() Colour      { return new3 (124, 205, 124) }
-func PaleGreen4() Colour      { return new3 ( 84, 139,  84) }
-func SpringGreen1() Colour    { return new3 (  0, 255, 127) }
-func SpringGreen2() Colour    { return new3 (  0, 238, 118) }
-func SpringGreen3() Colour    { return new3 (  0, 205, 102) }
-func SpringGreen4() Colour    { return new3 (  0, 139,  69) }
-func Green1() Colour          { return new3 (  0, 255,   0) }
-func Green2() Colour          { return new3 (  0, 238,   0) }
-func Green3() Colour          { return new3 (  0, 205,   0) }
-func Green4() Colour          { return new3 (  0, 139,   0) }
-func Chartreuse1() Colour     { return new3 (127, 255,   0) }
-func Chartreuse2() Colour     { return new3 (118, 238,   0) }
-func Chartreuse3() Colour     { return new3 (102, 205,   0) }
-func Chartreuse4() Colour     { return new3 ( 69, 139,   0) }
-func OliveDrab1() Colour      { return new3 (192, 255,  62) }
-func OliveDrab2() Colour      { return new3 (179, 238,  58) }
-func OliveDrab3() Colour      { return new3 (154, 205,  50) }
-func OliveDrab4() Colour      { return new3 (105, 139,  34) }
-func DarkOliveGreen1() Colour { return new3 (202, 255, 112) }
-func DarkOliveGreen2() Colour { return new3 (188, 238, 104) }
-func DarkOliveGreen3() Colour { return new3 (162, 205,  90) }
-func DarkOliveGreen4() Colour { return new3 (110, 139,  61) }
-func Khaki1() Colour          { return new3 (255, 246, 143) }
-func Khaki2() Colour          { return new3 (238, 230, 133) }
-func Khaki3() Colour          { return new3 (205, 198, 115) }
-func Khaki4() Colour          { return new3 (139, 134,  78) }
-func LightGoldenrod1() Colour { return new3 (255, 236, 139) }
-func LightGoldenrod2() Colour { return new3 (238, 220, 130) }
-func LightGoldenrod3() Colour { return new3 (205, 190, 112) }
-func LightGoldenrod4() Colour { return new3 (139, 129,  76) }
-func LightYellow1() Colour    { return new3 (255, 255, 224) }
-func LightYellow2() Colour    { return new3 (238, 238, 209) }
-func LightYellow3() Colour    { return new3 (205, 205, 180) }
-func LightYellow4() Colour    { return new3 (139, 139, 122) }
-func Yellow1() Colour         { return new3 (255, 255,   0) }
-func Yellow2() Colour         { return new3 (238, 238,   0) }
-func Yellow3() Colour         { return new3 (205, 205,   0) }
-func Yellow4() Colour         { return new3 (139, 139,   0) }
-func Gold1() Colour           { return new3 (255, 215,   0) }
-func Gold2() Colour           { return new3 (238, 201,   0) }
-func Gold3() Colour           { return new3 (205, 173,   0) }
-func Gold4() Colour           { return new3 (139, 117,   0) }
-func Goldenrod1() Colour      { return new3 (255, 193,  37) }
-func Goldenrod2() Colour      { return new3 (238, 180,  34) }
-func Goldenrod3() Colour      { return new3 (205, 155,  29) }
-func Goldenrod4() Colour      { return new3 (139, 105,  20) }
-func DarkGoldenrod1() Colour  { return new3 (255, 185,  15) }
-func DarkGoldenrod2() Colour  { return new3 (238, 173,  14) }
-func DarkGoldenrod3() Colour  { return new3 (205, 149,  12) }
-func DarkGoldenrod4() Colour  { return new3 (139, 101,   8) }
-func RosyBrown1() Colour      { return new3 (255, 193, 193) }
-func RosyBrown2() Colour      { return new3 (238, 180, 180) }
-func RosyBrown3() Colour      { return new3 (205, 155, 155) }
-func RosyBrown4() Colour      { return new3 (139, 105, 105) }
-func IndianRed1() Colour      { return new3 (255, 106, 106) }
-func IndianRed2() Colour      { return new3 (238,  99,  99) }
-func IndianRed3() Colour      { return new3 (205,  85,  85) }
-func IndianRed4() Colour      { return new3 (139,  58,  58) }
-func Sienna1() Colour         { return new3 (255, 130,  71) }
-func Sienna2() Colour         { return new3 (238, 121,  66) }
-func Sienna3() Colour         { return new3 (205, 104,  57) }
-func Sienna4() Colour         { return new3 (139,  71,  38) }
-func Burlywood1() Colour      { return new3 (255, 211, 155) }
-func Burlywood2() Colour      { return new3 (238, 197, 145) }
-func Burlywood3() Colour      { return new3 (205, 170, 125) }
-func Burlywood4() Colour      { return new3 (139, 115,  85) }
-func Wheat1() Colour          { return new3 (255, 231, 186) }
-func Wheat2() Colour          { return new3 (238, 216, 174) }
-func Wheat3() Colour          { return new3 (205, 186, 150) }
-func Wheat4() Colour          { return new3 (139, 126, 102) }
-func Tan1() Colour            { return new3 (255, 165,  79) }
-func Tan2() Colour            { return new3 (238, 154,  73) }
-func Tan3() Colour            { return new3 (205, 133,  63) }
-func Tan4() Colour            { return new3 (139,  90,  43) }
-func Chocolate1() Colour      { return new3 (255, 127,  36) }
-func Chocolate2() Colour      { return new3 (238, 118,  33) }
-func Chocolate3() Colour      { return new3 (205, 102,  29) }
-func Chocolate4() Colour      { return new3 (139,  69,  19) }
-func Firebrick1() Colour      { return new3 (255,  48,  48) }
-func Firebrick2() Colour      { return new3 (238,  44,  44) }
-func Firebrick3() Colour      { return new3 (205,  38,  38) }
-func Firebrick4() Colour      { return new3 (139,  26,  26) }
-func Brown1() Colour          { return new3 (255,  64,  64) }
-func Brown2() Colour          { return new3 (238,  59,  59) }
-func Brown3() Colour          { return new3 (205,  51,  51) }
-func Brown4() Colour          { return new3 (139,  35,  35) }
-func Salmon1() Colour         { return new3 (255, 140, 105) }
-func Salmon2() Colour         { return new3 (238, 130,  98) }
-func Salmon3() Colour         { return new3 (205, 112,  84) }
-func Salmon4() Colour         { return new3 (139,  76,  57) }
-func LightSalmon1() Colour    { return new3 (255, 160, 122) }
-func LightSalmon2() Colour    { return new3 (238, 149, 114) }
-func LightSalmon3() Colour    { return new3 (205, 129,  98) }
-func LightSalmon4() Colour    { return new3 (139,  87,  66) }
-func Orange1() Colour         { return new3 (255, 165,   0) }
-func Orange2() Colour         { return new3 (238, 154,   0) }
-func Orange3() Colour         { return new3 (205, 133,   0) }
-func Orange4() Colour         { return new3 (139,  90,   0) }
-func DarkOrange1() Colour     { return new3 (255, 127,   0) }
-func DarkOrange2() Colour     { return new3 (238, 118,   0) }
-func DarkOrange3() Colour     { return new3 (205, 102,   0) }
-func DarkOrange4() Colour     { return new3 (139,  69,   0) }
-func Coral1() Colour          { return new3 (255, 114,  86) }
-func Coral2() Colour          { return new3 (238, 106,  80) }
-func Coral3() Colour          { return new3 (205,  91,  69) }
-func Coral4() Colour          { return new3 (139,  62,  47) }
-func Tomato1() Colour         { return new3 (255,  99,  71) }
-func Tomato2() Colour         { return new3 (238,  92,  66) }
-func Tomato3() Colour         { return new3 (205,  79,  57) }
-func Tomato4() Colour         { return new3 (139,  54,  38) }
-func OrangeRed1() Colour      { return new3 (255,  69,   0) }
-func OrangeRed2() Colour      { return new3 (238,  64,   0) }
-func OrangeRed3() Colour      { return new3 (205,  55,   0) }
-func OrangeRed4() Colour      { return new3 (139,  37,   0) }
-func Red1() Colour            { return new3 (255,   0,   0) }
-func Red2() Colour            { return new3 (238,   0,   0) }
-func Red3() Colour            { return new3 (205,   0,   0) }
-func Red4() Colour            { return new3 (139,   0,   0) }
-func DeepPink1() Colour       { return new3 (255,  20, 147) }
-func DeepPink2() Colour       { return new3 (238,  18, 137) }
-func DeepPink3() Colour       { return new3 (205,  16, 118) }
-func DeepPink4() Colour       { return new3 (139,  10,  80) }
-func HotPink1() Colour        { return new3 (255, 110, 180) }
-func HotPink2() Colour        { return new3 (238, 106, 167) }
-func HotPink3() Colour        { return new3 (205,  96, 144) }
-func HotPink4() Colour        { return new3 (139,  58,  98) }
-func Pink1() Colour           { return new3 (255, 181, 197) }
-func Pink2() Colour           { return new3 (238, 169, 184) }
-func Pink3() Colour           { return new3 (205, 145, 158) }
-func Pink4() Colour           { return new3 (139,  99, 108) }
-func LightPink1() Colour      { return new3 (255, 174, 185) }
-func LightPink2() Colour      { return new3 (238, 162, 173) }
-func LightPink3() Colour      { return new3 (205, 140, 149) }
-func LightPink4() Colour      { return new3 (139,  95, 101) }
-func PaleVioletRed1() Colour  { return new3 (255, 130, 171) }
-func PaleVioletRed2() Colour  { return new3 (238, 121, 159) }
-func PaleVioletRed3() Colour  { return new3 (205, 104, 137) }
-func PaleVioletRed4() Colour  { return new3 (139,  71,  93) }
-func Maroon1() Colour         { return new3 (255,  52, 179) }
-func Maroon2() Colour         { return new3 (238,  48, 167) }
-func Maroon3() Colour         { return new3 (205,  41, 144) }
-func Maroon4() Colour         { return new3 (139,  28,  98) }
-func VioletRed1() Colour      { return new3 (255,  62, 150) }
-func VioletRed2() Colour      { return new3 (238,  58, 140) }
-func VioletRed3() Colour      { return new3 (205,  50, 120) }
-func VioletRed4() Colour      { return new3 (139,  34,  82) }
-func Magenta1() Colour        { return new3 (255,   0, 255) }
-func Magenta2() Colour        { return new3 (238,   0, 238) }
-func Magenta3() Colour        { return new3 (205,   0, 205) }
-func Magenta4() Colour        { return new3 (139,   0, 139) }
-func Orchid1() Colour         { return new3 (255, 131, 250) }
-func Orchid2() Colour         { return new3 (238, 122, 233) }
-func Orchid3() Colour         { return new3 (205, 105, 201) }
-func Orchid4() Colour         { return new3 (139,  71, 137) }
-func Plum1() Colour           { return new3 (255, 187, 255) }
-func Plum2() Colour           { return new3 (238, 174, 238) }
-func Plum3() Colour           { return new3 (205, 150, 205) }
-func Plum4() Colour           { return new3 (139, 102, 139) }
-func MediumOrchid1() Colour   { return new3 (224, 102, 255) }
-func MediumOrchid2() Colour   { return new3 (209,  95, 238) }
-func MediumOrchid3() Colour   { return new3 (180,  82, 205) }
-func MediumOrchid4() Colour   { return new3 (122,  55, 139) }
-func DarkOrchid1() Colour     { return new3 (191,  62, 255) }
-func DarkOrchid2() Colour     { return new3 (178,  58, 238) }
-func DarkOrchid3() Colour     { return new3 (154,  50, 205) }
-func DarkOrchid4() Colour     { return new3 (104,  34, 139) }
-func Purple1() Colour         { return new3 (155,  48, 255) }
-func Purple2() Colour         { return new3 (145,  44, 238) }
-func Purple3() Colour         { return new3 (125,  38, 205) }
-func Purple4() Colour         { return new3 ( 85,  26, 139) }
-func MediumPurple1() Colour   { return new3 (171, 130, 255) }
-func MediumPurple2() Colour   { return new3 (159, 121, 238) }
-func MediumPurple3() Colour   { return new3 (137, 104, 205) }
-func MediumPurple4() Colour   { return new3 ( 93,  71, 139) }
-func Thistle1() Colour        { return new3 (255, 225, 255) }
-func Thistle2() Colour        { return new3 (238, 210, 238) }
-func Thistle3() Colour        { return new3 (205, 181, 205) }
-func Thistle4() Colour        { return new3 (139, 123, 139) }
-/*
-func () Colour { return new3 (  0,   0,   0)Gray0
-func () Colour { return new3 (  3,   3,   3)Gray1
-func () Colour { return new3 (  5,   5,   5)Gray2
-func () Colour { return new3 (  8,   8,   8)Gray3
-func () Colour { return new3 ( 10,  10,  10)Gray4
-func () Colour { return new3 ( 13,  13,  13)Gray5
-func () Colour { return new3 ( 15,  15,  15)Gray6
-func () Colour { return new3 ( 18,  18,  18)Gray7
-func () Colour { return new3 ( 20,  20,  20)Gray8
-func () Colour { return new3 ( 23,  23,  23)Gray9
-func () Colour { return new3 ( 26,  26,  26)Gray10
-func () Colour { return new3 ( 28,  28,  28)Gray11
-func () Colour { return new3 ( 31,  31,  31)Gray12
-func () Colour { return new3 ( 33,  33,  33)Gray13
-func () Colour { return new3 ( 36,  36,  36)Gray14
-func () Colour { return new3 ( 38,  38,  38)Gray15
-func () Colour { return new3 ( 41,  41,  41)Gray16
-func () Colour { return new3 ( 43,  43,  43)Gray17
-func () Colour { return new3 ( 46,  46,  46)Gray18
-func () Colour { return new3 ( 48,  48,  48)Gray19
-func () Colour { return new3 ( 51,  51,  51)Gray20
-func () Colour { return new3 ( 54,  54,  54)Gray21
-func () Colour { return new3 ( 56,  56,  56)Gray22
-func () Colour { return new3 ( 59,  59,  59)Gray23
-func () Colour { return new3 ( 61,  61,  61)Gray24
-func () Colour { return new3 ( 64,  64,  64)Gray25
-func () Colour { return new3 ( 66,  66,  66)Gray26
-func () Colour { return new3 ( 69,  69,  69)Gray27
-func () Colour { return new3 ( 71,  71,  71)Gray28
-func () Colour { return new3 ( 74,  74,  74)Gray29
-func () Colour { return new3 ( 77,  77,  77)Gray30
-func () Colour { return new3 ( 79,  79,  79)Gray31
-func () Colour { return new3 ( 82,  82,  82)Gray32
-func () Colour { return new3 ( 84,  84,  84)Gray33
-func () Colour { return new3 ( 87,  87,  87)Gray34
-func () Colour { return new3 ( 89,  89,  89)Gray35
-func () Colour { return new3 ( 92,  92,  92)Gray36
-func () Colour { return new3 ( 94,  94,  94)Gray37
-func () Colour { return new3 ( 97,  97,  97)Gray38
-func () Colour { return new3 ( 99,  99,  99)Gray39
-func () Colour { return new3 (102, 102, 102)Gray40
-func () Colour { return new3 (105, 105, 105)Gray41
-func () Colour { return new3 (107, 107, 107)Gray42
-func () Colour { return new3 (110, 110, 110)Gray43
-func () Colour { return new3 (112, 112, 112)Gray44
-func () Colour { return new3 (115, 115, 115)Gray45
-func () Colour { return new3 (117, 117, 117)Gray46
-func () Colour { return new3 (120, 120, 120)Gray47
-func () Colour { return new3 (122, 122, 122)Gray48
-func () Colour { return new3 (125, 125, 125)Gray49
-func () Colour { return new3 (127, 127, 127)Gray50
-func () Colour { return new3 (130, 130, 130)Gray51
-func () Colour { return new3 (133, 133, 133)Gray52
-func () Colour { return new3 (135, 135, 135)Gray53
-func () Colour { return new3 (138, 138, 138)Gray54
-func () Colour { return new3 (140, 140, 140)Gray55
-func () Colour { return new3 (143, 143, 143)Gray56
-func () Colour { return new3 (145, 145, 145)Gray57
-func () Colour { return new3 (148, 148, 148)Gray58
-func () Colour { return new3 (150, 150, 150)Gray59
-func () Colour { return new3 (153, 153, 153)Gray60
-func () Colour { return new3 (156, 156, 156)Gray61
-func () Colour { return new3 (158, 158, 158)Gray62
-func () Colour { return new3 (161, 161, 161)Gray63
-func () Colour { return new3 (163, 163, 163)Gray64
-func () Colour { return new3 (166, 166, 166)Gray65
-func () Colour { return new3 (168, 168, 168)Gray66
-func () Colour { return new3 (171, 171, 171)Gray67
-func () Colour { return new3 (173, 173, 173)Gray68
-func () Colour { return new3 (176, 176, 176)Gray69
-func () Colour { return new3 (179, 179, 179)Gray70
-func () Colour { return new3 (181, 181, 181)Gray71
-func () Colour { return new3 (184, 184, 184)Gray72
-func () Colour { return new3 (186, 186, 186)Gray73
-func () Colour { return new3 (189, 189, 189)Gray74
-func () Colour { return new3 (191, 191, 191)Gray75
-func () Colour { return new3 (194, 194, 194)Gray76
-func () Colour { return new3 (196, 196, 196)Gray77
-func () Colour { return new3 (199, 199, 199)Gray78
-func () Colour { return new3 (201, 201, 201)Gray79
-func () Colour { return new3 (204, 204, 204)Gray80
-func () Colour { return new3 (207, 207, 207)Gray81
-func () Colour { return new3 (209, 209, 209)Gray82
-func () Colour { return new3 (212, 212, 212)Gray83
-func () Colour { return new3 (214, 214, 214)Gray84
-func () Colour { return new3 (217, 217, 217)Gray85
-func () Colour { return new3 (219, 219, 219)Gray86
-func () Colour { return new3 (222, 222, 222)Gray87
-func () Colour { return new3 (224, 224, 224)Gray88
-func () Colour { return new3 (227, 227, 227)Gray89
-func () Colour { return new3 (229, 229, 229)Gray90
-func () Colour { return new3 (232, 232, 232)Gray91
-func () Colour { return new3 (235, 235, 235)Gray92
-func () Colour { return new3 (237, 237, 237)Gray93
-func () Colour { return new3 (240, 240, 240)Gray94
-func () Colour { return new3 (242, 242, 242)Gray95
-func () Colour { return new3 (245, 245, 245)gray96
-func () Colour { return new3 (247, 247, 247)gray97
-func () Colour { return new3 (250, 250, 250)gray98
-func () Colour { return new3 (252, 252, 252)gray99
-func () Colour { return new3 (255, 255, 255)gray100
-*/
-// func DarkGray() Colour        { return new3 (169, 169, 169) }
-// func DarkBlue() Colour        { return new3 (  0,   0, 139) }
-// func DarkCyan() Colour        { return new3 (  0, 139, 139) }
-// func DarkMagenta() Colour     { return new3 (139,   0, 139) }
-// func DarkRed() Colouri        { return new3 (139,   0,   0) }
-// func LightGreen() Colour      { return new3 (144, 238, 144) }
-func Crimson() Colour         { return new3 (220,  20,  60) }
-func Indigo() Colour          { return new3 ( 75,   0, 130) }
-func Olive() Colour           { return new3 (128, 128,   0) }
-func RebeccaPurple() Colour   { return new3 (102,  51, 153) }
-// func Silver() Colour          { return new3 (192, 192, 192) }
-func Teal() Colour            { return new3 (  0, 128, 128) }
+
+func Snow() Colour                  { return new3 ("snow",                  255, 250, 250) }
+func GhostWhite() Colour            { return new3 ("ghostwhite",            248, 248, 255) }
+func WhiteSmoke() Colour            { return new3 ("whitesmoke",            245, 245, 245) }
+func Gainsboro() Colour             { return new3 ("gainsboro",             220, 220, 220) }
+func FloralWhite() Colour           { return new3 ("florawhite",            255, 250, 240) }
+func OldLace() Colour               { return new3 ("oldlace",               253, 245, 230) }
+func Linen() Colour                 { return new3 ("linen",                 250, 240, 230) }
+func AntiqueWhite() Colour          { return new3 ("antiquewhite",          250, 235, 215) }
+func PapayaWhip() Colour            { return new3 ("papayawhip",            255, 239, 213) }
+func BlanchedAlmond() Colour        { return new3 ("blanchedalmond",        255, 235, 205) }
+func Bisque() Colour                { return new3 ("bisque",                255, 228, 196) }
+func PeachPuff() Colour             { return new3 ("peachpuff",             255, 218, 185) }
+func NavajoWhite() Colour           { return new3 ("navajowhite",           255, 222, 173) }
+func Moccasin() Colour              { return new3 ("moccasin",              255, 228, 181) }
+func Cornsilk() Colour              { return new3 ("cornsilk",              255, 248, 220) }
+func Ivory() Colour                 { return new3 ("ivory",                 255, 255, 240) }
+func LemonChiffon() Colour          { return new3 ("lemonchiffon",          255, 250, 205) }
+func Seashell() Colour              { return new3 ("seashell",              255, 245, 238) }
+func Honeydew() Colour              { return new3 ("honeydew",              240, 255, 240) }
+func MintCream() Colour             { return new3 ("mintcream",             245, 255, 250) }
+func Azure() Colour                 { return new3 ("azure",                 240, 255, 255) }
+func AliceBlue() Colour             { return new3 ("aliceblue",             240, 248, 255) }
+func Lavender() Colour              { return new3 ("lavender",              230, 230, 250) }
+func LavenderBlush() Colour         { return new3 ("lavenderblush",         255, 240, 245) }
+func MistyRose() Colour             { return new3 ("mistyrose",             255, 228, 225) }
+func DarkSlateGray() Colour         { return new3 ("darkslategray",          47,  79,  79) }
+func DimGray() Colour               { return new3 ("dimgray",               105, 105, 105) }
+func SlateGray() Colour             { return new3 ("slategray",             112, 128, 144) }
+func LightSlateGray() Colour        { return new3 ("lightslategray",        119, 136, 153) }
+func WebGray() Colour               { return new3 ("webgray",               128, 128, 128) }
+func MidnightBlue() Colour          { return new3 ("midnightblue",           25,  25, 112) }
+func Navy() Colour                  { return new3 ("navy",                    0,   0, 128) }
+func CornflowerBlue() Colour        { return new3 ("cornflowerblue",        100, 149, 237) }
+func DarkSlateBlue() Colour         { return new3 ("darkslateblue",          72,  61, 139) }
+func SlateBlue() Colour             { return new3 ("slateblue",             106,  90, 205) }
+func MediumSlateBlue() Colour       { return new3 ("mediumslateblue",       123, 104, 238) }
+func LightSlateBlue() Colour        { return new3 ("lightslateblue",        132, 112, 255) }
+func MediumBlue() Colour            { return new3 ("mediumblue",              0,   0, 205) }
+func RoyalBlue() Colour             { return new3 ("royalblue",              65, 105, 225) }
+func DodgerBlue() Colour            { return new3 ("dodgerblue",             30, 144, 255) }
+func DeepSkyBlue() Colour           { return new3 ("deepskyblue",             0, 191, 255) }
+func XSkyBlue() Colour              { return new3 ("xskyblue",              135, 206, 235) }
+func LightSkyBlue() Colour          { return new3 ("lightskyblue",          135, 206, 250) }
+func SteelBlue() Colour             { return new3 ("steelblue",              70, 130, 180) }
+func LightSteelBlue() Colour        { return new3 ("lightsteelblue",        176, 196, 222) }
+func XLightBlue() Colour            { return new3 ("xlightblue",            173, 216, 230) }
+func PowderBlue() Colour            { return new3 ("powderblue",            176, 224, 230) }
+func PaleTurquoise() Colour         { return new3 ("paleturquoise",         175, 238, 238) }
+func DarkTurquoise() Colour         { return new3 ("darkturquoise",           0, 206, 209) }
+func MediumTurquoise() Colour       { return new3 ("mediumturquoise",        72, 209, 204) }
+func TTurquoise() Colour            { return new3 ("tturquoise",             64, 224, 208) }
+func TCyan() Colour                 { return new3 ("tcyan",                   0, 255, 255) }
+func TAqua() Colour                 { return new3 ("taqua",                   0, 255, 255) }
+func TLightCyan() Colour            { return new3 ("tlightcyan",            224, 255, 255) }
+func TCadetBlue() Colour            { return new3 ("tcadetblue",             95, 158, 160) }
+func TMediumAquamarine() Colour     { return new3 ("tmediumaquamarine",     102, 205, 170) }
+func TAquamarine() Colour           { return new3 ("taquamarine",           127, 255, 212) }
+func TDarkGreen() Colour            { return new3 ("tdarkgreen",              0, 100,   0) }
+func TDarkOliveGreen() Colour       { return new3 ("tdarkolivegreen",        85, 107,  47) }
+func TDarkSeaGreen() Colour         { return new3 ("tdarkseagreen",         143, 188, 143) }
+func TSeaGreen() Colour             { return new3 ("tseagreen",              46, 139,  87) }
+func TMediumSeaGreen() Colour       { return new3 ("tmediumseagreen",        60, 179, 113) }
+func TLightSeaGreen() Colour        { return new3 ("tlightseagreen",         32, 178, 170) }
+func TPaleGreen() Colour            { return new3 ("tpalegreen",            152, 251, 152) }
+func TSpringGreen() Colour          { return new3 ("tspringgreen",            0, 255, 127) }
+func TLawnGreen() Colour            { return new3 ("tlawngreen",            124, 252,   0) }
+func TGreen() Colour                { return new3 ("tgreen",                  0, 255,   0) }
+func TLime() Colour                 { return new3 ("tlime",                   0, 255,   0) }
+func TWebGreen() Colour             { return new3 ("twebgreen",               0, 128,   0) }
+func TChartreuse() Colour           { return new3 ("tchartreuse",           127, 255,   0) }
+func TMediumSpringGreen() Colour    { return new3 ("tmediuimspringgreen",     0, 250, 154) }
+func TGreenYellow() Colour          { return new3 ("tgreenyellow",          173, 255,  47) }
+func TLimeGreen() Colour            { return new3 ("tlimegreen",             50, 205,  50) }
+func TYellowGreen() Colour          { return new3 ("tyellowgreen",          154, 205,  50) }
+func TForestGreen() Colour          { return new3 ("tforestgreen",           34, 139,  34) }
+func TOliveDrab() Colour            { return new3 ("tolivedrab",            107, 142,  35) }
+func TDarkKhaki() Colour            { return new3 ("tdarkkhaki",            189, 183, 107) }
+func TKhaki() Colour                { return new3 ("tkhaki",                240, 230, 140) }
+func TPaleGoldenrod() Colour        { return new3 ("tpalegoldenrod",        238, 232, 170) }
+func TLightGoldenrodYellow() Colour { return new3 ("tlightgoldenrodyellow", 250, 250, 210) }
+func TLightYellow() Colour          { return new3 ("tlightyellow",          255, 255, 224) }
+func TYellow() Colour               { return new3 ("tyellow",               255, 255,   0) }
+func TGold() Colour                 { return new3 ("tgold",                 255, 215,   0) }
+func TLightGoldenrod() Colour       { return new3 ("tlightgoldenrod",       238, 221, 130) }
+func Tgoldenrod() Colour            { return new3 ("tgoldenrod",            218, 165,  32) }
+func TDarkGoldenrod() Colour        { return new3 ("tdarkgoldenrod",        184, 134,  11) }
+func TRosyBrown() Colour            { return new3 ("trosybrown",            188, 143, 143) }
+func TIndianRed() Colour            { return new3 ("tindianred",            205,  92,  92) }
+func TSaddleBrown() Colour          { return new3 ("tsaddlebrown",          139,  69,  19) }
+func TSienna() Colour               { return new3 ("tsienna",               160,  82,  45) }
+func TPeru() Colour                 { return new3 ("tperu",                 205, 133,  63) }
+func TBurlywood() Colour            { return new3 ("tburlywood",            222, 184, 135) }
+func TBeige() Colour                { return new3 ("tbeige",                245, 245, 220) }
+func TWheat() Colour                { return new3 ("twheat",                245, 222, 179) }
+func TSandyBrown() Colour           { return new3 ("tsandybrown",           244, 164,  96) }
+func TTan() Colour                  { return new3 ("ttan",                  210, 180, 140) }
+func TChocolate() Colour            { return new3 ("tchocolate",            210, 105,  30) }
+func TFirebrick() Colour            { return new3 ("tfirebrick",            178,  34,  34) }
+func TBrown() Colour                { return new3 ("tbrown",                165,  42,  42) }
+func TDarkSalmon() Colour           { return new3 ("tdarksalmon",           233, 150, 122) }
+func TSalmon() Colour               { return new3 ("tsalmon",               250, 128, 114) }
+func TLightSalmon() Colour          { return new3 ("tlightsalmon",          255, 160, 122) }
+func TOrange() Colour               { return new3 ("torange",               255, 165,   0) }
+func TDarkOrange() Colour           { return new3 ("tdarkorange",           255, 140,   0) }
+func TCoral() Colour                { return new3 ("tcoral",                255, 127,  80) }
+func TLightCoral() Colour           { return new3 ("tlightcoral",           240, 128, 128) }
+func TTomato() Colour               { return new3 ("ttomato",               255,  99,  71) }
+func TOrangeRed() Colour            { return new3 ("torangered",            255,  69,   0) }
+func THotPink() Colour              { return new3 ("thotpink",              255, 105, 180) }
+func TDeepPink() Colour             { return new3 ("tdeeppink",             255,  20, 147) }
+func TPink() Colour                 { return new3 ("tpink",                 255, 192, 203) }
+func TLightPink() Colour            { return new3 ("tlightpink",            255, 182, 193) }
+func TPaleVioletRed() Colour        { return new3 ("tpalevioletred",        219, 112, 147) }
+func TMaroon() Colour               { return new3 ("tmaroon",               176,  48,  96) }
+func TWebMaroon() Colour            { return new3 ("twebmaroon",            128,   0,   0) }
+func TMediumVioletRed() Colour      { return new3 ("tmediumvioletred",      199,  21, 133) }
+func TVioletRed() Colour            { return new3 ("tvioletred",            208,  32, 144) }
+func TMagenta() Colour              { return new3 ("tmagenta",              255,   0, 255) }
+func TViolet() Colour               { return new3 ("tviolett",              238, 130, 238) }
+func TPlum() Colour                 { return new3 ("tplum",                 221, 160, 221) }
+func TOrchid() Colour               { return new3 ("torchid",               218, 112, 214) }
+func TMediumOrchid() Colour         { return new3 ("tmediumorchid",         186,  85, 211) }
+func TDarkOrchid() Colour           { return new3 ("tdarkorchid",           153,  50, 204) }
+func TDarkViolet() Colour           { return new3 ("tdarkviolet",           148,   0, 211) }
+func TBlueViolet() Colour           { return new3 ("tblueviolet",           138,  43, 226) }
+func Tpurple() Colour               { return new3 ("tpurple",               160,  32, 240) }
+func TWebPurple() Colour            { return new3 ("twebpurple",            128,   0, 128) }
+func TMediumPurple() Colour         { return new3 ("tmediumpurple",         147, 112, 219) }
+func Tthistle() Colour              { return new3 ("tthistle",              216, 191, 216) }
+func TSnow1() Colour                { return new3 ("tsnow1",                255, 250, 250) }
+func TSnow2() Colour                { return new3 ("tsnow2",                238, 233, 233) }
+func TSnow3() Colour                { return new3 ("tsnow3",                205, 201, 201) }
+func TSnow4() Colour                { return new3 ("tsnow4",                139, 137, 137) }
+func TSeashell1() Colour            { return new3 ("tseashell1",            255, 245, 238) }
+func TSeashell2() Colour            { return new3 ("tseashell2",            238, 229, 222) }
+func TSeashell3() Colour            { return new3 ("tseashell3",            205, 197, 191) }
+func TSeashell4() Colour            { return new3 ("tseashell4",            139, 134, 130) }
+func TAntiqueWhite1() Colour        { return new3 ("tantiquewhite1",        255, 239, 219) }
+func TAntiqueWhite2() Colour        { return new3 ("tantiquewhite2",        238, 223, 204) }
+func TAntiqueWhite3() Colour        { return new3 ("tantiquewhite3",        205, 192, 176) }
+func TAntiqueWhite4() Colour        { return new3 ("tantiquewhite4",        139, 131, 120) }
+func TBisque1() Colour              { return new3 ("tbisque1",              255, 228, 196) }
+func TBisque2() Colour              { return new3 ("tbisque2",              238, 213, 183) }
+func TBisque3() Colour              { return new3 ("tbisque3",              205, 183, 158) }
+func TBisque4() Colour              { return new3 ("tbisque4",              139, 125, 107) }
+func TPeachPuff1() Colour           { return new3 ("tpeachpuff1",           255, 218, 185) }
+func TPeachPuff2() Colour           { return new3 ("tpeachpuff2",           238, 203, 173) }
+func TPeachPuff3() Colour           { return new3 ("tpeachpuff3",           205, 175, 149) }
+func TPeachPuff4() Colour           { return new3 ("tpeachpuff4",           139, 119, 101) }
+func TNavajoWhite1() Colour         { return new3 ("tnavajowhite1",         255, 222, 173) }
+func TNavajoWhite2() Colour         { return new3 ("tnavajowhite2",         238, 207, 161) }
+func TNavajoWhite3() Colour         { return new3 ("tnavajowhite3",         205, 179, 139) }
+func TNavajoWhite4() Colour         { return new3 ("tnavajowhite4",         139, 121,  94) }
+func TLemonChiffon1() Colour        { return new3 ("tlemonchiffon1",        255, 250, 205) }
+func TLemonChiffon2() Colour        { return new3 ("tlemonchiffon2",        238, 233, 191) }
+func TLemonChiffon3() Colour        { return new3 ("tlemonchiffon3",        205, 201, 165) }
+func TLemonChiffon4() Colour        { return new3 ("tlemonchiffon4",        139, 137, 112) }
+func TCornsilk1() Colour            { return new3 ("tcornsilk1",            255, 248, 220) }
+func TCornsilk2() Colour            { return new3 ("tcornsilk2",            238, 232, 205) }
+func TCornsilk3() Colour            { return new3 ("tcornsilk3",            205, 200, 177) }
+func TCornsilk4() Colour            { return new3 ("tcornsilk4",            139, 136, 120) }
+func TIvory1() Colour               { return new3 ("tivory1",               255, 255, 240) }
+func TIvory2() Colour               { return new3 ("tivory2",               238, 238, 224) }
+func TIvory3() Colour               { return new3 ("tivory3",               205, 205, 193) }
+func TIvory4() Colour               { return new3 ("tivory4",               139, 139, 131) }
+func THoneydew1() Colour            { return new3 ("thoneydew1",            240, 255, 240) }
+func THoneydew2() Colour            { return new3 ("thoneydew2",            224, 238, 224) }
+func THoneydew3() Colour            { return new3 ("thoneydew3",            193, 205, 193) }
+func THoneydew4() Colour            { return new3 ("thoneydew4",            131, 139, 131) }
+func TLavenderBlush1() Colour       { return new3 ("tlavenderblush1",       255, 240, 245) }
+func TLavenderBlush2() Colour       { return new3 ("tlavenderblush2",       238, 224, 229) }
+func TLavenderBlush3() Colour       { return new3 ("tlavenderblush3",       205, 193, 197) }
+func TLavenderBlush4() Colour       { return new3 ("tlavenderblush4",       139, 131, 134) }
+func TMistyRose1() Colour           { return new3 ("tmistyrose1",           255, 228, 225) }
+func TMistyRose2() Colour           { return new3 ("tmistyrose2",           238, 213, 210) }
+func TMistyRose3() Colour           { return new3 ("tmistyrose3",           205, 183, 181) }
+func TMistyRose4() Colour           { return new3 ("tmistyrose4",           139, 125, 123) }
+func TAzure1() Colour               { return new3 ("tazure1",               240, 255, 255) }
+func TAzure2() Colour               { return new3 ("tazure2",               224, 238, 238) }
+func TAzure3() Colour               { return new3 ("tazure3",               193, 205, 205) }
+func TAzure4() Colour               { return new3 ("tazure4",               131, 139, 139) }
+func TSlateBlue1() Colour           { return new3 ("tslateblue1",           131, 111, 255) }
+func TSlateBlue2() Colour           { return new3 ("tslateblue2",           122, 103, 238) }
+func TSlateBlue3() Colour           { return new3 ("tslateblue3",           105,  89, 205) }
+func TSlateBlue4() Colour           { return new3 ("tslateblue4",            71,  60, 139) }
+func TRoyalBlue1() Colour           { return new3 ("troyalblue1",            72, 118, 255) }
+func TRoyalBlue2() Colour           { return new3 ("troyalblue2",            67, 110, 238) }
+func TRoyalBlue3() Colour           { return new3 ("troyalblue3",            58,  95, 205) }
+func TRoyalBlue4() Colour           { return new3 ("troyalblue4",            39,  64, 139) }
+func TBlue1() Colour                { return new3 ("tblue1",                  0,   0, 255) }
+func TBlue2() Colour                { return new3 ("tblue2",                  0,   0, 238) }
+func TBlue3() Colour                { return new3 ("tblue3",                  0,   0, 205) }
+func TBlue4() Colour                { return new3 ("tblue4",                  0,   0, 139) }
+func TDodgerBlue1() Colour          { return new3 ("tdodgerblue1",           30, 144, 255) }
+func TDodgerBlue2() Colour          { return new3 ("tdodgerblue2",           28, 134, 238) }
+func TDodgerBlue3() Colour          { return new3 ("tdodgerblue3",           24, 116, 205) }
+func TDodgerBlue4() Colour          { return new3 ("tdodgerblue4",           16,  78, 139) }
+func TSteelBlue1() Colour           { return new3 ("tsteelblue1",            99, 184, 255) }
+func TSteelBlue2() Colour           { return new3 ("tsteelblue2",            92, 172, 238) }
+func TSteelBlue3() Colour           { return new3 ("tsteelblue3",            79, 148, 205) }
+func TSteelBlue4() Colour           { return new3 ("tsteelblue4",            54, 100, 139) }
+func TDeepSkyBlue1() Colour         { return new3 ("tdeepskyblue1",           0, 191, 255) }
+func TDeepSkyBlue2() Colour         { return new3 ("tdeepskyblue2",           0, 178, 238) }
+func TDeepSkyBlue3() Colour         { return new3 ("tdeepskyblue3",           0, 154, 205) }
+func TDeepSkyBlue4() Colour         { return new3 ("tdeepskyblue4",           0, 104, 139) }
+func TSkyBlue1() Colour             { return new3 ("tskyblue1",             135, 206, 255) }
+func TSkyBlue2() Colour             { return new3 ("tskyblue2",             126, 192, 238) }
+func TSkyBlue3() Colour             { return new3 ("tskyblue3",             108, 166, 205) }
+func TSkyBlue4() Colour             { return new3 ("tskyblue4",              74, 112, 139) }
+func TLightSkyBlue1() Colour        { return new3 ("tlightskyblue1",        176, 226, 255) }
+func TLightSkyBlue2() Colour        { return new3 ("tlightskyblue2",        164, 211, 238) }
+func TLightSkyBlue3() Colour        { return new3 ("tlightskyblue3",        141, 182, 205) }
+func TLightSkyBlue4() Colour        { return new3 ("tlightskyblue4",         96, 123, 139) }
+func TSlateGray1() Colour           { return new3 ("tslategray1",           198, 226, 255) }
+func TSlateGray2() Colour           { return new3 ("tslategray2",           185, 211, 238) }
+func TSlateGray3() Colour           { return new3 ("tslategray3",           159, 182, 205) }
+func TSlateGray4() Colour           { return new3 ("tslategray4",           108, 123, 139) }
+func TLightSteelBlue1() Colour      { return new3 ("tlightsteelblue1",      202, 225, 255) }
+func TLightSteelBlue2() Colour      { return new3 ("tlightsteelblue2",      188, 210, 238) }
+func TLightSteelBlue3() Colour      { return new3 ("tlightsteelblue3",      162, 181, 205) }
+func TLightSteelBlue4() Colour      { return new3 ("tlightsteelblue4",      110, 123, 139) }
+func TLightBlue1() Colour           { return new3 ("tlightblue1",           191, 239, 255) }
+func TLightBlue2() Colour           { return new3 ("tlightblue2",           178, 223, 238) }
+func TLightBlue3() Colour           { return new3 ("tlightblue3",           154, 192, 205) }
+func TLightBlue4() Colour           { return new3 ("tlightblue4",           104, 131, 139) }
+func LightCyan1() Colour            { return new3 ("lightcyan1",            224, 255, 255) }
+func LightCyan2() Colour            { return new3 ("lightcyan2",            209, 238, 238) }
+func LightCyan3() Colour            { return new3 ("lightcyan3",            180, 205, 205) }
+func LightCyan4() Colour            { return new3 ("lightcyan4",            122, 139, 139) }
+func PaleTurquoise1() Colour        { return new3 ("paleturquoise1",        187, 255, 255) }
+func PaleTurquoise2() Colour        { return new3 ("paleturquoise2",        174, 238, 238) }
+func PaleTurquoise3() Colour        { return new3 ("paleturquoise3",        150, 205, 205) }
+func PaleTurquoise4() Colour        { return new3 ("paleturquoise4",        102, 139, 139) }
+func CadetBlue1() Colour            { return new3 ("cadetblue1",            152, 245, 255) }
+func CadetBlue2() Colour            { return new3 ("cadetblue2",            142, 229, 238) }
+func CadetBlue3() Colour            { return new3 ("cadetblue3",            122, 197, 205) }
+func CadetBlue4() Colour            { return new3 ("cadetblue4",             83, 134, 139) }
+func Turquoise1() Colour            { return new3 ("turquoise1",              0, 245, 255) }
+func Turquoise2() Colour            { return new3 ("turquoise2",              0, 229, 238) }
+func Turquoise3() Colour            { return new3 ("turquoise3",              0, 197, 205) }
+func Turquoise4() Colour            { return new3 ("turquoise4",              0, 134, 139) }
+func Cyan1() Colour                 { return new3 ("cyan1",                   0, 255, 255) }
+func Cyan2() Colour                 { return new3 ("cyan2",                   0, 238, 238) }
+func Cyan3() Colour                 { return new3 ("cyan3",                   0, 205, 205) }
+func Cyan4() Colour                 { return new3 ("cyan4",                   0, 139, 139) }
+func DarkSlateGray1() Colour        { return new3 ("darkslategray1",        151, 255, 255) }
+func DarkSlateGray2() Colour        { return new3 ("darkslategray2",        141, 238, 238) }
+func DarkSlateGray3() Colour        { return new3 ("darkslategray3",        121, 205, 205) }
+func DarkSlateGray4() Colour        { return new3 ("darkslategray4",         82, 139, 139) }
+func Aquamarine1() Colour           { return new3 ("aquamarine1",           127, 255, 212) }
+func Aquamarine2() Colour           { return new3 ("aquamarine2",           118, 238, 198) }
+func Aquamarine3() Colour           { return new3 ("aquamarine3",           102, 205, 170) }
+func Aquamarine4() Colour           { return new3 ("aquamarine4",            69, 139, 116) }
+func DarkSeaGreen1() Colour         { return new3 ("darkseagreen1",         193, 255, 193) }
+func DarkSeaGreen2() Colour         { return new3 ("darkseagreen2",         180, 238, 180) }
+func DarkSeaGreen3() Colour         { return new3 ("darkseagreen3",         155, 205, 155) }
+func DarkSeaGreen4() Colour         { return new3 ("darkseagreen4",         105, 139, 105) }
+func SeaGreen1() Colour             { return new3 ("seagreen1",              84, 255, 159) }
+func SeaGreen2() Colour             { return new3 ("seagreen2",              78, 238, 148) }
+func SeaGreen3() Colour             { return new3 ("seagreen3",              67, 205, 128) }
+func SeaGreen4() Colour             { return new3 ("seagreen4",              46, 139,  87) }
+func PaleGreen1() Colour            { return new3 ("palegreen1",            154, 255, 154) }
+func PaleGreen2() Colour            { return new3 ("palegreen2",            144, 238, 144) }
+func PaleGreen3() Colour            { return new3 ("palegreen3",            124, 205, 124) }
+func PaleGreen4() Colour            { return new3 ("palegreen4",             84, 139,  84) }
+func SpringGreen1() Colour          { return new3 ("springgreen1",            0, 255, 127) }
+func SpringGreen2() Colour          { return new3 ("springgreen2",            0, 238, 118) }
+func SpringGreen3() Colour          { return new3 ("springgreen3",            0, 205, 102) }
+func SpringGreen4() Colour          { return new3 ("springgreen4",            0, 139,  69) }
+func Green1() Colour                { return new3 ("green1",                  0, 255,   0) }
+func Green2() Colour                { return new3 ("green2",                  0, 238,   0) }
+func Green3() Colour                { return new3 ("green3",                  0, 205,   0) }
+func Green4() Colour                { return new3 ("green4",                  0, 139,   0) }
+func Chartreuse1() Colour           { return new3 ("chartreuse1",           127, 255,   0) }
+func Chartreuse2() Colour           { return new3 ("chartreuse2",           118, 238,   0) }
+func Chartreuse3() Colour           { return new3 ("chartreuse3",           102, 205,   0) }
+func Chartreuse4() Colour           { return new3 ("chartreuse4",            69, 139,   0) }
+func OliveDrab1() Colour            { return new3 ("olivedrab1",            192, 255,  62) }
+func OliveDrab2() Colour            { return new3 ("olivedrab2",            179, 238,  58) }
+func OliveDrab3() Colour            { return new3 ("olivedrab3",            154, 205,  50) }
+func OliveDrab4() Colour            { return new3 ("olivedrab4",            105, 139,  34) }
+func DarkOliveGreen1() Colour       { return new3 ("darkolivegreen1",       202, 255, 112) }
+func DarkOliveGreen2() Colour       { return new3 ("darkolivegreen2",       188, 238, 104) }
+func DarkOliveGreen3() Colour       { return new3 ("darkolivegreen3",       162, 205,  90) }
+func DarkOliveGreen4() Colour       { return new3 ("darkolivegreen4",       110, 139,  61) }
+func Khaki1() Colour                { return new3 ("khaki1",                255, 246, 143) }
+func Khaki2() Colour                { return new3 ("khaki2",                238, 230, 133) }
+func Khaki3() Colour                { return new3 ("khaki3",                205, 198, 115) }
+func Khaki4() Colour                { return new3 ("khaki4",                139, 134,  78) }
+func LightGoldenrod1() Colour       { return new3 ("lightgoldenrod1",       255, 236, 139) }
+func LightGoldenrod2() Colour       { return new3 ("lightgoldenrod2",       238, 220, 130) }
+func LightGoldenrod3() Colour       { return new3 ("lightgoldenrod3",       205, 190, 112) }
+func LightGoldenrod4() Colour       { return new3 ("lightgoldenrod4",       139, 129,  76) }
+func LightYellow1() Colour          { return new3 ("lightyellow1",          255, 255, 224) }
+func LightYellow2() Colour          { return new3 ("lightyellow2",          238, 238, 209) }
+func LightYellow3() Colour          { return new3 ("lightyellow3",          205, 205, 180) }
+func LightYellow4() Colour          { return new3 ("lightyellow4",          139, 139, 122) }
+func Yellow1() Colour               { return new3 ("yellow1",               255, 255,   0) }
+func Yellow2() Colour               { return new3 ("yellow2",               238, 238,   0) }
+func Yellow3() Colour               { return new3 ("yellow3",               205, 205,   0) }
+func Yellow4() Colour               { return new3 ("yellow4",               139, 139,   0) }
+func Gold1() Colour                 { return new3 ("gold1",                 255, 215,   0) }
+func Gold2() Colour                 { return new3 ("gold2",                 238, 201,   0) }
+func Gold3() Colour                 { return new3 ("gold3",                 205, 173,   0) }
+func Gold4() Colour                 { return new3 ("gold4",                 139, 117,   0) }
+func Goldenrod1() Colour            { return new3 ("goldenrod1",            255, 193,  37) }
+func Goldenrod2() Colour            { return new3 ("goldenrod2",            238, 180,  34) }
+func Goldenrod3() Colour            { return new3 ("goldenrod3",            205, 155,  29) }
+func Goldenrod4() Colour            { return new3 ("goldenrod4",            139, 105,  20) }
+func DarkGoldenrod1() Colour        { return new3 ("darkgoldenrod1",        255, 185,  15) }
+func DarkGoldenrod2() Colour        { return new3 ("darkgoldenrod2",        238, 173,  14) }
+func DarkGoldenrod3() Colour        { return new3 ("darkgoldenrod3",        205, 149,  12) }
+func DarkGoldenrod4() Colour        { return new3 ("darkgoldenrod4",        139, 101,   8) }
+func RosyBrown1() Colour            { return new3 ("trosybrown1",           255, 193, 193) }
+func RosyBrown2() Colour            { return new3 ("trosybrown2",           238, 180, 180) }
+func RosyBrown3() Colour            { return new3 ("trosybrown3",           205, 155, 155) }
+func RosyBrown4() Colour            { return new3 ("trosybrown4",           139, 105, 105) }
+func IndianRed1() Colour            { return new3 ("tindianred1",           255, 106, 106) }
+func IndianRed2() Colour            { return new3 ("tindianred2",           238,  99,  99) }
+func IndianRed3() Colour            { return new3 ("tindianred3",           205,  85,  85) }
+func IndianRed4() Colour            { return new3 ("tindianred4",           139,  58,  58) }
+func Sienna1() Colour               { return new3 ("sienna1",               255, 130,  71) }
+func Sienna2() Colour               { return new3 ("sienna2",               238, 121,  66) }
+func Sienna3() Colour               { return new3 ("sienna3",               205, 104,  57) }
+func Sienna4() Colour               { return new3 ("sienna4",               139,  71,  38) }
+func Burlywood1() Colour            { return new3 ("tburlywood1",           255, 211, 155) }
+func Burlywood2() Colour            { return new3 ("tburlywood2",           238, 197, 145) }
+func Burlywood3() Colour            { return new3 ("tburlywood3",           205, 170, 125) }
+func Burlywood4() Colour            { return new3 ("tburlywood4",           139, 115,  85) }
+func Wheat1() Colour                { return new3 ("twheat1",               255, 231, 186) }
+func Wheat2() Colour                { return new3 ("twheat2",               238, 216, 174) }
+func Wheat3() Colour                { return new3 ("twheat3",               205, 186, 150) }
+func Wheat4() Colour                { return new3 ("twheat4",               139, 126, 102) }
+func Tan1() Colour                  { return new3 ("ttan1",                 255, 165,  79) }
+func Tan2() Colour                  { return new3 ("ttan2",                 238, 154,  73) }
+func Tan3() Colour                  { return new3 ("ttan3",                 205, 133,  63) }
+func Tan4() Colour                  { return new3 ("ttan4",                 139,  90,  43) }
+func Chocolate1() Colour            { return new3 ("tchocolate1",           255, 127,  36) }
+func Chocolate2() Colour            { return new3 ("tchocolate2",           238, 118,  33) }
+func Chocolate3() Colour            { return new3 ("tchocolate3",           205, 102,  29) }
+func Chocolate4() Colour            { return new3 ("tchocolate4",           139,  69,  19) }
+func Firebrick1() Colour            { return new3 ("tfirebrick1",           255,  48,  48) }
+func Firebrick2() Colour            { return new3 ("tfirebrick2",           238,  44,  44) }
+func Firebrick3() Colour            { return new3 ("tfirebrick3",           205,  38,  38) }
+func Firebrick4() Colour            { return new3 ("tfirebrick4",           139,  26,  26) }
+func Brown1() Colour                { return new3 ("tbrown1",               255,  64,  64) }
+func Brown2() Colour                { return new3 ("tbrown2",               238,  59,  59) }
+func Brown3() Colour                { return new3 ("tbrown3",               205,  51,  51) }
+func Brown4() Colour                { return new3 ("tbrown4",               139,  35,  35) }
+func Salmon1() Colour               { return new3 ("tsalmon1",              255, 140, 105) }
+func Salmon2() Colour               { return new3 ("tsalmon2",              238, 130,  98) }
+func Salmon3() Colour               { return new3 ("tsalmon3",              205, 112,  84) }
+func Salmon4() Colour               { return new3 ("tsalmon4",              139,  76,  57) }
+func LightSalmon1() Colour          { return new3 ("tlightsalmon1",         255, 160, 122) }
+func LightSalmon2() Colour          { return new3 ("tlightsalmon2",         238, 149, 114) }
+func LightSalmon3() Colour          { return new3 ("tlightsalmon3",         205, 129,  98) }
+func LightSalmon4() Colour          { return new3 ("tlightsalmon4",         139,  87,  66) }
+func Orange1() Colour               { return new3 ("orange1",               255, 165,   0) }
+func Orange2() Colour               { return new3 ("orange2",               238, 154,   0) }
+func Orange3() Colour               { return new3 ("orange3",               205, 133,   0) }
+func Orange4() Colour               { return new3 ("orange4",               139,  90,   0) }
+func DarkOrange1() Colour           { return new3 ("darkorange1",           255, 127,   0) }
+func DarkOrange2() Colour           { return new3 ("darkorange2",           238, 118,   0) }
+func DarkOrange3() Colour           { return new3 ("darkorange3",           205, 102,   0) }
+func DarkOrange4() Colour           { return new3 ("darkorange4",           139,  69,   0) }
+func Coral1() Colour                { return new3 ("coral1",                255, 114,  86) }
+func Coral2() Colour                { return new3 ("coral2",                238, 106,  80) }
+func Coral3() Colour                { return new3 ("coral3",                205,  91,  69) }
+func Coral4() Colour                { return new3 ("coral4",                139,  62,  47) }
+func Tomato1() Colour               { return new3 ("tomato1",               255,  99,  71) }
+func Tomato2() Colour               { return new3 ("tomato2",               238,  92,  66) }
+func Tomato3() Colour               { return new3 ("tomato3",               205,  79,  57) }
+func Tomato4() Colour               { return new3 ("tomato4",               139,  54,  38) }
+func OrangeRed1() Colour            { return new3 ("orangered1",            255,  69,   0) }
+func OrangeRed2() Colour            { return new3 ("orangered2",            238,  64,   0) }
+func OrangeRed3() Colour            { return new3 ("orangered3",            205,  55,   0) }
+func OrangeRed4() Colour            { return new3 ("orangered4",            139,  37,   0) }
+func Red1() Colour                  { return new3 ("red1",                  255,   0,   0) }
+func Red2() Colour                  { return new3 ("red2",                  238,   0,   0) }
+func Red3() Colour                  { return new3 ("red3",                  205,   0,   0) }
+func Red4() Colour                  { return new3 ("red4",                  139,   0,   0) }
+func DeepPink1() Colour             { return new3 ("deeppink1",             255,  20, 147) }
+func DeepPink2() Colour             { return new3 ("deeppink2",             238,  18, 137) }
+func DeepPink3() Colour             { return new3 ("deeppink3",             205,  16, 118) }
+func DeepPink4() Colour             { return new3 ("deeppink4",             139,  10,  80) }
+func HotPink1() Colour              { return new3 ("hotpink1",              255, 110, 180) }
+func HotPink2() Colour              { return new3 ("hotpink2",              238, 106, 167) }
+func HotPink3() Colour              { return new3 ("hotpink3",              205,  96, 144) }
+func HotPink4() Colour              { return new3 ("hotpink4",              139,  58,  98) }
+func Pink1() Colour                 { return new3 ("pink1",                 255, 181, 197) }
+func Pink2() Colour                 { return new3 ("pink2",                 238, 169, 184) }
+func Pink3() Colour                 { return new3 ("pink3",                 205, 145, 158) }
+func Pink4() Colour                 { return new3 ("pink4",                 139,  99, 108) }
+func LightPink1() Colour            { return new3 ("lightpink1",            255, 174, 185) }
+func LightPink2() Colour            { return new3 ("lightpink2",            238, 162, 173) }
+func LightPink3() Colour            { return new3 ("lightpink3",            205, 140, 149) }
+func LightPink4() Colour            { return new3 ("lightpink4",            139,  95, 101) }
+func PaleVioletRed1() Colour        { return new3 ("palevioletred1",        255, 130, 171) }
+func PaleVioletRed2() Colour        { return new3 ("palevioletred2",        238, 121, 159) }
+func PaleVioletRed3() Colour        { return new3 ("palevioletred3",        205, 104, 137) }
+func PaleVioletRed4() Colour        { return new3 ("palevioletred4",        139,  71,  93) }
+func Maroon1() Colour               { return new3 ("maroon1",               255,  52, 179) }
+func Maroon2() Colour               { return new3 ("maroon2",               238,  48, 167) }
+func Maroon3() Colour               { return new3 ("maroon3",               205,  41, 144) }
+func Maroon4() Colour               { return new3 ("maroon4",               139,  28,  98) }
+func VioletRed1() Colour            { return new3 ("violetred1",            255,  62, 150) }
+func VioletRed2() Colour            { return new3 ("violetred2",            238,  58, 140) }
+func VioletRed3() Colour            { return new3 ("violetred3",            205,  50, 120) }
+func VioletRed4() Colour            { return new3 ("violetred4",            139,  34,  82) }
+func Magenta1() Colour              { return new3 ("magenta1",              255,   0, 255) }
+func Magenta2() Colour              { return new3 ("magenta2",              238,   0, 238) }
+func Magenta3() Colour              { return new3 ("magenta3",              205,   0, 205) }
+func Magenta4() Colour              { return new3 ("magenta4",              139,   0, 139) }
+func Orchid1() Colour               { return new3 ("orchid1",               255, 131, 250) }
+func Orchid2() Colour               { return new3 ("orchid2",               238, 122, 233) }
+func Orchid3() Colour               { return new3 ("orchid3",               205, 105, 201) }
+func Orchid4() Colour               { return new3 ("orchid4",               139,  71, 137) }
+func Plum1() Colour                 { return new3 ("plum1",                 255, 187, 255) }
+func Plum2() Colour                 { return new3 ("plum2",                 238, 174, 238) }
+func Plum3() Colour                 { return new3 ("plum3",                 205, 150, 205) }
+func Plum4() Colour                 { return new3 ("plum4",                 139, 102, 139) }
+func MediumOrchid1() Colour         { return new3 ("mediumorchid1",         224, 102, 255) }
+func MediumOrchid2() Colour         { return new3 ("mediumorchid2",         209,  95, 238) }
+func MediumOrchid3() Colour         { return new3 ("mediumorchid3",         180,  82, 205) }
+func MediumOrchid4() Colour         { return new3 ("mediumorchid4",         122,  55, 139) }
+func DarkOrchid1() Colour           { return new3 ("darkorchid1",           191,  62, 255) }
+func DarkOrchid2() Colour           { return new3 ("darkorchid2",           178,  58, 238) }
+func DarkOrchid3() Colour           { return new3 ("darkorchid3",           154,  50, 205) }
+func DarkOrchid4() Colour           { return new3 ("darkorchid4",           104,  34, 139) }
+func Purple1() Colour               { return new3 ("purple1",               155,  48, 255) }
+func Purple2() Colour               { return new3 ("purple2",               145,  44, 238) }
+func Purple3() Colour               { return new3 ("purple3",               125,  38, 205) }
+func Purple4() Colour               { return new3 ("purple4",                85,  26, 139) }
+func MediumPurple1() Colour         { return new3 ("mediumpurple1",         171, 130, 255) }
+func MediumPurple2() Colour         { return new3 ("mediumpurple2",         159, 121, 238) }
+func MediumPurple3() Colour         { return new3 ("mediumpurple3",         137, 104, 205) }
+func MediumPurple4() Colour         { return new3 ("mediumpurple4",          93,  71, 139) }
+func Thistle1() Colour              { return new3 ("thistle1",              255, 225, 255) }
+func Thistle2() Colour              { return new3 ("thistle2",              238, 210, 238) }
+func Thistle3() Colour              { return new3 ("thistle3",              205, 181, 205) }
+func Thistle4() Colour              { return new3 ("thistle4",              139, 123, 139) }
+func Gray1() Colour                 { return new3 ("gray1",                   3,   3,   3) }
+func Gray2() Colour                 { return new3 ("gray2",                   5,   5,   5) }
+func Gray3() Colour                 { return new3 ("gray3",                   8,   8,   8) }
+func Gray4() Colour                 { return new3 ("gray4",                  10,  10,  10) }
+func Gray5() Colour                 { return new3 ("gray5",                  13,  13,  13) }
+func Gray6() Colour                 { return new3 ("gray6",                  15,  15,  15) }
+func Gray7() Colour                 { return new3 ("gray7",                  18,  18,  18) }
+func Gray8() Colour                 { return new3 ("gray8",                  20,  20,  20) }
+func Gray9() Colour                 { return new3 ("gray9",                  23,  23,  23) }
+func Gray10() Colour                { return new3 ("gray10",                 26,  26,  26) }
+func Gray11() Colour                { return new3 ("gray11",                 28,  28,  28) }
+func Gray12() Colour                { return new3 ("gray12",                 31,  31,  31) }
+func Gray13() Colour                { return new3 ("gray13",                 33,  33,  33) }
+func Gray14() Colour                { return new3 ("gray14",                 36,  36,  36) }
+func Gray15() Colour                { return new3 ("gray15",                 38,  38,  38) }
+func Gray16() Colour                { return new3 ("gray16",                 41,  41,  41) }
+func Gray17() Colour                { return new3 ("gray17",                 43,  43,  43) }
+func Gray18() Colour                { return new3 ("gray18",                 46,  46,  46) }
+func Gray19() Colour                { return new3 ("gray19",                 48,  48,  48) }
+func Gray20() Colour                { return new3 ("gray20",                 51,  51,  51) }
+func Gray21() Colour                { return new3 ("gray21",                 54,  54,  54) }
+func Gray22() Colour                { return new3 ("gray22",                 56,  56,  56) }
+func Gray23() Colour                { return new3 ("gray23",                 59,  59,  59) }
+func Gray24() Colour                { return new3 ("gray24",                 61,  61,  61) }
+func Gray25() Colour                { return new3 ("gray25",                 64,  64,  64) }
+func Gray26() Colour                { return new3 ("gray26",                 66,  66,  66) }
+func Gray27() Colour                { return new3 ("gray27",                 69,  69,  69) }
+func Gray28() Colour                { return new3 ("gray28",                 71,  71,  71) }
+func Gray29() Colour                { return new3 ("gray29",                 74,  74,  74) }
+func Gray30() Colour                { return new3 ("gray30",                 77,  77,  77) }
+func Gray31() Colour                { return new3 ("gray31",                 79,  79,  79) }
+func Gray32() Colour                { return new3 ("gray32",                 82,  82,  82) }
+func Gray33() Colour                { return new3 ("gray33",                 84,  84,  84) }
+func Gray34() Colour                { return new3 ("gray34",                 87,  87,  87) }
+func Gray35() Colour                { return new3 ("gray35",                 89,  89,  89) }
+func Gray36() Colour                { return new3 ("gray36",                 92,  92,  92) }
+func Gray37() Colour                { return new3 ("gray37",                 94,  94,  94) }
+func Gray38() Colour                { return new3 ("gray38",                 97,  97,  97) }
+func Gray39() Colour                { return new3 ("gray39",                 99,  99,  99) }
+func Gray40() Colour                { return new3 ("gray40",                102, 102, 102) }
+func Gray41() Colour                { return new3 ("gray41",                105, 105, 105) }
+func Gray42() Colour                { return new3 ("gray42",                107, 107, 107) }
+func Gray43() Colour                { return new3 ("gray43",                110, 110, 110) }
+func Gray44() Colour                { return new3 ("gray44",                112, 112, 112) }
+func Gray45() Colour                { return new3 ("gray45",                115, 115, 115) }
+func Gray46() Colour                { return new3 ("gray46",                117, 117, 117) }
+func Gray47() Colour                { return new3 ("gray47",                120, 120, 120) }
+func Gray48() Colour                { return new3 ("gray48",                122, 122, 122) }
+func Gray49() Colour                { return new3 ("gray49",                125, 125, 125) }
+func Gray50() Colour                { return new3 ("gray50",                127, 127, 127) }
+func Gray51() Colour                { return new3 ("gray51",                130, 130, 130) }
+func Gray52() Colour                { return new3 ("gray52",                133, 133, 133) }
+func Gray53() Colour                { return new3 ("gray53",                135, 135, 135) }
+func Gray54() Colour                { return new3 ("gray54",                138, 138, 138) }
+func Gray55() Colour                { return new3 ("gray55",                140, 140, 140) }
+func Gray56() Colour                { return new3 ("gray56",                143, 143, 143) }
+func Gray57() Colour                { return new3 ("gray57",                145, 145, 145) }
+func Gray58() Colour                { return new3 ("gray58",                148, 148, 148) }
+func Gray59() Colour                { return new3 ("gray59",                150, 150, 150) }
+func Gray60() Colour                { return new3 ("gray60",                153, 153, 153) }
+func Gray61() Colour                { return new3 ("gray61",                156, 156, 156) }
+func Gray62() Colour                { return new3 ("gray62",                158, 158, 158) }
+func Gray63() Colour                { return new3 ("gray63",                161, 161, 161) }
+func Gray64() Colour                { return new3 ("gray64",                163, 163, 163) }
+func Gray65() Colour                { return new3 ("gray65",                166, 166, 166) }
+func Gray66() Colour                { return new3 ("gray66",                168, 168, 168) }
+func Gray67() Colour                { return new3 ("gray67",                171, 171, 171) }
+func Gray68() Colour                { return new3 ("gray68",                173, 173, 173) }
+func Gray69() Colour                { return new3 ("gray69",                176, 176, 176) }
+func Gray70() Colour                { return new3 ("gray70",                179, 179, 179) }
+func Gray71() Colour                { return new3 ("gray71",                181, 181, 181) }
+func Gray72() Colour                { return new3 ("gray72",                184, 184, 184) }
+func Gray73() Colour                { return new3 ("gray73",                186, 186, 186) }
+func Gray74() Colour                { return new3 ("gray74",                189, 189, 189) }
+func Gray75() Colour                { return new3 ("gray75",                191, 191, 191) }
+func Gray76() Colour                { return new3 ("gray76",                194, 194, 194) }
+func Gray77() Colour                { return new3 ("gray77",                196, 196, 196) }
+func Gray78() Colour                { return new3 ("gray78",                199, 199, 199) }
+func Gray79() Colour                { return new3 ("gray79",                201, 201, 201) }
+func Gray80() Colour                { return new3 ("gray80",                204, 204, 204) }
+func Gray81() Colour                { return new3 ("gray81",                207, 207, 207) }
+func Gray82() Colour                { return new3 ("gray82",                209, 209, 209) }
+func Gray83() Colour                { return new3 ("gray83",                212, 212, 212) }
+func Gray84() Colour                { return new3 ("gray84",                214, 214, 214) }
+func Gray85() Colour                { return new3 ("gray85",                217, 217, 217) }
+func Gray86() Colour                { return new3 ("gray86",                219, 219, 219) }
+func Gray87() Colour                { return new3 ("gray87",                222, 222, 222) }
+func Gray88() Colour                { return new3 ("gray88",                224, 224, 224) }
+func Gray89() Colour                { return new3 ("gray89",                227, 227, 227) }
+func Gray90() Colour                { return new3 ("gray90",                229, 229, 229) }
+func Gray91() Colour                { return new3 ("gray91",                232, 232, 232) }
+func Gray92() Colour                { return new3 ("gray92",                235, 235, 235) }
+func Gray93() Colour                { return new3 ("gray93",                237, 237, 237) }
+func Gray94() Colour                { return new3 ("gray94",                240, 240, 240) }
+func Gray95() Colour                { return new3 ("gray95",                242, 242, 242) }
+func Gray96() Colour                { return new3 ("gray96",                245, 245, 245) }
+func Gray97() Colour                { return new3 ("gray97",                247, 247, 247) }
+func Gray98() Colour                { return new3 ("gray98",                250, 250, 250) }
+func Gray99() Colour                { return new3 ("gray99",                252, 252, 252) }
+func Gray100() Colour               { return new3 ("gray100",               255, 255, 255) }
+func XDarkGray() Colour             { return new3 ("xdarkgray",             169, 169, 169) }
+func XDarkBlue() Colour             { return new3 ("xdarkblue",               0,   0, 139) }
+func XDarkCyan() Colour             { return new3 ("xdarkcyan",               0, 139, 139) }
+func XDarkMagenta() Colour          { return new3 ("xdarkmagenta",          139,   0, 139) }
+func XLightGreen() Colour           { return new3 ("xlightgreen",           144, 238, 144) }
+func Crimson() Colour               { return new3 ("crimson",               220,  20,  60) }
+func Indigo() Colour                { return new3 ("indigo",                 75,   0, 130) }
+func Olive() Colour                 { return new3 ("olive",                 128, 128,   0) }
+func RebeccaPurple() Colour         { return new3 ("rebeccaPurple",         102,  51, 153) }
+func XSilver() Colour               { return new3 ("xsilver",               192, 192, 192) }
+func Teal() Colour                  { return new3 ("teal",                    0, 128, 128) }

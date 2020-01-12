@@ -1,6 +1,6 @@
 package macc
 
-// (c) Christian Maurer   v. 171020 - license see µU.go
+// (c) Christian Maurer   v. 190823 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,7 +11,7 @@ type
                  mon.Monitor
                  }
 
-func newM() MAccount {
+func newMon() MAccount {
   x := new(monitor)
   balance := uint(0)
   fs := func (a Any, i uint) Any {

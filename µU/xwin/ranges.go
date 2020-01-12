@@ -55,7 +55,7 @@ func natord (x, y, x1, y1 *uint) {
 
 func (X *xwindow) Save (l, c, w, h uint) {
   x, y := C.int(X.wd1) * C.int(c), C.int(X.ht1) * C.int(l)
-  w_, h_ := X.wd1 * C.uint(w), X.ht1 * C.uint(h)
+  w_, h_ := C.uint(X.wd1 * w), C.uint(X.ht1 * h)
   C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.shadow), X.gc, x, y, w_, h_, x, y)
 }
 
@@ -72,7 +72,7 @@ func (X *xwindow) Save1() {
 
 func (X *xwindow) Restore (l, c, w, h uint) {
   x, y := C.int(X.wd1) * C.int(c), C.int(X.ht1) * C.int(l)
-  w_, h_ := X.wd1 * C.uint(w), X.ht1 * C.uint(h)
+  w_, h_ := C.uint(X.wd1 * w), C.uint(X.ht1 * h)
   C.XCopyArea (dpy, C.Drawable(X.shadow), C.Drawable(X.win), X.gc, x, y, w_, h_, x, y)
   C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.buffer), X.gc, x, y, w_, h_, x, y)
 }

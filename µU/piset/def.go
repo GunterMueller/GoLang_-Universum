@@ -14,4 +14,4 @@ type
 }
 
 // Returns a new empty persistent indexed set for objects of the type of o.
-func New(o Object, f Func) PersistentIndexedSet { return new_(o, f) }
+func New(o Object, f Func) PersistentIndexedSet { return new_(o,f) }

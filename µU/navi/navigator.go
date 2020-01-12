@@ -10,7 +10,7 @@ package navi
 import (
   "os"
   . "µU/obj"
-  . "µU/spc"
+//  . "µU/spc"
 )
 type
   button byte; const (
@@ -33,20 +33,22 @@ var (
   file *os.File
   navipipe chan Command
   but button
-  data [2 * NDirs]int16
-  index [NDirs]int16 // 0..2
-  sign [NDirs]int16 // +1, -1
+  data [2 * 3]int16
+  index [3]int16 // 0..2
+  sign [3]int16 // +1, -1
 )
 
 func init() {
-  for d := D0; d < NDirs; d++ {
-    sign[d], index[d] = 1, int16(d)
+//  for d := D0; d < NDirs; d++ {
+  for i := uint(0); i < 3; i++ {
+    sign[i], index[i] = 1, int16(i)
   }
 // The 3dconnexion SpaceNavigator has the rightoriented trihedral (x, y, z) = (right, back, bottomn):
 // it delivers the movements in 0..2 and the rotations around the corresponding axes (consequently - viewed
 // in opposition to the direction of the axes - in mathematical positive sense) in NDirs+0..2 = 3..5.
 // In µU this is translated into the trihedral (x, y, z) = (right, front, top) defined in the package spc:
-  sign[Front], sign[Top] = -1, -1
+//  sign[Front], sign[Top] = -1, -1
+  sign[1], sign[2] = -1, -1
   f, err := os.OpenFile ("/dev/input/navi", os.O_RDONLY, 0444)
   if err == nil {
     file = f
@@ -124,7 +126,8 @@ func catch() {
       }
     case 2: // movement, rotation
       C = navigate
-      if Direction(code) >= 2 * NDirs {
+//      if Direction(code) >= 2 * NDirs {
+      if code >= 2 * 3 {
         println ("navi-input_event code too big: ", code)
         continue
       }
@@ -144,11 +147,14 @@ func catch() {
   }
 }
 
+/*
 func read() (GridCoord, GridCoord) {
   var mov, rot GridCoord
-  for d := D0; d < NDirs; d++ {
-    mov[d] = sign[d] * data[index [d]]
-    rot[d] = sign[d] * data[int16(NDirs) + index [d]]
+//  for d := D0; d < NDirs; d++ {
+  for i := uint(0); i < 3; i++ {
+    mov[i] = sign[i] * data[index [i]]
+    rot[i] = sign[i] * data[int16(3) + index [i]]
   }
   return mov, rot
 }
+*/

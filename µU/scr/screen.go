@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 171221 - license see µU.go
+// (c) Christian Maurer   v. 191107 - license see µU.go
 
 import (
   "strconv"
@@ -37,11 +37,11 @@ var (
 )
 
 func newMax() Screen {
-  return newScr (0, 0, mode.Mode(maxMode()))
+  return new_(0, 0, mode.Mode(maxMode()))
 }
 
-func newScr (x, y uint, m mode.Mode) Screen {
-  if m == mode.WH { ker.Panic ("use newWH !") }
+func new_(x, y uint, m mode.Mode) Screen {
+//  if m == mode.WH { ker.Panic ("use newWH !") }
   X := new(screen)
   actual = X
   scrList = append (scrList, X)
@@ -61,8 +61,7 @@ func newScr (x, y uint, m mode.Mode) Screen {
   X.Colours (col.StartCols())
   X.ScrColours (col.StartCols())
   X.Cls()
-
-  X.SetFontsize (font.Normal)
+  X.SetFontsize (font.Huge) // font.Normal)
   X.SetLinewidth (Thin)
   X.Transparence (false)
   return X
@@ -72,22 +71,26 @@ func newWH (x, y, w, h uint) Screen {
   X := new(screen)
   actual = X
   scrList = append (scrList, X)
-  X.Mode = mode.WH
-  mode.WdHt (w, h)
+//  X.Mode = mode.WH
+//  mode.WdHt (w, h)
   X.x, X.y = int(x), int(y)
   X.wd, X.ht = w, h
   if underX {
-    X.XWindow = xwin.New (x, y, mode.WH)
-    width, height = xwin.MaxRes()
+    X.XWindow = xwin.NewWH (x, y, w, h)
+    width, height = w, h
   } else {
-//    X.Console = cons.NewWH (x, y, w, h)
-//    width, height = cons.MaxRes()
-    ker.Panic ("newWH is not yet implemented for tty-consoles")
+    X.Console = cons.NewWH (x/8, y/16, w/8, h/16)
+    width, height = cons.MaxRes()
+//    ker.Panic ("newWH is not yet implemented for tty-consoles")
   }
   X.Colours (col.StartCols())
   X.ScrColours (col.StartCols())
   X.Cls()
-  X.SetFontsize (font.Normal)
+  if maxMode() == mode.UHD {
+    X.SetFontsize (font.Huge)
+  } else {
+    X.SetFontsize (font.Normal)
+  }
   X.SetLinewidth (Thin)
   X.Transparence (false)
   return X
@@ -216,6 +219,7 @@ func (X *screen) Movex (x, y int) {
   }
 }
 
+/*
 func init() {
 //  var _ Window = newMax()
 //  visible = true // TODO -> only in initConsole()
@@ -261,3 +265,4 @@ func look (d func()) {
     ker.Panic ("no GUI")
   }
 }
+*/

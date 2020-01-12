@@ -20,6 +20,6 @@ func (x *distributedGraph) awaitAllMonitors() {
 }
 
 func pause () {
-  time.Sleep (1e9)
+  time.Sleep (2e9)
   return
 }

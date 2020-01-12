@@ -1,6 +1,6 @@
 package macc
 
-// (c) Christian Maurer   v. 171127 - license see µU.go
+// (c) Christian Maurer   v. 190823 - license see µU.go
 
 type
   MAccount interface { // A multitasking capable account.
@@ -23,10 +23,10 @@ type
 func New() MAccount { return new_() }
 
 // Implementation with a universal monitor.
-func NewM() MAccount { return newM() }
+func NewMon() MAccount { return newMon() }
 
 // Implementation with message passing
-func NewCh() MAccount { return newCh() }
+func NewChannel() MAccount { return newChannel() }
 
 // Implementation with a far monitor.
-func NewFM (h string, p uint16, s bool) MAccount { return newFM(h,p,s) }
+func NewFMon (h string, p uint16, s bool) MAccount { return newFMon(h,p,s) }

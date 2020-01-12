@@ -1,67 +1,64 @@
 package kbd
 
-// (c) Christian Maurer   v. 180813 - license see µU.go
+// (c) Christian Maurer   v. 191010 - license see µU.go
 
 import (
-  "µU/spc"
+//  "µU/spc"
   "µU/xwin"
   "µU/z"
   "µU/mouse"
-  "µU/navi"
+//  "µU/navi"
 )
 const (
 // PIPE_BUF = 256
-// raw key codes
-// alphanumeric keyboard: control keys
-  shiftL    =  42
-  shiftR    =  54
-  shiftLock =  58
-  ctrlL     =  29
-  ctrlR     =  97
-  altL      =  56
+// control keys
+  esc       = 1
+  enter     = 28
+  shiftL    = 42
+  shiftR    = 54
+  shiftLock = 58
+  ctrlL     = 29
+  ctrlR     = 97
+  altL      = 56
   altR      = 100
-  esc       =   1
-  back      =  14
-  tab       =  15
-  enter     =  28
-// alphanumeric keyboard:
-  f1        =  59
-  f2        =  60
-  f3        =  61
-  f4        =  62
-  f5        =  63
-  f6        =  64
-  f7        =  65
-  f8        =  66
-  f9        =  67
-  f10       =  68
-  f11       =  87
-  f12       =  88
-// numeric keypad:
-  numEnter  =  96
-  num0      =  82
-  num1      =  79
-  num2      =  80
-  num3      =  81
-  num4      =  75
-  num5      =  76
-  num6      =  77
-  num7      =  71
-  num8      =  72
-  num9      =  73
-  numSep    =  83
-  numMinus  =  74
-  numPlus   =  78
-  numTimes  =  55
-  numDiv    =  98
+  back      = 14
+  tab       = 15
+// function keys
+  f1        = 59
+  f2        = 60
+  f3        = 61
+  f4        = 62
+  f5        = 63
+  f6        = 64
+  f7        = 65
+  f8        = 66
+  f9        = 67
+  f10       = 68
+  f11       = 87
+  f12       = 88
+// numeric keypad
+  numEnter  = 96
+  num0      = 82
+  num1      = 79
+  num2      = 80
+  num3      = 81
+  num4      = 75
+  num5      = 76
+  num6      = 77
+  num7      = 71
+  num8      = 72
+  num9      = 73
+  numSep    = 83
+  numMinus  = 74
+  numPlus   = 78
+  numTimes  = 55
+  numDiv    = 98
+// direction keys
   left      = 105
   right     = 106
   up        = 103
   down      = 108
-// ? = 101; ? = 112
-// ? = 117; ? = 118
-// ? = 120; ? = 121; ? = 122; ? = 123; ? = 124
-// special keypad:
+// special keys:
   pgRight   = 113 // only under X
   pgLeft    = 114 // only under X
   pgUp      = 104
@@ -69,18 +66,17 @@ const (
   pos1      = 102
   end       = 107
   ins       = 110
-  del       = 111 // XXX
-// ? = 89; ? = 90; ? = 91; ? = 92; ? = 93; ? = 94; ? = 95
-  prt       =  99
-  roll      =  70
+  del       = 111
+  prt       = 99
+  roll      = 70
   pause     = 119
-  numOnOff  =  69
+  numOnOff  = 69
 //  onOff     = 113
 //  lower     = 114
 //  louder    = 115
-//  doofL     = 125 // d(o,o)f
-//  doofM     = 126
-//  doofR     = 127
+  doofL     = 125
+  doofM     = 126
+  doofR     = 127
 //  toolbox   = 501 // 501 % 256 = 245, % 128 = 117
   noKeycodes= 128
 // combinations:
@@ -290,9 +286,11 @@ func command() (Comm, uint) {
   return c, d
 }
 
+/*
 func readNavi() (spc.GridCoord, spc.GridCoord) {
   return navi.Read()
 }
+*/
 
 func lastByte() byte {
   return lastbyte

@@ -67,6 +67,12 @@ if e.S == 64 { panic("x.inputX: shriek !") }
     if shiftX || ctrlX { *T ++ }
     if altX { *T += 2 }
     switch e.T {
+    case C.Expose:
+      *B = 0
+      *C = Expose
+      *T = 0
+      println ("na siehste es geht doch")
+      break loop
     case C.KeyPress:
       if e.C < 9 {
         println ("oops, got keycode ", e.C, " < 9") // XXX ?
