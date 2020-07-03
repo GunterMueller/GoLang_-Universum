@@ -1,6 +1,6 @@
 package rw
 
-// (c) Christian Maurer   v. 171127 - license see µU.go
+// (c) Christian Maurer   v. 200421 - license see µU.go
 
 type
   ReaderWriter interface { // protocols for the readers/writers problem
@@ -9,26 +9,27 @@ type
 // The calling goroutine is reading; no goroutine is writing.
 // If at the time of the call there was a writing goroutine,
 // the calling goroutine has been delayed, until there was no writing goroutine.
-  ReaderIn ()
+  ReaderIn()
 
 // Pre: The calling goroutine is reading.
 // The calling goroutine is neither reading or writing.
-  ReaderOut ()
+  ReaderOut()
 
 // Pre: The calling goroutine is neither reading or writing.
 // The calling goroutine is writing;
 // no other goroutine is writing and there are no reading goroutines.
 // If at the time of the call there were reading goroutines or a writing one,
 // the calling goroutine has been delayed, until there were no reading or writing goroutines.
-  WriterIn ()
+  WriterIn()
 
 // Pre: The calling goroutine is writing.
 // The calling goroutine is neither reading or writing.
-  WriterOut ()
+  WriterOut()
 
   Fin()
 }
 
+// Parameter m means the maximally admissible number of concurrent readers
 func New1() ReaderWriter { return new1() }
 func New2() ReaderWriter { return new2() }
 func NewSemaphore() ReaderWriter { return newS() }
@@ -38,7 +39,7 @@ func NewCriticalSection1() ReaderWriter { return newCS1() }
 func NewCriticalSection2() ReaderWriter { return newCS2() }
 func NewCriticalSectionBounded (m uint) ReaderWriter { return newCSB(m) }
 func NewCriticalSectionFair() ReaderWriter { return newCSF() }
-func NewCriticalResource (r uint) ReaderWriter { return newCR(r) }
+func NewCriticalResource (m uint) ReaderWriter { return newCR(m) }
 func NewMonitor1() ReaderWriter { return newM1() }
 func NewMonitor2() ReaderWriter { return newM2() }
 func NewConditionedMonitor() ReaderWriter { return newCM() }
@@ -55,3 +56,5 @@ func NewFarMonitor (h string, p uint16, s bool) ReaderWriter { return newFM(h,p,
 func NewFarMonitorBounded (m uint, h string, p uint16, s bool) ReaderWriter {
   return newFMB(m,h,p,s)
 }
+
+func NewAddS (m uint) ReaderWriter { return newAdd(m) }

@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 191107 - license see µU.go
+// (c) Christian Maurer   v. 191124 - license see µU.go
 
 import (
   "strconv"
@@ -61,7 +61,11 @@ func new_(x, y uint, m mode.Mode) Screen {
   X.Colours (col.StartCols())
   X.ScrColours (col.StartCols())
   X.Cls()
-  X.SetFontsize (font.Huge) // font.Normal)
+  if maxMode() == mode.UHD {
+    X.SetFontsize (font.Huge)
+  } else {
+    X.SetFontsize (font.Normal)
+  }
   X.SetLinewidth (Thin)
   X.Transparence (false)
   return X

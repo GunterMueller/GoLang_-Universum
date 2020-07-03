@@ -1,0 +1,108 @@
+package dgra
+
+// (c) Christian Maurer  v. 200603 - license see µU.go
+//
+// >>> Dijkstra-Scholten: Termination Detection for Diffusing Computations
+//     Inf. Proc. Letters 11 (1980) 1-4
+// >>> x.time0/time1 = C/D = sum of deficits of all incoming/outgoing edges
+//
+// >>> XXX not yet correct: clean termination of algorithm
+
+import (
+  . "µU/obj"
+  "µU/rand"
+//  "µU/errh"
+)
+const (
+  message = uint(iota)
+  signal
+)
+
+func (x *distributedGraph) termDetect (p Pred, o Op) {
+  x.connect (uint(0))
+  x.Pred, x.Op = p, o
+//^^^^^^
+  go x.do()
+  if x.me == x.root {
+    for k := uint(0); k < x.n; k++ {
+      if x.Graph.Outgoing(k) {
+        inc (&x.time1)
+//      ^^^
+x.log2("msg to", x.nr[k], ": D =", x.time1)
+        x.ch[k].Send(x.me + x.uint * message)
+//                          ^^^^^^
+        if x.Pred(x.meVertex) { x.Op(x.meVertex) }
+//                ^^^^^^^^^^
+      }
+    }
+  }
+}
+
+func (x *distributedGraph) do() {
+  n := x.ch[x.me].Recv().(uint)
+  s := n % x.uint
+  switch n / x.uint {
+  case message:
+    inc(&x.time0)
+//       ^^^^^^^
+    x.cornet.Ins (s)
+//  ^^^^^^^^
+x.check()
+x.log3("msg from", s, ": C =", x.time0, ", D =", x.time1)
+    if x.Pred(x.meVertex) { x.Op(x.meVertex) }
+// missing: do work or send work to a child
+    c := uint(0)
+    for k := uint(0); k < x.n; k++ {
+      if x.Graph.Outgoing(k) {
+        c++
+      }
+    }
+    if c == 0 {
+      dec(&x.time0)
+      k := x.cornet.Get().(uint)
+x.check()
+      x.ch[k].Send (x.me + x.uint * signal)
+      return
+    }
+    // c > 0, i.e. there are children
+    i := rand.Natural(x.n)
+    c = 0
+    for k := uint(0); k < x.n; k++ {
+      if x.Graph.Outgoing(k) && k >= i {
+        inc(&x.time1)
+        c++
+        x.ch[k].Send (x.me + x.uint * message)
+x.log3("msg  to ", x.nr[k], ": C =", x.time0, ", D =", x.time1)
+        break
+      }
+    }
+    if c == 0 { // no msg was sent
+      if x.Pred(x.meVertex) { x.Op(x.meVertex) } // do the work alone
+    }
+  case signal:
+    dec(&x.time1)
+x.log3("sig from", s, ": C =", x.time0, ", D =", x.time1)
+    if x.me == x.root {
+      if x.time1 == 0 {
+x.log("termination by signal from", s)
+      }
+    } else {
+      for x.time0 > 1 {
+        dec(&x.time0)
+        k := x.cornet.Get().(uint)
+x.check()
+x.log3("sig  to ", x.nr[k], ": C =", x.time0, ", D =", x.time1)
+        x.ch[k].Send (x.me + x.uint * signal)
+      }
+      if x.time0 == 1 {
+        if x.time1 == 0 {
+          x.time0 = 0
+          k := x.cornet.Get().(uint)
+x.check()
+x.log3("sig  to ", x.nr[k], ": C =", x.time0, ", D =", x.time1)
+          x.ch[k].Send (x.me + x.uint * signal)
+        }
+      }
+    }
+  }
+}

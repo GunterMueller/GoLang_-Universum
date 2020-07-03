@@ -1,6 +1,8 @@
 package kbd
 
 // (c) Christian Maurer   v. 171221
+//
+// >>> has to be worked out some day ...
 
 // #include <stdio.h>
 // #include <termios.h>

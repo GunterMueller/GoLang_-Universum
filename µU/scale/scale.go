@@ -1,6 +1,6 @@
 package scale
 
-// (c) Christian Maurer   v. 150425 - license see µU.go
+// (c) Christian Maurer   v. 191125 - license see µU.go
 
 import (
   "math"
@@ -109,15 +109,15 @@ func edit() {
     if y0 >= yMin {
       y0 = y0 - width / nn [d]
     }
-  case kbd.This:
+  case kbd.To:
     x, y:= scr.MousePosGr()
     y = int(scr.Ht()) - y
     x0 = x0 + float64 (x) / mX - width / 2
     y0 = y0 + float64 (y) / mY - height / 2
-  case kbd.There:
+  case kbd.Drag:
     x, y:= scr.MousePosGr()
     xt, yt = float64 (x), float64 (int(scr.Ht()) - y)
-  case kbd.Push, kbd.Thither:
+  case kbd.Drop, kbd.Move:
     x, y:= scr.MousePosGr()
     x0 = x0 - (float64 (x) - xt) / mX
     y0 = y0 - (float64 (int(scr.Ht()) - y) - yt) / mY

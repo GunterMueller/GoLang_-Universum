@@ -1,10 +1,7 @@
 package dgra
 
-// (c) Christian Maurer   v. 190402 - license see nU.go
-
 import ("strconv"; . "nU/obj"; "nU/env"; "nU/nchan"
-        "nU/fmon"; "nU/adj"; "nU/vtx"; "nU/gra"
-        "nU/dgra/status" )
+        "nU/fmon"; "nU/adj"; "nU/vtx"; "nU/gra")
 
 type distributedGraph struct {
   gra.Graph
@@ -33,14 +30,8 @@ type distributedGraph struct {
   matrix adj.AdjacencyMatrix
   size uint
   diameter, distance, leader uint
-  PulseAlg; ElectAlg; TravAlg
+  HeartbeatAlg; ElectAlg; TravAlg
   Op
-// for KochMoranZaks:
-  state byte // King or Citizen
-  pik status.Status // phase and identity of the king of the calling process
-  unused []bool
-  parentChannel uint // channel-number to parent
-  msgchan []chan Stream
 }
 const (
   p0 = nchan.Port0
@@ -93,7 +84,7 @@ func new_(g gra.Graph) DistributedGraph {
   x.parent, x.child = inf, make([]bool, x.n)
   x.mon = make([]fmon.FarMonitor, x.n)
   g.Ex (x.actVertex)
-  x.PulseAlg, x.ElectAlg, x.TravAlg = PulseGraph, ChangRoberts, DFS
+  x.HeartbeatAlg, x.ElectAlg, x.TravAlg = HeartbeatGraph, ChangRoberts, DFS
   x.leader = x.me
   x.Op = Ignore
   return x

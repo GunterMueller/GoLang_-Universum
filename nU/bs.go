@@ -18,7 +18,6 @@ func main() {
   scr.Circle (40, 40, 20)
   scr.ColourF (col.Cyan())
   scr.Circle (40, 20, 10)
-// return
   for i := byte(0); i < 250; i += 10 {
     scr.ColourF (col.New3(127 - i / 2, 127 + i / 2, i))
     scr.Write ("ABCDEFGHIJ", uint(i/10), 0)
@@ -40,9 +39,6 @@ func main() {
   w (col.White())
   w (col.LightWhite())
   scr.ColourF (col.Red())
-//  scr.Warp (50, 0)
-//  scr.Switch (true)
-//  return
   scr.Line (1, 1, 25, 1)
   scr.Write ("*", 1, 1); scr.Write ("*", 25, 1)
   scr.ColourF (col.Yellow())
@@ -66,5 +62,4 @@ func main() {
   scr.Write ("Esel", 12, 25)
   scr.ColourF (col.Green())
   scr.Write ("Geier", 15, 40)
-//  scr.Warp (30, 0)
 }

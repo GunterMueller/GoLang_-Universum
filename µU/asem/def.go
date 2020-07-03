@@ -3,7 +3,7 @@ package asem
 // (c) Christian Maurer   v. 170410 - license see µU.go
 
 type
-  AddSemaphore interface { // Specs: see my book, p. 99
+  AddSemaphore interface { // Specs: see my book
 
   P (n uint)
   V (n uint)

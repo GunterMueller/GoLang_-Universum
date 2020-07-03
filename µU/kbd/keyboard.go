@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 191010 - license see µU.go
+// (c) Christian Maurer   v. 200517 - license see µU.go
 
 import (
 //  "µU/spc"
@@ -12,47 +12,47 @@ import (
 const (
 // PIPE_BUF = 256
 // control keys
-  esc       = 1
-  enter     = 28
-  shiftL    = 42
-  shiftR    = 54
-  shiftLock = 58
-  ctrlL     = 29
-  ctrlR     = 97
-  altL      = 56
+  esc       =   1
+  enter     =  28
+  shiftL    =  42
+  shiftR    =  54
+  shiftLock =  58
+  ctrlL     =  29
+  ctrlR     =  97
+  altL      =  56
   altR      = 100
-  back      = 14
-  tab       = 15
+  back      =  14
+  tab       =  15
 // function keys
-  f1        = 59
-  f2        = 60
-  f3        = 61
-  f4        = 62
-  f5        = 63
-  f6        = 64
-  f7        = 65
-  f8        = 66
-  f9        = 67
-  f10       = 68
-  f11       = 87
-  f12       = 88
+  f1        =  59
+  f2        =  60
+  f3        =  61
+  f4        =  62
+  f5        =  63
+  f6        =  64
+  f7        =  65
+  f8        =  66
+  f9        =  67
+  f10       =  68
+  f11       =  87
+  f12       =  88
 // numeric keypad
-  numEnter  = 96
-  num0      = 82
-  num1      = 79
-  num2      = 80
-  num3      = 81
-  num4      = 75
-  num5      = 76
-  num6      = 77
-  num7      = 71
-  num8      = 72
-  num9      = 73
-  numSep    = 83
-  numMinus  = 74
-  numPlus   = 78
-  numTimes  = 55
-  numDiv    = 98
+  numEnter  =  96
+  num0      =  82
+  num1      =  79
+  num2      =  80
+  num3      =  81
+  num4      =  75
+  num5      =  76
+  num6      =  77
+  num7      =  71
+  num8      =  72
+  num9      =  73
+  numSep    =  83
+  numMinus  =  74
+  numPlus   =  78
+  numTimes  =  55
+  numDiv    =  98
 // direction keys
   left      = 105
   right     = 106
@@ -67,16 +67,41 @@ const (
   end       = 107
   ins       = 110
   del       = 111
-  prt       = 99
-  roll      = 70
+  prt       =  99
+  roll      =  70
   pause     = 119
-  numOnOff  = 69
+  numOnOff  =  69
 //  onOff     = 113
 //  lower     = 114
 //  louder    = 115
-  doofL     = 125
-  doofM     = 126
   doofR     = 127
+// AltGr-keys:
+  backslash =  92
+  braceL    = '{'
+  braceR    = '}'
+  bracketL  = '['
+  bracketR  = ']'
+// UTF-8-symbols:
+  degree     = z.Degree
+  twoSup     = z.ToThe2
+  threeSup   = z.ToThe3
+  Ä          = z.Ä
+  Ö          = z.Ö
+  Ü          = z.Ü
+  ä          = z.Ae
+  ö          = z.Oe
+  ü          = z.Ue
+  ß          = z.Sz
+  euro       = z.Euro
+  cent       = z.Cent
+  mu         = z.Mu
+  paragraph  = z.Paragraph
+  registered = z.Registered
+  female     = z.Female
+  copyright  = z.Copyright
+  male       = z.Male
+  division   = z.Division
+
 //  toolbox   = 501 // 501 % 256 = 245, % 128 = 117
   noKeycodes= 128
 // combinations:
@@ -88,21 +113,15 @@ const (
   ctrlRoff  = ctrlR + off
   altLoff   = altL + off
   altRoff   = altR + off
-//  doofLoff  = doofL + off
-//  doofMoff  = doofM + off
-//  doofRoff  = doofR + off
-  function  = 143
+//  function  = 143
 )
 var (
-  bb,       // key
-  bB,       // key + Shift
-  aa []byte // key + AltGr
-  aA []byte // key + Shift + AltGr
+  shift, ctrl, alt, altGr, /* fn, */ mouseL, mouseM, mouseR bool
+  bb, aa []byte
   kK [noKeycodes]Comm
   lastbyte byte
   lastcommand Comm
   lastdepth uint
-//  shift, shiftFix, ctrl, alt, altGr /* , numOnOff */, fn, lBut, mBut, rBut bool
 )
 
 func init() {
@@ -110,51 +129,23 @@ func init() {
   //           012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
   bb = []byte("  1234567890 '  qwertzuiop +  asdfghjkl  ^ #yxcvbnm,.- +               789-456+1230,  <           /")
   //                       ß             ü            öä
-  bb[12] = z.Sz
-  bb[26] = z.Ue
-  bb[39] = z.Oe
-  bb[40] = z.Ae
-
+  bb[12] = ß
+  bb[26] = ü
+  bb[39] = ö
+  bb[40] = ä
   //           0         1         2         3         4         5         6         7         8         9
   //           012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
-  bB = []byte("  !  $%&/()=?`  QWERTZUIOP *  ASDFGHJKL    'YXCVBNM;:_ *               789-456+1230,  >           /")
-  //               §                     Ü            ÖÄ°
-  bB [4] = z.Paragraph
-  bB[26] = z.Ü
-  bB[39] = z.Ö
-  bB[40] = z.Ä
-  bB[41] = z.Degree
-
-  //           0         1         2         3         4         5         6         7         8         9
-  //           012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
-  aa = []byte("     $%&/()=?`  @WERTZUIOP ~  ASDFGHJKL    'YX VBN ;:_ ~               {[]-456+123},  |           /")
-  //             ¹²³             €       ü            öä    ¢©   µ
-  aa [2] = z.ToThe1
-  aa [3] = z.ToThe2
-  aa [4] = z.ToThe3
-  aa[18] = z.Euro
-  aa[26] = z.Ue
-  aa[39] = z.Oe
-  aa[40] = z.Ae
-  aa[45] = z.Cent
-  aa[50] = z.Mu
-
-  //           0         1         2         3         4         5         6         7         8         9
-  //           012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
-  aA = []byte("  ! $%&/()=?`  @WERTZUIOP ~  ASDFGHJKL    'YXCVBNM;:_ ~               {[]-456+123},  |           /")
-  //                             ®             ª       ¬    ¢   º ÷                    ± ¤     £ ×
-  aA[18] = z.Registered
-  aA[33] = z.Female
-  aA[41] = z.Negate
-  aA[46] = z.Copyright
-  aA[50] = z.Male
-  aA[52] = z.Division
-  aA[73] = z.PlusMinus
-  aA[75] = z.Euro
-  aA[81] = z.Pound
-  aA[83] = z.Times
-
-  for b:= 0; b < noKeycodes; b++ { kK[b] = Esc }
+  aa = []byte("  !  $%&/()=?`  QWERTZUIOP ~  ASDFGHJKL    'YXCVBNM;:_ *               789-456+1230,  |           /")
+  //             ¹²³             €       Ü            ÖÄ    ¢©   µ
+  aa [3] = '"'
+  aa [4] = paragraph
+  aa[26] = Ü
+  aa[39] = Ö
+  aa[40] = Ä
+  aa[41] = degree
+  for b:= 0; b < noKeycodes; b++ {
+    kK[b] = Esc
+  }
   kK[esc]    = Esc
   kK[f1]     = Help
   kK[f2]     = Search
@@ -211,38 +202,42 @@ func init() {
 }
 
 func isAlpha (n uint) bool {
-  switch n { case 41, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13, // ^ 1 2 3 4 5 6 7 8 9 0 ß '
-                   16,17,18,19,20,21,22,23,24,25,26,27,   //  Q W E R T Z U I O P Ü +
-                    30,31,32,33,34,35,36,37,38,39,40,43,  //   A S D F G H J K L Ö Ä #
-                   86,44,45,46,47,48,49,50,51,52,53,      //  < Y X C V B N M , . -
-                                  57,                     // space
-                  numMinus, numPlus, numTimes, numDiv:    // keypad
+  switch n {
+  case 41, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13, // ^ 1 2 3 4 5 6 7 8 9 0 ß '
+        16,17,18,19,20,21,22,23,24,25,26,27,   //  Q W E R T Z U I O P Ü +
+         30,31,32,33,34,35,36,37,38,39,40,43,  //   A S D F G H J K L Ö Ä #
+        86,44,45,46,47,48,49,50,51,52,53,      //  < Y X C V B N M , . -
+                       57,                     // space
+       numMinus, numPlus, numTimes, numDiv:    // keypad
     return true
   }
   return false
 }
 
 func isF (n uint) bool {
-  switch n { case f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12:
+  switch n {
+  case f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12:
     return true
   }
   return false
 }
 
 func isCmd (n uint) bool {
-  switch n { case esc, back, tab, enter,
-                  left, right, up, down, pgUp, pgDown, pos1, end,
-                  ins, del,
-                  prt, roll, pause,
-//                  onOff, lower, louder,
-                  numEnter:
+  switch n {
+  case esc, back, tab, enter,
+       left, right, up, down, pgUp, pgDown, pos1, end,
+       ins, del,
+       prt, roll, pause,
+//       onOff, lower, louder,
+       numEnter:
     return true
   }
   return isF (n)
 }
 
 func isKeypad (n uint) bool {
-  switch n { case num0, num1, num2, num3, num4, num5, num6, num7, num8, num9, numSep:
+  switch n {
+  case num0, num1, num2, num3, num4, num5, num6, num7, num8, num9, numSep:
     return true
   }
   return false
@@ -253,7 +248,7 @@ func read() (byte, Comm, uint) {
   if underX {
     inputX (&b, &c, &d)
   } else {
-    input (&b, &c, &d)
+    inputC (&b, &c, &d)
   }
   return b, c, d
 }
@@ -392,4 +387,4 @@ func Control (n uint, i *uint) {
     *i = n - 1
   }
 }
-*/
+ */

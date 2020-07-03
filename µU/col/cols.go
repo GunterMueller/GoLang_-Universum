@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 191107 - license see µU.go
+// (c) Christian Maurer   v. 200126 - license see µU.go
 
 func HeadF() Colour            { return LightWhite() }
 func HeadB() Colour            { return Blue() }
@@ -40,7 +40,7 @@ func Red() Colour              { return new3 ("red",             170,   0,   0) 
 func FlashRed() Colour         { return new3 ("flashred",        255,   0,   0) }
 func LightRed() Colour         { return new3 ("lightred",        255,  85,  85) }
 func WhiteRed() Colour         { return new3 ("whitered",        255, 170, 170) }
-func DarkRose() Colour         { return new3 ("darkrose",        234,  0,  127) }
+func DarkRose() Colour         { return new3 ("darkrose",        234,   0, 127) }
 func Rose1() Colour            { return new3 ("rose1",           255, 170, 170) }
 func LightRose() Colour        { return new3 ("lightrose",       255, 191, 191) }
 func PompejiRed() Colour       { return new3 ("pompejired",      187,  68,  68) }
@@ -62,6 +62,7 @@ func SandYellow() Colour       { return new3 ("sandyellow1",     234, 206, 127) 
 func LemonYellow() Colour      { return new3 ("lemonyellow",     192, 255,  85) }
 func FlashGreen() Colour       { return new3 ("flashgreen",        0, 255,   0) }
 func BlackGreen() Colour       { return new3 ("blackgreen",        0,  51,   0) }
+func VeryDarkGreen() Colour    { return new3 ("verydarkgreen",     0,  63,   0) }
 func DarkGreen() Colour        { return new3 ("darkgreen",         0,  85,   0) }
 func Green() Colour            { return new3 ("green",             0, 170,   0) }
 func LightGreen() Colour       { return new3 ("lightgreen",       85, 255,  85) }
@@ -85,8 +86,9 @@ func DarkBlue() Colour         { return new3 ("darkblue",          0,   0,  85) 
 func Blue() Colour             { return new3 ("blue",              0,   0, 170) }
 func LightBlue() Colour        { return new3 ("lightblue",        51, 102, 255) }
 func WhiteBlue() Colour        { return new3 ("whiteblue",       170, 170, 255) }
-func GentianBlue() Colour      { return new3 ("gentianblue",       0,   0, 212) }
+func SkyLightBlue() Colour     { return new3 ("skylightblue",     85, 170, 255) }
 func SkyBlue() Colour          { return new3 ("skyblue",           0, 170, 255) }
+func GentianBlue() Colour      { return new3 ("gentianblue",       0,   0, 212) }
 func Ultramarine() Colour      { return new3 ("ultramarine",      68,   0, 153) }
 func BlackMagenta() Colour     { return new3 ("blackmagenta",     51,   0,  51) }
 func DarkMagenta() Colour      { return new3 ("darkmagenta",      85,   0,  85) }

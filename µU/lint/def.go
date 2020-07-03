@@ -51,5 +51,5 @@ type
   SetBit(i int, b bool)
 }
 // Return the long integer with Val(n) == n resp. Val64(n) == n.
-func New(n int) LongInteger { return newInt(n) }
-func New64(n int64) LongInteger { return new64(n) }
+func New (n int) LongInteger { return newInt(n) }
+func New64 (n int64) LongInteger { return new64(n) }

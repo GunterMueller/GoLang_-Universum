@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 190314 - license see µU.go
+// (c) Christian Maurer   v. 191117 - license see µU.go
 
 import (
   "math"
@@ -11,11 +11,11 @@ type
   pointFunc func (int, int)
 
 func (X *console) SetLinewidth (w Linewidth) {
-//  X.lineWd = w
+  X.lineWd = w
 }
 
 func (X *console) ActLinewidth() Linewidth {
-  return Thin // X.lineWd
+  return X.lineWd
 }
 
 func (X *console) iok (x, y int) bool {
@@ -28,7 +28,8 @@ func (X *console) iok (x, y int) bool {
 func (X *console) iok4 (x, y, x1, y1 int) bool {
   if ! visible { return false }
   if x < 0 || y < 0 || x1 < 0 || y1 < 0 { return false }
-  return x < int(X.wd) && y < int(X.ht) && x1 < int(X.wd) && y1 < int(X.ht)
+  return true
+  return x < int(X.wd) && y < int(X.ht) && x1 < int(X.wd) && y1 < int(X.ht) // shit
 }
 
 func intord (x, y, x1, y1 *int) {
@@ -152,7 +153,7 @@ func (X *console) horizontal (x, y, x1 int, f pointFunc) {
   if x == x1 { f (x, y); return }
   if x > x1 { x, x1 = x1, x }
 //  if x >= X.wd { return }
-  if x1 >= int(X.wd) { x1 = int(X.wd) - 1 }
+//  if x1 >= int(X.wd) { x1 = int(X.wd) - 1 }
   x0 := x
   for x := x0; x <= x1; x++ {
     f (x, y)
@@ -174,7 +175,7 @@ func (X *console) horizontal (x, y, x1 int, f pointFunc) {
 // Pre: x < Wd, y <= y1 < Ht.
 func (X *console) vertical (x, y, y1 int, f pointFunc) {
   if y > y1 { y, y1 = y1, y }
-  if y1 >= int(X.ht) { y1 = int(X.ht) - 1 }
+//  if y1 >= int(X.ht) { y1 = int(X.ht) - 1 }
   y0 := y
   for y := y0; y <= y1; y++ {
     f (x, y)
@@ -362,7 +363,9 @@ func nat (x, y int) bool {
 
 func (X *console) line (x, y, x1, y1 int, f pointFunc) {
   if x1 < x { x, x1 = x1, x; y, y1 = y1, y }
-  if ! X.iok4 (x, y, x1, y1) { return }
+  if ! X.iok4 (x, y, x1, y1) {
+    return
+  }
   if y == y1 {
     X.horizontal (x, y, x1, f)
     return

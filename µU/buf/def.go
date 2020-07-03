@@ -1,11 +1,11 @@
 package buf
 
-// (c) Christian Maurer   v. 171104 - license see µU.go
+// (c) Christian Maurer   v. 171106 - license see µU.go
 
 import
   . "µU/obj"
 type
-  Buffer interface { // Fifo-Queues
+  Buffer interface { // FIFO-Queues
 
 // Returns true, if there are no objects in x.
   Empty() bool

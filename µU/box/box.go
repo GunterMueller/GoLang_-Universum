@@ -1,6 +1,6 @@
 package box
 
-// (c) Christian Maurer   v. 190528 - license see µU.go
+// (c) Christian Maurer   v. 200402 - license see µU.go
 
 import (
   "strconv"
@@ -271,13 +271,13 @@ func (b *box) done (s *string, x, y uint) bool {
     return true
   case kbd.Go:
     ;
-  case kbd.Here, kbd.There, kbd.This:
+  case kbd.Here, kbd.Drag, kbd.To:
     ; // return true
-  case kbd.Pull, kbd.Push, kbd.Move:
+  case kbd.This, kbd.Drop, kbd.There:
     ;
-  case kbd.Hither, kbd.Thither:
+  case kbd.That, kbd.Move:
     ;
-  case kbd.Thus:
+  case kbd.Hither:
     t := (*s)
     t = t[:b.index] + scr.Paste() + t[b.index:]
     if ProperLen(t) > b.width { t = t[:b.width] }
@@ -352,7 +352,7 @@ func (b *box) editText (imGraphikmodus bool, s *string, x, y uint) {
         // see editNumber
       } else {
         if b.possible (s, x, y) {
-          Replace (s, b.index, char)
+          Replace1 (s, b.index, char)
           scr.Lock()
           scr.Colours (b.cF, b.cB)
           if b.graphical {
@@ -522,11 +522,11 @@ func (b *box) doneNumerical (s *string, x, y uint) bool {
 */
   case kbd.Go:
     ;
-  case kbd.Here, kbd.There, kbd.This:
+  case kbd.Here, kbd.Drag, kbd.To:
     return true
-  case kbd.Pull, kbd.Push, kbd.Move:
+  case kbd.This, kbd.Drop, kbd.There:
     ;
-  case kbd.Hither, kbd.Thither, kbd.Thus:
+  case kbd.That, kbd.Move, kbd.Hither:
     ;
   default:
     return true
@@ -551,7 +551,7 @@ func (b *box) possibleNumerical (s *string, x, y uint) bool {
         break
       }
       if (*s)[i] == '0' && (*s)[i + 1] == '0' {
-        Replace (s, i, ' ')
+        Replace1 (s, i, ' ')
       } else {
         break
       }
@@ -664,22 +664,22 @@ func (B *box) editNumber (imGraphikmodus bool, s *string, x, y uint) {
             temp = 0
             for (*s)[temp] == space { temp++ }
             if (*s)[temp] == '-' {
-              Replace (s, temp, '+')
+              Replace1 (s, temp, '+')
               break
             } else if (*s)[temp] == '+' {
-              Replace (s, temp, '-')
+              Replace1 (s, temp, '-')
               break
             } else if temp > 0 {
-              Replace (s, temp - 1, '-')
+              Replace1 (s, temp - 1, '-')
               break
             }
           } else if status == ee {
             if temp, ok := Pos (*s, 'E'); ok {
               if (*s)[temp + 1] == '-' {
-                Replace (s, temp + 1, '+')
+                Replace1 (s, temp + 1, '+')
                 break
               } else if (*s)[temp + 1] == '+' {
-                Replace (s, temp + 1, '-')
+                Replace1 (s, temp + 1, '-')
                 break
               }
             }
@@ -714,7 +714,7 @@ func (B *box) editNumber (imGraphikmodus bool, s *string, x, y uint) {
           B.index = 0
           B.write (*s, x, y)
           B.index = temp
-          Replace (s, B.index - 1, char)
+          Replace1 (s, B.index - 1, char)
           scr.Lock()
           scr.Colours (B.cF, B.cB)
           if B.graphical {

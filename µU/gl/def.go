@@ -147,8 +147,6 @@ func Door (w, r, d, v, h float64, c col.Colour) { door(w,r,d,v,h,c) }
 func Window (w, d, h, f, r, rb, rt float64, b bool, c col.Colour) { window(w,d,h,f,r,rb,rt,b,c) }
 func Window1 (w, d, h, f float64, c col.Colour) { window1(w,d,h,f,c) }
 
-// light
-
 // Pre: n < MaxL, 0 <= h[i] <= 1 für i = 0, 1.
 // If Light n is already switched on, nothing has happened.
 // Otherwise it is now switched on at position v
@@ -160,3 +158,5 @@ func InitLight (n uint, v, h vect.Vector, r, g, b byte) { initLight(n,v,h,r,g,b)
 func PosLight (n uint, v vect.Vector) { posLight(n,v) }
 
 func ActualizeLight (n uint) { actLight(n) }
+
+func Lamp (n uint) { lamp(n) }

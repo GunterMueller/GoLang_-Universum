@@ -9,7 +9,7 @@ type Message interface {
   Coder
 
 // Liefert den Typ von x.
-  Type() byte
+  Kind() byte
 
 // Liefert das Quadrupel (id, num, maxnum, ok) von x.
   IdNumsOk() (uint, uint, uint, bool)

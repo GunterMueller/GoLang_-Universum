@@ -1,0 +1,81 @@
+package dgra
+
+// (c) Christian Maurer   v. 200603 - license see µU.go
+//
+// >>> under development
+
+import (
+  "math/rand"
+  . "µU/obj"
+  "µU/atomic"
+  "µU/perm"
+)
+const (
+  message = byte(iota)
+  signal
+)
+
+// message sent / received: x.outDef++ / x.inDef++
+//  signal received / sent: x.outDef-- / x.inDef--
+func (x *distributedGraph) DijkstraScholten (o Op) {
+  x.connect (byte(0))
+  if x.me == x.root {
+    x.parent = x.me
+    p := perm.New(x.n)
+    for i := uint(0); i < x.n; i++ {
+      x.ch[p.F(i)].Send (message)
+      x.outDef++
+    }
+  }
+done := make(chan int, 1)
+  for j := uint(0); j < x.n; j++ {
+    go func (i uint) {
+      if x.ch[i].Recv().(byte) == message {
+//        x.Mutex.Lock()
+//        if x.inDef[i] == 0 {
+        if x.parent == inf {
+          x.parent = x.nr[i]
+//          x.Mutex.Unlock()
+        } else {
+//          x.Mutex.Unlock()
+        }
+        atomic.Add (&x.inDef[i], 1)
+        atomic.Add (&x.inDefSum, 1)
+        x.corn.Ins (x.nr[i])
+//      if x.corn.Num() > 0 
+//      wenn er Nachfolger hat, dann an alle eine Sendung ?
+      } else { // signal received
+        atomic.Dec (&x.outDef)
+        _ = x.corn.Get().(uint)
+      }
+    }(j)
+ //   if x.me != x.root && x.NumNeighboursOut() > 0 { // only for predecessors (except root)
+    go func (i uint) {
+      n := uint(rand.Uint32()) % x.n
+      x.Mutex.Lock()
+      if x.inDefSum > 0 { // x.inDef[n] > 0 || x.inDef[n] == 0 && x.outDef > 0 {
+        x.ch[n].Send (message)
+        x.Mutex.Unlock()
+        atomic.Add (&x.outDef, 1)
+      } else { // x.inDef == 0 && x.outDef == 0, i.e.
+        x.Mutex.Unlock()
+        // process is in neutral state and must not send any more messages
+      }
+    }(j)
+    go func (i uint) {
+      x.Mutex.Lock()
+      if x.inDefSum > 1 || x.inDefSum == 1 && x.outDef == 0 {
+        if x.inDefSum == 1 {
+          x.ch[x.parent].Send (signal)
+          x.Mutex.Unlock()
+        } else { // x.inDefSum > 1
+          x.Mutex.Unlock()
+          n := x.corn.Get().(uint)
+          x.ch[n].Send (signal)
+        }
+        atomic.Dec (&x.outDef)
+      }
+    }(j)
+  }
+<-done
+}

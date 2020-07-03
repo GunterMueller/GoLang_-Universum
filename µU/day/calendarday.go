@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 190906 - license see µU.go
+// (c) Christian Maurer   v. 200507 - license see µU.go
 
 import (
   . "µU/ker"
@@ -401,7 +401,7 @@ func (x *calendarday) OrdDay() uint {
     y.day, y.month, y.year = 1, 1, x.year
     for y.month < x.month {
       n += uint(y.daysInMonth())
-      y.month ++
+      y.month++
     }
     n += uint(x.day)
   }
@@ -772,6 +772,9 @@ func computeHolidays() { // Quelle: S. Deschauer, Die Osterfestberechnung. DdM 1
   }
   if actualHolidayYear >= 2019 { // Weltfrauentag (Berlin)
     holiday [8][3] = true
+  }
+  if actualHolidayYear == 2020 { // einmaliger Feiertag in Berlin
+    holiday [8][5] = true
   }
 }
 

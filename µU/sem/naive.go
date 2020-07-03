@@ -9,7 +9,8 @@ import
 type
   naive struct {
                int "value"
-  block, mutex sync.Mutex
+         block,
+         mutex sync.Mutex
                }
 
 func new_(n uint) Semaphore {

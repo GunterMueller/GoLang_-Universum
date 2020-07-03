@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 190821 - license see µU.go
+// (c) Christian Maurer   v. 191125 - license see µU.go
 
 import (
 //  "µU/env"
@@ -73,7 +73,7 @@ func init() {
 func wait() { // TODO -> kbd, other name
   loop: for {
     _, c, _  := kbd.Read()
-    switch c { case kbd.Enter, kbd.Esc, kbd.Back, kbd.Here, kbd.There:
+    switch c { case kbd.Enter, kbd.Esc, kbd.Back, kbd.Here, kbd.Drag:
       break loop
     }
   }

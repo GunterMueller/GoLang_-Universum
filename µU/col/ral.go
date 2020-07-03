@@ -127,7 +127,7 @@ func Kieferngrün() Colour {      return new3 ("kieferngrün",       38,  74,  5
 func Minzgrün() Colour {         return new3 ("minzgrün",          18, 120,  38) }
 func Signalgrün() Colour {       return new3 ("signalgrün",        41, 138,  64) }
 func Minttürkis() Colour {       return new3 ("minttürkis",        66, 140, 120) }
-func Pastelltürkis() Colour {    return new3 ("pastelltürkis",      0,   0,   0) }
+func Pastelltürkis() Colour {    return new3 ("pastelltürkis",      0,   0,   0) } // XXX falsch
 func Fehgrau() Colour {          return new3 ("fehgrau",          115, 133, 145) }
 func Silbergrau() Colour {       return new3 ("silbergrau",       135, 148, 166) }
 func Olivgrau() Colour {         return new3 ("olivgrau",         122, 117,  97) }

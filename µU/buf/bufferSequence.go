@@ -29,7 +29,7 @@ func (x *bufferSeq) Get() Any {
   if x.Empty() {
     return x.Any
   }
-  x.Seek(0)
+  x.Seek (0)
   defer x.Sequence.Del()
   return x.Sequence.Get()
 }

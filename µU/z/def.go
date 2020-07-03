@@ -1,35 +1,51 @@
 package z
 
-// (c) Christian Maurer   v. 170781 - license see µU.go
+// (c) Christian Maurer   v. 200403 - license see µU.go
 
 const (
-  Ä = byte(196)
-  Ö = byte(214)
-  Ü = byte(220)
-  Ae = Ä + 32 // 'ä'
-  Oe = Ö + 32 // 'ö'
-  Ue = Ü + 32 // 'ü'
-  Sz = byte(223)
-  Euro       = byte(164) // '€'
-  Cent       = byte(162) // '¢'
-  Pound      = byte(163) // '£'
-  Paragraph  = byte(167) // '§'
-  Degree     = byte(176) // '°'
-  Copyright  = byte(169) // '©'
-  Registered = byte(174) // '®'
-  PlusMinus  = byte(177) // '±'
-  Mu         = byte(181) // 'µ'
-  Times      = byte(215) // '×'
-  Division   = byte(247) // '÷'
-  Dot        = byte(183) // '·`
-  Negate     = byte(172) // '¬'
-  ToThe1     = byte(185) // '¹'
-  ToThe2     = byte(178) // '²'
-  ToThe3     = byte(179) // '³'
-  Quarter    = byte(188) // '¼'
-  Half       = byte(189) // '½'
-  Female     = byte(170) // 'ª'
-  Male       = byte(186) // 'º'
+  Ä                = byte(196) // 'Ä'
+  ÄÄ = 'Ä'
+  Ö                = byte(214) // 'Ö'
+  Ü                = byte(220) // 'Ü'
+  Ae               = byte(228) // 'ä'
+  Oe               = byte(246) // 'ö'
+  Ue               = byte(252) // 'ü'
+  Sz               = byte(223) // 'ß'
+//NoBreakSpace     = byte(160)
+//InvExclamation   = byte(161) // '¡'
+  Cent             = byte(162) // '¢'
+  Pound            = byte(163) // '£'
+  Euro             = byte(164) // '€'
+  Yen              = byte(165) // '¥'
+  BrokenBar        = byte(166) // '¦'
+  Paragraph        = byte(167) // '§'
+//Diaeresis        = byte(168) // '¨'
+  Copyright        = byte(169) // '©'
+  Female           = byte(170) // 'ª'
+  LeftDoubleAngle  = byte(171) // '«'
+  Not              = byte(172) // '¬'
+//SoftHyphen       = byte(173)
+  Registered       = byte(174) // '®'
+//Macron           = byte(175) // '¯'
+  Degree           = byte(176) // '°'
+  PlusMinus        = byte(177) // '±'
+  ToThe2           = byte(178) // '²'
+  ToThe3           = byte(179) // '³'
+//Acute            = byte(180) // '´'
+  Mu               = byte(181) // 'µ'
+  Pilcrow          = byte(182) // '¶'
+  Dot              = byte(183) // '·`
+//Cedilla          = byte(184) // '·'
+  ToThe1           = byte(185) // '¹'
+  Male             = byte(186) // 'º'
+  RightDoubleAngle = byte(187) // '»'
+  Quarter          = byte(188) // '¼'
+  Half             = byte(189) // '½'
+  ThreeQuarters    = byte(190) // '¾'
+//InvQuestionMark  = byte(191) // '¿'
+  Times            = byte(215) // '×'
+  EmptySet         = byte(216) // 'Ø'
+  Division         = byte(247) // '÷'
 )
 
 // Returns true, if b is one of the constants that are defined

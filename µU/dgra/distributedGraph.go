@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 190707 - license see µU.go
+// (c) Christian Maurer   v. 200122 - license see µU.go
 
 import (
   "µU/ker"
@@ -16,12 +16,14 @@ import (
   "µU/gra"
   "µU/adj"
   "µU/ego"
+  "µU/mcorn"
+  "sync"
 )
 type
   distributedGraph struct {
                    gra.Graph // neighbourhood of the current vertex
                              // must not be changed by any application
-          tmpGraph gra.Graph // a clone of gra.Graph; these three graphs are only
+          tmpGraph gra.Graph // for several temporary usages
                    bool "Graph.Directed"
          actVertex vtx.Vertex // the vertex representing the actual process
                 me uint // and its identity
@@ -48,8 +50,12 @@ type
            labeled bool
 diameter, distance,
             leader uint
-                   PulseAlg; ElectAlg; TravAlg
+                   HeartbeatAlg; ElectAlg; TravAlg
                    Op
+  outDef, inDefSum uint // for Dijktra/Scholten
+             inDef []uint
+              corn mcorn.MCornet
+                   sync.Mutex
                    }
 const (
   p0 = nchan.Port0
@@ -72,7 +78,7 @@ func new_(g gra.Graph) DistributedGraph {
   x.bool = x.Graph.Directed()
   x.actVertex = x.Graph.Get().(vtx.Vertex)
   x.me = value(x.actVertex)
-  if x.me != ego.Me() { errh.Error2 ("x.me", x.me, "Me", ego.Me()) }
+  if x.me != ego.Me() { errh.Error2 ("x.me ==", x.me, "!= Me ==", ego.Me()) }
   x.actHost = env.Localhost()
   x.n = x.Graph.Num() - 1
   x.nb = make([]vtx.Vertex, x.n)
@@ -104,9 +110,10 @@ func new_(g gra.Graph) DistributedGraph {
   x.parent, x.child = inf, make([]bool, x.n)
   x.mon = make([]fmon.FarMonitor, x.n)
   g.Ex (x.actVertex)
-  x.PulseAlg, x.ElectAlg, x.TravAlg = PulseGraph, ChangRoberts, DFS
+  x.HeartbeatAlg, x.ElectAlg, x.TravAlg = HeartbeatGraph, ChangRoberts, DFS
   x.leader = x.me
   x.Op = Ignore
+  x.corn = mcorn.New(uint(0))
   return x
 }
 
@@ -143,6 +150,7 @@ func (x *distributedGraph) connect (a Any) {
   for i := uint(0); i < x.n; i++ {
     x.ch[i] = nchan.New (a, x.me, x.nr[i], x.host[i], x.port[i])
   }
+  x.inDef = make([]uint, x.NumNeighbours())
 }
 
 func (x *distributedGraph) fin() {

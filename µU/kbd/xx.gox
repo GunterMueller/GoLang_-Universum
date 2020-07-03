@@ -1,0 +1,291 @@
+package kbd
+
+// (c) Christian Maurer   v. 200517 - license see µU.go
+
+// #cgo LDFLAGS: -lX11
+// #include <X11/X.h>
+import
+  "C"
+import (
+  "os"
+  "µU/time"
+  "µU/xwin"
+)
+var (
+  underX bool
+  xpipe chan xwin.Event
+  ch chan int = make (chan int, 1)
+)
+
+// Pre: xwin.x.initialized == true
+func catchX () {
+  for xwin.Eventpipe == nil {
+    time.Msleep (10)
+  }
+//  ch <- 0
+//  println ("keyboard.catchX: Eventpipe != nil")
+  for p := range xwin.Eventpipe {
+    xpipe <- p
+    <-ch
+  }
+  close (xpipe)
+}
+
+func isSet (bit, x uint) bool {
+  return x >> bit % 2 == 1
+}
+
+func inputX (B *byte, C *Comm, T *uint) {
+  const (
+    shiftBit     =  0
+    shiftLockBit =  1
+    ctrlBit      =  2
+    altBit       =  3
+    altGrBit     =  7
+    mouseBitL    =  8
+    mouseBitM    =  9
+    mouseBitR    = 10
+  )
+  var e xwin.Event
+  ok := false
+  loop: for {
+    *B, *C, *T = 0, None, 0
+    e, ok = <-xpipe
+    ch <- 0
+    if ! ok { panic ("x.inputX: ! ok") }
+    if e.S == 64 { panic("x.inputX: shriek !") }
+    shiftX := isSet (shiftBit, e.S)
+    shiftLockX := isSet (shiftLockBit, e.S)
+    if shiftLockX { shiftX = false } // weg isser
+    ctrlX := isSet (ctrlBit, e.S)
+    altX := isSet (altBit, e.S)
+    altGrX := isSet (altGrBit, e.S)
+    mouseBitLX := isSet (mouseBitL, e.S)
+    mouseBitMX := isSet (mouseBitM, e.S)
+    mouseBitRX := isSet (mouseBitR, e.S)
+    if shiftX || ctrlX { *T ++ }
+    if altX {
+      *T += 2
+    }
+    switch e.T {
+    case C.Expose:
+      *B = 0
+      *C = Expose
+      *T = 0
+      println ("na siehste es geht doch")
+      break loop
+    case C.KeyPress:
+      if e.C < 9 {
+        println ("oops, got keycode ", e.C, " < 9") // XXX ?
+      } else {
+        e.C -= 8
+        switch {
+        case e.C == esc:
+          *C = Esc
+        case e.C == shiftL || e.C == shiftR:
+          shiftX = true
+        case e.C == ctrlL || e.C ==  ctrlR:
+          ctrlX = true
+        case e.C == alt:
+          altX = true
+        case e.C == altGr:
+          altGrX = true
+        case isAlpha (e.C):
+          if ctrlX && (e.C == 46 || e.C == 16 ) { // Ctrl C, Ctrl Q
+            // finX ()
+            os.Exit (0)
+          }
+          switch *T {
+          case 0:
+            if altGrX {
+              switch e.C {
+              case 3: // 2
+                *B = twoSup
+              case 4: // 3
+                *B = threeSup
+              case 8: // 7
+                *B = bracketL
+              case 9: // 8
+                *B = bracketR
+              case 10: // 9
+                *B = braceL
+              case 11: // 0
+                *B = braceR
+              case 12: // ß
+                *B = backslash
+              case 16: // Q
+                *B = '@'
+              case 18: // E
+                *B = euro
+              case 19: // R
+                *B = registered
+              case 27: // +
+                *B = '~'
+              case 33: // F
+                *B = female
+              case 41:
+                *B = not
+              case 46: // C
+                *B = copyright
+              case 50: // M
+                *B = male
+              case 52: // ,
+                *B = division
+              case 73: //
+                *B = plusMinus
+//              case 75: //
+//                *B = currency
+              case 81: // 
+                *B = pound
+              case 83: // 
+                *B = times
+              }
+            } else {
+              *B = bb[e.C]
+            }
+          case 1:
+            if altGrX {
+              switch e.C {
+              case 4:
+                *B = paragraph
+              case 26:
+                *B = Ü
+              case 39:
+                *B = Ö
+              case 40:
+                *B = Ä
+              case 41:
+                *B = degree
+              }
+            } else {
+              *B = bb[e.C]
+            }
+          case 2:
+            *B = aa[e.C]
+          }
+        case isCmd (e.C):
+          *C = kK[e.C]
+/*
+          if e.C == pgUp || e.C == pgDown {
+//          if e.C == pgUp + 8 || e.C == pgDown + 8 { // 112/117 -> 104/109
+            *T += 2
+          }
+*/
+          if e.C == left && altX {
+            *C = PgLeft
+            *T = 0; if shiftX { *T = 1 }
+            break loop
+          }
+          if e.C == right && altX {
+            altX = false
+            *C = PgRight
+            *T = 0; if shiftX { *T = 1 }
+            break loop
+          }
+          if e.C == pgUp {
+            *C = PgUp
+            break loop
+          }
+          if e.C == pgDown {
+            *C = PgDown
+            break loop
+          }
+//          if (e.C == left || e.C == right) && e.S == 64 { *T += 2 }
+          if e.C == back && *T > 2 { *C = None; *T = 0 } // doesn't help: wm crashes
+//        case k == numOnOff:
+//          ; // TODO
+        case isKeypad (e.C):
+          switch *T {
+          case 0:
+            *B = bb[e.C]
+          default:
+            *C = kK[e.C]
+          }
+//        case isFunction (e.C):
+//          ; // TODO
+        case e.C == 100:
+          println ("uff", e.C, e.S)
+        case e.C == 127:
+          *B = backslash
+        default:
+          println ("C.KeyPress: keycode ", e.C, "/ state ", e.S)
+        }
+      }
+      if *B > 0 || *C > 0 {
+        break loop
+      }
+    case C.KeyRelease:
+      ;
+    case C.ButtonPress:
+      if *T > 1 { *T = 1 } // because the bloody WM eats everything else up
+      switch e.C {
+      case 1:
+        *C = Here
+      case 2:
+        *C = That
+      case 3:
+        *C = This
+      case 4:
+        *C = ScrollUp
+      case 5:
+        *C = ScrollDown
+      default:
+        println ("xwin.ButtonPress: button ", e.C ,"/ state ", e.S)
+      }
+      if *C > 0 {
+        break loop
+      }
+    case C.ButtonRelease:
+      if *T > 1 {
+        *T = 1 // because the bloody fucking WM eats everything else up
+      }
+      ctrlX = false
+      altX = false
+      altGrX = false
+      switch e.C {
+      case 1:
+        if mouseBitLX {
+//          mouseBitLX = false
+          *C = To
+        }
+      case 2:
+        if mouseBitMX {
+//          mouseBitMX = false
+          *C = Hither
+        }
+      case 3:
+        if mouseBitRX {
+//          mouseBitRX = false
+          *C = There
+        }
+      case 4:
+        *C = ScrollUp
+      case 5:
+        *C = ScrollDown
+      default:
+        println ("xwin.ButtonRelease: button ", e.C ,"/ state ", e.S)
+      }
+      if *C > 0 {
+        break loop
+      }
+    case C.MotionNotify:
+      *T = 0
+      if mouseBitLX {
+        *C = Drag
+      } else if mouseBitMX {
+        *C = Move
+      } else if mouseBitRX {
+        *C = Drop
+      } else {
+        *C = Go
+      }
+      break loop
+    case C.ClientMessage:
+      ; // break loop // navi
+    default:
+      *B, *C, *T = 0, None, 0
+      break loop
+    }
+  }
+  lastbyte, lastcommand, lastdepth = *B, *C, *T
+}

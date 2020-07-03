@@ -1,6 +1,6 @@
 package prt
 
-// (c) Christian Maurer   v. 171217 - license see µU.go
+// (c) Christian Maurer   v. 200402 - license see µU.go
 
 import (
   "os/exec"
@@ -57,7 +57,7 @@ func print1 (b byte, l, c uint, f Font) {
     startPage()
   }
   page[l][c] = Code (f, size) + "  "
-  str.Replace (&page[l][c], 3, b)
+  str.Replace1 (&page[l][c], 3, b)
 }
 
 func print (s string, l, c uint, f Font) {

@@ -9,9 +9,9 @@ import (
   "µU/day"
 )
 const ( // v.
-  yy = 19
-  mm = 11
-  dd =  7
+  yy = 20
+  mm =  6
+  dd =  3
 )
 var
   v day.Calendarday = day.New()

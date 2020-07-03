@@ -1,8 +1,5 @@
 package dgra
 
-// (c) Christian Maurer   v. 171130 - license see nU.go
-// (c) Christian Maurer   v. 190402 - license see nU.go
-
 type ElectAlg byte; const (
   ChangRoberts = ElectAlg(iota)
   Peterson
@@ -10,9 +7,6 @@ type ElectAlg byte; const (
   HirschbergSinclair
   DFSelect
   DFSelectfm
-//  Maurer
-//  Maurerfm
-  KorachMoranZaks
 )
 
 func (x *distributedGraph) SetElectAlgorithm (a ElectAlg) {
@@ -37,12 +31,6 @@ func (x *distributedGraph) Leader() uint {
     x.dfselect()
   case DFSelectfm:
     x.dfselectfm()
-//  case Maurer:
-//    x.maurer()
-//  case FmMaurer:
-//    x.fmMaurer()
-  case KorachMoranZaks:
-    x.korachMoranZaks()
   }
   return x.leader
 }

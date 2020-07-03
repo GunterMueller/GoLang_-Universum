@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 191009 - license see µU.go
+// (c) Christian Maurer   v. 191125 - license see µU.go
 
 // >>> implements only a german keyboard !
 
@@ -24,24 +24,24 @@ type
   None = Comm(iota)       // to distinguish between character- and command-keys, see specification of "Read"
   Esc                     // to leave the system (or a part of it)
   Enter                   // to confirm or reject or correct at the end of an input,
-  Back                    // generally to move in the system forward or backward
+  Back                    // to move in the system forward or backward
   Left; Right; Up; Down   // to move the cursor on the screen,
   PgLeft; PgRight; PgUp; PgDown // XXX
-  Pos1; End               // generally to move in the system in the corresponding direction
+  Pos1; End               // to move in the system in the corresponding direction
   Tab                     // for special purposes
   Del; Ins                // to remove or insert objects
   Help; Search            // to induce context dependent reactions of the system
   Act; Cfg;               // and for special purposes
-  Mark; Demark            // to (de-)select objects
+  Mark; Demark            // to (de-)mark objects
   Cut; Copy; Paste        // "waste paper basket"-operations
   Red; Green; Blue        // to handle colours
   Print; Roll; Pause      // for special purposes
   OnOff; Lower; Louder    // loudspeaker
   Go                      // to go to particular positions on the screen,
-  Here; Pull; Hither      // generally to "click" on objects and
-  There; Push; Thither    // to move them around on the screen with a mouse
-  This; Move; Thus        // and to "drag and drop" them
-//^^^^  ^^^^  ^^^^ TODO names
+  Here; This; That        // to click on objects and
+  Drag; Drop; Move        // to move them around on the screen with a mouse
+  To; There; Hither       // and to drag and drop them
+  ScrollUp; ScrollDown    //
   Nav                     // to navigate in space with a 3d-mouse
   Expose                  // only for openGL3G
   NComms                  // number of commands
@@ -57,7 +57,6 @@ type
 
    Commands of depth 0 are implemented by keys (without metakeys)
    or mouse-actions with system independent semantics:
-
    - Enter:                   input-key "Enter"/"Return"
    - Esc:                     "stop-"key "Esc"
    - Back:                    backspace-key "<-"
@@ -65,14 +64,17 @@ type
    - Pos1, End:               corresponding keys
    - Tab:                     Tabkey "|<- ->|"
    - Del, Ins:                corresponding keys
-   - Help, ..., Paste:        F1-, ..., F9-key
-   - Red, Green, Blue:        F10/11/12-key
-   - Print, Roll, Pause:      "Druck"-, "Rollen"- "Pause"-key
+   - Help, Search:            F1-, F2-key
+   - Act, Cfg:                F3-, F4-key
+   - Mark, Demark:            F5-, F6-key
+   - Cut, Copy, Paste:        F7-, F8/F9-key
+   - Red, Green, Blue:        F10-, F11-, F12-key
+   - Print, Roll, Pause:      corresponding keys
    - OnOff, Lower, Louder:    corresponding keys on IBM-keyboards
    - Go:                      mouse moved with no button pressed
-   - Here, There, This:       left, right, middle button pressed
-   - Pull, Push, Move:        mouse moved with corresponding button pressed
-   - Hither, Thither, ToThis: corresponding button released
+   - Here, This, That:        left, right, middle button pressed
+   - Drag, Drop, Move:        mouse moved with corresponding button pressed
+   - To, There, Hither:       corresponding button released
    - Navigate:                3d-mouse used
 
    commands of depth > 0 by combination with metakeys:

@@ -1,6 +1,6 @@
 package z
 
-// (c) Christian Maurer   v. 180917 - license see µU.go
+// (c) Christian Maurer   v. 200403 - license see µU.go
 
 const
   delta = 'a' - 'A'
@@ -25,9 +25,9 @@ func init() {
 
 func isLatin1 (b byte) bool {
   switch b {
-  case
-    Ä, Ö, Ü, Ae, Oe, Ue, Sz, Euro, Cent, Pound, Paragraph, Degree, Copyright, Registered,
-    Mu, PlusMinus, Times, Division, Dot, Negate, ToThe1, ToThe2, ToThe3, Female, Male:
+  case Ä, Ö, Ü, Ae, Oe, Ue, Sz, Cent, Pound, Euro, Yen, BrokenBar, Paragraph, Copyright, Female,
+       LeftDoubleAngle, Not, Registered, Degree, PlusMinus, ToThe2, ToThe3, Mu, Pilcrow, Dot,
+       ToThe1, Male, RightDoubleAngle, Quarter, Half, ThreeQuarters, Times, EmptySet, Division:
     return true
   }
   return false
@@ -208,36 +208,60 @@ func postscript (b byte) string {
     return "udieresis"
   case Sz:
     return "germandbls"
+  case Cent:
+    return "cent"
+  case Pound:
+    return "sterling"
   case Euro:
     return "euro"
-/*
-  case toThe2:
-    return ""
-  case toThe3:
-    return ""
-*/
-  case Mu:
-    return "mu"
+  case Yen:
+    return "yen"
+  case BrokenBar:
+    return "brokenbar"
+  case Paragraph:
+    return "section"
   case Copyright:
     return "copyright"
-/*
-  case registered:
+  case Female:
+    return "ordfeminine"
+  case LeftDoubleAngle:
+    return "quotedblleft"
+  case Not:
+    return "logicalnot"
+  case Registered:
     return "registered"
-  case pound:
-    return "sterling"
-  case female:
-    return ""
-  case male:
-    return ""
-  case plusMinus:
+  case Degree:
+    return "deg"
+  case PlusMinus:
     return "plusminus"
-  case times:
+  case ToThe2:
+    return "twosuperior"
+  case ToThe3:
+    return "threesuperior"
+  case Mu:
+    return "mu"
+  case Pilcrow:
+    return "paragraph"
+  case Dot:
+    return "periodcentered"
+  case ToThe1:
+    return "onesuperior"
+  case Male:
+    return "ordmasculine"
+  case RightDoubleAngle:
+    return "quotedblright"
+  case Quarter:
+    return "onequarter"
+  case Half:
+    return "onehalf"
+  case ThreeQuarters:
+    return "threequarters"
+  case Times:
     return "multiply"
-  case division:
-    return ""
-  case negate:
-    return ""
-*/
+  case EmptySet:
+    return "emptyset"
+  case Division:
+    return "divisionslash"
   }
   return ""
 }
@@ -258,46 +282,60 @@ func Latin1Byte (r rune) byte {
     return Ue
   case 'ß': // C3 9F
     return Sz
-  case '€': // E2 82 AC
-    return Euro
   case '¢': // C2 A2
     return Cent
   case '£': // C2 A3
     return Pound
+  case '€': // E2 82 AC
+    return Euro
+  case '¥': // C2 A5
+    return Yen
+  case '¦': // C2 A6
+    return BrokenBar
   case '§': // C2 A7
     return Paragraph
-  case '°': // C2 B0
-    return Degree
   case '©': // C2 A9
     return Copyright
+  case 'ª': // C2 AA
+    return Female
+  case '«': // C2 AB
+    return LeftDoubleAngle
+  case '¬': // C2 AC
+    return Not
   case '®': // C2 AE
     return Registered
+  case '°': // C2 B0
+    return Degree
   case '±': // C2 B1
     return PlusMinus
-  case 'µ': // C2 B5
-    return Mu
-  case '×': // C3 97
-    return Times
-  case '÷': // C3 B7
-    return Division
-  case '·': // C2 B7
-    return Dot
-  case '¬': // C2 AC
-    return Negate
-  case '¹': // C2 B9
-    return ToThe1
   case '²': // C2 B3
     return ToThe2
   case '³': // C2 B2
     return ToThe3
+  case 'µ': // C2 B5
+    return Mu
+  case '¶': // C2 B6
+    return Pilcrow
+  case '·': // C2 B7
+    return Dot
+  case '¹': // C2 B9
+    return ToThe1
+  case 'º': // C2 BA
+    return Male
+  case '»': // C2 BB
+    return RightDoubleAngle
   case '¼': // C2 BC
     return Quarter
   case '½': // C2 BD
     return Half
-  case 'ª': // C2 AA
-    return Female
-  case 'º': // C2 BA
-    return Male
+  case '¾': // C2 BE
+    return ThreeQuarters
+  case '×': // C3 97
+    return Times
+  case 'Ø': // C2 98
+    return EmptySet
+  case '÷': // C3 B7
+    return Division
   }
   return 0
 }

@@ -18,18 +18,18 @@ const
 
 // Paths in the file system tree are sequences of names of directories
 // - separated from each other by "/" - in the direction
-// from the root of the file system tree towards its leaves, s.t.
-// >>>jeweils<<< the next directory is contained in the previous one.
+// from the root of the file system tree towards its leaves,
+// s.t. always the next directory is contained in the previous one.
 // If the first character of a path is the separator, it starts
 // in the root directory, otherwise in the actual directory.
 // A separator at the end of a path does not matter,
 // if the path is not only the root directory "/".
 // (The name of a directory is therefore also a path.)
 // The last directory of a path is denoted as its target directory;
-// its target directory of the path "/" is the root directory.
-// Every calling process befindet sich at any time in exactly one
-// directory, which is called its actual directory; the sequence
-// of the directories from the root directory to the actual directory
+// the target directory of the path "/" is the root directory.
+// Every calling process is at any time in exactly one directory,
+// which is called its actual directory; the sequence if the
+// the directories from the root directory to the actual directory
 // is called the actual path; i.e. the actual directory is always
 // the target directory of the actual path.
 // The empty string "" is also a path; its target directory

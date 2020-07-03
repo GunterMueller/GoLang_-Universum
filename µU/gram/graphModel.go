@@ -1,6 +1,6 @@
 package gram
 
-// (c) Christian Maurer   v. 170810 - license see µU.go
+// (c) Christian Maurer   v. 191125 - license see µU.go
 
 import (
   . "µU/obj"
@@ -198,7 +198,7 @@ func (x *graphModel) Edit() {
         x.Del()
       }
       x.Write()
-    case kbd.There: // move vertex
+    case kbd.Drag: // move vertex
       switch i {
       case 0:
         if x.ExPred (x.underMouse) { // vertex local
@@ -206,7 +206,7 @@ func (x *graphModel) Edit() {
             kk, _ := kbd.Command()
             scr.MousePointer (true)
             switch kk {
-            case kbd.Push:
+            case kbd.Drop:
               x.vertex = x.Get().(vtx.Vertex)
               xu, yu := x.vertex.Pos()
               x.vertex.Mouse()
@@ -223,7 +223,7 @@ func (x *graphModel) Edit() {
                                   }
                                 })
               x.Write()
-            case kbd.Thither:
+            case kbd.Move:
               break loop1
             }
           }
@@ -234,7 +234,7 @@ func (x *graphModel) Edit() {
           x.Write()
         }
       }
-    case kbd.This: // connect vertices / remove edge:
+    case kbd.To: // connect vertices / remove edge:
       if x.ExPred (x.underMouse) {
         x.vertex = x.Get().(vtx.Vertex) // vertex local
         xm, ym := x.vertex.Pos()
@@ -244,11 +244,11 @@ func (x *graphModel) Edit() {
           kk, _ := kbd.Command()
           scr.MousePointer (true)
           switch kk {
-          case kbd.Move:
+          case kbd.There:
             scr.LineInv (xm, ym, xm1, ym1)
             xm1, ym1 = scr.MousePosGr()
             scr.LineInv (xm, ym, xm1, ym1)
-          case kbd.Thus:
+          case kbd.Hither:
             scr.LineInv (xm, ym, xm1, ym1)
             if x.ExPred (x.underMouse) {
               if x.Located () {

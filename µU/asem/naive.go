@@ -8,7 +8,7 @@ import
   "µU/sem"
 type
   naive struct {
-               uint "number of processes allowed to use the critical section, that shall be protected by the semaphore"
+               uint "value of the semaphore"
                sem.Semaphore
                }
 

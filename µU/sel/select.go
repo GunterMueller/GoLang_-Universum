@@ -65,10 +65,11 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
     }
     n0 = *i
     C, d:= kbd.Command()
-    switch C { case kbd.Esc, kbd.Thither:
+    switch C {
+    case kbd.Esc, kbd.Move:
       *i = n
       break loop
-    case kbd.Enter, kbd.Hither:
+    case kbd.Enter, kbd.That:
       break loop
     case kbd.Left, kbd.Up:
       if d == 0 {

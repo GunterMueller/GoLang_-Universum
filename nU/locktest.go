@@ -55,5 +55,5 @@ func main() {
   runtime.GOMAXPROCS (ncpu)
   for p := uint(0); p < m; p++ { go count(p) }
   for i := 0; i < m; i++ { <-c }
-  println(); println ("locktest: Zähler =", n, "<=", m * N)
+  println(); println ("locktest: counter =", n, "<=", m * N)
 }

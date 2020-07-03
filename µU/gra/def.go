@@ -68,7 +68,7 @@ type
 // Returns the number of edges of x.
   Num1() uint
 
-// Returns the number of marked vertices x.
+// Returns the number of marked vertices of x.
   NumMarked() uint
 
 // Returns the number of marked edges of x.
@@ -86,9 +86,10 @@ type
 // is now the colocal vertex of x.
   Ins (v Any)
 
-// If x is empty or if the colocal vertex of x coincides with the local vertex
-// or if e is not of the edgetype of x, nothing has happened. Otherwise:
-// e is inserted in x as edge from the colocal to the local vertex of x
+// If x was empty or if the colocal vertex of x coincides
+// with the local vertex of x or if e is not of the edgetype of x,
+// nothing has happened. Otherwise:
+// e is inserted into x as edge from the colocal to the local vertex of x
 // (if these two vertices were already connected by an edge,
 // that edge is replaced by e).
 // For e == nil e is replaced by uint(1).
@@ -113,9 +114,9 @@ type
 // a.Vertex(i) to a.Vertex(k), iff a.Val(i,k) > 0 (i, k < a.Num()).
   SetMatrix (a adj.AdjacencyMatrix)
 
-// Returns true, iff the colocal vertex
-// does not coincide with the local vertex of x and
-// there is an edge from the colocal to the local vertex in x.
+// Returns true, iff the colocal vertex of x does not
+// coincide with the local vertex of x and there is
+// an edge in x from the colocal to the local vertex.
   Edged() bool
 
 // Returns true, iff
@@ -128,13 +129,14 @@ type
 // The colocal vertex of x is the same as before.
   Ex (v Any) bool
 
-// Returns true, if v and v1 are contained as vertices in x and do not coincide.
-// In this case v now is the colocal and v1 the local vertex of x.
+// Returns true, if v and v1 are contained as vertices in x
+// and do not coincide. In this case now
+// v is the colocal and v1 the local vertex of x.
   Ex2 (v, v1 Any) bool
 
 // Pre: p is defined on vertices.
-// Returns true, if there is a vertex in x, for which p returns true.
-// In this case some such vertex is now the local vertex of x.
+// Returns true, iff there is a vertex in x, for which p returns true.
+// In this case some now such vertex is the local vertex of x.
 // The colocal vertex of x is the same as before.
   ExPred (p Pred) bool
 
@@ -162,22 +164,23 @@ type
 // returns otherwise a clone of the local vertex of x.
   Get() Any
 
-// Returns a clone of the pattern edge of x, if x is empty or
-// if there is no edge from the colocal to the local vertex of x or
-// if the colocal vertex of x coincides with the local vertex.
-// Returns otherwise a clone of the edge
-// from the colocal to the local vertex of x.
+// Returns a clone of the pattern edge of x, if x is empty
+// or if there is no edge from the colocal vertex to the
+// local vertex of x or if these two vertices coincide.
+// Returns otherwise a clone of the edge from the
+// colocal vertex of x to the local vertex of x.
   Get1() Any
 
-// Returns clones of the colocal and of the local vertex of x.
+// Returns (nil, nil), if x is empty.
+// Returns otherwise a pair, consisting of clones
+// of the colocal and of the local vertex of x.
   Get2() (Any, Any)
 
-// If x is empty or
-// if v is not of the vertextype of x, nothing has happened. Otherwise:
+// If x is empty or if v is not of the vertex type of x, nothing has happened. Otherwise:
 // The local vertex of x is replaced by v.
   Put (v Any)
 
-// If x is empty or if e has no edgetype or
+// If x is empty or if e has no edge type or
 // if e is not of the edgetype of x or
 // if there is no edge from the colocal to the local vertex of x,
 // nothing has happened. Otherwise:
@@ -194,20 +197,20 @@ type
 // No vertex and no edge in x is marked.
   ClrMarked()
 
-// If x is empty or if v is not of the vertextype of x or
-// if v is not contained in x, nothing had happened.
+// If x is empty or if v is not of the vertex type of x
+// or if v is not contained in x, nothing has happened.
 // Otherwise, v is now the local vertex of x and is marked.
 // The colocal vertex of x is the same as before.
   Mark (v Any)
 
-// If x is empty or if v or v1 is not of the vertextype of x
+// If x is empty or if v or v1 is not of the vertex type of x
 // or if v or v1 is not contained in x
 // or if v and v1 conincide, nothing had happened.
-// Otherwise, v is now the colocal and v1 the local vertex of x
-// and v, v1 and the edge between them are marked.
+// Otherwise, v is now the colocal and v1 the local vertex
+// of x and these two vertices and the edge between them are now marked.
   Mark2 (v, v1 Any)
 
-// Returns true, if all vertices and all edges in x are marked.
+// Returns true, if all vertices and all edges of x are marked.
   AllMarked() bool
 
 // If x is empty, nothing has happened. Otherwise:
@@ -295,8 +298,8 @@ type
   Relocate()
 
 // If x is empty, nothing had happened. Otherwise:
-// The colocal vertex coincides with the local vertex of x,
-// where for f that is the vertex, that was the former local vertex of x,
+// The colocal vertex of x coincides with the local vertex of x,
+// where for f == true that is the vertex, that was the former local vertex of x,
 // and for !f the vertex, that was the former colocal vertex of x.
 // The actual path of x consists only of this vertex.
 // The only marked vertex is this vertex; no edges are marked.
@@ -329,12 +332,12 @@ type
   Step (i uint, f bool)
 
 // Returns false, if x is empty or if i >= NumNeighbourOut();
-// returns otherwise true, iff the edge to its i-th neighbour
-// of the local vertex is an outgoing one.
+// returns otherwise true, iff the edge to the i-th neighbour
+// of the local vertex is an outgoing edge.
   Outgoing (i uint) bool
 
 // Returns nil, if x is empty or if i >= NumNeighbourOut();
-// returns otherwise a copy of the i-th outgoing neighbour of the local vertex.
+// returns otherwise a clone of the i-th outgoing neighbour of the local vertex.
   NeighbourOut (i uint) Any
 
 // Returns false, if x is empty or if i >= NumNeighboursIn();
@@ -347,7 +350,8 @@ type
   NeighbourIn (i uint) Any
 
 // Returns nil, if x is empty or if i >= NumNeighbours();
-// returns otherwise a copy of its i-th neighbour vertex.
+// returns otherwise a clone of its i-th neighbour vertex
+// of the local vertex of x.
   Neighbour (i uint) Any
 
 // Pre: p is defined on vertices.
@@ -362,7 +366,7 @@ type
 
 // Pre: o is defined on vertices.
 // o is applied to all vertices of x.
-// Colocal and local vertex of x are the same as before;
+// The colocal and the local vertex of x are the same as before;
 // the marked vertices and edges are unaffected.
   Trav (o Op)
 
@@ -400,13 +404,13 @@ type
   Trav1Coloc (o Op)
 
 // Returns nil, if x is empty.
-// Returns otherwise the Graph consisting of the local vertex,
-// all its neighbour vertices and of all edges
-// outgoing from and incoming to it.
+// Returns otherwise the graph consisting of the local
+// vertex of x, all its neighbour vertices and of all edges
+// outgoing from it and incoming to it.
 // The local vertex of x is the local vertex of the star.
 // It is the only marked vertex in the star;
 // all edges in the star are marked.
-  Star () Graph
+  Star() Graph
 
 // Returns true, iff there are no cycles in x.
   Acyclic() bool
@@ -448,14 +452,15 @@ type
 // at which those edges come in.
   Sort()
 
-// Pre: x is directed iff all graphs y are.
-// x consists of all vertices and edges of x and all graphs y.
+// Pre: x is directed, iff all graphs y are directed.
+// x consists of all vertices and edges of x before
+// and of all graphs y. Thereby all marks of y are overtaken.
   Add (y ...Graph)
 
 // The demofunction for d is switched on, iff s[d] == true.
   SetDemo (d Demo)
 
-// Pre: v is defined on vertices and e on edges.
+// Pre: wv is defined on vertices and we on edges.
 // wv and we are the actual write functions for the vertices and edges of x.
   SetWrite (wv, we CondOp)
 
@@ -468,9 +473,9 @@ type
 
 // Pre: v is atomic or imlements Object.
 //      e == nil or e is of type uint or implements Valuator;
-// x is Empty
+// Returns an empty graph, 
 // x is directed, iff d (i.e. otherwise undirected).
-// x has v as pattern vertex defining the vertextype of x.
-// For e == nil, e is replaced by uint(1) and all edges of x have value 1.
-// x has e as pattern edge defining the edgetype of x.
+// v is the pattern vertex of x defining the vertex type of x.
+// For e == nil, e is replaced by uint(1) and all edges of x have the value 1.
+// otherwise e is the pattern edge of x defining the edgetype of x.
 func New (d bool, v, e Any) Graph { return new_(d,v,e) }

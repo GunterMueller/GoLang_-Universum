@@ -1,7 +1,5 @@
 package dgra
 
-// (c) Christian Maurer   v. 171128 - license see nU.go
-
 import "nU/gra"
 
 type DistributedGraph interface {
@@ -19,9 +17,9 @@ type DistributedGraph interface {
   Time() uint
   Time1() uint
 
-  SetPulseAlgorithm (a PulseAlg) // see pulseAlgorithms.go
-  PulseAlgorithm() PulseAlg
-  Pulse()
+  SetHeartbeatAlgorithm (a HeartbeatAlg) // see heartbeatAlgorithms.go
+  HeartbeatAlgorithm() HeartbeatAlg
+  Heartbeat()
 
   SetTravAlgorithm (a TravAlg) // see travAlgorithms.go
   TravAlgorithm() TravAlg

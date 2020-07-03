@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 200119 - license see nU.go
 
 import "nU/dgra/internal"
 
@@ -21,7 +21,7 @@ func (x *distributedGraph) hirschbergSinclair() {
         msg := x.ch[j].Recv().(internal.Message)
         mutex.Lock()
         id, num, maxnum, ok := msg.IdNumsOk()
-        switch msg.Type() {
+        switch msg.Kind() {
         case internal.Candidate:
           if id < x.me {
             msg.SetReply (false)

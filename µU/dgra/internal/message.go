@@ -1,12 +1,12 @@
 package internal
 
-// (c) Christian Maurer   v. 190402 - license see µU.go
+// (c) Christian Maurer   v. 200119 - license see µU.go
 
 import
   . "µU/obj"
 type
   message struct {
-                 byte "message type"
+                 byte "message kind"
                  uint "identity"
              num,
           maxnum uint
@@ -75,7 +75,7 @@ func (x *message) Decode (s Stream) {
   x.bool = s[i] == 1
 }
 
-func (x *message) Type() byte {
+func (x *message) Kind() byte {
   return x.byte
 }
 

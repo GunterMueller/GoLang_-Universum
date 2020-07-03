@@ -1,6 +1,6 @@
 package lockn
 
-// (c) Christian Maurer   v. 190816 - license see µU.go
+// (c) Christian Maurer   v. 191229 - license see µU.go
 
 // >>> Knuth, D. E.: Additional Comments on a Problem in Concurrent Programming Control.
 //     CACM 9 (1966) 321-322
@@ -8,11 +8,6 @@ package lockn
 import (
   . "µU/obj"
   . "µU/atomic"
-)
-const (
-  passive = iota
-  requesting
-  active
 )
 type
   knuth struct {

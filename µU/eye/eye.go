@@ -1,14 +1,13 @@
 package eye
 
-// (c) Christian Maurer   v. 191018 - license see µU.go
+// (c) Christian Maurer   v. 191117 - license see µU.go
 
 import (
   "math"
-//  . "µU/obj"
-//  "µU/col"
-//  "µU/scr"; "µU/errh"
+  . "µU/obj"
+  "µU/col"
   "µU/vect"
-  "µU/gl" // PosLight, Actualize
+  "µU/gl"
 )
 const (
   epsilon = 1.0E-6
@@ -22,14 +21,19 @@ type
    originOld,
        focus,
         temp vect.Vector
-         vec [3]vect.Vector
+      vector [3]vect.Vector
        delta float64 // invariant: delta == Distance (Auge, focus)
-//      colour col.Colour
-//        flat bool
+      colour col.Colour
+        flat bool
              }
-var
-  nB, nD, nF uint
-//  var e = New() // -> Anwendung
+
+func next (i int) int {
+  return (i + 1) % 3
+}
+
+func prev (i int) int {
+  return (i + 2) % 3
+}
 
 func new_() Eye {
   e := new (eye)
@@ -37,12 +41,11 @@ func new_() Eye {
   e.originOld = vect.New()
   e.focus = vect.New()
   e.temp = vect.New()
-  e.vec[0] = vect.New3 (1, 0, 0)
-  e.vec[1] = vect.New3 (0, 1, 0)
-  e.vec[2] = vect.New3 (0, 0, 1)
+  e.vector[0] = vect.New3 (1, 0, 0)
+  e.vector[1] = vect.New3 (0, 1, 0)
+  e.vector[2] = vect.New3 (0, 0, 1)
   e.delta = e.origin.Distance (e.focus)
-//  e.colour, _ = scr.StartCols()
-//  e.colour = col.White()
+  e.colour = col.White()
   return e
 }
 
@@ -50,11 +53,9 @@ func (e *eye) SetLight (n uint) {
   gl.PosLight (n, e.origin)
 }
 
-/*
-func (e *eye) Actualize() {
-  gl.Actualize (e.vec[right], e.vec[front], e.vec[top], e.origin)
+func (e *eye) actualize() {
+//  gl.Actualize (e.vec[0], e.vec[1], e.vec[2], e.origin)
 }
-*/
 
 func (e *eye) Set (ex, ey, ez, fx, fy, fz float64) {
   e.origin.Set3 (ex, ey, ez)
@@ -72,9 +73,9 @@ func (e *eye) DistanceFrom (aim vect.Vector) float64 {
 }
 
 func (e *eye) adjustFocus() {
-  e.focus.Scale (e.delta, e.vec[front])
+  e.focus.Scale (e.delta, e.vector[front])
   e.focus.Add (e.origin)
-//  e.Actualize()
+  e.actualize()
 }
 
 func (e *eye) Distance() float64 {
@@ -84,7 +85,6 @@ func (e *eye) Distance() float64 {
   return e.delta
 }
 
-/*
 func (e *eye) Read (v []vect.Vector) bool {
   v[0].Copy (e.originOld)
   if len (v) > 1 {
@@ -96,46 +96,42 @@ func (e *eye) Read (v []vect.Vector) bool {
 func (e *eye) Flatten (f bool) {
   e.flat = f
 }
-*/
 
 func (e *eye) Move (i int, dist float64) {
-  nB++
-  e.vec[top].Ext (e.vec[right], e.vec[front])
-  e.vec[top].Norm()
+  e.vector[top].Ext (e.vector[right], e.vector[front])
+  e.vector[top].Norm()
   e.originOld.Copy (e.origin)
-  e.temp.Scale (dist, e.vec[i])
+  e.temp.Scale (dist, e.vector[i])
   e.origin.Add (e.temp)
   e.adjustFocus()
 }
 
 func (e *eye) rotate (i int, alpha float64) { // ziemlich abenteuerliche Konstruktion
-  V1 := e.vec[(i + 1) % 3]
-  V1.Rot (e.vec[i], alpha)
+  V1 := e.vector[next(i)]
+  V1.Rot (e.vector[i], alpha)
   V1.Norm()
-//  V2.Copy (e.vec[i])
-  V2 := e.vec[i].Clone().(vect.Vector)
+//  V2.Copy (e.vector[i])
+  V2 := e.vector[i].Clone().(vect.Vector)
   V2.Cross (V1)
-  V2.Ext (e.vec[i], V1)
+  V2.Ext (e.vector[i], V1)
   V2.Norm()
 }
 
 func (e *eye) Turn (i int, alpha float64) {
-  nD++
   e.rotate (i, alpha)
   e.adjustFocus()
 }
 
 func (e *eye) Invert() {
-  nD++
-  e.vec[right].Dilate (-1.0)
-  e.vec[front].Dilate (-1.0)
+  e.vector[right].Dilate (-1)
+  e.vector[front].Dilate (-1)
   e.adjustFocus()
 }
 
 func (e *eye) adjustOrigin() {
-  e.temp.Scale (e.delta, e.vec[front])
+  e.temp.Scale (e.delta, e.vector[front])
   e.origin.Sub (e.focus, e.temp)
-//  e.Actualize()
+  e.actualize()
 }
 
 func (e *eye) Focus (d float64) {
@@ -146,7 +142,6 @@ func (e *eye) Focus (d float64) {
 
 func (e *eye) TurnAroundFocus (i int, alpha float64) {
   if e.delta < epsilon { return }
-  nF++
 //  println ("TurnAroundFocus")
   e.rotate (i, -alpha)
 //  println ("rotated")
@@ -157,88 +152,76 @@ func (e *eye) TurnAroundFocus (i int, alpha float64) {
   e.adjustOrigin()
 }
 
-/*
-func (e *eye) Setx (x, y, z, x1, y1, z1 float64) {
-  e.origin.Set3 (x, y, z)
-  e.focus.Set3 (x1, y1, z1)
+func (e *eye) Setx (ex, ey, ez, fx, fy, fz float64) {
+  e.origin.Set3 (ex, ey, ez)
+  e.focus.Set3 (fx, fy, fz)
   e.delta = e.origin.Distance (e.focus)
   if e.delta < epsilon { return } // error
-  if math.Abs (z - z1) < epsilon { // Blick horizontal
-    e.vec[top].Set3 (0, 0, 1)
-    e.vec[front].Sub (e.focus, e.origin)
-    e.vec[front].Norm()
-////    e.vec[right].Copy (e.vec[front]) e.vec[right].Cross (e.vec[top])
-    e.vec[right].Ext (e.vec[front], e.vec[top])
-    e.vec[right].Norm()
-  } else { // z != z1
-    if math.Abs (x - x1) < epsilon && math.Abs (y - y1) < epsilon { // x == x1 und y == y1
-      e.vec[right].Set3 (1, 0, 0)
-      e.vec[front].Set3 (0, 0, 1)
-      e.vec[top].Set3 (0, 1, 0) // XXX
-      if z > z1 { // Blick von top, x -> right, y -> top
-        e.vec[front].Dilate (-1)
-      } else { // z < z1 *) // Blick von unten, x -> right, y -> unten
-        e.vec[top].Dilate (-1)
+  if math.Abs (ez - fz) < epsilon { // ez == fz: Blick horizontal
+    e.vector[top].Set3 (0, 0, 1)
+    e.vector[front].Sub (e.focus, e.origin)
+    e.vector[front].Norm()
+////    e.vector[right].Copy (e.vector[front]) e.vector[right].Cross (e.vector[top])
+    e.vector[right].Ext (e.vector[front], e.vector[top])
+    e.vector[right].Norm()
+  } else { // ez != fz
+    if math.Abs (ex - fx) < epsilon && math.Abs (ey - fy) < epsilon { // ex == fx und ey == fy
+      e.vector[right].Set3 (1, 0, 0)
+      e.vector[front].Set3 (0, 0, 1)
+      e.vector[top].Set3 (0, 1, 0) // XXX
+      if ez > fz { // Blick von top, x -> right, y -> top
+        e.vector[front].Dilate (-1)
+      } else { // ez < fz // Blick von unten, x -> right, y -> unten
+        e.vector[top].Dilate (-1)
       }
-    } else { // x != x1 oder y != y1
-      e.vec[front].Sub (e.focus, e.origin)
-      e.vec[front].Norm()
-      v2 := e.vec[front].Coord (top)
-      e.vec[top].Copy (e.vec[front])
-      if z < z1 { v2 = -v2 }
-      e.temp.Set3 (0., 0., - 1./v2)
-      e.vec[top].Add (e.temp)
-      e.vec[top].Norm()
-      e.vec[right].Ext (e.vec[front], e.vec[top])
-      e.vec[right].Norm()
+    } else { // ex != fx oder ey != fy
+      e.vector[front].Sub (e.focus, e.origin)
+      e.vector[front].Norm()
+      v2 := e.vector[front].Coord (top)
+      e.vector[top].Copy (e.vector[front])
+      if ez < fz { v2 = -v2 }
+      e.temp.Set3 (0, 0, -1/v2)
+      e.vector[top].Add (e.temp)
+      e.vector[top].Norm()
+      e.vector[right].Ext (e.vector[front], e.vector[top])
+      e.vector[right].Norm()
     }
   }
-//  e.Actualize()
-}
-*/
-
-func Report() {
-//  errh.Error2 ("Bewegungen:", nB, "/ Drehungen:", nD)
-  println (nB, "Bewegungen,", nD, "Drehungen")
+  e.actualize()
 }
 
-/*
-var (
-  stack[]([]byte) = make ([]([]byte), 100)
-//  v vect.Vector = vect.New()
-)
+var
+  stack = make ([]Stream, 100)
 
-// Vielleicht geht das folgende ja noch einfacher ...
-
-func (e *eye) zl() uint {
+func (e *eye) codelen() uint {
   return 4 * e.temp.Codelen() + e.colour.Codelen()
 }
 
 func (e *eye) Push (c col.Colour) {
-  B := make ([]byte, e.zl())
-  a := 0
-  copy (B[a:a+8], e.origin.Encode())
-  a += 8
-  for i := 0; i < 3; i++ {
-    copy (B[a:a+8], e.vec[i].Encode())
-    a += 8
+  bs := make (Stream, e.codelen())
+  i, a := uint(0), e.origin.Codelen()
+  copy (bs[i:i+a], e.origin.Encode())
+  for j := 0; j < 3; j++ {
+    copy (bs[i:i+a], e.vector[j].Encode())
+    i += a
   }
-  copy (B[a:a+97], c.Encode())
-  stack = append (stack, B)
+  a = 3
+  copy (bs[i:i+a], c.Encode())
+  stack = append (stack, bs)
 }
 
-func (e *eye) Colour() col.Colour {
-  B := stack[len(stack) - 1]
-  a := 0
-  e.origin.Decode (B[a:a+8])
-  a += 8
-  for i := 0; i < 3; i++ {
-    e.vec[i].Decode (B[a:a+8])
-    a += 8
+func (e *eye) Top() col.Colour {
+  n := len(stack)
+  bs := stack[n - 1]
+  i, a := uint(0), e.origin.Codelen()
+  e.origin.Decode (bs[i:i+a])
+  for j := 0; j < 3; j++ {
+    e.vector[j].Decode (bs[i:i+a])
+    i += a
   }
   c := col.New()
-  c.Decode (B[a:a+3])
-  stack = stack[0:len(stack) - 2]
+  a = c.Codelen()
+  c.Decode (bs[i:i+a])
+  stack = stack[:n - 1]
   return c
 }
-*/

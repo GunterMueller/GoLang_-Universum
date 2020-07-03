@@ -1,11 +1,11 @@
 package cons
 
-// (c) Christian Maurer   v. 171217 - license see µU.go
+// (c) Christian Maurer   v. 191117 - license see µU.go
 
 import (
   "sync"
   "strconv"
-//  . "µU/linewd"
+  . "µU/linewd"
   . "µU/shape"
   . "µU/mode"
   "µU/ker"
@@ -26,7 +26,7 @@ nLines, nColumns uint
 cF, cB, cFA, cBA col.Colour
     codeF, codeB []byte
       scrF, scrB col.Colour
-//          lineWd Linewidth
+          lineWd Linewidth
         fontsize font.Size
      transparent bool
      cursorShape,
@@ -41,7 +41,7 @@ cF, cB, cFA, cBA col.Colour
               pg [][]bool // to fill polygons
         incident bool
    xx_, yy_, tt_ int // for incidence tests
-             }
+                 }
 var (
   actMutex sync.Mutex
   consList []*console

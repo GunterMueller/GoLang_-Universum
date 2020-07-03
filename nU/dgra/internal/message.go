@@ -1,6 +1,6 @@
 package internal
 
-// (c) Christian Maurer   v. 190402 - license see nU.go
+// (c) Christian Maurer   v. 200119 - license see nU.go
 
 import . "nU/obj"
 
@@ -79,7 +79,7 @@ func (x *message) Decode (bs []byte) {
   x.bool = bs[i] == 1
 }
 
-func (x *message) Type() byte {
+func (x *message) Kind() byte {
   return x.byte
 }
 

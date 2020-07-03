@@ -8,7 +8,7 @@ import
   "sync"
 type
   google struct {
-            int "value"
+                int "value"
           mutex *sync.Mutex
          wakeup *sync.Cond
                 }

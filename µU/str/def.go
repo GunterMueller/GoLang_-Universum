@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 200402 - license see µU.go
 
 //     latin-1-strings (without any bloody UTF-8-stuff)
 
@@ -26,7 +26,11 @@ func Lit (s string) bool { return lit(s) }
 
 // If p < len(s), the byte at position p of s is replaced by c.
 // Otherwise s is not changed.
-func Replace (s *string, p uint, c byte) { replace (s,p,c) }
+func Replace1 (s *string, p uint, c byte) { replace1 (s,p,c) }
+
+// If p + len(t) <= len(s), the part of s starting at position p is replaced by t.
+// Otherwise s is not changed.
+func Replace (s *string, p uint, t string) { replace (s,p,t) }
 
 // Returns true, iff s contains no bytes or only spaces.
 func Empty (s string) bool { return empty(s) }

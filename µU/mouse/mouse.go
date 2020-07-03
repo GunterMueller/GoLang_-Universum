@@ -1,18 +1,17 @@
 package mouse
 
-// (c) Christian Maurer   170814 - license see µU.go
+// (c) Christian Maurer  v. 191125 - license see µU.go
 
-import
-(
+import (
   "os"
   "µU/ker"
   "µU/xwin"
 )
 const (
-  move = iota         // mousemove without any button pressed
-  here; drag; drop    // left mousebutton
-  there; drag1; drop1 // right mousebutton
-  this; drag2; drop2  // middle mousebutton
+  go_ = iota         // mousemove without any button pressed
+  here; this; that   // left mousebutton
+  drag; drop; move   // right mousebutton
+  to_; there; hither // middle mousebutton
 )
 type
   button byte; const (
@@ -28,18 +27,17 @@ var (
   butt, oldButt button
   yy, // vertical swap
   x0, y0, x1, y1, // boundaries
-  mX, mY uint // location of mouse pointer
+  xm, ym uint // location of mouse pointer
 )
 
 func init() {
   if xwin.UnderX() {
     mousepipe = (chan Command)(nil)
   } else {
-    var err error
-    file, err = os.Open ("/dev/input/mice")
-    if err == nil {
+    var e error
+    if file, e = os.Open ("/dev/input/mice"); e == nil {
       Def (0, 0, 1000, 1000) // TODO
-      lastCommand = move
+      lastCommand = go_
       oldButt = none
       mousepipe = make (chan Command)
       go catch()
@@ -50,7 +48,6 @@ func init() {
 }
 
 func Ex() bool {
-//  return file != nil
   return mousepipe != (chan Command)(nil)
 }
 
@@ -62,7 +59,7 @@ func Def (x, y, w, h uint) {
   x0, y0 = x, y
   x1, y1 = x0 + w - 1, y0 + h - 1
   yy = y1
-  mX, mY = x0 + w / 2, y0 + h / 2
+  xm, ym = x0 + w / 2, y0 + h / 2
 }
 
 func Warp (x, y uint) {
@@ -72,7 +69,7 @@ func Warp (x, y uint) {
   if y > y1 {
     y = y1
   }
-  mX, mY = x, yy - y
+  xm, ym = x, yy - y
 }
 
 func catch() {
@@ -86,7 +83,8 @@ func catch() {
     i, _:= file.Read (bs[:])
     if i < 3 { continue }
     a = uint(bs[0])
-    switch a % 8 { case 0:
+    switch a % 8 {
+    case 0:
       butt = none
     case 1, 5: // left, left and middle
       butt = left
@@ -102,57 +100,61 @@ func catch() {
     a /= 8
     if a == 0 { break }
     a = (a - 1) / 2
-    switch a { case 0:
-      mX += dx
-      mY += dy
+    switch a {
+    case 0:
+      xm += dx
+      ym += dy
     case 1:
       dx = 256 - dx
-      mY += dy
-      if mX > dx { mX -= dx } else { mX = 0 }
+      ym += dy
+      if xm > dx { xm -= dx } else { xm = 0 }
     case 2:
       dy = 256 - dy
-      mX += dx
-      if mY > dy { mY -= dy } else { mY = 0 }
+      xm += dx
+      if ym > dy { ym -= dy } else { ym = 0 }
     case 3:
       dx = 256 - dx
       dy = 256 - dy
-      if mX > dx { mX -= dx } else { mX = 0 }
-      if mY > dy { mY -= dy } else { mY = 0 }
+      if xm > dx { xm -= dx } else { xm = 0 }
+      if ym > dy { ym -= dy } else { ym = 0 }
     default:
       break
     }
-    if mX < x0 {
-      mX = x0
-    } else if mX > x1 {
-      mX = x1
+    if xm < x0 {
+      xm = x0
+    } else if xm > x1 {
+      xm = x1
     }
-    if mY < y0 {
-      mY = y0
-    } else if mY > y1 {
-      mY = y1
+    if ym < y0 {
+      ym = y0
+    } else if ym > y1 {
+      ym = y1
     }
-    switch butt { case none:
-      switch lastCommand { case move:
+    switch butt {
+    case none:
+      switch lastCommand {
+      case go_:
         if dragged {
-        c = move
+        c = go_
       } else {
         continue
       }
-    case here, drag:
-      c = drop
-    case there, drag1:
-      c = drop1
-    case this, drag2:
-      c = drop2
-    case drop, drop1, drop2:
+    case here, this:
+      c = that
+    case drag, drop:
       c = move
+    case to_, there:
+      c = hither
+    case that, move, hither:
+      c = go_
     }
     case left:
-      switch lastCommand { case move, drop, drop1, drop2:
+      switch lastCommand {
+      case go_, that, move, hither:
         c = here
-      case here, drag:
+      case here, this:
         if dragged {
-          c = drag
+          c = this
         } else {
           continue
         }
@@ -160,11 +162,12 @@ func catch() {
         c = lastCommand
       }
     case right:
-      switch lastCommand { case move, drop, drop1, drop2:
-        c = there
-      case there, drag1:
+      switch lastCommand {
+      case go_, that, move, hither:
+        c = drag
+      case drag, drop:
         if dragged {
-          c = drag1
+          c = drop
         } else {
           continue
         }
@@ -172,11 +175,12 @@ func catch() {
         c = lastCommand
       }
     case middle:
-      switch lastCommand { case move, drop, drop1, drop2:
-      c = this
-      case this, drag2:
+      switch lastCommand {
+      case go_, that, move, hither:
+      c = to_
+      case to_, there:
         if dragged {
-          c = drag2
+          c = there
         } else {
           continue
         }
@@ -191,5 +195,5 @@ func catch() {
 }
 
 func Pos() (int, int) {
-  return int(mX), int(yy - mY)
+  return int(xm), int(yy - ym)
 }

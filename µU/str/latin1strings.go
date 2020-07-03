@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 200402 - license see µU.go
 
 import
   "µU/z"
@@ -62,12 +62,19 @@ func lit (s string) bool {
   return true
 }
 
-func replace (s *string, p uint, c byte) {
+func replace1 (s *string, p uint, c byte) {
   n := len (*s)
   if int(p) >= n { return }
   t := string(c)
   *s = (*s)[:p] + t + (*s)[p+1:]
   z.ToHellWithUTF8 (s)
+}
+
+func replace (s *string, p uint, t string) {
+  m := uint(len(t))
+  n := len (*s)
+  if p + m >= uint(n) { return }
+  *s = (*s)[:p] + t + (*s)[p+m:]
 }
 
 func empty (s string) bool {

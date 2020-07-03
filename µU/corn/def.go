@@ -1,15 +1,17 @@
 package corn
 
-// (c) Christian Maurer   v. 170316 - license see µU.go
+// (c) Christian Maurer   v. 200120 - license see µU.go
 
 import (
   . "µU/obj"
-  "µU/qu"
+  "µU/buf"
 )
 type
   Cornet interface {
 
-  qu.Queue
+  buf.Buffer
 }
 
+// Pre: a is atomic or of a type implementing Object.
+// Returns a new cornet for elements of the type of a.
 func New (a Any) Cornet { return new_(a) }

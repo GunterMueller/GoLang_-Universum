@@ -1,6 +1,6 @@
 package fig2
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 191125 - license see µU.go
 
 import (
   . "µU/obj"
@@ -480,9 +480,9 @@ func (f *figure2) editN() {
     switch K { case kbd.Esc:
       break loop
     case kbd.Go,
-         kbd.Here, kbd.Pull, kbd.Hither,
-         kbd.There, kbd.Push, kbd.Thither,
-         kbd.This: // kbd.ToThis:
+         kbd.Here, kbd.This, kbd.That,
+         kbd.There, kbd.Drop, kbd.Move,
+         kbd.To: // kbd.ToThis:
       f.invertN()
 //      if f.Type == Curve {
 //        if n == scr.MaxBezierdegree { break loop }
@@ -496,7 +496,7 @@ func (f *figure2) editN() {
           n++
         }
       }
-      if K == kbd.This {
+      if K == kbd.To {
         n := len (f.x)
         if n == 0 {
           break loop
@@ -517,9 +517,9 @@ func (f *figure2) editN() {
       f.x[n-1], f.y[n-1] = scr.MousePosGr()
       f.invertN()
       if f.Type == Points {
-        if K == kbd.Hither { break loop }
+        if K == kbd.That { break loop }
       } else {
-        if K == kbd.Thither { break loop }
+        if K == kbd.Move { break loop }
       }
     }
   }
@@ -584,7 +584,7 @@ func (f *figure2) edit1() {
   f.invert1()
   loop: for {
     K, T := kbd.Command()
-    switch K { case kbd.Pull, kbd.Hither:
+    switch K { case kbd.This, kbd.That:
       f.invert1()
       f.x[1], f.y[1] = scr.MousePosGr()
       switch f.Type {
@@ -620,7 +620,7 @@ func (f *figure2) edit1() {
         // stop (Modul, 1)
       }
       f.invert1()
-      if K == kbd.Hither {
+      if K == kbd.That {
         f.filled = T > 0
         break loop
       }
@@ -779,16 +779,16 @@ errh.Error ("Figur hat Länge", n)
           break loop
         case kbd.There:
           i = f.uM()
-        case kbd.Push, kbd.Thither:
+        case kbd.Drop, kbd.Move:
           if i < n {
             f.Invert()
             f.mark (i)
             f.x[i], f.y[i] = scr.MousePosGr()
             f.mark (i)
             f.Invert()
-            if c == kbd.Thither { i = n } // ? ? ?
+            if c == kbd.Move { i = n } // ? ? ?
           }
-        case kbd.This:
+        case kbd.To:
           switch f.Type {
           case Points, Segments, Polygon, Curve:
             if f.x == nil {

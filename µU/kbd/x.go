@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 171217 - license see µU.go
+// (c) Christian Maurer   v. 200517 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -35,42 +35,47 @@ func isSet (bit, x uint) bool {
   return x >> bit % 2 == 1
 }
 
-func inputX (B *byte, C *Comm, T *uint) {
+func inputX (B *byte, C *Comm, D *uint) {
   const (
-    shiftBit     = 0
-    shiftLockBit = 1
-    ctrlBit      = 2
-    altBit       = 3
-    altGrBit     = 7
-    mouseBitL    = 8
-    mouseBitM    = 9
-    mouseBitR   = 10
+    shiftBit     =  0
+    shiftLockBit =  1
+    ctrlBit      =  2
+    altBit       =  3
+    altGrBit     =  7
+    mouseBitL    =  8
+    mouseBitM    =  9
+    mouseBitR    = 10
   )
   var e xwin.Event
-//  var k uint
   ok := false
-  loop: for {
-    *B, *C, *T = 0, None, 0
+loop:
+  for {
+    *B, *C, *D = 0, None, 0
     e, ok = <-xpipe
     ch <- 0
-    if ! ok { println ("x.inputX: ! ok") }
-if e.S == 64 { panic("x.inputX: shriek !") }
-    shiftX := isSet (shiftBit, e.S)
-    shiftFix := isSet (shiftLockBit, e.S)
-    if shiftFix { shiftX = false } // weg isser
-    ctrlX := isSet (ctrlBit, e.S)
-    altX := isSet (altBit, e.S)
-    altGrX := isSet (altGrBit, e.S)
-    lBut := isSet (mouseBitL, e.S)
-    mBut := isSet (mouseBitM, e.S)
-    rBut := isSet (mouseBitR, e.S)
-    if shiftX || ctrlX { *T ++ }
-    if altX { *T += 2 }
+    if ! ok { panic ("x.inputX: ! ok") }
+    if e.S == 64 { panic("x.inputX: shriek !") }
+    shift := isSet (shiftBit, e.S)
+    shiftLock := isSet (shiftLockBit, e.S)
+    if shiftLock { shift = false } // weg isser
+    ctrl := isSet (ctrlBit, e.S)
+    alt := isSet (altBit, e.S)
+    altGr := isSet (altGrBit, e.S)
+    mouseL := isSet (mouseBitL, e.S)
+    mouseM := isSet (mouseBitM, e.S)
+    mouseR := isSet (mouseBitR, e.S)
+    if shift || ctrl {
+//      *D++
+      *D = 1
+    } else if alt {
+//      *D += 2
+      *D = 2
+    }
     switch e.T {
     case C.Expose:
       *B = 0
       *C = Expose
-      *T = 0
+      *D = 0
       println ("na siehste es geht doch")
       break loop
     case C.KeyPress:
@@ -82,72 +87,123 @@ if e.S == 64 { panic("x.inputX: shriek !") }
         case e.C == esc:
           *C = Esc
         case e.C == shiftL || e.C == shiftR:
-          shiftX = true
+          shift = true
         case e.C == ctrlL || e.C ==  ctrlR:
-          ctrlX = true
+          ctrl = true
         case e.C == altL:
-          altX = true
+          alt = true
         case e.C == altR:
-          altGrX = true
+          altGr = true
         case isAlpha (e.C):
-          if ctrlX && (e.C == 46 || e.C == 16 ) { // Ctrl C, Ctrl Q
-            // finX ()
+          if ctrl && (e.C == 'C' || e.C == 'Q' ) {
+            // finX () // TODO
             os.Exit (0)
           }
-          switch *T {
+          switch *D {
           case 0:
-            if altGrX {
+            if altGr {
               switch e.C {
-              case 16, 19, 33, 46, 50: // Q, R, F, C, M ->
-                *B = aA[e.C] // @, z.Registered, z.Female, z.Copyright, z.Male
+              case 3: // 2
+                *B = twoSup
+              case 4: // 3
+                *B = threeSup
+              case 8: // 7
+                *B = braceL
+              case 9: // 8
+                *B = bracketL
+              case 10: // 9
+                *B = bracketR
+              case 11: // 0
+                *B = braceR
+              case 12: // ß
+                *B = backslash
+              case 16: // Q
+                *B = '@'
+              case 18: // E
+                *B = euro
+              case 19: // R
+                *B = registered
+              case 27: // +
+                *B = '~'
+              case 33: // F
+                *B = female
+              case 41:
+                *B = degree
+              case 46: // C
+                *B = copyright
+              case 50: // M
+                *B = mu
+              case 52: // .
+                *B = division
               }
             } else {
               *B = bb[e.C]
             }
           case 1:
-            *B = bB[e.C]
+            if altGr {
+/*/
+              switch e.C {
+              case 26:
+                *B = Ü
+              case 39:
+                *B = Ö
+              case 40:
+                *B = Ä
+              case 86:
+                *B = '|'
+              }
+/*/
+            } else {
+              *B = aa[e.C]
+            }
           case 2:
             *B = aa[e.C]
           }
         case isCmd (e.C):
           *C = kK[e.C]
-/*
-          if e.C == pgUp || e.C == pgDown {
-//          if e.C == pgUp + 8 || e.C == pgDown + 8 { // 112/117 -> 104/109
-            *T += 2
-          }
-*/
-          if e.C == left && altX {
+          switch e.C {
+          case left:
+          if alt {
             *C = PgLeft
-            *T = 0; if shiftX { *T = 1 }
+            *D = 0
+            if shift {
+              *D = 1
+            }
             break loop
           }
-          if e.C == right && altX {
-            altX = false
-            *C = PgRight
-            *T = 0; if shiftX { *T = 1 }
-            break loop
-          }
-          if e.C == pgUp {
+          case right:
+            if alt {
+              alt = false
+              *C = PgRight
+              *D = 0; if shift {
+                *D = 1
+              }
+              break loop
+            }
+          case pgUp:
             *C = PgUp
+//            *D = 2
             break loop
-          }
-          if e.C == pgDown {
+          case pgDown:
             *C = PgDown
+//            *D = 2
             break loop
           }
-//          if (e.C == left || e.C == right) && e.S == 64 { *T += 2 }
-          if e.C == back && *T > 2 { *C = None; *T = 0 } // doesn't help: wm crashes
+//          if (e.C == left || e.C == right) && e.S == 64 { *D += 2 }
+          if e.C == back && *D > 2 {
+            *C, *D = None, 0
+          } // doesn't help: wm crashes
 //        case k == numOnOff:
-//          ; // TODO
+//          // TODO
         case isKeypad (e.C):
-          switch *T { case 0:
+          switch *D {
+          case 0:
             *B = bb[e.C]
           default:
             *C = kK[e.C]
           }
-//        case isFunction (e.C):
-//          ; // TODO
+        case e.C == 127:
+          *B = backslash
         default:
           println ("C.KeyPress: keycode ", e.C, "/ state ", e.S)
         }
@@ -156,19 +212,22 @@ if e.S == 64 { panic("x.inputX: shriek !") }
         break loop
       }
     case C.KeyRelease:
-      ;
+      ; // is ignored
     case C.ButtonPress:
-      if *T > 1 { *T = 1 } // because the bloody WM eats everything else up
-      switch e.C { case 1:
+      if *D > 1 {
+        *D = 1 // because the bloody WM eats everything else up
+      }
+      switch e.C {
+      case 1:
         *C = Here
       case 2:
-        *C = This
+        *C = That
       case 3:
-        *C = There
+        *C = This
       case 4:
-        *C = Up
+        *C = ScrollUp
       case 5:
-        *C = Down
+        *C = ScrollDown
       default:
         println ("xwin.ButtonPress: button ", e.C ,"/ state ", e.S)
       }
@@ -176,29 +235,32 @@ if e.S == 64 { panic("x.inputX: shriek !") }
         break loop
       }
     case C.ButtonRelease:
-      if *T > 1 { *T = 1 } // because the bloody WM eats everything else up
-      ctrlX = false
-      altX = false
-      altGrX = false
-      switch e.C { case 1:
-        if lBut {
-//          lBut = false
-          *C = Hither
+      if *D > 1 {
+        *D = 1 // because the bloody fucking WM eats everything else up
+      }
+      ctrl = false
+      alt = false
+      altGr = false
+      switch e.C {
+      case 1:
+        if mouseL {
+//          mouseL = false
+          *C = To
         }
       case 2:
-        if mBut {
-//          mBut = false
-          *C = Thus
+        if mouseM {
+//          mouseM = false
+          *C = Hither
         }
       case 3:
-        if rBut {
-//          rBut = false
-          *C = Thither
+        if mouseR {
+//          mouseR = false
+          *C = There
         }
       case 4:
-        *C = Up
+        *C = ScrollUp
       case 5:
-        *C = Down
+        *C = ScrollDown
       default:
         println ("xwin.ButtonRelease: button ", e.C ,"/ state ", e.S)
       }
@@ -206,13 +268,13 @@ if e.S == 64 { panic("x.inputX: shriek !") }
         break loop
       }
     case C.MotionNotify:
-      *T = 0
-      if lBut {
-        *C = Pull
-      } else if mBut {
+      *D = 0
+      if mouseL {
+        *C = Drag
+      } else if mouseM {
         *C = Move
-      } else if rBut {
-        *C = Push
+      } else if mouseR {
+        *C = Drop
       } else {
         *C = Go
       }
@@ -220,9 +282,9 @@ if e.S == 64 { panic("x.inputX: shriek !") }
     case C.ClientMessage:
       ; // break loop // navi
     default:
-      *B, *C, *T = 0, None, 0
+      *B, *C, *D = 0, None, 0
       break loop
     }
   }
-  lastbyte, lastcommand, lastdepth = *B, *C, *T
+  lastbyte, lastcommand, lastdepth = *B, *C, *D
 }

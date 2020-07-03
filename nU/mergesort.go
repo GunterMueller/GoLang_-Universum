@@ -1,7 +1,5 @@
 package main
 
-// (c) Christian Maurer   v. 171230 - license see nU.go
-
 func merge (a []int, m int) {
   n := len(a)
   b := make([]int, len(a))

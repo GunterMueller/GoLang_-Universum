@@ -2,7 +2,7 @@ package dgra
 
 // (c) Christian Maurer   v. 190402 - license see µU.go
 //
-// >>> Construction of a directed ring using the idea of Awerbuch's -algorithm
+// >>> Construction of a directed ring using the idea of Awerbuch's algorithm
 
 import (
   . "µU/obj"

@@ -1,12 +1,11 @@
 package dgra
 
-// (c) Christian Maurer   v. 171118 - license see µU.go
+// (c) Christian Maurer   v. 200122 - license see µU.go
 
 import
   "µU/errh"
-var
-//  withError bool
-  withError = true
+const
+  withError = false
 
 func (x *distributedGraph) log0 (s string) {
   if ! x.demo { return }
@@ -25,6 +24,7 @@ func (x *distributedGraph) log (s string, n uint) {
   }
   println(s, n)
 }
+
 /*
 func (x *distributedGraph) enter (r uint) {
   if ! x.demo { return }
@@ -35,7 +35,8 @@ func (x *distributedGraph) enter (r uint) {
   }
   println (s, r)
 }
-i*/
+*/
+
 func (x *distributedGraph) log2 (s string, n uint, s1 string, n1 uint) {
   if ! x.demo { return }
   if withError {

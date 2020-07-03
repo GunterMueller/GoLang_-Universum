@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 190524 - license see µU.go
+// (c) Christian Maurer   v. 200130 - license see µU.go
 
 import (
   . "µU/obj"
@@ -114,7 +114,7 @@ type
   NumberOfDays() uint
 
 // Returns 0, if x is empty. Returns otherwise,
-// der wievielte Tag im Jahr von x der Tag von x ist. // Help for translation needed
+// the ordinal number of the day in the year of x (starting with 1 on the 1st January)
   OrdDay() uint
 
 // If x is empty or the effect would lead outside the range

@@ -1,10 +1,11 @@
 package main
 
-/* (c) Christian Maurer   v. 190402
+/* (c) Christian Maurer   v. 200421
        christian.maurer-berlin.eu proprietary - all rights reserved
 
-  Dieses Paket - das n(ano)Universum - enthält die Quelltexte aus meinem Lehrbuch
-  "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2018).
+  This package - the n(ano)Universe - contains the source texts from my textbooks
+  "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2018)
+  "Nonsequential and Distributed Programming with Go" (Springer Nature 2028).
 
   THIS SOFTWARE  IS PROVIDED BY THE AUTHOR  "AS IS"  AND ANY EXPRESS OR IMPLIED WARRANTIES,
   INCLUDING,  BUT NOT LIMITED TO,  THE IMPLIED WARRANTIES  OF MERCHANTABILITY  AND  FITNESS
@@ -17,14 +18,14 @@ package main
 
   APART FROM THIS  THE TEXT IN GERMAN ABOVE AND BELOW  IS A MANDATORY PART  OF THE LICENSE.
 
-  Alle Quelltexte aus diesem Pakets nU  sind äußerst sorgfältig entwickelt und ausgetestet.
-  ABER:  Es gibt keine fehlerfreie Software - dies gilt natürlich auch für _diese_ Quellen.
-  Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, z. B. zum Abfackeln von Rechnern,
-  zur Entgleisung von Eisenbahnen, zum GAU in Atomkraftwerken  oder zum Absturz des Mondes.
-  Darum wird vor der Verwendung irgendwelcher Quellen von  nU  in Programmen zu ernsthaften
-  Zwecken AUSDRÜCKLICH GEWARNT!
+  All source texts in this package nU are developed extremely carefully and tested.
+  HOWEVER:  There does not exist any software without errors - this is of course also true
+  for these sources.  Their use in programs could lead to DAMAGES, i.e. to burn computers,
+  derail trains, to worst case scenarios in nuclear power plants or the crash of the moon.
+  Therefore, you are warned of using sources of nU in programs for serious uses.
 
-  Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen. */
+  Hints to discovered discrepancies or errors are of course very gratefully accepted!   */
+
 
 import ("nU/lock"; "nU/lock2"; "nU/lockn";
         "nU/mbuf"; "nU/mbbuf"; "nU/macc"; "nU/rw"; "nU/lr"; "nU/dgra")

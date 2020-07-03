@@ -9,14 +9,14 @@ import
 type
   correct struct {
                  int "value"
-          binsem,
+          block,
            mutex sync.Mutex
                  }
 
 func newC (n uint) Semaphore {
   x := new(correct)
   x.int = int(n)
-  x.binsem.Lock()
+  x.block.Lock()
   return x
 }
 
@@ -25,7 +25,7 @@ func (x *correct) P() {
   x.int--
   if x.int < 0 {
     x.mutex.Unlock()
-    x.binsem.Lock()
+    x.block.Lock()
   }
   x.mutex.Unlock()
 }
@@ -34,7 +34,7 @@ func (x *correct) V() {
   x.mutex.Lock()
   x.int++
   if x.int <= 0 {
-    x.binsem.Unlock()
+    x.block.Unlock()
   } else {
     x.mutex.Unlock()
   }

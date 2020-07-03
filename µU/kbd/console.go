@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 200517 - license see µU.go
 
 import (
   "os"
@@ -13,45 +13,44 @@ var (
   keypipe chan byte
   mousepipe chan mouse.Command = nil
   navipipe chan navi.Command
-  shiftC, ctrlC, altC, altGrC, fn bool
 )
 
 func catch() {
-  shiftC, ctrlC, altC, altGrC, fn = false, false, false, false, false
+//  shift, ctrl, alt, altGr, fn = false, false, false, false, false
+  shift, ctrl, alt, altGr = false, false, false, false
   defer ker.Fin() // hilft nich
   for {
     b := term.Read()
-    switch b { // case 0:
+    switch b {
+    // case 0:
       // ker.Oops() // Fn-key combination !
     case shiftL, shiftR, shiftLock:
-      shiftC = true
+      shift = true
     case ctrlL, ctrlR:
-      ctrlC = true
+      ctrl = true
     case altL:
-      altC = true
-//    case doofL, doofM, doofR:
-//      ctrlC = true
+      alt = true
+//    case doofR:
+//      backslash
     case altR:
-      altGrC = true
+      altGr = true
     case shiftLoff, shiftRoff, shiftLockoff:
-      shiftC = false
+      shift = false
     case ctrlLoff, ctrlRoff:
-      ctrlC = false
+      ctrl = false
     case altLoff:
-      altC = false
+      alt = false
     case altRoff:
-      altGrC = false
-//    case doofLoff, doofMoff, doofRoff:
-//      altC = false
-    case function:
+      altGr = false
+//    case function:
       // println ("Fn-Key")
-      fn = true
+//      fn = true
     default:
-      if ctrlC && // (alt || altGr) && b == pause ||
-                  b == 46 { // 'C'
+      if ctrl && // (alt || altGr) && b == pause ||
+                  b == 46 { // C
         ker.Fin()
         os.Exit (1)
-      } else if b < off && ctrlC && (altC || altGrC) {
+      } else if b < off && ctrl && (alt || altGr) {
         switch b {
         case left, right:
           ker.Console1 (b == right)
@@ -59,8 +58,7 @@ func catch() {
           ker.Console (b - f1 + 1)
         case f11, f12:
           ker.Console (b - f11 + 11)
-        case esc, back, tab, enter, roll, numEnter, pos1,
-             up, pgUp, end, down, pgDown, ins, del:
+        case esc, back, tab, enter, roll, numEnter, pos1, up, pgUp, end, down, pgDown, ins, del:
           keypipe <- b
         }
       } else {
@@ -70,7 +68,7 @@ func catch() {
   }
 }
 
-func input (b *byte, c *Comm, d *uint) {
+func inputC (B *byte, C *Comm, D *uint) {
   var (
     b0 byte
     k, k1 uint
@@ -78,18 +76,27 @@ func input (b *byte, c *Comm, d *uint) {
     m3c navi.Command
     ok bool
   )
-  loop: for {
-    *b, *c, *d = 0, None, 0
+loop:
+  for {
+    *B, *C, *D = 0, None, 0
     select {
     case mc = <-mousepipe:
-      *c, *d = Go + Comm (mc), 0
-      if shiftC || ctrlC { *d ++ }
-      if altC || altGrC { *d += 2 }
+      *C, *D = Go + Comm (mc), 0
+      if shift || ctrl {
+        *D = 1
+      }
+      if alt || altGr {
+        *D = 2
+      }
       break loop
     case m3c = <-navipipe:
-      *c, *d = Go + Comm (m3c), 0
-      if shiftC || ctrlC { *d ++ }
-      if altC || altGrC { *d += 2 }
+      *C, *D = Go + Comm (m3c), 0
+      if shift || ctrl {
+        *D = 1
+      }
+      if alt || altGr {
+        *D = 2
+      }
       break loop
     case b0, ok = <-keypipe:
       if ok {
@@ -101,43 +108,37 @@ func input (b *byte, c *Comm, d *uint) {
 //    if k == 0 { ker.Shit() }
     k1 = k
     k = k % off
-    if shiftC || ctrlC { *d ++ }
-    if altC || altGrC { *d += 2 }
+    if shift || ctrl {
+      *D = 1
+    }
+    if alt || altGr {
+      *D += 2
+    }
     switch b0 {
     case pgUp, pgDown:
-      *d += 2
+      *D = 2
     }
     switch {
     case isAlpha (k):
-      switch *d { case 0:
-        *b = bb[k]
-      case 1:
-        *b = bB[k]
-      case 2:
-        *b = aa[k]
-      default:
-        if altGrC {
-//          *b = aA[k]
-        } else {
-//          *b = aa[k]
-        }
+      if *D == 0 {
+        *B = bb[k]
+      } else {
+        *B = aa[k]
       }
     case k == esc || k == numEnter || isCmd (k):
-      *c = kK[k]
+      *C = kK[k]
     case k == shiftLock:
-      shiftC = true
+      shift = true
     case isKeypad (k):
-      if shiftC {
-        *c = kK[k]
+      if shift {
+        *C = kK[k]
         switch k {
         case num9, num3:
-          *d = 2
+          *D = 2
         }
       } else {
-        *b = bb[k]
+        *B = bb[k]
       }
-    case k == function:
-      // println ("Fn-Key")
     default:
       if k == 0 {
         // ignore
@@ -146,19 +147,19 @@ func input (b *byte, c *Comm, d *uint) {
       }
     }
     if k1 < off { // key pressed, not released
-      if *b == 0 {
-        if *c > None {
+      if *B == 0 {
+        if *C > None {
           break loop
         }
       } else {
-        lastbyte = *b
-        *c = None
+        lastbyte = *B
+        *C = None
         break loop
       }
     }
   }
-  lastcommand = *c
-  lastdepth = *d
+  lastcommand = *C
+  lastdepth = *D
 }
 
 func initConsole() {

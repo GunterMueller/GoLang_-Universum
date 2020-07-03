@@ -24,8 +24,9 @@ func (X *xwindow) Encode (x, y, w, h uint) []byte {
   bs := make ([]byte, X.Codelen (w, h))
   n := 4 * 4
   copy (bs[:n], obj.Encode4 (uint32(x), uint32(y), uint32(w), uint32(h)))
-  const M = C.ulong(1 << 32 - 1)
-  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(x), C.int(y), C.uint(w), C.uint(h), M, C.XYPixmap)
+  const M = C.ulong(1 << 64 - 1) // XXX
+  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(x), C.int(y), C.uint(w), C.uint(h),
+                       M, C.XYPixmap)
   var pixel C.ulong
   for y := 0; y < int(h); y++ {
     for x := 0; x < int(w); x++ {

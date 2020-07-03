@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 190707 - license see µU.go
+// (c) Christian Maurer   v. 200120 - license see µU.go
 
 import (
   "µU/env"
@@ -51,7 +51,6 @@ func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
   for i := uint(0); i < n; i++ {
     h[i] = env.Localhost()
   }
-//  h[3] = "uranus" //  h[3].Defined ("uranus")
   d.setHosts (h)
   d.diameter = m
   return d
@@ -392,30 +391,30 @@ func g8 (i uint) DistributedGraph {
 
 func g8dir (i uint) DistributedGraph {
 /*
-2      0 ------> 1
-3     * \       * \
-4    /   \     /   \
-5   /     *   /     *
-6  2        3        4 ------> 5
-7   \         \     *
-4    \         \   /
-9     *         * /
-10     6 ------> 7
+2        0 --------> 1 --------> 2
+3       *             *         /
+4     /                 \     /
+5   /                     \ *
+6  3 <-------- 4 --------> 5
+7   \         /           /
+8     \     /           /
+9       * *           *
+10       6 --------> 7 
 
             1         2         3
-  01234567890123456789012345678901
+  012345678901234567890123456789012
 */
-  l := []int { 2,  2,  6,  6,  6,  6, 10, 10 }
-  c := []int { 5, 15,  1, 10, 19, 29,  5, 15 }
-  e := [][]uint { []uint { 1, 3 },
-                  []uint { 4 },
+  l := []int { 2,  2,  2,  6,  6,  6, 10, 10 }
+  c := []int { 7, 19, 22,  1, 13, 25,  7, 19 }
+  e := [][]uint { []uint { 1 },
+                  []uint { 2 },
                   []uint { 5 },
                   []uint { 0, 6 },
-                  []uint { 1, 7 },
-                  []uint { 5 },
-                  []uint { },
-                  []uint { 7 } }
-  return newg (true, l, c, e, 4, i)
+                  []uint { 3, 5, 6 },
+                  []uint { 7 },
+                  []uint { 7 },
+                  []uint { } }
+  return newg (true, l, c, e, 3, i)
 }
 
 func g8cyc (i uint) DistributedGraph {

@@ -1,9 +1,11 @@
 package dgra
 
-// (c) Christian Maurer   v. 100707 - license see µU.go
+// (c) Christian Maurer   v. 200603 - license see µU.go
 
-import
+import (
+//  . "µU/obj"
   "µU/gra"
+)
 type
   DistributedGraph interface {
 
@@ -22,9 +24,9 @@ type
   Time() uint
   Time1() uint
 
-  SetPulseAlgorithm (a PulseAlg) // see pulseAlgorithms.go
-  PulseAlgorithm() PulseAlg
-  Pulse()
+  SetHeartbeatAlgorithm (a HeartbeatAlg) // see heartbeatAlgorithms.go
+  HeartbeatAlgorithm() HeartbeatAlg
+  Heartbeat()
 
   SetTravAlgorithm (a TravAlg) // see travAlgorithms.go
   TravAlgorithm() TravAlg
@@ -32,6 +34,8 @@ type
   SetElectAlgorithm (a ElectAlg) // see electAlgorithms.go
   ElectAlgorithm() ElectAlg
   Leader() uint
+
+//  DijkstraScholten (o Op) // under development3G
 }
 
 // Pre: The values of the edges of g + nchan.Port0 are the ports

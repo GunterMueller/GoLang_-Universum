@@ -11,14 +11,16 @@ type
                             cmon.Monitor
                             }
 
-func newCMB (mR uint) ReaderWriter {
+func newCMB (m uint) ReaderWriter {
   var nR, nW uint
-  var tR uint // number of readers within one turn
+//  var tR uint // number of readers within one turn XXX
   x := new(condMonitorBounded)
+  if m == 0 { m = 1 }
   c := func (i uint) bool {
          switch i {
          case readerIn:
-           return nW == 0 && (x.Blocked (writerIn) == 0 || tR < mR)
+//           return nW == 0 && (x.Blocked (writerIn) == 0 || tR < m)
+           return nW == 0 && (x.Blocked (writerIn) == 0 || nR < m)
          case writerIn:
            return nR == 0 && nW == 0 && x.Blocked (readerIn) == 0
          }
@@ -28,14 +30,14 @@ func newCMB (mR uint) ReaderWriter {
          switch i {
          case readerIn:
            nR++
-           tR++
+//           tR++
            return nR
          case readerOut:
            nR--
            return nR
          case writerIn:
            nW = 1
-           tR = 0
+//           tR = 0
          case writerOut:
            nW = 0
          }

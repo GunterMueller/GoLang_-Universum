@@ -22,7 +22,6 @@ func (x *distributedGraph) helaryRaynal (o Op) {
   if x.me == x.root {
     x.parent = x.root
     us := append(UintStream {DISCOVER}, x.me)
-println ("DISCOVER to", x.nr[0])
     x.ch[0].Send (us)
     x.child[0] = true
   }
@@ -46,7 +45,7 @@ println ("DISCOVER to", x.nr[0])
       break
     }
     j := us[0]
-    us = us[1:]; if len(us) == 0 { println("ganz große Scheiße von", x.nr[j]) }
+    us = us[1:]; if len(us) == 0 { panic("oops") }
     neighbours := us[1:]
     existUnvisitedNeighbours := false
     for i := uint(0); i < x.n; i++ {

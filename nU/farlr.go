@@ -1,10 +1,8 @@
 package main
 
-// (c) Christian Maurer   v. 180101 - license see nU.go
-//
-// >>> Anwendung in kleinen Fenstern auf einer graphischen Oberfläche;
-//     der ferne Monitor wird mit dem Argument 0 gestartet und
-//     die Klienten mit verschiedenen Argumenten 1, 2, 3, ...
+// >>> to be applied in small windows on a GUI;
+//     the far monitor is started with the argument 0
+//     and the clients with different arguments 1, 2, 3, ...
 
 
 import ("time"; "math/rand"; "nU/ego"; "nU/env"; "nU/term"; "nU/col"; "nU/scr"; . "nU/lr")
@@ -12,11 +10,11 @@ import ("time"; "math/rand"; "nU/ego"; "nU/env"; "nU/term"; "nU/col"; "nU/scr"; 
 var (
   x LeftRight
   sL, sR = "", ""
-  s0 = "                         "
-  uL = " linken Prozess starten: Tab"
-  uR = "rechten Prozess starten: Enter"
-  uE = "                beenden: Esc"
-  uM = "fernen Monitor beenden: Esc"
+  s0 = "                          "
+  uL = "  start left proces: Tab  "
+  uR = "start right process: Enter"
+  uE = "               stop: Esc  "
+  uM = "terminate far monitor: Esc"
 )
 
 func drive() {

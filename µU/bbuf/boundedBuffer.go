@@ -1,6 +1,6 @@
 package bbuf
 
-// (c) Christian Maurer   v. 171106 - license see µU.go
+// (c) Christian Maurer   v. 2001120 - license see µU.go
 
 import
   . "µU/obj"

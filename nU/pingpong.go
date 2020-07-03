@@ -1,7 +1,5 @@
 package main
 
-// (c) Christian Maurer   v. 171202 - license see nsp.go
-
 import ("time"; "nU/env"; "nU/nchan")
 
 func main() {

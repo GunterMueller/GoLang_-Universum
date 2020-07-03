@@ -1,8 +1,9 @@
-package main // mergesort mit Botschaftenaustausch
+package main
+// mergesort with message passing
 import "math/rand"
 
 const (
-  N = 128 // Potenz von 2!
+  N = 128 // power of 2 !
   max = 2 * N - 2
 )
 var (
@@ -26,13 +27,13 @@ func nAwaitedNumbers (i int) int {
   return e
 }
 
-func sort (i int) { // i = Anzahl der Sortierprozesse
-  rL, rR := 2 * i, 2 * i + 1 // Anzahl der linken bzw.
-  t := N + i // rechten Empfangs- und der Sendekanäle
-  e := nAwaitedNumbers(i) // Anzahl der zu erwartenden
-  e0 := 1 // sowie der von links
+func sort (i int) { // i = number of sorting processes
+  rL, rR := 2 * i, 2 * i + 1 // number of left reso,
+  t := N + i // right receive- and send-channels
+  e := nAwaitedNumbers(i) // number of the messages
+  e0 := 1 // to be awaited, also from the left
   nL := <-c[rL]
-  e1 := 1 // und von rechts empfangenen Botschaften
+  e1 := 1 // and from the right
   nR := <-c[rR]
   for e0 <= e && e1 <= e {
     if nL <= nR {
@@ -65,11 +66,11 @@ func sort (i int) { // i = Anzahl der Sortierprozesse
 }
 
 func write() {
-  println("zufällig erzeugt:")
+  println("randomly generated:")
   for i := 0; i < N; i++ {
     print(<-c[max], " ")
   }
-  println(); println("sortiert:")
+  println(); println("sorted:")
   for i := 0; i < N; i++ {
     print(<-c[max], " ")
   }

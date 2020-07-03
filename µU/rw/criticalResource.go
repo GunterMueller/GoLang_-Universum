@@ -1,6 +1,6 @@
 package rw
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 200421 - license see µU.go
 
 // >>> readers/writers problem
 
@@ -11,13 +11,13 @@ type
                           cr.CriticalResource
                           }
 
-func newCR (r uint) ReaderWriter {
+func newCR (m uint) ReaderWriter {
   const nc = 2
   x := &criticalResource { cr.New (nc, 1) }
-  m := make([][]uint, nc)
-  for i := uint(0); i < nc; i++ { m[i] = make([]uint, 1) }
-  m[reader][0], m[writer][0] = r, 1
-  x.Limit (m)
+  max := make([][]uint, nc)
+  for i := uint(0); i < nc; i++ { max[i] = make([]uint, 1) }
+  max[reader][0], max[writer][0] = m, 1
+  x.Limit (max)
   return x
 }
 

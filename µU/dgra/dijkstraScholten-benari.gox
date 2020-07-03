@@ -1,0 +1,12 @@
+        if x.inDefSum > 1 { // BenAri
+          n := x.corn.Get().(uint)
+          if ! (x.inDef{n} > 1 || x.inDef[n] == 1 && n != x.parent) { ker.Oops() }
+          x.ch[n].Send (signal)
+          x.inDef[n]--
+          x.inDefSum--
+        } else if inDefSum == 1 && isTerminated && x.outDef == 0 {
+          x.ch[parent].Send (signal)
+          x.inDef[parent] = 0
+          x.inDefSum = 0
+          x.parent = inf
+        }

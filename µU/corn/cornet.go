@@ -1,6 +1,6 @@
 package corn
 
-// (c) Christian Maurer   v. 170318 - license see µU.go
+// (c) Christian Maurer   v. 200120 - license see µU.go
 
 import (
   . "µU/obj"
@@ -17,8 +17,8 @@ func new_(a Any) Cornet {
 }
 
 func (x *cornet) Ins (a Any) {
-  x.Seek(x.Num())
-	x.Sequence.Ins(a)
+  x.Seek (x.Num())
+	x.Sequence.Ins (a)
 }
 
 func (x *cornet) Get() Any {
