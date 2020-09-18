@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 180812 - license see µU.go
+// (c) Christian Maurer   v. 200908 - license see µU.go
 
 import (
   . "µU/obj"
@@ -28,7 +28,7 @@ type (
   person struct {
         surname,
       firstName text.Text
-                tval.TruthValue "female/male" // True == f, False == m
+                tval.TruthValue "female/indetermined/male"
                 day.Calendarday "birthday"
                 enum.Enumerator "title"
           field []Any // to [En|De]code
@@ -49,12 +49,12 @@ func init() {
 
 func new_() Person {
   x := new(person)
-  x.surname = text.New(lenName)
-  x.firstName = text.New(lenFirstName)
+  x.surname = text.New (lenName)
+  x.firstName = text.New (lenFirstName)
   x.TruthValue = tval.New()
-  x.TruthValue.SetFormat("m", "w")
+  x.TruthValue.SetFormat (" ", "m", "w")
   x.Calendarday = day.New()
-  x.Enumerator = enum.New(enum.Title)
+  x.Enumerator = enum.New (enum.Title)
   x.field = []Any { x.surname, x.firstName, x.Calendarday, x.TruthValue, x.Enumerator }
   x.cl = []uint { lenName, lenFirstName, x.Calendarday.Codelen(), x.TruthValue.Codelen(), x.Enumerator.Codelen() }
   x.Format = LongB
@@ -316,10 +316,12 @@ func (x *person) Write (l, c uint) {
   default:
     x.TruthValue.Write (l, c + cmf)
   }
-  switch x.Format { case ShortB, LongB, LongTB:
+  switch x.Format {
+  case ShortB, LongB, LongTB:
     x.Calendarday.Write (l, c + cbd)
   }
-  switch x.Format { case LongT, LongTB:
+  switch x.Format {
+  case LongT, LongTB:
     x.Enumerator.Write (l + 1, c + can)
   }
 }
@@ -332,22 +334,26 @@ func (x *person) Edit (l, c uint) {
     i = 4
   }
   loop: for {
-    switch i { case 0:
+    switch i {
+    case 0:
       x.surname.Edit (l, c + csn)
     case 1:
       x.firstName.Edit (l, c + cfn)
     case 2:
-      switch x.Format { case Short, ShortB:
+      switch x.Format {
+      case Short, ShortB:
         ;
       default:
         x.TruthValue.Edit (l, c + cmf)
       }
     case 3:
-      switch x.Format { case ShortB, LongB, LongTB:
+      switch x.Format {
+      case ShortB, LongB, LongTB:
         x.Calendarday.Edit (l, c + cbd)
       }
     case 4:
-      switch x.Format { case LongT, LongTB:
+      switch x.Format {
+      case LongT, LongTB:
         x.Enumerator.Edit (l + 1, c + can)
       }
     }
@@ -379,12 +385,14 @@ func (x *person) SetFont (f font.Font) {
 }
 
 func (x *person) printMask (l, c uint) {
-  switch x.Format { case Short, ShortB:
+  switch x.Format {
+  case Short, ShortB:
     csn = 0; cfn = 28; cbd = 44
   default:
     csn = 6; cfn = 42; cmf = 63; cbd = 71; can = csn
   }
-  switch x.Format { case Short:
+  switch x.Format {
+  case Short:
     pbx.Print (",", l, c + cfn - 2)
     return
   case ShortB:
@@ -395,12 +403,14 @@ func (x *person) printMask (l, c uint) {
   default:
     pbx.Print ("Name:", l, c + csn - 6)
     pbx.Print ("Vorname:", l, c + cfn - 9)
-    pbx.Print ("m/w:", l, c + cmf - 5)
+    pbx.Print ("u/m/w:", l, c + cmf - 5)
   }
-  switch x.Format { case LongB, LongTB:
+  switch x.Format {
+  case LongB, LongTB:
     pbx.Print ("geb.:", l, c + cbd - 6)
   }
-  switch x.Format { case LongT, LongTB:
+  switch x.Format {
+  case LongT, LongTB:
     pbx.Print ("Anr.:", l + 1, c + can - 6)
   }
 }
@@ -415,14 +425,17 @@ func (x *person) Print (l, c uint) {
   x.surname.Print (l, c + csn)
   x.firstName.SetFont (font.Bold)
   x.firstName.Print (l, c + cfn)
-  switch x.Format { case Short, ShortB:
+  switch x.Format {
+  case Short, ShortB:
   default:
     x.TruthValue.Print (l, c + cmf)
   }
-  switch x.Format { case ShortB, LongB, LongTB:
+  switch x.Format {
+  case ShortB, LongB, LongTB:
     x.Calendarday.Print (l, c + cbd)
   }
-  switch x.Format { case LongT, LongTB:
+  switch x.Format {
+  case LongT, LongTB:
     x.Enumerator.Print (l + 1, c + can)
   }
 }
@@ -437,44 +450,6 @@ func (x *person) Codelen() uint {
 */
   return                              45
 }
-
-/*
-func (x *person) EncodeOld() []byte { // deprecated
-  bs := make ([]byte, x.Codelen())
-  a, b := uint(0), lenName
-  copy (bs[a:a+b], x.surname.Encode())
-  a += b
-  b = lenFirstName
-  copy (bs[a:a+b], x.firstName.Encode())
-  a += b
-  b = x.Calendarday.Codelen()
-  copy (bs[a:a+b], x.Calendarday.Encode())
-  a += b
-  b = x.TruthValue.Codelen()
-  copy (bs[a:a+b], x.TruthValue.Encode())
-  a += b
-  b = x.Enumerator.Codelen()
-  copy (bs[a:a+b], x.Enumerator.Encode())
-  return bs
-}
-
-func (x *person) Decode (b []byte) {
-  i, a := uint(0), lenName
-  x.surname.Decode (b[i:i+a])
-  i += a
-  a = lenFirstName
-  x.firstName.Decode (b[i:i+a])
-  i += a
-  a = x.Calendarday.Codelen()
-  x.Calendarday.Decode (b[i:i+a])
-  i += a
-  a = x.TruthValue.Codelen()
-  x.TruthValue.Decode (b[i:i+a])
-  i += a
-  a = x.Enumerator.Codelen()
-  x.Enumerator.Decode (b[i:i+a])
-}
-*/
 
 func (x *person) Encode() []byte {
   return Encodes (x.field, x.cl)

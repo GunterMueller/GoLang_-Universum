@@ -1,26 +1,23 @@
 package tval
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
-
-// >>> TODO logical operations
+// (c) Christian Maurer   v. 200906 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
 )
 type
-  TruthValue interface { // truth values "true", "false" and "undecidable"
+  TruthValue interface { // values "indetermined", "false" and "true"
 
-  Object
+  Object // Clear sets the value of x to "indetermined".
   col.Colourer
   Editor
   Stringer
   Printer
 
-// Pre: len(f) == len(t) > 0.
-// false/true as strings are represented by f/t;
-// undecidable by an empty string of the same length.
-  SetFormat (f, t string)
+// Pre: len(i) == len(f) == len(t) > 0.
+// indetermined/false/true as strings are represented by i/f/t.
+  SetFormat (i, f, t string)
 
 // The value of x is set to b.
   Set (b bool)

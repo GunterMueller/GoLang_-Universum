@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 190815 - license see µU.go
+// (c) Christian Maurer   v. 200908 - license see µU.go
 
 import (
   "math"
@@ -49,17 +49,17 @@ func codelen (a Any) uint {
   case Stream:
     return uint(len(a.(Stream)))
   case IntStream:
-    return c0 * uint(len(a.(IntStream)) + 1)
+    return c0 + c0 * uint(len(a.(IntStream)))
   case UintStream:
-    return c0 * uint(len(a.(UintStream)) + 1)
+    return c0 + c0 * uint(len(a.(UintStream)))
   case AnyStream:
     y := c0
     for _, b := range a.(AnyStream) {
       y += uint(codelen(b))
     }
     return y
-  case Coder:
-    return (a.(Coder)).Codelen()
+  case Object:
+    return (a.(Object)).Codelen()
   }
   fail (a)
   panic("shut up, compiler")
@@ -180,14 +180,14 @@ func encode (a Any) Stream {
   case Stream:
     return a.(Stream)
   case IntStream:
-    us := a.(IntStream)
-    n := len(us)
+    is := a.(IntStream)
+    n := len(is)
     c := int(c0)
     bs = make(Stream, c * (n + 1))
     copy (bs[:c], encode(n))
     i := c
     for j := 0; j < n; j++ {
-      copy (bs[i:i+c], encode(us[j]))
+      copy (bs[i:i+c], encode(is[j]))
       i += c
     }
   case UintStream:
@@ -206,28 +206,29 @@ func encode (a Any) Stream {
     n := uint(len(as))
     c := c0
     for j := uint(0); j < n; j++ {
-      c += 1 + c0 + codelen(as[j])
+      c += c0 + codelen(as[j])
     }
     bs = make (Stream, c)
     copy (bs[:c0], encode(n))
     i := c0
     for j := uint(0); j < n; j++ {
-      bs[i] = gödel(as[j])
-      i++
+//      bs[i] = gödel(as[j])
+//      i++
       k := codelen(as[j])
       copy(bs[i:i+c0], encode(k))
       i += c0
       copy(bs[i:i+k], encode(as[j]))
       i += k
     }
-  case Coder:
-    return a.(Coder).Encode()
+  case Object:
+    return a.(Object).Encode()
   default:
     fail (a)
   }
   return bs
 }
 
+/*/
 func gödel (a Any) byte {
   if a == nil { return 0 }
   switch a.(type) {
@@ -263,6 +264,16 @@ func gödel (a Any) byte {
     return 15
   case string:
     return 16
+  case BoolStream:
+    return 17
+  case Stream:
+    return 18
+  case IntStream:
+    return 19
+  case UintStream:
+    return 20
+  case AnyStream:
+    return 21
   case Object:
     return 254
   }
@@ -299,15 +310,28 @@ func degödel (b byte) Any {
     return float32(0)
   case 13:
     return float64(0)
-//  case 14:
-//    return complex64(0, 0)
-//  case 15:
-//    return complex128(0, 0)
+  case 14:
+    return complex64(0)
+  case 15:
+    return complex128(0)
   case 16:
     return ""
+  case 17:
+    return new(BoolStream)
+  case 18:
+    return new(Stream)
+  case 19:
+    return new(IntStream)
+  case 21:
+    return new(UintStream)
+  case 22:
+    return new(AnyStream)
+  case 255:
+    return Object.Clr()
   }
   return nil
 }
+/*/
 
 func chk (b Stream, n int) {
   if len(b) < n { // != n {
@@ -437,39 +461,40 @@ func decode (a Any, bs Stream) Any {
   case Stream:
     return bs
   case IntStream:
-    n := decode(0, bs[:c0]).(int)
+    n := decode (0, bs[:c0]).(int)
     us := make(IntStream, n)
     i := c0
     for j := 0; j < n; j++ {
-      us[j] = decode(0, bs[i:i+c0]).(int)
+      us[j] = decode (0, bs[i:i+c0]).(int)
       i += c0
     }
     return us
   case UintStream:
-    n := decode(uint(0), bs[:c0]).(uint)
+    n := decode (uint(0), bs[:c0]).(uint)
     us := make(UintStream, n)
     i := c0
     for j := uint(0); j < n; j++ {
-      us[j] = decode(uint(0), bs[i:i+c0]).(uint)
+      us[j] = decode (uint(0), bs[i:i+c0]).(uint)
       i += c0
     }
     return us
   case AnyStream:
-    n := decode(uint(0), bs[:c0]).(uint)
+    n := decode (uint(0), bs[:c0]).(uint)
     as := make(AnyStream, n)
     i := c0
     for j := uint(0); j < n; j++ {
-      g := degödel(bs[i])
-      i++
-      k := decode(uint(0), bs[i:i+c0]).(uint)
+      k := decode (uint(0), bs[i:i+c0]).(uint)
       i += c0
-      as[j] = decode(g, bs[i:i+k])
+      as[j] = bs[i:i+k] // any client has to decode this Stream himself
       i += k
     }
     return as
   case Coder:
     chk (bs, int(a.(Coder).Codelen()))
     a.(Coder).Decode (bs)
+  case Object:
+    chk (bs, int(a.(Object).Codelen()))
+    a.(Object).Decode (bs)
   default:
     fail (a)
   }
@@ -492,34 +517,6 @@ func decode4 (bs Stream) (uint32, uint32, uint32, uint32) {
   d := decode (uint32(0), bs[12:16]).(uint32)
   return a, b, c, d
 }
-
-/*
-func encodes_ (as Stream, cs []uint) Stream {
-  l := uint(0)
-  for _, b:= range cs {
-    l += b
-  }
-  bs := make (Stream, l)
-  a := uint(0)
-  for i, x := range as {
-    copy (bs[a:a+cs[i]], encode(x))
-    a += cs[i]
-  }
-  return bs
-}
-
-func decodes_ (bs Stream, as Stream, cs []uint) {
-  l := uint(0)
-  for _, b:= range cs {
-    l += b
-  }
-  a := uint(0)
-  for i, x := range as {
-    as[i] = decode (x, bs[a:a+cs[i]]).(byte)
-    a += cs[i]
-  }
-}
-*/
 
 func encodes (as AnyStream, c []uint) Stream {
   n := uint(0)

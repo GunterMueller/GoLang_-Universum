@@ -12,7 +12,8 @@ func (x *distributedGraph) heartbeatmatrix() {
   x.log0 ("initial situation")
   for r:= uint(1); r <= x.diameter; r++ {
     for i := uint(0); i < x.n; i++ {
-      x.ch[i].Send (x.matrix)
+//      x.ch[i].Send (x.matrix)
+      x.send (i, x.matrix)
     }
     for i := uint(0); i < x.n; i++ {
       a := x.ch[i].Recv().(adj.AdjacencyMatrix)

@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 180131 - license see µU.go
+// (c) Christian Maurer   v. 200714 - license see µU.go
 
 import (
   . "µU/obj"
@@ -331,16 +331,16 @@ type
 // Vertices and edges in x are marked, if the belong to its actual path.
   Step (i uint, f bool)
 
-// Returns false, if x is empty or if i >= NumNeighbourOut();
+// Returns false, if x is empty or if i >= NumNeighbours();
 // returns otherwise true, iff the edge to the i-th neighbour
 // of the local vertex is an outgoing edge.
   Outgoing (i uint) bool
 
-// Returns nil, if x is empty or if i >= NumNeighbourOut();
+// Returns nil, if x is empty or if i >= NumNeighboursOut();
 // returns otherwise a clone of the i-th outgoing neighbour of the local vertex.
   NeighbourOut (i uint) Any
 
-// Returns false, if x is empty or if i >= NumNeighboursIn();
+// Returns false, if x is empty or if i >= NumNeighbours();
 // returns otherwise true, iff the edge to the i-th neighbour
 // of the local vertex is an incoming one.
   Incoming (i uint) bool
@@ -469,6 +469,8 @@ type
 
 // x is written on the screen by means of the actual write functions.
   Write()
+
+  ExVtx (a Any) Any
 }
 
 // Pre: v is atomic or imlements Object.

@@ -90,10 +90,15 @@ func newCons (x, y uint, m Mode) Console {
   }
   X.initMouse()
   X.pg = make([][]bool, X.ht)
-  for i := 0; i < int(X.ht); i++ { X.pg[i] = make ([]bool, X.wd) }
+  for i := 0; i < int(X.ht); i++ {
+    X.pg[i] = make ([]bool, X.wd)
+  }
   X.ScrColours (X.cF, X.cB)
   X.Cls()
-  if first { defer goMouse(); first = false }
+  if first {
+    defer goMouse()
+    first = false
+  }
   X.SetFontsize (font.Normal)
   X.doBlink()
   actMutex.Lock()

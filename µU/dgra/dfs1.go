@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171209 - license see µU.go
+// (c) Christian Maurer   v. 200728 - license see µU.go
 
 import
   . "µU/obj"
@@ -18,7 +18,8 @@ func (x *distributedGraph) dfs1 (o Op) {
     x.tree.Ins (x.actVertex)
     x.tree.Mark (x.actVertex)
     x.tree.Write()
-    x.ch[0].Send (x.tree)
+//    x.ch[0].Send (x.tree)
+    x.send (0, x.tree)
 // x.log("sent to", x.nr[0])
   }
   for i := uint(0); i < x.n; i++ {
@@ -61,7 +62,8 @@ func (x *distributedGraph) dfs1 (o Op) {
       }
       x.visited[k] = true
 // x.log("send to", x.nr[k])
-      x.ch[k].Send (x.tree)
+//      x.ch[k].Send (x.tree)
+      x.send (k, x.tree)
       if k == u {
         x.distance = k // save for test
         x.tmpGraph.Copy (x.tree)
@@ -90,7 +92,8 @@ func (x *distributedGraph) dfs1 (o Op) {
   for k := uint(0); k < x.n; k++ {
     if x.child[k] {
 // x.log("Send to", x.nr[k])
-      x.ch[k].Send (bs)
+//      x.ch[k].Send (bs)
+      x.send (k, bs)
     }
   }
   x.Op (x.actVertex)

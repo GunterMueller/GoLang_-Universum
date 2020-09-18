@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 200120 - license see µU.go
+// (c) Christian Maurer   v. 200714 - license see µU.go
 
 import (
   "µU/env"
@@ -415,6 +415,73 @@ func g8dir (i uint) DistributedGraph {
                   []uint { 7 },
                   []uint { } }
   return newg (true, l, c, e, 3, i)
+}
+
+func g9dir (i uint) DistributedGraph {
+/*
+2      2 ----> 4 ----> 6 ----> 8
+3     * \               \            
+4    /   \-------\       \            
+5   /             *       *
+6  0 ----> 3 ----> 5 ----> 7
+7   \     *               *
+8    \   /               /            
+9     * /               /
+10     1 --------------/
+
+            1         2         3
+  012345678901234567890123456789012
+*/
+//  l := []int { 6, 10,  0,  6,  0,  6,  0,  6,  0 }
+  l := []int { 4,  7,  1,  4,  1,  4,  1,  4,  1 }
+  c := []int { 1,  5,  5,  9, 13, 17, 21, 25, 29 }
+  e := [][]uint { []uint { 1, 2, 3 },
+                  []uint { 3, 7 },
+                  []uint { 4, 5 },
+                  []uint { 5 },
+                  []uint { 6 },
+                  []uint { 7 },
+                  []uint { 7, 8 },
+                  []uint { },
+                  []uint { } }
+  return newg (true, l, c, e, 4, i)
+}
+
+func g9a (i uint) DistributedGraph {
+/*
+2      2 ----> 4 ----> 6 ----> 8
+3     * \               \            
+4    /   \-------\       \            
+5   /             *       *
+6  0               5       7
+*/
+  l := []int { 4,      1,      1,  4,  1,  4,  1 }
+  c := []int { 1,      5,     13, 17, 21, 25, 29 }
+  e := [][]uint { []uint { 2 },
+                  []uint { 4, 5 },
+                  []uint { 6 },
+                  []uint { },
+                  []uint { 7, 8 },
+                  []uint { },
+                  []uint { } }
+  return newg (true, l, c, e, 4, i)
+}
+
+func g9b (i uint) DistributedGraph {
+/*
+6  0       3               7
+7   \     *               *
+8    \   /               /            
+9     * /               /
+10     1 --------------/
+*/
+  l := []int { 4,  7,      4,              4     }
+  c := []int { 1,  5,      9,             25     }
+  e := [][]uint { []uint { 1 },
+                  []uint { 3, 7 },
+                  []uint { },
+                  []uint { } }
+  return newg (true, l, c, e, 2, i)
 }
 
 func g8cyc (i uint) DistributedGraph {

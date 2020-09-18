@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 200122 - license see µU.go
+// (c) Christian Maurer   v. 200717 - license see µU.go
 
 import
   "µU/errh"
@@ -53,4 +53,13 @@ func (x *distributedGraph) log3 (s string, n uint, s1 string, n1 uint, s2 string
     return
   }
   println(s, n, s1, n1, s2, n2)
+}
+
+func (x *distributedGraph) log4 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint, s3 string, n3 uint) {
+  if ! x.demo { return }
+  if withError {
+    errh.Error4 (s, n, s1, n1, s2, n2, s3, n3)
+    return
+  }
+  println(s, n, s1, n1, s2, n2, s3, n3)
 }

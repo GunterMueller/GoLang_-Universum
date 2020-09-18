@@ -30,7 +30,7 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
     h = scr.NLines() - l - 1
   }
   if *i >= n { *i = n - 1 }
-  MouseOn:= scr.MousePointerOn()
+  MouseOn := scr.MousePointerOn()
   var x, y int
   if MouseOn {
     scr.MousePointer (false)
@@ -38,9 +38,9 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
   }
   scr.WarpMouse (l + *i, c)
   scr.Save (l, c, w, h)
-  i0, n0:= uint(0), uint(0)
+  i0, n0 := uint(0), uint(0)
   if *i == 0 { n0 = 1 } // else { n0 = 0 }
-  neu:= true
+  neu := true
   loop: for {
     if *i < i0 {
       i0 = *i
@@ -54,7 +54,7 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
     if neu {
       neu = false
       var cF, cB col.Colour
-      for j:= uint(0); j < h; j++ {
+      for j := uint(0); j < h; j++ {
         if i0 + j == *i {
           cF, cB = f, b
         } else {
@@ -64,7 +64,7 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
       }
     }
     n0 = *i
-    C, d:= kbd.Command()
+    C, d := kbd.Command()
     switch C {
     case kbd.Esc, kbd.Move:
       *i = n
@@ -96,7 +96,7 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
     case kbd.End:
       *i = n - 1
     case kbd.Go:
-      _, yM:= scr.MousePosGr()
+      _, yM := scr.MousePosGr()
       if uint(yM) <= l * scr.Ht1() + scr.Ht1() / 2 {
         if *i > 0 {
           *i --
@@ -133,14 +133,14 @@ var
   ptSuffix string
 
 func hasSuffix (a Any) bool {
-  p, ok:= str.Sub (ptSuffix, a.(string))
+  p, ok := str.Sub (ptSuffix, a.(string))
   return ok &&
          p == str.ProperLen (a.(string)) - uint(len (ptSuffix))
 }
 
 func aus (n, l, c uint, f, b col.Colour) {
-  N:= files.NamePred (hasSuffix, n)
-  if p, ok:= str.Sub (ptSuffix, N); ok {
+  N := files.NamePred (hasSuffix, n)
+  if p, ok := str.Sub (ptSuffix, N); ok {
     N = str.Part (N, 0, p)
   }
   bx.Colours (f, b)
@@ -148,7 +148,7 @@ func aus (n, l, c uint, f, b col.Colour) {
 }
 
 func names (mask, suffix string, n uint, l, c uint, f, b col.Colour) (string, string) {
-  t, t1:= uint(len (mask)), uint(0)
+  t, t1 := uint(len (mask)), uint(0)
   if t > 0 {
     t1 = 1 + t
   }
@@ -162,27 +162,28 @@ func names (mask, suffix string, n uint, l, c uint, f, b col.Colour) (string, st
   bx.Colours (f, b)
   ptSuffix = "." + suffix
   errh.Hint ("falls Dateien vorhanden, auswählen F2-, dann Pfeil-/Eingabetaste, ggf. Esc")
-  name:= env.Arg(1)
+  name := env.Arg(1)
   if name == "" {
     name = str.New (n) // Wörkeraunt um Fehler in box/imp.go
   }
-  if p, ok:= str.Pos (name, '.'); ok {
+  if p, ok := str.Pos (name, '.'); ok {
     name = str.Part (name, 0, p)
   }
   bx.Edit (&name, l, c + t1)
   str.OffSpc (&name)
-  if p, ok:= str.Pos (name, '.'); ok {
+  if p, ok := str.Pos (name, '.'); ok {
     name = str.Part (name, 0, p)
   }
-  filename:= name + ptSuffix
-  a:= files.NumPred (hasSuffix)
+  filename := name + ptSuffix
+  a := files.NumPred (hasSuffix)
   if a > 0 {
-    switch C, _:= kbd.LastCommand(); C { case kbd.Esc:
+    switch C, _ := kbd.LastCommand(); C {
+    case kbd.Esc:
       return "", "" // str.New (n), ""
     case kbd.Enter:
       // entered
     case kbd.Search:
-      i:= uint(0)
+      i := uint(0)
       select_ (aus, a, a, n, &i, l, c + t1, b, f)
       if i == a {
         return "", "" // str.New (n), ""
@@ -193,7 +194,7 @@ func names (mask, suffix string, n uint, l, c uint, f, b col.Colour) (string, st
   }
   errh.DelHint()
   str.OffSpc (&filename)
-  if p, ok:= str.Pos (filename, '.'); ok {
+  if p, ok := str.Pos (filename, '.'); ok {
     name = str.Part (filename, 0, p)
   }
   scr.Restore (l, c, t1 + n, 1)

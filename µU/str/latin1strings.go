@@ -485,3 +485,29 @@ func splitBrackets (s string, sep, b byte) []string {
   }
   return ss
 }
+
+func splitByte (s string, b byte) (uint, []string) {
+  ss := make([]string, 0)
+  if s == "" {
+    return 0, ss
+  }
+  if s[0] == '/' {
+    s = s[1:]
+  }
+  l := len(s)
+  if l > 1 && s[l-1] == '/' {
+    s = s[:l-1]
+  }
+  n := uint(0)
+  for {
+    n++
+    p, c := pos (s, b)
+    if ! c {
+      ss = append (ss, s)
+      break
+    }
+    ss = append (ss, s[:p])
+    s = s[p+1:]
+  }
+  return n, ss
+}

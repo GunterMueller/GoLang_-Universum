@@ -1,0 +1,107 @@
+package dgra
+
+// (c) Christian Maurer   v. 200721 - license see µU.go
+//
+// >>> Dijkstra-Scholten: Termination Detection for Diffusing Computations
+//     Inf. Proc. Letters 11 (1980) 1-4
+
+import (
+  . "µU/obj"
+  . "µU/atomic";
+  "µU/perm"
+)
+const (
+  message = uint(iota)
+  signal
+)
+
+func (x *distributedGraph) DijkstraScholten (o Op) {
+  x.connect (uint(0)) // the messages have type uint
+  x.Op = o
+  for i := uint(0); i < x.n; i++ {
+    go x.do (i)
+  }
+  if x.me == x.root {
+    p := perm.New (x.n)
+    for i := uint(0); i < x.n; i++ {
+      j := p.F(i)
+      x.ch[j].Send (x.me + inf * message)
+      Inc (&x.D)
+    }
+    x.Op (x.actVertex)
+  }
+  <-done
+}
+
+func (x *distributedGraph) do (i uint) {
+  for {
+    n := x.ch[i].Recv().(uint)
+//    content := n % inf // content of received message
+    if n / inf == message {
+      Inc (&x.C)
+      x.Mutex.Lock()
+      if x.C == 1 { // perform x.Op only once
+        x.Op (x.actVertex)
+      }
+      x.Mutex.Unlock()
+      x.corn.Ins (i)
+      if x.NumNeighboursOut() == 0 {
+        x.Mutex.Lock()
+        if x.C == x.NumNeighboursIn() {
+//        received a message from all predecessors
+          for x.C > 0 {
+            j := x.corn.Get().(uint)
+            x.ch[j].Send (x.me + inf * signal)
+            Dec (&x.C)
+          }
+          x.Mutex.Unlock()
+          break
+        } else { // x.C < x.NumNeighboursIn()
+//        wait for outstanding messages
+          x.Mutex.Unlock()
+        }
+      } else { // x.Outgoing (i) > 0
+        x.Mutex.Lock()
+        if x.C == x.NumNeighboursIn() {
+          p := perm.New (x.n)
+          for j := uint(0); j < x.n; j++ {
+            k := p.F(j)
+            if x.Outgoing (k) {
+              x.ch[k].Send (x.me + inf * message)
+              Inc (&x.D)
+            }
+          }
+//        wait for the corresponding signals
+        } else { // x.C < x.NumNeighboursIn()
+//        wait for outstanding messages
+        }
+        x.Mutex.Unlock()
+      }
+    } else { // n/inf == signal
+      Dec (&x.D)
+      if x.me == x.root { // environment
+        if x.D == 0 {
+          break
+        }
+      } else { // inner node
+        x.Mutex.Lock()
+        if x.D == 0 {
+          for x.C > 0 {
+            j := x.corn.Get().(uint)
+            x.ch[j].Send (x.me + inf * signal)
+            Dec (&x.C)
+          }
+          x.Mutex.Unlock()
+          break
+        } else { // x.D > 0
+          x.Mutex.Unlock()
+//        to keep the invariant C = 0 => D = 0
+//        do not send any signals, before D = 0,
+//        i.e. signals from all successors received,
+//        so wait for those
+        }
+      }
+    }
+  }
+  done <- 0
+}

@@ -1,11 +1,14 @@
 package dgra
 
-// (c) Christian Maurer   v. 200122 - license see µU.go
+// (c) Christian Maurer   v. 200728 - license see µU.go
 
 import (
   "µU/ker"
   . "µU/obj"
   "µU/env"
+  "µU/time"
+  "µU/col"
+  "µU/scr"
   "µU/nat"
   "µU/str"
   "µU/errh"
@@ -28,7 +31,9 @@ type
          actVertex vtx.Vertex // the vertex representing the actual process
                 me uint // and its identity
            actHost string // the name of the host running the actual process
-                 n uint // the number of neighbours of the actual vertex
+                 n, // the number of neighbours and
+           in, out uint // the number of incoming resp. outgoing edges
+                        // to resp. from the actual vertex
                 nb []vtx.Vertex // the neighbour vertices
                 nr []uint // and their identities
               host []string // the names of the hosts running the neighbour processes
@@ -44,16 +49,16 @@ type
             parent uint
              child []bool
        time, time1 uint
-              demo bool
+       demo, blink bool
             matrix adj.AdjacencyMatrix
               size uint // number of lines/colums of matrix
            labeled bool
-diameter, distance,
+          diameter,
+          distance,
             leader uint
                    HeartbeatAlg; ElectAlg; TravAlg
                    Op
-  outDef, inDefSum uint // for Dijktra/Scholten
-             inDef []uint
+              C, D uint // for Dijkstra/Scholten
               corn mcorn.MCornet
                    sync.Mutex
                    }
@@ -150,7 +155,6 @@ func (x *distributedGraph) connect (a Any) {
   for i := uint(0); i < x.n; i++ {
     x.ch[i] = nchan.New (a, x.me, x.nr[i], x.host[i], x.port[i])
   }
-  x.inDef = make([]uint, x.NumNeighbours())
 }
 
 func (x *distributedGraph) fin() {
@@ -174,6 +178,34 @@ func (x *distributedGraph) channel (id uint) uint {
     }
   }
   return j
+}
+
+func point (x0, y0, x1, y1 int, t float64) (int, int) {
+  x := float64(x0) + t * float64(x1 - x0)
+  y := float64(y0) + t * float64(y1 - y0)
+  return int(x + 0.5), int(y + 0.5)
+}
+
+func (x *distributedGraph) send (i uint, a Any) {
+  if x.blink {
+    scr.Save1()
+    x0, y0 := x.actVertex.Pos()
+    x1, y1 := x.nb[i].Pos()
+    f, b := scr.ScrColF(), scr.ScrColB()
+    f = col.LightRed()
+    scr.ColourF (f)
+    scr.Line (x0, y0, x1, y1)
+// errh.Hint2 ("from", x.me, "to", x.nr[i])
+    for t := 0.2; t < 0.9; t+= 0.1 {
+      xm, ym := point (x0, y0, x1, y1, t)
+      scr.ColourF (f); scr.CircleFull (xm, ym, 4)
+      time.Msleep (500)
+      scr.ColourF (b); scr.CircleFull (xm, ym, 4)
+    }
+// errh.DelHint ()
+    scr.Restore1()
+  }
+  x.ch[i].Send (a)
 }
 
 // Returns a new empty graph of the type of the underlying graph of x.
@@ -267,6 +299,11 @@ func (x *distributedGraph) Time1() uint {
 
 func (x *distributedGraph) Demo() {
   x.demo = true
+}
+
+func (x *distributedGraph) Blink() {
+  x.demo = true
+  x.blink = true
 }
 
 func (x *distributedGraph) ParentChildren() string {

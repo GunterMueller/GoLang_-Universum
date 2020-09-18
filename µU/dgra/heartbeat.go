@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 200116 - license see µU.go
+// (c) Christian Maurer   v. 200728 - license see µU.go
 
 import
   . "µU/obj"
@@ -14,11 +14,12 @@ func (x *distributedGraph) heartbeatgraph() {
   x.log0 ("initial situation")
   for r := uint(1); r <= x.diameter; r++ {
     for i := uint(0); i < x.n; i++ {
-      x.ch[i].Send (x.tmpGraph)
+//      x.ch[i].Send (x.tmpGraph)
+      x.send (i, x.tmpGraph)
     }
     for i := uint(0); i < x.n; i++ {
-      g := x.emptyGraph()
-      g.Decode (x.ch[i].Recv().(Stream))
+      bs := x.ch[i].Recv().(Stream)
+      g := x.decodedGraph (bs)
       x.tmpGraph.Add (g)
       x.tmpGraph.Write()
     }

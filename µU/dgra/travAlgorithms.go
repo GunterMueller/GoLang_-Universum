@@ -30,7 +30,7 @@ func (x *distributedGraph) TravAlgorithm() TravAlg {
 }
 
 func (x *distributedGraph) Trav (o Op) {
-  if x.Graph.Directed() { panic("forget it: Graph is directed") }
+  if x.Directed() { panic("forget it: Graph is directed") }
   switch x.TravAlg {
   case DFS:
     x.dfs (o)

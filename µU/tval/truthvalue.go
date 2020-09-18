@@ -1,6 +1,6 @@
 package tval
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 200906 - license see µU.go
 
 import (
   . "µU/obj"
@@ -16,7 +16,7 @@ const
   max = 15
 type
   value byte; const (
-  undecidable = iota
+  indetermined = iota
   falseVal
   trueVal
   nValues
@@ -25,8 +25,8 @@ type (
   representation [nValues]string
   truthValue struct {
                     value
-                    uint "uint"
                     representation
+                    uint // len of representations
              cF, cB col.Colour
                     font.Font
                     }
@@ -38,9 +38,9 @@ var (
 
 func new_() TruthValue {
   x := new (truthValue)
-  x.value = undecidable
+  x.value = indetermined
+  x.representation = [nValues]string { "?", "n", "y" }
   x.uint = 1
-  x.representation = [nValues]string { " ", "n", "j" }
   x.cF, x.cB = scr.StartCols()
   return x
 }
@@ -51,25 +51,20 @@ func (x *truthValue) imp (Y Any) *truthValue {
   return y
 }
 
-func (x *truthValue) SetFormat (f, t string) {
-  x.representation [falseVal] = f
-  x.uint = str.ProperLen (x.representation[falseVal])
-  if x.uint == 0 {
-    x.representation = [nValues]string { " ", "n", "j" }
-    return
+func (x *truthValue) SetFormat (i, f, t string) {
+  x.uint = uint(len(i))
+  if x.uint != uint(len(f)) || x.uint != uint(len(t)) {
+    x.representation = [nValues]string { "?", "n", "y" }
   }
-  x.representation [trueVal] = t
-  n := str.ProperLen (x.representation[falseVal])
-  if n > x.uint { x.uint = n }
-  x.representation [undecidable] = str.New (x.uint)
+  x.representation = [nValues]string { i, f, t }
 }
 
 func (x *truthValue) Empty() bool {
-  return x.value == undecidable
+  return x.value == indetermined
 }
 
 func (x *truthValue) Clr() {
-  x.value = undecidable
+  x.value = indetermined
 }
 
 func (x *truthValue) Copy (Y Any) {
@@ -107,8 +102,9 @@ func (x *truthValue) Decode (b []byte) {
 }
 
 func (x *truthValue) Defined (s string) bool {
-  switch s[0] { case ' ', '?':
-    x.value = undecidable
+  switch s[0] {
+  case ' ', '?':
+    x.value = indetermined
     return true
   }
   for v := value(1); v < nValues; v++ {
@@ -146,7 +142,7 @@ func (x *truthValue) Edit (l, c uint) {
     if x.Defined (input) {
       break
     } else {
-      errh.Error0("Eingabe unverständlich") // , l + 1, c)
+      errh.Error0 ("input unclear")
     }
   }
   x.Write (l, c)

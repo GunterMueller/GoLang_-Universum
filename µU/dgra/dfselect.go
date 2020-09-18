@@ -1,13 +1,14 @@
 package dgra
 
-// (c) Christian Maurer   v. 171130 - license see µU.go
+// (c) Christian Maurer   v. 200728 - license see µU.go
 
 func (x *distributedGraph) dfselect() {
   x.connect (x.leader)
   defer x.fin()
   if x.me == x.root { // root sends the first message
     x.parent = x.root // inf + 1 // trick, see below
-    x.ch[0].Send (x.leader)
+//    x.ch[0].Send (x.leader)
+    x.send (0, x.leader)
     x.child[0] = true
     x.visited[0] = true
   }
@@ -53,7 +54,8 @@ func (x *distributedGraph) dfselect() {
         x.distance, x.diameter = k, t
         x.child[k] = true // temptative
       }
-      x.ch[k].Send(x.leader + inf * t)
+//      x.ch[k].Send(x.leader + inf * t)
+      x.send (k, x.leader + inf * t)
       mutex.Unlock()
       done <- 0
     }(i)
@@ -64,14 +66,16 @@ func (x *distributedGraph) dfselect() {
   if x.me == x.root {
     for i := uint(0); i < x.n; i++ {
       if x.child[i] {
-        x.ch[i].Send(x.leader)
+//        x.ch[i].Send(x.leader)
+        x.send (i, x.leader)
       }
     }
   } else {
     x.leader = x.ch[x.channel(x.parent)].Recv().(uint)
     for i := uint(0); i < x.n; i++ {
       if x.child[i] {
-        x.ch[i].Send(x.leader)
+//        x.ch[i].Send(x.leader)
+        x.send (i, x.leader)
       }
     }
   }

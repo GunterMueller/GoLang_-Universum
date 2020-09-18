@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 200116 - license see µU.go
+// (c) Christian Maurer   v. 200728 - license see µU.go
 
 // see G. Andrews: Concurrent Programming (1991) p. 375
 // >>> The condition to leave the for-loop by the break statement is
@@ -23,7 +23,8 @@ func (x *distributedGraph) heartbeatmatrix1() {
   for r := uint(1); true; r++ {
     bs := x.matrix.Encode()
     for i := uint(0); i < x.n; i++ {
-      x.ch[i].Send(append(Encode(true), bs...))
+//      x.ch[i].Send(append(Encode(true), bs...))
+      x.send (i, append(Encode(true), bs...))
     }
     for i := uint(0); i < x.n; i++ {
       bs = x.ch[i].Recv().(Stream)

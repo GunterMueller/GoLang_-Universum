@@ -1,9 +1,9 @@
 package dgra
 
-// (c) Christian Maurer   v. 200603 - license see µU.go
+// (c) Christian Maurer   v. 200728 - license see µU.go
 
 import (
-//  . "µU/obj"
+  . "µU/obj"
   "µU/gra"
 )
 type
@@ -16,13 +16,14 @@ type
 
 // The demo modus for graphical output is set.
   Demo()
+// The demo modus for graphical output is set
+// and the blink modus while sending is set.
+  Blink()
 
 // Pre for all following methods: The hosts of x are set.
-  Me() uint
-  Root() uint
+  Me() uint; Root() uint
   ParentChildren() string
-  Time() uint
-  Time1() uint
+  Time() uint; Time1() uint
 
   SetHeartbeatAlgorithm (a HeartbeatAlg) // see heartbeatAlgorithms.go
   HeartbeatAlgorithm() HeartbeatAlg
@@ -35,7 +36,8 @@ type
   ElectAlgorithm() ElectAlg
   Leader() uint
 
-//  DijkstraScholten (o Op) // under development3G
+  DijkstraScholten (o Op)
+  DijkstraScholten1 (o Op)
 }
 
 // Pre: The values of the edges of g + nchan.Port0 are the ports
@@ -60,6 +62,7 @@ func G6full (i uint) DistributedGraph { return g6full(i) }
 func G8a (i uint) DistributedGraph { return g8a(i) }
 func G8 (i uint) DistributedGraph { return g8(i) }
 func G8dir (i uint) DistributedGraph { return g8dir(i) }
+func G9dir (i uint) DistributedGraph { return g9dir(i) }
 func G8cyc (i uint) DistributedGraph { return g8cyc(i) }
 func G8ring (i uint) DistributedGraph { return g8ring(i) }
 func G8ringdir (i uint) DistributedGraph { return g8ringdir(i) }

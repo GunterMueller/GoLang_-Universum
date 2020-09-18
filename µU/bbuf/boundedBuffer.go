@@ -1,12 +1,12 @@
 package bbuf
 
-// (c) Christian Maurer   v. 2001120 - license see µU.go
+// (c) Christian Maurer   v. 200908 - license see µU.go
 
 import
   . "µU/obj"
 type
   boundedBuffer struct {
-                       Any
+                       Any "Musterobjekt"
      cap, num, in, out uint
                content AnyStream
                        }

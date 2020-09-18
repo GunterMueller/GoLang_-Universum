@@ -1,6 +1,6 @@
 package lint
 
-// (c) Christian Maurer   v. 180901 - license see µU.go
+// (c) Christian Maurer   v. 200902 - license see µU.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 
@@ -181,7 +181,8 @@ func (x *longInteger) Print (l, c uint) {
   s:= x.String()
   c0:= c
   for i:= 0; i < len (s); i++ {
-    prt.Print1 (s[i], l, c, x.Font)
+    prt.SetFont (x.Font)
+    prt.Print1 (s[i], l, c)
     if c + 1 < prt.NColumns() {
       c ++
     } else if l + 2 < prt.NLines() {

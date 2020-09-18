@@ -1,6 +1,6 @@
 package pbox
 
-// (c) Christian Maurer   v. 161216 - license see µU.go
+// (c) Christian Maurer   v. 200902 - license see µU.go
 
 import
   "µU/font"
@@ -11,10 +11,15 @@ type
   SetFont (f font.Font)
 
 // TODO Spec
+  SetFontsize (s font.Size)
+
+// TODO Spec
   Font() font.Font
 
 // TODO Spec
+  Fontsize() font.Size
 
+// TODO Spec
   Print (s string, l, c uint)
 
 // TODO Spec

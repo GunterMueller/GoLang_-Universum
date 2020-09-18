@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 200902 - license see µU.go
 
 import (
   "µU/font"
@@ -12,9 +12,9 @@ func size (c col.Colour) font.Size {
   cF, cH := c, c
   cH.Contrast()
   n := uint(0)
-  z, s:= scr.MousePos()
-  Select1 (font.Name, font.NSizes, font.M, &n, z, s, cF, cH)
-  if n < font.NSizes {
+  z, s := scr.MousePos()
+  Select1 (font.Name, uint(font.NSizes), font.M, &n, z, s, cF, cH)
+  if n < uint(font.NSizes) {
     return font.Size (n)
   }
   return font.Normal

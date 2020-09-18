@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171203 - license see µU.go
+// (c) Christian Maurer   v. 200728 - license see µU.go
 //
 // >>> root starts sending the graph consisting only of his own vertex.
 //     1st round: Each vertex receives a part of the cycle from its predecessor,
@@ -22,7 +22,8 @@ func (x *distributedGraph) maurer() {
   if x.me == x.root { // starts sending its singleton graph
     x.cycle.Ins (x.actVertex)
     x.cycle.Write()
-    x.ch[out].Send(x.cycle.Encode())
+//    x.ch[out].Send(x.cycle.Encode())
+    x.send (out, x.cycle.Encode())
   }
   bs := x.ch[in].Recv().(Stream)
 x.log0("recvd")
@@ -36,12 +37,14 @@ x.log0("recvd")
   }
   x.cycle.Edge (x.directedEdge(x.nb[in], x.actVertex))
   x.cycle.Write()
-  x.ch[out].Send (x.cycle.Encode())
+//  x.ch[out].Send (x.cycle.Encode())
+  x.send (out, x.cycle.Encode())
 // 2nd round:
   x.cycle = x.decodedGraph (x.ch[in].Recv().(Stream))
   x.cycle.Write()
   if x.me != x.root {
-    x.ch[out].Send (x.cycle.Encode())
+//    x.ch[out].Send (x.cycle.Encode())
+    x.send (out, x.cycle.Encode())
   }
   x.leader = valueMax (x.cycle)
 }

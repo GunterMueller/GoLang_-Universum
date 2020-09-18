@@ -8,7 +8,7 @@ import (
 )
 
 func (x *distributedGraph) maurerfm() {
-  in, out := uint(1), uint(0); if x.Graph.Outgoing(1) { in, out = out, in }
+  in, out := uint(1), uint(0); if x.Outgoing(1) { in, out = out, in }
   go func() {
     fmon.New (nil, 1, x.m, AllTrueSp,
               x.actHost, p0 + uint16(x.me), true)

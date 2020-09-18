@@ -1,6 +1,6 @@
 package main
 
-/* (c) Christian Maurer   v. 200421
+/* (c) Christian Maurer   v. 200908
        christian.maurer-berlin.eu proprietary - all rights reserved
 
   This package - the n(ano)Universe - contains the source texts from my textbooks

@@ -19,6 +19,7 @@ type
               string "string"
        cF, cB col.Colour
               font.Font
+              font.Size
               }
 var (
   bx = box.New()
@@ -33,7 +34,8 @@ func new_(n uint) Text {
   x.uint = n
   x.string = str.New (n)
   x.cF, x.cB = scr.StartCols()
-  x.Font = font.Normal
+  x.Font = font.Roman
+  x.Size = font.Normal
   return x
 }
 
@@ -156,8 +158,13 @@ func (x *text) SetFont (f font.Font) {
   x.Font = f
 }
 
+func (x *text) SetFontsize (s font.Size) {
+  x.Size = s
+}
+
 func (x *text) Print (l, c uint) {
   pbx.SetFont (x.Font)
+  pbx.SetFontsize (x.Size)
   pbx.Print (x.string, l, c)
 }
 
