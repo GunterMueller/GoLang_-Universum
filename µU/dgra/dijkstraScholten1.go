@@ -1,6 +1,10 @@
 package dgra
 
+<<<<<<< HEAD
 // (c) Christian Maurer   v. 201009 - license see µU.go
+=======
+// (c) Christian Maurer   v. 200728 - license see µU.go
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
 //
 // >>> Dijkstra-Scholten: Termination Detection for Diffusing Computations
 //     Inf. Proc. Letters 11 (1980) 1-4
@@ -29,7 +33,11 @@ func (x *distributedGraph) DijkstraScholten1 (o Op) {
       j := p.F(i)
 //      x.ch[j].Send (bs)
       x.send (j, bs)
+<<<<<<< HEAD
       Inc1 (&x.D)
+=======
+      Inc (&x.D)
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
     }
     x.Op (x.actVertex)
   }
@@ -47,7 +55,11 @@ errh.Error ("waiting for msg from", x.nr[i])
     if ms == message {
       x.tree = x.decodedGraph(bs[c0:])
       x.tree.Write()
+<<<<<<< HEAD
       Inc1 (&x.C)
+=======
+      Inc (&x.C)
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
       x.Mutex.Lock()
       if x.C == 1 { // insert actVertex and perform x.Op only once
         x.tree.Ex (x.nb[i])
@@ -85,7 +97,11 @@ errh.Error ("waiting for msg from", x.nr[i])
             if x.Outgoing (k) {
 //              x.ch[k].Send (bs)
               x.send (k, bs)
+<<<<<<< HEAD
               Inc1 (&x.D)
+=======
+              Inc (&x.D)
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
             }
           }
 //        message from all predecessors received,

@@ -1,6 +1,10 @@
 package dgra
 
+<<<<<<< HEAD
 // (c) Christian Maurer   v. 201009 - license see µU.go
+=======
+// (c) Christian Maurer   v. 200724 - license see µU.go
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
 //
 // >>> Dijkstra-Scholten: Termination Detection for Diffusing Computations
 //     Inf. Proc. Letters 11 (1980) 1-4
@@ -47,7 +51,11 @@ x.tree = x.Clone().(gra.Graph)
       j := p.F(i)
 //      x.ch[j].Send (bs)
       x.send (j, bs)
+<<<<<<< HEAD
       Inc1 (&x.D)
+=======
+      Inc (&x.D)
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
     }
     x.Op (x.actVertex)
   }
@@ -67,7 +75,11 @@ func (x *distributedGraph) do (i uint) {
         x.tree = x.decodedGraph(bs[c0:])
         x.tree.Write()
       }
+<<<<<<< HEAD
       Inc1 (&x.C)
+=======
+      Inc (&x.C)
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
       x.Mutex.Lock()
       if x.C == 1 { // insert actVertex and perform x.Op only once
         if withTree {
@@ -113,7 +125,11 @@ func (x *distributedGraph) do (i uint) {
             if x.Outgoing (k) {
 //              x.ch[k].Send (bs)
               x.send (k, bs)
+<<<<<<< HEAD
               Inc1 (&x.D)
+=======
+              Inc (&x.D)
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
             }
           }
 //        all messages received, wait for the corresponding signals

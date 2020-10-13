@@ -9,15 +9,15 @@ const
 type addSemaphore struct {
   int "number of processes allowed to use the critical section"
   Mutex
-  sem [M]sem.Semaphore
-  n [M]int
+  s [M]sem.Semaphore
+  n [M]int // n[i] = number of processes blocked on s[i] (i < M)
 }
 
 func new_(n uint) *addSemaphore {
   x := new(addSemaphore)
   x.int = int(n)
   for i := 0; i < M; i++ {
-    x.sem[i] = sem.New(0)
+    x.s[i] = sem.New(0)
   }
   return x
 }
@@ -30,7 +30,7 @@ func (x *addSemaphore) P (n uint) {
   } else {
     x.n[n]++
     x.Mutex.Unlock()
-    x.sem[n].P()
+    x.s[n].P()
   }
 }
 
@@ -42,7 +42,7 @@ func (x *addSemaphore) V (n uint) {
     for x.n[i] > 0 && i < x.int {
       x.int -= i
       x.n[i]--
-      x.sem[i].V()
+      x.s[i].V()
     }
     i--
   }

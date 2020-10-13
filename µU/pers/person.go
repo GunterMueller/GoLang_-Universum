@@ -1,6 +1,10 @@
 package pers
 
+<<<<<<< HEAD
 // (c) Christian Maurer   v. 201004 - license see µU.go
+=======
+// (c) Christian Maurer   v. 200908 - license see µU.go
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
 
 import (
   . "µU/obj"
@@ -342,8 +346,12 @@ func (x *person) Edit (l, c uint) {
   if C, _ := kbd.LastCommand(); C == kbd.Up {
     i = 4
   }
+<<<<<<< HEAD
   loop:
   for {
+=======
+  loop: for {
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
     switch i {
     case 0:
       x.surname.Edit (l, c + csn)

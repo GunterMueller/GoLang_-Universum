@@ -1,6 +1,10 @@
 package prt
 
+<<<<<<< HEAD
 // (c) Christian Maurer   v. 201011 - license see µU.go
+=======
+// (c) Christian Maurer   v. 200902 - license see µU.go
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
 
 import (
   "os/exec"

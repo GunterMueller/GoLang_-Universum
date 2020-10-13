@@ -1,6 +1,10 @@
 package str
 
+<<<<<<< HEAD
 // (c) Christian Maurer   v. 201008 - license see µU.go
+=======
+// (c) Christian Maurer   v. 200825 - license see µU.go
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
 
 //     latin-1-strings (without any bloody UTF-8-stuff)
 
@@ -174,4 +178,8 @@ func SplitLine (s *string) string { return splitLine(s) }
 func SplitBrackets (s string, sep, b byte) []string { return splitBrackets (s,sep,b) }
 
 // TODO Spec
+<<<<<<< HEAD
 func SplitByte (s string, b byte) ([]string, uint) { return splitByte(s,b) }
+=======
+func SplitByte (s string, b byte) (uint, []string) { return splitByte (s,b) }
+>>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
