@@ -2,8 +2,9 @@ package cons
 
 // (c) Christian Maurer   v. 170818 - license see µU.go
 
-import
+import (
   "µU/font"
+)
 
 func (X *console) ActFontsize() font.Size {
   return X.fontsize

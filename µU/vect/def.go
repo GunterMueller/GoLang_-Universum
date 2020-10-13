@@ -1,11 +1,9 @@
 package vect
 
-// (c) Christian Maurer   v. 191019 - license see µU.go
+// (c) Christian Maurer   v. 201009 - license see µU.go
 
-import (
+import
   . "µU/obj"
-  . "µU/add"
-)
 const // For float64's a, b "a quasi equals b" means |a - b| < epsilon.
   epsilon = 1.0E-6
 type

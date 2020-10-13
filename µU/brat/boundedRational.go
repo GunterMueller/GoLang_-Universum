@@ -1,12 +1,10 @@
 package brat
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 201009 - license see µU.go
 
 import (
   "math"
   . "µU/obj"
-  . "µU/add"
-  . "µU/mul"
   "µU/str"
   "µU/col"
   "µU/scr"
@@ -371,7 +369,7 @@ func (x *rational) Sub (Y ...Adder) {
   }
 }
 
-func (x *rational) mul (Y Multiplier) {
+func (x *rational) mul (Y Any) {
   y := x.imp(Y)
   if y.denom == 0 {
     x.Clr()
@@ -396,7 +394,7 @@ func (x *rational) mul (Y Multiplier) {
   x.reduce()
 }
 
-func (x *rational) Mul (Y ...Multiplier) {
+func (x *rational) Mul (Y ...Any) {
   for i, _ := range Y {
     x.mul (Y[i])
   }
@@ -404,6 +402,23 @@ func (x *rational) Mul (Y ...Multiplier) {
 
 func (x *rational) Sqr() {
   x.Mul (x)
+}
+
+func (x *rational) Power (n uint) {
+  c, d := x.num, x.denom
+  switch n {
+  case 0:
+    x.num, x.denom = 1, 1
+  case 1:
+    return
+  default: // n > 1
+    for i := uint(1); i < n; i++ {
+      c *= x.num
+      d *= x.denom
+    }
+    x.num, x.denom = c, d
+    x.reduce()
+  }
 }
 
 func (x *rational) Invert() {
@@ -414,19 +429,15 @@ func (x *rational) Invert() {
   }
 }
 
-func (x *rational) Div (Y, Z Multiplier) {
-  y, z := x.imp (Y), x.imp (Z)
-  if y.denom == 0 || z.num == 0 || z.denom == 0 {
+func (x *rational) DivBy (Y Any) {
+  y := x.imp(Y)
+  if y.num == 0 || y.denom == 0 {
     x.Clr()
     return
   }
-  inv := z.Clone().(*rational)
+  inv := y.Clone().(*rational)
   inv.Invert()
-  x.Mul (y, inv)
-}
-
-func (x *rational) DivBy (Y Multiplier) {
-  x.Div (x, Y)
+  x.Mul (inv)
 }
 
 /*

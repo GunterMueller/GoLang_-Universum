@@ -65,7 +65,7 @@ func IsCapUmlaut (b byte) bool { return isCapUmlaut(b) }
 func OpensHell (b byte) bool { return opensHell(b) }
 
 // Returns true, iff s contains one of the bytes that open hell.
-func DevilsDung (s *string) bool { return devilsDung(s) }
+func DevilsDung (s string) bool { return devilsDung(s) }
 
 // All UTF8-runes in s starting with one of the bytes, that open hell,
 // are converted to the corresponding latin1-bytes.

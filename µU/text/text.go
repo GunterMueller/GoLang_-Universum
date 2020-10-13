@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 190805 - license see µU.go
+// (c) Christian Maurer   v. 201004 - license see µU.go
 
 import (
   "µU/rand"
@@ -19,6 +19,7 @@ type
               string "string"
        cF, cB col.Colour
               font.Font
+              font.Size
               }
 var (
   bx = box.New()
@@ -33,7 +34,8 @@ func new_(n uint) Text {
   x.uint = n
   x.string = str.New (n)
   x.cF, x.cB = scr.StartCols()
-  x.Font = font.Normal
+  x.Font = font.Roman
+  x.Size = font.Normal
   return x
 }
 
@@ -156,8 +158,13 @@ func (x *text) SetFont (f font.Font) {
   x.Font = f
 }
 
+func (x *text) SetFontsize (s font.Size) {
+  x.Size = s
+}
+
 func (x *text) Print (l, c uint) {
   pbx.SetFont (x.Font)
+  pbx.SetFontsize (x.Size)
   pbx.Print (x.string, l, c)
 }
 
@@ -191,6 +198,13 @@ func (x *text) Split() []Text {
 
 func (x *text) Len() uint {
   return x.uint
+}
+
+func (x *text) Byte (n uint) byte {
+  if n < uint(len(x.string)) {
+    return x.string[n]
+  }
+  return 0
 }
 
 /////////////////////////////////////////////////////
@@ -256,14 +270,15 @@ func (x *text) ToLower0() {
   x.Defined (s)
 }
 
-func (X *text) WriteGr (x, y int) {
-  bx.Wd (X.uint)
-  bx.Colours (X.cF, X.cB)
-  bx.WriteGr (X.string, x, y)
+func (t *text) WriteGr (x, y int) {
+  bx.Wd (t.uint)
+  bx.Colours (t.cF, t.cB)
+  bx.WriteGr (t.string, x, y)
 }
 
-func (X *text) EditGr (x, y int) {
-  bx.Wd (X.uint)
-  bx.Colours (X.cF, X.cB)
-  bx.EditGr (&X.string, x, y)
+func (t *text) EditGr (x, y int) {
+  bx.Wd (t.uint)
+  bx.Colours (t.cF, t.cB)
+  bx.EditGr (&t.string, x, y)
+  str.Move (&t.string, false)
 }

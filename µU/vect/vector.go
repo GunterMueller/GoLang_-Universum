@@ -1,12 +1,11 @@
 package vect
 
-// (c) Christian Maurer   v. 191012 - license see µU.go
+// (c) Christian Maurer   v. 201009 - license see µU.go
 
 import (
   "math"
   "strconv"
   . "µU/obj"
-  . "µU/add"
   "µU/str"
 //  "µU/col"
 )

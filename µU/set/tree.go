@@ -1,9 +1,12 @@
 package set
 
-// (c) Christian Maurer   v. 140101 - license see µU.go
+// (c) Christian Maurer   v. 201003 - license see µU.go
 
 import (
+  "µU/ker"
   . "µU/obj"
+  "µU/scr"
+  "µU/str"
 )
 type
   balance byte; const (
@@ -11,17 +14,16 @@ type
   balanced
   rightweighty
 )
-type (
+type
   tree struct {
               Any
          left,
         right *tree
               balance
               }
-)
 
 func leaf (a Any) *tree {
-  t:= new (tree)
+  t := new (tree)
   t.Any = Clone (a)
   t.left, t.right = nil, nil
   t.balance = balanced
@@ -36,7 +38,7 @@ func (x *tree) num() uint {
 }
 
 func (x *tree) numPred (p Pred) uint {
-  n:= uint(0)
+  n := uint(0)
   if x == nil { return n }
   if p (x.Any) { n ++ }
   return n + x.left.numPred (p) + x.right.numPred (p)
@@ -66,7 +68,7 @@ func (x *tree) all (p Pred) bool {
 func (x *tree) first (a Any) *tree {
   if x == nil { return nil }
   if Less (a, x.Any) {
-    y:= x.left.first (a)
+    y := x.left.first (a)
     if y == nil {
       return x
     }
@@ -77,16 +79,16 @@ func (x *tree) first (a Any) *tree {
     }
   } else if Less (x.Any, a) {
     return x.right.first (a)
-  } // see above remark
+  } // see above remark, i.e. Eq (x.Any, a)
   return x
 }
 
 // Pre: x and x.right are not empty, x is rightweighty,
 //      x.right is i) rightweighty or ii) balanced.
-// i)  x and x.left are balanced,
-// ii) x is leftweighty, x.left is rightweighty.
+// In case i): x and x.left are balanced,
+//        ii): x is leftweighty, x.left is rightweighty.
 func (x *tree) rotL() *tree {
-  y:= x.right
+  y := x.right
   x.right = y.left
   y.left = x
   x = y
@@ -102,7 +104,7 @@ func (x *tree) rotL() *tree {
 
 // dually to rotL
 func (x *tree) rotR() *tree {
-  y:= x.left
+  y := x.left
   x.left = y.right
   y.right = x
   x = y
@@ -116,13 +118,13 @@ func (x *tree) rotR() *tree {
   return x
 }
 
-// Pre: t, t.left and t.left.right are not empty, 
-//      t is not balanced, 
-//      t is leftweighty, t.left is rightweighty.
-// t is balanced.
+// Pre: x, x.left and x.left.right are not empty, 
+//      x is not balanced, 
+//      x is leftweighty, x.left is rightweighty.
+// x is balanced.
 func (x *tree) rotLR() *tree {
-  y:= x.left
-  z:= y.right
+  y := x.left
+  z := y.right
   y.right = z.left
   z.left = y
   x.left = z.right
@@ -145,8 +147,8 @@ func (x *tree) rotLR() *tree {
 
 // dually to rotLR
 func (x *tree) rotRL() *tree {
-  y:= x.right
-  z:= y.left
+  y := x.right
+  z := y.left
   y.left = z.right
   z.right = y
   x.right = z.left
@@ -223,7 +225,7 @@ func (x *tree) in (a Any, increased *bool) (*tree, *tree) {
 }
 
 func (x *tree) ins (a Any) (*tree, *tree) {
-  increased:= false
+  increased := false
   return x.in (a, &increased)
 }
 
@@ -296,7 +298,7 @@ func (x *tree) liftR (y *tree, decreased, oneLess *bool) *tree {
 }
 
 func (x *tree) d (a Any, decreased *bool) (*tree, bool) {
-  oneLess:= false
+  oneLess := false
   if x == nil {
     return x, oneLess
   }
@@ -325,15 +327,15 @@ func (x *tree) d (a Any, decreased *bool) (*tree, bool) {
 }
 
 func (x *tree) del (a Any) (*tree, bool) {
-  decreased:= false
+  decreased := false
   return x.d (a, &decreased)
 }
 
 func (x *tree) exPred (p Pred) *tree {
   if x == nil { return nil }
-  l:= x.left.exPred (p)
+  l := x.left.exPred (p)
   if l != nil { return l }
-  r:= x.right.exPred (p)
+  r := x.right.exPred (p)
   if r != nil { return r }
   if p (x.Any) {
     return x
@@ -350,5 +352,28 @@ func (x *tree) trav (op Op) {
 }
 
 func (x *tree) split (p Pred) (*tree, *tree) {
+  ker.Panic ("Split is not yet implemented")
   return nil, nil
+}
+
+func (x *tree) write (x0, x1, y, dy uint, f func (Any) string) {
+  if x == nil { return }
+  xm:= (x0 + x1) / 2
+  y1:= int(y + scr.Ht1() / 2) - 1
+  if x.left != nil {
+    scr.Line (int(xm), y1, int(x0 + xm) / 2, y1 + int (dy))
+  }
+  if x.right != nil {
+    scr.Line (int(xm), y1, int(xm + x1) / 2, y1 + int (dy))
+  }
+  scr.WriteGr (f (x.Any), int(xm - scr.Wd1()), int(y))
+  x.left.write (x0, xm, y + dy, dy, f)
+  x.right.write (xm, x1, y + dy, dy, f)
+}
+
+func (x *tree) write1 (d uint, f func (Any) string) {
+  if x == nil { return }
+  x.right.write1 (d + 1, f)
+  println (str.New (6 * d) + f (x.Any))
+  x.left.write1 (d + 1, f)
 }

@@ -1,6 +1,6 @@
 package prt
 
-// (c) Christian Maurer   v. 200402 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
 import (
   "os/exec"
@@ -14,83 +14,81 @@ import (
 const (
   maxC = 160
   maxL = 128
+  F = NFonts
+  S = NSizes
 )
 var (
-  size Size = Big // Normal ??
   tex, dvi, log, ps pseq.PersistentSequence
   texname, dviname, logname, psname, patternname string
-  page [][]string // only 1 page TODO more pages
-  nC = [NSizes]uint { 136, 112, 92, 80, 64 }
-  nL = [NSizes]uint { 108,  80, 60, 48, 40 }
-  dH, dW [NSizes]string
-  code, cm [NFonts][NSizes]string
+  page [][]string // only for one page TODO allow more pages
+  nC = [S]uint { 136, 102, 85, 74, 50 }
+  nL = [S]uint { 108,  80, 60, 48, 33 }
+  dH, dW [S]string
+  actualFont = Roman
+  actualSize = Normal
+  code, cm [F][S]string
   initialized bool
 )
 
-func init() {
-  cm[Roman]        = [NSizes]string { "cmtt8 scaled 725",    "cmtt8",               "cmtt10",   "cmtt12",               "cmtt12 scaled 1200" }
-  cm[Bold]         = [NSizes]string { "cmbtt10 scaled 600",  "cmbtt8",              "cmbtt10",  "cmbtt10 scaled 1200",  "cmbtt10 scaled 1440" }
-  cm[Slanted]      = [NSizes]string { "cmsltt10 scaled 600", "cmsltt10 scaled 800", "cmsltt10", "cmsltt10 scaled 1200", "cmsltt10 scaled 1440" }
-  cm[Italic]       = [NSizes]string { "cmitt10 scaled 600",  "cmitt10 scaled 800",  "cmitt10",  "cmitt10 scaled 1200",  "cmitt10 scaled 1440" }
-  dH               = [NSizes]string { "6.75",                "9.2",                 "12",       "14.4",                 "17.28" }
-  dW               = [NSizes]string { "3.661",               "4.446",               "5.412",    "6.224",                "7.78" } // 175 / nC * 72.27 / 25.4
+//                           6 pt                   8 pt                   10 pt       12 pt                   17 pt
+func init() { //             Tiny                   Small                  Normal      Big                     Huge
+  cm[Roman]   = [S]string { "cmtt8 scaled 750",    "cmtt8",               "cmtt10",   "cmtt12",               "cmtt12 scaled 1440" }
+  cm[Bold]    = [S]string { "cmbtt10 scaled 600",  "cmbtt8",              "cmbtt10",  "cmbtt10 scaled 1200",  "cmbtt10 scaled 1728" }
+  cm[Italic]  = [S]string { "cmitt10 scaled 600",  "cmitt10 scaled 800",  "cmitt10",  "cmitt10 scaled 1200",  "cmitt10 scaled 1728" }
+  dH          = [S]string { "7.2",                 "9.6",                 "12",       "14.4",                 "2.074" } // 246.2 / nL * 72.27 / 25.4
+  dW          = [S]string { "3.661",               "4.446",               "5.412",    "6.224",                "9.352" } // 159.2 / nC * 72.27 / 25.4
 }
 
-func _switch (s Size) {
-  size = s
-  if ! initialized {
-    _init()
-    initialized = true
-  }
-  startPage()
+func setFont (f Font) {
+  actualFont = f
 }
 
-func fontsize() Size {
-  return size
+func setFontsize (s Size) {
+  actualSize = s
 }
 
-func print1 (b byte, l, c uint, f Font) {
-  if l >= nL[size] || c >= nC[size] { return }
+func print1 (b byte, l, c uint) {
+  if l >= nL[actualSize] || c >= nC[actualSize] { return }
   if ! initialized {
     _init()
     initialized = true
     startPage()
   }
-  page[l][c] = Code (f, size) + "  "
+  page[l][c] = Code (actualFont, actualSize) + "  "
   str.Replace1 (&page[l][c], 3, b)
 }
 
-func print (s string, l, c uint, f Font) {
-  if l >= nL[size] {
+func print (s string, l, c uint) {
+  if l >= nL[actualSize] {
     return // TODO more than one page
   }
-  t:= str.Lat1 (s)
-  n:= uint(len (t))
-  for i:= uint(0); i < n; i++ {
-    print1 (t[i], l, c + i, f)
+  t := str.Lat1 (s)
+  n := uint(len (t))
+  for i := uint(0); i < n; i++ {
+    print1 (t[i], l, c + i)
   }
 }
 
 func ins (s string) {
-  for i:= 0; i < len(s); i++ {
+  for i := 0; i < len(s); i++ {
     tex.Ins (byte(s[i]))
   }
 }
 
 func _init() {
-  N:= files.Tmp()
-  null:= byte(0)
+  N := files.Tmp()
+  null := byte(0)
   patternname = N + "*"
-  tex = pseq.New (null)
+  tex = pseq.New (null, false)
   texname = N + "tex"
   tex.Name (texname)
-  dvi = pseq.New (null)
+  dvi = pseq.New (null, false)
   dviname = N + "dvi"
   dvi.Name (dviname)
-  log = pseq.New (null)
+  log = pseq.New (null, false)
   logname = N + "log"
   log.Name (logname)
-  ps = pseq.New (null)
+  ps = pseq.New (null, false)
   psname = N + "ps"
   ps.Name (psname)
 }
@@ -104,10 +102,10 @@ func footline (s string) {
 }
 
 func startPage() {
-  page = make ([][]string, nL[size])
-  for l:= uint(0); l < nL[size]; l++ {
-    page[l] = make ([]string, nC[size])
-    for c:= uint(0); c < nC[size]; c++ {
+  page = make ([][]string, nL[actualSize])
+  for l := uint(0); l < nL[actualSize]; l++ {
+    page[l] = make ([]string, nC[actualSize])
+    for c := uint(0); c < nC[actualSize]; c++ {
       page[l][c] = "    " // str.Clr (4)
     }
   }
@@ -122,17 +120,17 @@ func startPage() {
   ins ("\\lccode`\\^^d6=`\\^^f6 \\uccode`\\^^f6=`\\^^d6\n")
   ins ("\\lccode`\\^^dc=`\\^^fc \\uccode`\\^^fc=`\\^^dc\n")
 //  ins ("\\font\\rmf cmr8 \\font\\ttf cmtt8\n") // for footlines
-  for f:= Font(0); f < NFonts; f++ {
-    for s:= Size(0); s < NSizes; s++ {
+  for f := Font(0); f < F; f++ {
+    for s := Size(0); s < S; s++ {
       ins ("\\font\\" + Code (f, s) + " " + cm[f][s] + " ")
     }
     ins ("\n")
   }
-  ins ("\\" + Code (Roman, size) + "\n")
-  ins ("\\nL " + nat.String (nL[size]) + "\n")
-  ins ("\\nC " + nat.String (nC[size]) + "\n")
-  ins ("\\dH " + dH[size] + "pt\n")
-  ins ("\\dW " + dW[size] + "pt\n")
+  ins ("\\" + Code (Roman, actualSize) + "\n")
+  ins ("\\nL " + nat.String (nL[actualSize]) + "\n")
+  ins ("\\nC " + nat.String (nC[actualSize]) + "\n")
+  ins ("\\dH " + dH[actualSize] + "pt\n")
+  ins ("\\dW " + dW[actualSize] + "pt\n")
   ins ("\\voffset -5.4mm\n") // top margin: 1in - 5.4mm = 2cm
   ins ("\\vsize\\nL\\dH \\advance\\vsize by 15.6pt\n") // because of \interlineskip
   ins ("\\baselineskip\\dH \n")
@@ -146,11 +144,12 @@ func startPage() {
 }
 
 func goPrint() {
-  for l:= uint(0); l < nL[size]; l++ {
+  for l := uint(0); l < nL[actualSize]; l++ {
     ins ("\\line{") // \\strut"); <-- changes the line height ! causes trouble
 // we have to construct our own strut, depending on the Font, with height and depth TODO
-    for c:= uint(0); c < nC[size]; c++ {
-      switch page[l][c][3] { case ' ':
+    for c := uint(0); c < nC[actualSize]; c++ {
+      switch page[l][c][3] {
+      case ' ':
         ins ("\\E")
       case '_':
         ins ("\\U")

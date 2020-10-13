@@ -1,0 +1,35 @@
+func (x *persistentSequence) insOrd (a Any) {
+  y := new_(x.emptyObject, x.ordered).(*persistentSequence)
+  y.Name (x.tmpName)
+  y.Clr()
+  inserted := false
+  n := x.Num()
+  i := uint(0)
+  for {
+    x.Seek (i)
+    b := x.Get()
+    if Less (b, a) {
+      y.Seek (i)
+      y.Put (b)
+    } else if Eq (b, a) {
+      y.Seek (i + 1)
+      y.Put (a)
+      inserted = true
+    } else { // Less (a, b)
+      for i < n {
+        x.Seek (i)
+        y.Seek (i + 1)
+        y.Put (x.Get())
+        i++
+      }
+      break
+    }
+    i++
+  }
+  if ! inserted {
+    y.Put (a)
+  }
+  x.Clr()
+  y.Rename (x.name)
+  y.Fin()
+}

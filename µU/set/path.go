@@ -1,6 +1,6 @@
 package set
 
-// (c) Christian Maurer   v. 140528 - license see µU.go
+// (c) Christian Maurer   v. 201004 - license see µU.go
 
 import (
   . "µU/obj"
@@ -13,19 +13,17 @@ type
               }
 
 // x.path is the list of nodes from actual up to root. 
-// min/max == true, iff the actual node w.r.t. Less
-// is the smallest/largest object in x.
+// min/max == true, iff the actual node w.r.t. Less is the smallest/largest object in x.
 func (x *set) defPath() (bool, bool) {
-  t:= x.anchor
+  t := x.anchor
   x.path = &node { t, nil }
-  min, max:= true, true
-//  if e, ok:= x.actual.Any.(Editor) { e.Write (2, 0); errh.Error0("x.actual") }
+  min, max := true, true
   for {
-    if t == nil { ker.Panic ("piset defPath: t == nil") }
     if t == x.actual {
-      if ! Eq (t.Any, x.actual.Any) { ker.Panic ("piset.defPath Eq bug") }
+      if ! Eq (t.Any, x.actual.Any) { ker.Panic ("set.defPath Eq bug") }
       break
     }
+    if t == nil { ker.Panic ("set defPath: t == nil") }
     if Less (x.actual.Any, t.Any) {
       t, max = t.left, false
     } else {
@@ -48,7 +46,7 @@ func (x *set) somethingBelow (f bool) bool {
 }
 
 func (x *set) abovePointsToCurrent (f bool) bool {
-  t:= x.path.next.tree.right
+  t := x.path.next.tree.right
   if ! f {
     t = x.path.next.tree.left
   }

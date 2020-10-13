@@ -1,25 +1,35 @@
 package obj
 
-// (c) Christian Maurer   v. 170817 - license see µU.go
+// (c) Christian Maurer   v. 201009 - license see µU.go
 
 type
   Multiplier interface {
 
 // Returns true, iff x is neutral w.r.t. multiplication.
-  One () bool
+  One() bool
 
+// Pre: All y's are of a numerical type or implement Adder;
+//      the result is in the range of the type of x.
 // x is now the product of x before and all y's.
-  Mul (y ...Multiplier)
+  Mul (y ...Any)
 
-// x is the product of y and z.
-  Prod (y, z Multiplier)
+// x is now the square of x before.
+  Sqr()
 
-// x = x0 * x0, where x0 denotes x before.
-  Sqr ()
+// x is now the n-th power of x before.
+  Power (n uint)
 
-// x = y / z. // eventually deprecated
-  Div (y, z Multiplier)
-
-// x = x0 / y, where x0 denotes x before. // eventually deprecated
-  DivBy (y Multiplier)
+// Pre: ! Zero(x).
+// x is now the quotient of x before and y.
+  DivBy (y Any)
 }
+
+// Pre: a is of a numerical type or implements Multiplier.
+// Returns true, iff a is neutral w.r.t. multiplication.
+func One (a Any) bool { return one(a) }
+
+// Pre: a and all b's are of a numerical type or implement Multiplier.
+// Returns the product of a and all b's.
+func Mul (a Any, b ...Any) Any { return mul(a,b...) }
+
+func Sqr (a Any) Any { return sqr(a) }

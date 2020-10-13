@@ -1,25 +1,33 @@
 package audio
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 201010 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
   "µU/enum"
   "µU/text"
-  "µU/masks"
+//  "µU/masks"
   "µU/atom"
   "µU/mol"
 )
 const (
-  lenWerk = 25
-  lenOrch = 25
-  lenName = 25
+  len0 = 30
+  len1 = 60
+)
+type
+  order byte; const (
+  subject = order(iota)
+  composer_group
+  medium
+  nOrders
 )
 type
   audio struct {
                mol.Molecule
                }
+var
+  actOrd order
 
 func (x *audio) imp (Y Any) mol.Molecule {
   y, ok:= Y.(*audio)
@@ -29,44 +37,49 @@ func (x *audio) imp (Y Any) mol.Molecule {
 
 func new_() Audio {
   x := new (audio)
-  x.Molecule = mol.New()
-  a := atom.New (enum.New (enum.Composer))
+  x.Molecule = mol.New (9)
+  a := atom.New (enum.New (enum.AudioC)) // Gebiet
   a.Colours (col.Yellow(), col.Black())
-  x.Ins (a, 0, 11)
-  a = atom.New (text.New (lenWerk))
+  x.Ins (a, 0,  0)
+//  x.Ins (a, 0, 12)
+
+  a = atom.New (text.New (len0)) // Komponist/Gruppe
   a.Colours (col.LightRed(), col.Black())
-  x.Ins (a, 1, 11)
-  a = atom.New (text.New (lenOrch)) // Orchester
-  x.Ins (a, 2, 11)
-  a = atom.New (text.New (lenName)) // Dirigent
+  x.Ins (a, 0, 15)
+//  x.Ins (a, 0, 46)
+
+  a = atom.New (text.New (len0)) // Dirigent/Solist
+  a.Colours (col.LightBlue(), col.Black())
+  x.Ins (a, 0, 49)
+//  x.Ins (a, 1, 46)
+
+  a = atom.New (enum.New (enum.AudioMedium)) // Medium
+  a.Colours (col.LightBlue(), col.Black())
+  x.Ins (a, 1,  8)
+//  x.Ins (a, 1, 12)
+
+  a = atom.New (text.New (len1)) // Werk
   a.Colours (col.Cyan(), col.Black())
-  x.Ins (a, 3, 11)
-  a = atom.New (text.New (lenName)) // Solist
-  a.Colours (col.LightBlue(), col.Black())
-  x.Ins (a, 4, 11)
-  a = atom.New (text.New (lenName)) // Solist
-  a.Colours (col.LightBlue(), col.Black())
-  x.Ins (a, 5, 11)
-  a = atom.New (enum.New (enum.RecordLabel))
-  a.Colours (col.LightCyan(), col.Black())
-  x.Ins (a, 6, 11)
-  a = atom.New (enum.New (enum.AudioMedium))
-  x.Ins (a, 7, 11)
-  a = atom.New (enum.New (enum.SparsCode))
-  x.Ins (a, 8, 11)
+  x.Ins (a, 1, 15)
+//  x.Ins (a, 2, 15)
+/*/       1         2         3         4         5         6         7
+01234567890123456789012345678901234567890123456789012345678901234567890123456789
+___________    ______________________________    ______________________________
+        ___    ________________________________________________________________
 
-  m:= masks.New()
-  m.Ins ("Komponist:", 0, 0)
-  m.Ins ("     Werk:", 1, 0)
-  m.Ins ("Orchester:", 2, 0)
-  m.Ins (" Dirigent:", 3, 0)
-  m.Ins (" Solist 1:", 4, 0)
-  m.Ins (" Solist 2:", 5, 0)
-  m.Ins ("    Firma:", 6, 0)
-  m.Ins ("   Platte:", 7, 0)
-  m.Ins ("       ad:", 8, 0)
+    Gebiet: ___________     Komponist/Gruppe: ______________________________
+    Medium: ___              Dirigent/Solist: ______________________________
+      Werk: ________________________________________________________________
+/*/
+/*/
+  m := masks.New()
+  m.Ins ("Gebiet:",          0,  4)
+  m.Ins ("Komponist:",       0, 35)
+  m.Ins ("Medium:",          1,  4)
+  m.Ins ("Dirigent/Solist:", 1, 29)
+  m.Ins ("Werk:",            2,  6)
   x.SetMask (m)
-
+/*/
   return x
 }
 
@@ -84,16 +97,61 @@ func (x *audio) Clone() Any {
   return y
 }
 
-func (x *audio) Less (Y Any) bool {
-  return x.Molecule.Less (x.imp (Y))
-}
+// func (x *audio) Less (Y Any) bool {
+//   return x.Molecule.Less (x.imp (Y))
+// }
 
-func (x *audio) Index() Func {
-  return func (X Any) Any {
-    return x.imp (X).Component (0).(atom.Atom)
+func (x *audio) Less (Y Any) bool {
+  y := x.imp(Y)
+  xs := x.Component(0).(atom.Atom)
+  xc := x.Component(1).(atom.Atom)
+//  xd := x.Component(2).(atom.Atom)
+  xm := x.Component(3).(atom.Atom)
+//  xw := x.Component(4).(atom.Atom)
+  ys := y.Component(0).(atom.Atom)
+  yc := y.Component(1).(atom.Atom)
+//  yd := y.Component(2).(atom.Atom)
+  ym := y.Component(3).(atom.Atom)
+//  yw := y.Component(4).(atom.Atom)
+/*/
+    Gebiet: ___________     Komponist/Gruppe: ______________________________
+    Medium: ___
+/*/
+  switch actOrd {
+  case subject:
+    if xs.Eq (ys) {
+      if xc.Eq (yc) {
+        return xm.Less (ym)
+      }
+      return xc.Less (yc)
+    }
+    return xs.Less (ys)
+  case composer_group:
+    if xc.Eq (yc) {
+      if xs.Eq (ys) {
+        return x.Less (ym)
+      }
+      return x.Less (ys)
+    }
+    return xc.Less (yc)
+  case medium:
+    if xm.Eq (ym) {
+      if xs.Eq (ys) {
+        return x.Less (yc)
+      }
+      return x.Less (ys)
+    }
+    return xm.Less (ym)
   }
+  return false
 }
 
 func (x *audio) RotOrder() {
-//  ___.RotOrder()
+  actOrd = (actOrd + 1) % nOrders
+}
+
+func (x *audio) Index() Func {
+  return func (a Any) Any {
+    return a
+  }
 }

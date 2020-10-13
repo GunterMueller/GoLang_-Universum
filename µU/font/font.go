@@ -1,16 +1,22 @@
 package font
 
-// (c) Christian Maurer   v. 170328 - license see µU.go
+// (c) Christian Maurer   v. 200904 - license see µU.go
 
 var (
-  sign = []string {"r", "b", "s", "i"}
-  size = []string {"t", "s", "n", "b", "h"}
-  width  = []uint {5,  6,  8, 12, 16}
-  height = []uint {7, 10, 16, 24, 32}
+  sign = []string {"r", "b", "i"}
+  size = []string {"t", "s", "n", "b", "l", "h"}
+  width  = []uint { 5,   6,   8,  12,  14,  16}
+  height = []uint { 7,  10,  16,  24,  28,  32}
 )
 
 func init() {
-  Name = []string {"tiny  ", "small ", "normal", "big   ", "huge  "}
+  Name = []string{ "tiny  ", //  6pt
+                   "small ", //  8pt
+                   "normal", // 10pt
+                   "big",    // 12pt
+                   "large ", // 14pt
+                   "huge  ", // 17pt
+                 }
 }
 
 func code (f Font, s Size) string {

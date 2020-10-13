@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 140522 - license see µU.go
+// (c) Christian Maurer   v. 201007 - license see µU.go
 
 const (
   UndefModus = uint8(iota)
@@ -8,11 +8,12 @@ const (
   Konj
   NModi
 )
-var
-  lModus, sModus []string =
-  []string { "", "Indikativ", "Konjunktiv", },
-  []string { "", "Ind.", "Konj.", }
+var (
+  lModus = []string {"", "Indikativ", "Konjunktiv"}
+  sModus = []string {"", "Ind.", "Konj."}
+)
 
 func init() {
-  l[Modus], s[Modus] = lModus, sModus
+  l[Modus] = lModus
+  s[Modus] = sModus
 }

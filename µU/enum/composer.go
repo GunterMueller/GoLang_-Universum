@@ -1,13 +1,13 @@
 package enum
 
-// (c) Christian Maurer   v. 170419 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
 import
   "µU/str"
+
 var (
-  lComp, sComp[]string =
-  []string { "",
-    "Palestrina, Claudio da (1525-1594)",
+  lComposer = []string {"",
+                       "Palestrina, Claudio da (1525-1594)",
     "Monteverdi, Claudio (1567-1643)",
     "Frescobaldi, Girolamo (1583-1643)",
     "Schütz, Heinrich (1585-1672)",
@@ -93,15 +93,15 @@ var (
     "Britten, Benjamin (1913-1976)",
     "Boulez, Pierre (1925-2016)",
     "Henze, Hans Werner (1926-2012)",
-  },
-  lComp
-  NComposers = uint8(len(lComp))
-)
-func init() {
-  for i:= 1; i < len(lComp); i++ {
-    p, _:= str.Pos (lComp[i], ',')
-    sComp[i] = str.Part (lComp[i], 0, p)
   }
-  sComp[23] = "Bach, Ph.E."
-  l[Composer], s[Composer] = lComp, sComp
+)
+
+func init() {
+  l[Composer] = lComposer
+  s[Composer] = lComposer
+  for i := 1; i < len(l[Composer]); i++ {
+    p, _:= str.Pos (l[Composer][i], ',')
+    s[Composer][i] = str.Part (l[Composer][i], 0, p)
+  }
+  s[Composer][23] = "Bach, Ph.E."
 }

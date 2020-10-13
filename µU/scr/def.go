@@ -103,18 +103,22 @@ type
   ActMode() mode.Mode
 
 // Returns the coordinates of the top left corner of the screen.
-  X() uint; Y() uint
+  X() uint
+  Y() uint
 
 // Returns - depending on the actual fontsize -
 // the number of textlines and -columns of the actual mode.
-  NLines() uint; NColumns() uint
+  NLines() uint
+  NColumns() uint
 
 // Returns the pixelwidth/-height of the screen in the actual mode.
-  Wd() uint; Ht() uint
+  Wd() uint
+  Ht() uint
 
 // Returns the pixel distance between two textlines
 // = charheight/-width of the actual fontsize (s. below).
-  Wd1() uint; Ht1() uint
+  Wd1() uint
+  Ht1() uint
 
 // Return the relation Pixelwidth : Pixelheight of the actual mode.
   Proportion() float64
@@ -123,21 +127,25 @@ type
 
 // The colours of the screen are set to f and b (fore-/background).
   ScrColours (f, b col.Colour)
-  ScrColourF (f col.Colour); ScrColourB (b col.Colour)
+  ScrColourF (f col.Colour)
+  ScrColourB (b col.Colour)
 
 // Returns the fore-/backgroundcolour of the screen.
   ScrCols() (col.Colour, col.Colour)
-  ScrColF() col.Colour; ScrColB() col.Colour
+  ScrColF() col.Colour
+  ScrColB() col.Colour
 
 // The actual foregroundcolour is f, the actual backgroundcolour is b
 // resp. that of the screen.
 // The colours of the screen are not changed.
   Colours (f, b col.Colour)
-  ColourF (f col.Colour); ColourB (b col.Colour)
+  ColourF (f col.Colour)
+  ColourB (b col.Colour)
 
 // Returns the actual fore-/backgroundcolour.
   Cols() (col.Colour, col.Colour)
-  ColF() col.Colour; ColB() col.Colour
+  ColF() col.Colour
+  ColB() col.Colour
 
 // Returns the colour of the pixel at (x, y).
   Colour (x, y uint) col.Colour
@@ -258,20 +266,23 @@ type
 // Pre: See above.
 // A pixel in the actual foregroundcolour is set at position (x, y)
 // on the screen resp. the colour of that pixel is inverted.
-  Point (x, y int); PointInv (x, y int)
+  Point (x, y int)
+  PointInv (x, y int)
 
   OnPoint (x, y, a, b int, d uint) bool
 
 // Pre: See above.
 // At (xs[i], ys[i]) (i < len(xs) == len(ys)) a pixel is set in the actual
 // foregroundcolour resp. that pixel is inverted in its colour.
-  Points (xs, ys []int); PointsInv (xs, ys []int)
+  Points (xs, ys []int)
+  PointsInv (xs, ys []int)
 
 // Pre: See above.
 // The part of the line segment between (x, y) and (x1, y1)
 // visible on the screen is drawn in the actual foregroundcolour resp.
 // the pixels on that part are inverted in their colour.
-  Line (x, y, x1, y1 int); LineInv (x, y, x1, y1 int)
+  Line (x, y, x1, y1 int)
+  LineInv (x, y, x1, y1 int)
 
 // Pre: See above.
 // Returns true, iff the point at (x, y) has a distance of
@@ -288,7 +299,8 @@ type
 // For all i < n the parts of the line segments between (x[i], y[i]) and (x1[i], y1[i]),
 // that are visible on the screen, are drawn in the actual foregroundcolour
 // resp. all points on them are inverted.
-  Lines (x, y, x1, y1 []int); LinesInv (x, y, x1, y1 []int)
+  Lines (x, y, x1, y1 []int)
+  LinesInv (x, y, x1, y1 []int)
 
 // Pre: See above.
 // TODO Spec
@@ -298,7 +310,8 @@ type
 //      x[i] < Wd, y[i] < Ht für alle i < n:= len(x) == len(y).
 // From (x[0], y[0]) over (x[1], y[1]), ... until (x[n-1], y[n-1])
 // a sequence of line segments is drawn resp. all points on it are inverted.
-  Segments (x, y []int); SegmentsInv (x, y []int)
+  Segments (x, y []int)
+  SegmentsInv (x, y []int)
 
 // Returns true, iff the point at (a, b) has a distance of at most d pixels
 // from one of the sequence of line segments defined by x and y.
@@ -306,7 +319,8 @@ type
 
 // Pre: See above.
 // A line through (x, y) and (x1, y1) is drawn resp. all points on it are inverted.
-  InfLine (x, y, x1, y1 int); InfLineInv (x, y, x1, y1 int)
+  InfLine (x, y, x1, y1 int)
+  InfLineInv (x, y, x1, y1 int)
 
 // Returns true, iff the point at (a, b) has a distance of at most d pixels
 // from the line through (x, y) and (x1, y1).
@@ -316,15 +330,19 @@ type
 // Between (x, y), (x1, y1) and (x2, y2) a triangle is drawn
 // in the actual foregroundcolour resp. all points on it are inverted
 // resp. all its interior points (including its borders) are drawn / inverted.
-  Triangle (x, y, x1, y1, x2, y2 int); TriangleInv (x, y, x1, y1, x2, y2 int)
-  TriangleFull (x, y, x1, y1, x2, y2 int); TriangleFullInv (x, y, x1, y1, x2, y2 int)
+  Triangle (x, y, x1, y1, x2, y2 int)
+  TriangleInv (x, y, x1, y1, x2, y2 int)
+  TriangleFull (x, y, x1, y1, x2, y2 int)
+  TriangleFullInv (x, y, x1, y1, x2, y2 int)
 
 // Pre: See above.
 // Between (x, y) and (x1, y1) a rectangle (with horizontal and vertical borders)
 // is drawn in the actual foregroundcolour resp. all points on it are inverted
 // resp. all its interior points (including its borders) are drawn / inverted.
-  Rectangle (x, y, x1, y1 int); RectangleInv (x, y, x1, y1 int)
-  RectangleFull (x, y, x1, y1 int); RectangleFullInv (x, y, x1, y1 int)
+  Rectangle (x, y, x1, y1 int)
+  RectangleInv (x, y, x1, y1 int)
+  RectangleFull (x, y, x1, y1 int)
+  RectangleFullInv (x, y, x1, y1 int)
 
 // Pre: See above.
 // Returns true, iff the point at (a, b) has a distance of at most d pixels
@@ -344,8 +362,10 @@ type
 //        The polygon is drawn in the same colour.
 // A polygon is drawn between (x[0], y[0]), (x[1], y[1]), ... (x[n-1], y[n-1), (x[0], y[0])
 // resp. all pixels on it are inverted resp. the polygon is filled.
-  Polygon (x, y []int); PolygonInv (x, y []int)
-  PolygonFull (x, y []int); PolygonFullInv (x, y []int)
+  Polygon (x, y []int)
+  PolygonInv (x, y []int)
+  PolygonFull (x, y []int)
+  PolygonFullInv (x, y []int)
 
 // Returns true, iff the point at (a, b) has a distance of at most d pixels
 // from the polyon defined by x and y.
@@ -354,8 +374,10 @@ type
 // Pre: See above. r <= x, x + r < Wd, r <= y, y + r < Ht. 
 // Around (x, y) a circle with radius r is drawn / inverted
 // resp. all points in its interior are set / inverted.
-  Circle (x, y int, r uint); CircleInv (x, y int, r uint)
-  CircleFull (x, y int, r uint); CircleFullInv (x, y int, r uint)
+  Circle (x, y int, r uint)
+  CircleInv (x, y int, r uint)
+  CircleFull (x, y int, r uint)
+  CircleFullInv (x, y int, r uint)
 
 // Pre: See above. r <= x, x + r < Wd, r <= y, y + r < Ht,
 //      a and b given in degrees.
@@ -376,8 +398,10 @@ type
 // Pre: See above. a <= x, x + a < Wd, b <= y, y + b < Ht. 
 // Around (x, y) an ellipse with horizontal / vertical semiaxis a / b
 // is drawn / inverted resp. all points in its interior are set / inverted.
-  Ellipse (x, y int, a, b uint); EllipseInv (x, y int, a, b uint)
-  EllipseFull (x, y int, a, b uint); EllipseFullInv (x, y int, a, b uint)
+  Ellipse (x, y int, a, b uint)
+  EllipseInv (x, y int, a, b uint)
+  EllipseFull (x, y int, a, b uint)
+  EllipseFullInv (x, y int, a, b uint)
 
 // Returns true, iff the point at (A, B) has a distance of at most d pixels
 // from the border of the ellipse around (x, y) with semiaxis a and b.
@@ -390,7 +414,8 @@ type
 // resp. all points on that curve are inverted.
 // (For n == 0 the curve is the point (xs[0], ys[0]),
 // for n == 1 the line between (xs[0], ys[0]) and (xs[1], ys[1]).
-  Curve (xs, ys []int); CurveInv (xs, ys []int)
+  Curve (xs, ys []int)
+  CurveInv (xs, ys []int)
 
 // Returns true, iff the point at (x, y) has a distance of at most d pixels
 // from the curve defined by xs and ys.

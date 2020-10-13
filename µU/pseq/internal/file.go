@@ -1,13 +1,14 @@
 package internal
 
-// (c) Christian Maurer   v. 170316 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
 import (
   "os"
 //  . "µU/ker"
+  . "µU/obj"
   "µU/str"
 //  "µU/env"
-  "µU/errh"
+//  "µU/errh"
 )
 const
   rights = 0644
@@ -84,22 +85,11 @@ func new_() File {
   f.endoffset = 0
   f.isOpen = false
   return f
-//  return &f // prüfen, ob file = nil
 }
 
 func (f *file) Fin() {
   f.flush()
 }
-
-/*
-func (f *file) report (a, b string, n uint) {
-  if f.error == nil {
-//    errh.Error2 (a + b, n, "ok", 0)
-  } else {
-    errh.Error2 (a + " Error " + b, n, f.error.String(), 0)
-  }
-}
-*/
 
 func (f *file) Name (N string) {
   if str.Empty (N) { return }
@@ -107,23 +97,23 @@ func (f *file) Name (N string) {
   var fi os.FileInfo
   fi, f.error = os.Stat (N)
   f.exists = f.error == nil
-  if f.exists { // is there a file with name N (?)
+  if f.exists {
 //    if ! fi.IsRegular() { errh.Error0(N + " is no regular file"); Fin(); Exit (1) } // nothing goes
 //    if fi.Permission() != rights { errh.Error0(N + " has no rights"); Fin(); Exit (1) } // nothing goes
-    f.file, f.error = os.OpenFile (N, os.O_RDWR, rights) // ; f.report ("define", "OpenFile", 0)
+    f.file, f.error = os.OpenFile (N, os.O_RDWR, rights)
     if f.error == nil {
       f.endoffset = uint64(fi.Size())
-      _ = f.file.Close() // ; f.report ("define", "Close", 0)
+      _ = f.file.Close()
     } else {
       f.file = nil
       println (&os.PathError { "define", N, f.error })
     }
-  } else { // there is no file with name N (?)
+  } else { // there is no file with name N
     if os.IsPermission (f.error) { println ("no permission ") }
-    f.file, f.error = os.Create (N) // ; f.report ("define", "Create", 0)
+    f.file, f.error = os.Create (N)
     if f.error == nil {
       f.endoffset = 0
-      _ = f.file.Close() // ; f.report ("define", "Close", 0)
+      _ = f.file.Close()
       f.exists = true
     } else {
       f.file = nil
@@ -136,14 +126,13 @@ func (f *file) Name (N string) {
 func (f *file) Rename (s string) {
   f.flush()
   if f.isOpen {
-    _ = f.file.Sync() // ; f.report ("redefine", "Sync", 0)
-    _ = f.file.Close() // ; f.report ("redefine", "Close", 0)
+    _ = f.file.Sync()
+    _ = f.file.Close()
     f.isOpen = false
   }
   if f.file.Name() == s { return }
-  _ = os.Rename (f.file.Name(), s) // ; f.report ("redefine", "Rename", 0)
+  _ = os.Rename (f.file.Name(), s)
   f.exists = true // = Stat (&name, f.status) == 0
-  if ! f.exists { /* f.report ("redefine", "Stat", 0) */ }
   f.offset = 0
 //  f.endoffset = status.Byteanzahl // !!!
   f.isOpen = false
@@ -169,8 +158,8 @@ func (f *file) Length() uint64 {
   return f.endoffset
 }
 
-func (f *file) Seek (P uint64) {
-  f.offset = P
+func (f *file) Seek (i uint64) {
+  f.offset = i
 }
 
 func (f *file) Position() uint64 {
@@ -179,61 +168,25 @@ func (f *file) Position() uint64 {
 
 func (f *file) open() {
   if f.isOpen { return }
-//  f, err := OpenFile (f.file.Name(), /* os.O_APPEND */ os.O_RDWR, rights) // ; f.report ("open", f.file.Name(), 0)
-  f.file, f.error = os.OpenFile (f.file.Name(), /* os.O_APPEND */ os.O_RDWR, rights) // ; f.report ("open", f.file.Name(), 0)
-//  if err == nil {
-  if f.error == nil {
-//    f.file = f
-  } else {
+  f.file, f.error = os.OpenFile (f.file.Name(), os.O_RDWR, rights)
+  if f.error != nil {
     f.file = nil
   }
   f.isOpen = f.file != nil
 }
 
-func (f *file) read (bs []byte) uint {
+func (f *file) Read (s Stream) (int, error) {
   f.open()
-  if ! f.isOpen { errh.Error (f.file.Name(), uint(f.offset)) }
-  r := len (bs)
-//  r, f.error = f.file.ReadAt (bs, int64(f.offset)) // macht Zicken
-  _ /* off */, _ = f.file.Seek (int64(f.offset), 0) // ; f.report ("read", "Seek at offset", uint(off))
-  r, _ = f.file.Read (bs) // ; f.report ("Read", "at offset", uint(off))
-  f.offset += uint64(r)
-  return uint(r)
-}
-
-func (f *file) Read (bs []byte) (int, error) {
-// TODO
-  f.open()
-  r := len (bs)
-  r, f.error = f.file.ReadAt (bs, int64 (f.offset))
+  r := len(s)
+  r, f.error = f.file.ReadAt (s, int64 (f.offset))
   f.offset += uint64(r)
   return r, f.error
 }
 
-func (f *file) write (bs []byte) uint {
-// is going to be deprecated - will be replaced by the next method
-/*
+func (f *file) Write (s Stream) (int, error) {
   f.open()
-  w := len (bs)
-//  w, f.error = f.file.WriteAt (bs, int64(f.offset)) // ; f.report ("WriteAt", "", 1000000 + uint(w)
-  _, _ = f.file.Seek (int64(f.offset), 0) // ; f.report ("write", "Seek at offset", uint (off))
-  w, _ = f.file.Write (bs) // ; f.report ("Write", "at offset", uint (off))
-  f.offset += uint64(w)
-  if f.offset > f.endoffset { f.endoffset = f.offset }
-  return uint(w)
-*/
-  w := len (bs)
-  w, f.error = f.Write (bs)
-  return uint (w)
-}
-
-func (f *file) Write (bs []byte) (int, error) {
-  f.open()
-  w := len (bs)
-  w, f.error = f.file.WriteAt (bs, int64 (f.offset)) // ; f.report ("WriteAt", "", 1000000 + uint(w)
-//  var off int64
-//  /* off */ _, _ = f.file.Seek (int64(f.offset), 0) // ; f.report ("write", "Seek at offset", uint (off))
-//  w, f.error = f.file.Write (bs) // ; f.report ("Write", "at offset", uint (off))
+  w := len (s)
+  w, f.error = f.file.WriteAt (s, int64 (f.offset))
   f.offset += uint64(w)
   if f.offset > f.endoffset { f.endoffset = f.offset }
   return w, f.error
@@ -241,8 +194,8 @@ func (f *file) Write (bs []byte) (int, error) {
 
 func (f *file) flush() {
   if f.isOpen {
-    _ = f.file.Sync() // ; f.report ("flush", "Sync", 0)
-    _ = f.file.Close() // ; f.report ("flush", "Close", 0)
+    _ = f.file.Sync()
+    _ = f.file.Close()
     f.isOpen = false
   }
 }

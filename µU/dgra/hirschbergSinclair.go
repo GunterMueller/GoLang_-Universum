@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 200119 - license see µU.go
+// (c) Christian Maurer   v. 200728 - license see µU.go
 //
 // >>> D.S. Hirschberg, J. B. Sinclair: Decentralized Extrema-Finding in
 //     Circular Configuations of Processes. CACM 23 (1980), 627 - 628
@@ -35,29 +35,34 @@ func (x *distributedGraph) hirschbergSinclair() {
         case internal.Candidate:
           if id < x.me {
             msg.SetReply (false)
-            x.ch[j].Send (msg)
+//            x.ch[j].Send (msg)
+            x.send (j, msg)
           } else if id > x.me {
             status = lost
             num++
             if num < maxnum {
               msg.SetPass (id, num, maxnum)
-              x.ch[1 - j].Send (msg)
+//              x.ch[1 - j].Send (msg)
+              x.send (1 - j, msg)
             } else { // num >= maxnum
               msg.SetReply (true)
-              x.ch[j].Send (msg)
+//              x.ch[j].Send (msg)
+              x.send (j, msg)
             }
           } else { // id == x.me
             x.leader = x.me
             status = won
             msg.SetLeader (x.me)
-            x.ch[1 - j].Send (msg)
+//            x.ch[1 - j].Send (msg)
+            x.send (1 - j, msg)
           }
         case internal.Reply:
           if id == x.me {
             replyOk = replyOk && ok
             gotReply <- j
           } else { // id != x.me
-            x.ch[1 - j].Send (msg) // pass msg
+//            x.ch[1 - j].Send (msg) // pass msg
+            x.send (1 - j, msg) // pass msg
           }
         case internal.Leader:
           if id == x.me {
@@ -68,7 +73,8 @@ func (x *distributedGraph) hirschbergSinclair() {
           } else {
             status = lost
             msg.SetLeader (id)
-            x.ch[1 - j].Send (msg)
+//            x.ch[1 - j].Send (msg)
+            x.send (1 - j, msg)
             x.leader = id
             done <- 0
             mutex.Unlock()
@@ -83,8 +89,10 @@ func (x *distributedGraph) hirschbergSinclair() {
     replyOk = true
     msg := internal.New()
     msg.SetPass (x.me, 0, maxnum)
-    x.ch[0].Send (msg)
-    x.ch[1].Send (msg)
+//    x.ch[0].Send (msg)
+    x.send (0, msg)
+//    x.ch[1].Send (msg)
+    x.send (1, msg)
     <-gotReply; <-gotReply // await 2 responses
     if ! replyOk {
       status = lost

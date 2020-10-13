@@ -1,6 +1,6 @@
 package phone
 
-// (c) Christian Maurer   v. 170810 - license see µU.go
+// (c) Christian Maurer   v. 200913 - license see µU.go
 
 import (
   . "µU/obj"
@@ -91,7 +91,7 @@ func (x *phonenumber) Defined (s string) bool {
   } else {
     x.uint16 = 0
   }
-  str.OffAllSpaces (&s)
+  str.OffBytes (&s, ' ')
   if s == "" {
     x.uint32 = uint32(x.uint16)
     x.uint16 = 0

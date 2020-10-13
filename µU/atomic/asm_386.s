@@ -1,6 +1,6 @@
 // package atomic
 
-// (c) Christian Maurer   v. 190816 license see µU.go
+// (c) Christian Maurer   v. 201009 license see µU.go
 
 #include "textflag.h"
 
@@ -36,14 +36,14 @@ TEXT ·FetchAndIncrement(SB),NOSPLIT,$0
   MOVL AX, ret+4(FP)
   RET
 
-TEXT ·Add(SB),NOSPLIT,$0
+TEXT ·Inc(SB),NOSPLIT,$0
   MOVL n+0(FP), BP
   MOVL k+4(FP), AX
   LOCK
   XADDL AX, 0(BP)
   RET
 
-TEXT ·Inc(SB),NOSPLIT,$0
+TEXT ·Inc1(SB),NOSPLIT,$0
   MOVL n+0(FP), BP
   MOVL $1, AX
   LOCK

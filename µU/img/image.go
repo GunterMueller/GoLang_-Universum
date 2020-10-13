@@ -1,6 +1,6 @@
 package img
 
-// (c) Christian Maurer   v. 170814 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
 import (
   "os/exec"
@@ -23,7 +23,7 @@ func put (n string, x, y, w, h uint) {
 //  if scr.UnderX() { errh.Hint (errh.ToWait) }
   buf := scr.P6Encode (x, y, w, h)
   if scr.UnderX() { errh.DelHint() }
-  file := pseq.New (buf)
+  file := pseq.New (buf, false)
   file.Name (filename)
   file.Clr()
   file.Put (buf)
@@ -46,7 +46,7 @@ func size_(n string) (uint, uint) {
   l := pseq.Length (filename)
   if l == 0 { return 0, 0 }
   buf := make ([]byte, l)
-  file := pseq.New (buf)
+  file := pseq.New (buf, false)
   file.Name (filename)
   buf = file.Get().([]byte)
   file.Fin()
@@ -61,7 +61,7 @@ func get (n string, x, y uint) {
   l := pseq.Length (filename)
   if l == 0 { return }
   buf := make ([]byte, l)
-  file := pseq.New (buf)
+  file := pseq.New (buf, false)
   file.Name (filename)
   buf = file.Get().([]byte)
   file.Fin()

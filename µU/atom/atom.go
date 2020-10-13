@@ -1,6 +1,6 @@
 package atom
 
-// (c) Christian Maurer   v. 161216 - license see µU.go
+// (c) Christian Maurer   v. 201010 - license see µU.go
 
 import (
   "reflect"
@@ -13,6 +13,7 @@ import (
   "µU/tval"
   "µU/char"
   "µU/text"
+  "µU/texts"
   "µU/bnat"
   "µU/breal"
   "µU/clk"
@@ -42,6 +43,8 @@ func new_(o Object) Atom {
     x.Object, x.uint = char.New(), Character
   case "text":
     x.Object, x.uint = text.New (o.(text.Text).Len()), Text
+  case "texts":
+    x.Object, x.uint = texts.New (o.(texts.Texts).Len()), Texts
   case "bnat":
     x.Object, x.uint = bnat.New (o.(bnat.Natural).Width()), Natural
   case "breal":
@@ -56,14 +59,13 @@ func new_(o Object) Atom {
     x.Object, x.uint = cntry.New(), Country
   case "pers":
     x.Object, x.uint = pers.New(), Person
-////    persaddr
   case "phone":
     x.Object, x.uint = phone.New(), PhoneNumber
   case "addr":
     x.Object, x.uint = addr.New(), Address
 ////    host, conn
   default:
-    ker.Panic ("atom.New: parameter does not characterize an atomtype")
+    ker.Panic ("atom.New: parameter object is not of an admissible type")
   }
   return x
 }
@@ -142,4 +144,8 @@ func (x *atom) Encode() []byte {
 
 func (x *atom) Decode (bs []byte) {
   x.Object.Decode (bs)
+}
+
+func (x *atom) RotOrder() {
+  x.Object.(Orderer).RotOrder()
 }

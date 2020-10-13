@@ -71,6 +71,7 @@ func Valid (x float64) bool { return valid(x) }
 func Number (s string) float64 { return number(s) }
 
 func Defined (s string) (float64, bool) { return defined(s) } // TODO
+
 func String (x float64) string { return string_(x) }
 
 func Colours (f, b col.Colour) { colours(f,b) }

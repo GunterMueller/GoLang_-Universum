@@ -1,11 +1,9 @@
 package lint
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 201009 - license see µU.go
 
 import (
   . "µU/obj"
-  . "µU/add"
-  . "µU/mul"
   "µU/col"
 )
 type
@@ -20,8 +18,8 @@ type
   Adder
   Multiplier
 
-  SetInt(n int)
-  SetInt64(n int64)
+  SetInt (n int)
+  SetInt64 (n int64)
 
   Len() uint
   Odd() bool
@@ -33,22 +31,22 @@ type
 // Specs see µU.nat
   Inc()
   Dec()
-  Mod(y LongInteger)
-  MulMod(y, m LongInteger)
-  Div2(y, r LongInteger)
-  Gcd(y LongInteger)
-  Lcm(y LongInteger)
-  Pow(y LongInteger)
-  PowMod(y, m LongInteger)
-  Fak(n uint)
-  Binom(n, k uint)
-  LowFak(n, k uint)
-  Stirl2(n, k uint)
+  Mod (y LongInteger)
+  MulMod (y, m LongInteger)
+  Div2 (y, r LongInteger)
+  Gcd (y LongInteger)
+  Lcm (y LongInteger)
+  Pow (y LongInteger)
+  PowMod (y, m LongInteger)
+  Fak (n uint)
+  Binom (n, k uint)
+  LowFak (n, k uint)
+  Stirl2 (n, k uint)
   ProbabylPrime (n int) bool
 
   Bitlen() uint
-  Bit(i int) uint
-  SetBit(i int, b bool)
+  Bit (i int) uint
+  SetBit (i int, b bool)
 }
 // Return the long integer with Val(n) == n resp. Val64(n) == n.
 func New (n int) LongInteger { return newInt(n) }

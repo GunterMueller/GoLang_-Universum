@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 170419 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
 const (
   UndefPersona = uint8(iota)
@@ -9,12 +9,10 @@ const (
   Dritte
   NPersonae
 )
-var (
-  lPersona, sPersona []string =
-  []string { "", "1.", "2.", "3." },
-  lPersona
-)
+var
+  lPersona = []string {"", "1.", "2.", "3."}
 
 func init() {
-  l[Persona], s[Persona] = lPersona, sPersona
+  l[Persona] = lPersona
+  s[Persona] = lPersona
 }

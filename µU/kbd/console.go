@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 200517 - license see µU.go
+// (c) Christian Maurer   v. 200929 - license see µU.go
 
 import (
   "os"
@@ -140,10 +140,17 @@ loop:
         *B = bb[k]
       }
     default:
-      if k == 0 {
-        // ignore
-      } else {
-        ker.Panic1 ("kbd.console", 10000 + k)
+      switch k {
+      case 0:
+        ; // ignore
+      case doofL:
+        ;
+      case doofR:
+        ;
+      case windoof:
+        ;
+      default:
+        ker.Panic1 ("kbd.console", 10000 + k) // z.B. für k == 125
       }
     }
     if k1 < off { // key pressed, not released

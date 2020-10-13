@@ -1,15 +1,18 @@
 package enum
 
-// (c) Christian Maurer   v. 170419 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
 var (
-  lAudioMedium, sAudioMedium []string =
-  []string { "", "Single Play record", "Long Play record", "Composeract disk",
-             "Digital versatile disc", "Super Audio CD", "Blu-ray disc" },
-  []string { "", "SP", "LP", "CD", "DVD", "SACD", "BD" }
-  NAudioMedia = uint8(len(lAudioMedium))
+  laudioMedium = []string {"   ",
+                           "SP ",
+                           "LP ",
+                           "CD ",
+                           "DVD",
+                           "BR ",
+                          }
 )
 
 func init() {
-  l[AudioMedium], s[AudioMedium] = lAudioMedium, sAudioMedium
+  l[AudioMedium] = laudioMedium
+  s[AudioMedium] = laudioMedium
 }

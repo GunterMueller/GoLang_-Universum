@@ -1,6 +1,6 @@
 package z
 
-// (c) Christian Maurer   v. 200403 - license see µU.go
+// (c) Christian Maurer   v. 201008 - license see µU.go
 
 const
   delta = 'a' - 'A'
@@ -60,13 +60,13 @@ func opensHell (b byte) bool {
          b == byte(0xc3)
 }
 
-func devilsDung (s *string) bool {
-  n := len (*s)
+func devilsDung (s string) bool {
+  n := len (s)
   if n == 0 {
     return false
   }
   for i := 0; i < n; i++ {
-    switch (*s)[i] {
+    switch s[i] {
     case 0xc2, 0xc3:
       return true
     }
@@ -75,7 +75,9 @@ func devilsDung (s *string) bool {
 }
 
 func toHellWithUTF8 (s *string) {
+//  t := *s
   n := len (*s)
+//  for m := 0; m < n; m++ { println (m, (*s)[m], string((*s)[m])) }
   if n == 0 { return }
   bs := []byte(*s)
   i, k := 0, 0
@@ -96,9 +98,17 @@ func toHellWithUTF8 (s *string) {
   }
   if k == n {
     return
-  } else if k < n {
+  }
+  if k < n {
     *s = string(bs[:k])
   }
+/*/
+  println (t, "->", *s)
+  for m := 0; m < n; m++ { println (m, t[m], string(t[m])) }
+  println("---")
+  for m := 0; m < k; m++ { println (m, (*s)[m], string((*s)[m])) }
+  println("---")
+/*/
 }
 
 func Equiv (a, b byte) bool {

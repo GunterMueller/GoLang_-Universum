@@ -11,6 +11,7 @@ type
 
   col.Colourer
   Indexer
+  Orderer
 }
 
 // Returns a new empty pair of Person and Address.

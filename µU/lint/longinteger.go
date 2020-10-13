@@ -1,6 +1,6 @@
 package lint
 
-// (c) Christian Maurer   v. 180901 - license see µU.go
+// (c) Christian Maurer   v. 201009 - license see µU.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 
@@ -9,9 +9,7 @@ import (
   . "math/big"
 //  "strconv"
   . "µU/obj"
-  . "µU/add"
-  . "µU/mul"
-//  "µU/str"
+
   "µU/col"
   "µU/scr"
   "µU/box"
@@ -40,15 +38,15 @@ func init() {
   bx.Wd (64)
 }
 
-func newInt(n int) LongInteger {
-  x:= new(longInteger)
-  x.n = NewInt(int64(n))
+func newInt (n int) LongInteger {
+  x := new(longInteger)
+  x.n = NewInt (int64(n))
   x.cF, x.cB = scr.StartCols()
   return x
 }
 
 func new64 (n int64) LongInteger {
-  x:= new(longInteger)
+  x := new(longInteger)
   x.n = NewInt(n)
   x.cF, x.cB = scr.StartCols()
   return x
@@ -57,7 +55,7 @@ func new64 (n int64) LongInteger {
 /* deprecated, has to be moved into a package lnat !
 
 func newNat (n uint) LongInteger {
-  x:= new(longInteger)
+  x := new(longInteger)
   x.n = NewInt(int64(n))
   x.cF, x.cB = col.StartCols()
   return x
@@ -65,7 +63,7 @@ func newNat (n uint) LongInteger {
 */
 
 func (x *longInteger) imp (Y Any) *Int {
-  x, ok:= Y.(*longInteger)
+  x, ok := Y.(*longInteger)
   if ! ok { TypeNotEqPanic (x, Y) }
   return x.n
 }
@@ -89,7 +87,7 @@ func (x *longInteger) Copy (Y Any) {
 }
 
 func (x *longInteger) Clone() Any {
-  y:= New (0)
+  y := New (0)
   y.Copy (x)
   return y
 }
@@ -136,10 +134,10 @@ func (x *longInteger) Colours (f, b col.Colour) {
 }
 
 func (x *longInteger) Write (l, c uint) {
-  s:= x.String()
-  c0:= c
+  s := x.String()
+  c0 := c
   scr.Colours (x.cF, x.cB)
-  for n:= 0; n < len (s); n++ {
+  for n := 0; n < len (s); n++ {
     scr.Write1 (s[n], l, c)
     if c + 1 < scr.NColumns() {
       c ++
@@ -153,9 +151,9 @@ func (x *longInteger) Write (l, c uint) {
 }
 
 func (x *longInteger) Edit (l, c uint) {
-  s:= x.String()
-  w:= uint(len (s))
-  N:= scr.NColumns()
+  s := x.String()
+  w := uint(len (s))
+  N := scr.NColumns()
   if c >= N - w {
     x.Write (l, c)
     errh.Error0("zu wenig Platz auf dem Bildschirm") // TODO
@@ -178,10 +176,11 @@ func (x *longInteger) SetFont (f font.Font) {
 }
 
 func (x *longInteger) Print (l, c uint) {
-  s:= x.String()
-  c0:= c
-  for i:= 0; i < len (s); i++ {
-    prt.Print1 (s[i], l, c, x.Font)
+  s := x.String()
+  c0 := c
+  for i := 0; i < len (s); i++ {
+    prt.SetFont (x.Font)
+    prt.Print1 (s[i], l, c)
     if c + 1 < prt.NColumns() {
       c ++
     } else if l + 2 < prt.NLines() {
@@ -203,7 +202,7 @@ func (x *longInteger) Odd() bool {
 }
 
 func (x *longInteger) Val() int {
-  n:= x.n.Int64()
+  n := x.n.Int64()
   if Codelen(int(0)) == 4 {
     if n < 1<<32 - 1 && n > -1<<32 {
       return int(n)
@@ -217,7 +216,7 @@ func (x *longInteger) Val() int {
 }
 
 func (x *longInteger) ValInt() int {
-  n:= x.n.Int64()
+  n := x.n.Int64()
   if n < 1<<32 - 1 {
     return int(n)
   }
@@ -234,32 +233,32 @@ func (x *longInteger) Val64() int64 {
 /* deprecated, has to be moved into a package lreal !
 
 func newReal (r float64) LongInteger {
-  x:= New(0)
+  x := New(0)
   x.SetReal(r)
   return x
 }
  
 func (x *longInteger) ValReal() float64 {
-  r, err:= strconv.ParseFloat (x.n.String(), 64)
+  r, err := strconv.ParseFloat (x.n.String(), 64)
   if err != nil { return math.NaN() }
   if x.n.Sign() < 0 { r = -r }
   return r
 }
 
 func (x *longInteger) SetReal (r float64) {
-  i, _:= math.Modf (r + 0.5)
-  s:= strconv.FormatFloat (i, 'f', -1, 64)
-  if p, ok:= str.Pos (s, '.'); ok {
+  i, _ := math.Modf (r + 0.5)
+  s := strconv.FormatFloat (i, 'f', -1, 64)
+  if p, ok := str.Pos (s, '.'); ok {
     s = str.Part (s, 0, p)
   }
-  if _, ok:= x.n.SetString (s, 10); ! ok {
+  if _, ok := x.n.SetString (s, 10); ! ok {
     x.n.SetInt64 (0)
   }
 }
 */
 
 func (x *longInteger) Defined (s string) bool {
-  _, ok:= x.n.SetString (s, 10)
+  _, ok := x.n.SetString (s, 10)
   if ok {
     return true
   }
@@ -273,8 +272,8 @@ func (x *longInteger) String() string {
 
 func (x *longInteger) SumDigits() uint {
   tmp.n.Abs (x.n)
-  a:= uint(0)
-  for _, c:= range (tmp.n.String()) {
+  a := uint(0)
+  for _, c := range (tmp.n.String()) {
     a += uint(c)
   }
   return a
@@ -290,7 +289,7 @@ func (x *longInteger) Sum (Y, Z Adder) {
 }
 
 func (x *longInteger) Add (Y ...Adder) {
-  for _, y:= range Y {
+  for _, y := range Y {
     x.n.Add (x.n, y.(*longInteger).n)
   }
 }
@@ -300,7 +299,7 @@ func (x *longInteger) Inc() {
 }
 
 func (x *longInteger) Sub (Y ...Adder) {
-  for _, y:= range Y {
+  for _, y := range Y {
     x.n.Sub (x.n, y.(*longInteger).n)
   }
 }
@@ -313,8 +312,8 @@ func (x *longInteger) One() bool {
   return x.Eq (one)
 }
 
-func (x *longInteger) Mul (Y ...Multiplier) {
-  for _, y:= range Y {
+func (x *longInteger) Mul (Y ...Any) {
+  for _, y := range Y {
     x.n.Mul (x.n, y.(*longInteger).n)
   }
 }
@@ -323,14 +322,29 @@ func (x *longInteger) Sqr() {
   x.n.Mul (x.n, x.n)
 }
 
-func (x *longInteger) Div (Y, Z Multiplier) {
-  zn:= x.imp (Z)
-  if zn.Cmp (zero.n) == 0 { DivBy0Panic() }
-  x.n.Quo (x.imp (Y), zn)
+func (x *longInteger) Power (n uint) {
+  switch n {
+  case 0:
+    x.n.SetInt64 (1)
+  case 1:
+    return
+  default:
+    q := x.n
+    for i := uint(1); i < n; i++ {
+      q.Mul (q, x.n)
+    }
+    x.n = q
+  }
 }
 
-func (x *longInteger) DivBy (Y Multiplier) {
-  x.Div (x, Y)
+func (x *longInteger) div (Y, Z Any) {
+  z := x.imp (Z)
+  if z.Cmp (zero.n) == 0 { DivBy0Panic() }
+  x.n.Quo (x.imp (Y), z)
+}
+
+func (x *longInteger) DivBy (Y Any) {
+  x.div (x, Y)
 }
 
 func (x *longInteger) Mod (Y LongInteger) {
@@ -343,15 +357,15 @@ func (x *longInteger) MulMod (Y, M LongInteger) {
 }
 
 func (x *longInteger) Div2 (Y, R LongInteger) {
-  yn:= x.imp (Y)
-  r, ok:= R.(*longInteger)
+  yn := x.imp (Y)
+  r, ok := R.(*longInteger)
   if ! ok { TypeNotEqPanic (r, R) }
   if yn.Cmp (zero.n) == 0 { DivBy0Panic() }
   _, r.n = x.n.QuoRem (x.n, yn, one.n)
 }
 
 func (x *longInteger) Gcd (Y LongInteger) {
-  yn:= x.imp (Y)
+  yn := x.imp (Y)
   if x.n.Sign() <= 0 || yn.Sign() <= 0 {
     return
   }
@@ -359,7 +373,7 @@ func (x *longInteger) Gcd (Y LongInteger) {
 }
 
 func (x *longInteger) Lcm (Y LongInteger) {
-  yn:= x.imp (Y)
+  yn := x.imp (Y)
   if x.n.Sign() <= 0 || yn.Sign() <= 0 {
     return
   }
@@ -413,9 +427,9 @@ func (x *longInteger) Stirl2 (n, k uint) {
     return
   }
   tmp.n.SetInt64 (1)
-  e:= k % 2 != 0
-  nn, ii:= new64(int64(n)).(*longInteger), new64(1).(*longInteger)
-  for i:= uint(1); i <= k; i++ {
+  e := k % 2 != 0
+  nn, ii := new64(int64(n)).(*longInteger), new64(1).(*longInteger)
+  for i := uint(1); i <= k; i++ {
     tmp.n.Mul (tmp.n, tmp1.n.SetInt64 (int64(k - i + 1)))
     tmp.n.Div (tmp.n, ii.n)
     tmp1.n.Mul (tmp1.n.Exp (ii.n, nn.n, nil), tmp.n)
@@ -439,7 +453,7 @@ func (x *longInteger) Bit (i int) uint {
 }
 
 func (x *longInteger) SetBit (i int, b bool) {
-  u:= uint(0)
+  u := uint(0)
   if b { u++ }
   x.n.SetBit (x.n, i, u)
 }

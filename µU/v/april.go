@@ -1,6 +1,6 @@
 package v
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
 import (
   "strconv"
@@ -22,7 +22,7 @@ var (
 )
 
 func rot (n int) { var b byte
-  for i:= 0; ! ok; i++ {
+  for i := 0; ! ok; i++ {
     switch i % 4 { case 0: b = '|'; case 1: b = '/'; case 2: b = '-'; case 3: b = '\\' }
     scr.Write1 (b, y0 + 1, x0 + 64); time.Msleep (50)
   }
@@ -36,10 +36,14 @@ func doodle (c col.Colour, n int) {
   scr.Write ("The µU-tool to remove \"       \" is going to be executed, i.e.", y0, x0)
   scr.Write ("your disk will be completely reformatted, one moment please ... ", y0 + 1, x0); doof (y0, 26)
   const m = 1<<16
-  x:= str.New (m)
+  x := str.New (m)
   ok = false
-  for i:= 0; i < 10 * n; i++ { if i == 0 { go rot (n) }
-    file:= pseq.New (x); file.Name (f + strconv.Itoa(i) + t); file.Clr(); file.Ins (x); file.Fin()
+  for i := 0; i < 10 * n; i++ { if i == 0 { go rot (n) }
+    file := pseq.New (x, false);
+    file.Name (f + strconv.Itoa(i) + t)
+    file.Clr()
+    file.Ins (x)
+    file.Fin()
   }
   ok = true
   scr.ColourF (col.LightWhite())

@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 180725 - license see µU.go
+// (c) Christian Maurer   v. 201010 - license see µU.go
 
 import (
   . "µU/obj"
@@ -29,6 +29,7 @@ type
   Formatter
   Stringer
   Printer
+  Orderer
 
 // Returns true, if x and y coincide in surname, first name and birthday.
   Equiv (y Person) bool

@@ -1,81 +1,136 @@
 package dgra
 
-// (c) Christian Maurer   v. 200603 - license see µU.go
+// (c) Christian Maurer   v. 200721 - license see µU.go
 //
-// >>> under development
+// >>> Dijkstra-Scholten: Termination Detection for Diffusing Computations
+//     Inf. Proc. Letters 11 (1980) 1-4
 
 import (
-  "math/rand"
   . "µU/obj"
-  "µU/atomic"
+  . "µU/atomic";
+  "µU/time"
+  "µU/nat"
   "µU/perm"
 )
 const (
-  message = byte(iota)
+  message = uint(iota)
   signal
 )
 
-// message sent / received: x.outDef++ / x.inDef++
-//  signal received / sent: x.outDef-- / x.inDef--
+func (x *distributedGraph) lor (s string, i uint) {
+  return
+  x.log4 (nat.String (time.Secnsec()) + " " + s, x.me, "from", x.nr[i],
+          "in =", x.inDefs, "out =", x.outDefs)
+}
+
+func (x *distributedGraph) los (s string, i uint) {
+  return
+  x.log4 (nat.String (time.Secnsec()) + " " + s, x.me, " to ", x.nr[i],
+          "in =", x.inDefs, "out =", x.outDefs)
+}
+
 func (x *distributedGraph) DijkstraScholten (o Op) {
-  x.connect (byte(0))
+  x.connect (uint(0)) // iff messages have type uint
+  x.Op = o
+  for i := uint(0); i < x.n; i++ {
+    go x.do (i)
+  }
   if x.me == x.root {
-    x.parent = x.me
-    p := perm.New(x.n)
+    p := perm.New (x.n)
     for i := uint(0); i < x.n; i++ {
-      x.ch[p.F(i)].Send (message)
-      x.outDef++
+      j := p.F(i)
+      x.ch[j].Send (x.me + inf * message)
+      Inc (&x.outDefs)
+x.los ("msg", j)
+    }
+x.log0 (nat.String (time.Secnsec()) + nat.String (x.me) + " all msgs sent")
+    x.Op (x.actVertex)
+  }
+  <-done
+}
+
+func (x *distributedGraph) do (i uint) {
+  for {
+    n := x.ch[i].Recv().(uint)
+    content := n % inf // content of received message
+    if content != x.nr[i] {
+      x.log2 ("content", content, "instead", x.nr[i])
+    }
+    if n / inf == message {
+      if x.Outgoing (i) { x.log ("error: out to", x.nr[i])}
+      Inc (&x.inDefs)
+x.lor ("msg", i)
+      x.Mutex.Lock()
+      if x.inDefs == 1 {
+        x.Op (x.actVertex)
+      }
+      x.Mutex.Unlock()
+      x.corn.Ins (i)
+      if x.NumNeighboursOut() == 0 {
+        x.Mutex.Lock()
+        if x.inDefs == x.NumNeighboursIn() {
+// i.e.    from all incoming neighbours a message received
+          for x.inDefs > 0 {
+            j := x.corn.Get().(uint)
+            x.ch[j].Send (x.me + inf * signal)
+            Dec (&x.inDefs)
+x.los ("sig", j)
+          }
+          x.Mutex.Unlock()
+          break
+        } else { // x.inDefs < x.NumNeighboursIn()
+//        messages from incoming neighbours outstanding,
+//        i.e. wait for them, so remain in for-loop
+          x.Mutex.Unlock()
+        }
+      } else { // x.Outgoing (i) > 0
+        x.Mutex.Lock()
+        if x.inDefs == x.NumNeighboursIn() {
+          p := perm.New (x.n)
+          for j := uint(0); j < x.n; j++ {
+            k := p.F(j)
+            if x.Outgoing (k) {
+              x.ch[k].Send (x.me + inf * message)
+              Inc (&x.outDefs)
+x.los ("msg", k)
+            }
+          }
+//        and now wait for the corresponding signals,
+//        so remain in for-loop
+        } else { // x.inDefs < x.NumNeighboursIn()
+//        messages from incoming neighbours outstanding,
+//        i.e. wait for them, so remain in for-loop
+        }
+        x.Mutex.Unlock()
+      }
+    } else { // n/inf == signal
+      if x.Incoming (i) { x.log ("error: in from", x.nr[i])}
+      Dec (&x.outDefs)
+x.lor ("sig", i)
+      if x.me == x.root { // environment
+        if x.outDefs == 0 {
+x.log (nat.String (time.Secnsec()) + " term by sig <", x.nr[i])
+          break
+        }
+      } else { // inner node
+        x.Mutex.Lock()
+        if x.outDefs == 0 {
+          for x.inDefs > 0 {
+            j := x.corn.Get().(uint)
+            x.ch[j].Send (x.me + inf * signal)
+            Dec (&x.inDefs)
+x.los ("sig", j)
+          }
+          x.Mutex.Unlock()
+          break
+        } else { // x.outDefs > 0
+          x.Mutex.Unlock()
+//        must not send any signals, before signals
+//        from all outgoing neighbours received,
+//        i.e. wait for them, so remain in for-loop
+        }
+      }
     }
   }
-done := make(chan int, 1)
-  for j := uint(0); j < x.n; j++ {
-    go func (i uint) {
-      if x.ch[i].Recv().(byte) == message {
-//        x.Mutex.Lock()
-//        if x.inDef[i] == 0 {
-        if x.parent == inf {
-          x.parent = x.nr[i]
-//          x.Mutex.Unlock()
-        } else {
-//          x.Mutex.Unlock()
-        }
-        atomic.Add (&x.inDef[i], 1)
-        atomic.Add (&x.inDefSum, 1)
-        x.corn.Ins (x.nr[i])
-//      if x.corn.Num() > 0 
-//      wenn er Nachfolger hat, dann an alle eine Sendung ?
-      } else { // signal received
-        atomic.Dec (&x.outDef)
-        _ = x.corn.Get().(uint)
-      }
-    }(j)
- //   if x.me != x.root && x.NumNeighboursOut() > 0 { // only for predecessors (except root)
-    go func (i uint) {
-      n := uint(rand.Uint32()) % x.n
-      x.Mutex.Lock()
-      if x.inDefSum > 0 { // x.inDef[n] > 0 || x.inDef[n] == 0 && x.outDef > 0 {
-        x.ch[n].Send (message)
-        x.Mutex.Unlock()
-        atomic.Add (&x.outDef, 1)
-      } else { // x.inDef == 0 && x.outDef == 0, i.e.
-        x.Mutex.Unlock()
-        // process is in neutral state and must not send any more messages
-      }
-    }(j)
-    go func (i uint) {
-      x.Mutex.Lock()
-      if x.inDefSum > 1 || x.inDefSum == 1 && x.outDef == 0 {
-        if x.inDefSum == 1 {
-          x.ch[x.parent].Send (signal)
-          x.Mutex.Unlock()
-        } else { // x.inDefSum > 1
-          x.Mutex.Unlock()
-          n := x.corn.Get().(uint)
-          x.ch[n].Send (signal)
-        }
-        atomic.Dec (&x.outDef)
-      }
-    }(j)
-  }
-<-done
+  done <- 0
 }

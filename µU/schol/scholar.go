@@ -442,9 +442,9 @@ func (x *scholar) Decode (bs []byte) {
 }
 
 func (x *scholar) Index() Func {
-  return func (X Any) Any {
-    x, ok := X.(*scholar)
-    if ! ok { TypeNotEqPanic (x, X) }
+  return func (a Any) Any {
+    x, ok := a.(*scholar)
+    if ! ok { TypeNotEqPanic (x, a) }
     return x.Person
   }
 }

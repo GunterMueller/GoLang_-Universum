@@ -1,6 +1,6 @@
 package breal
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 201009 - license see µU.go
 
 import (
   . "µU/obj"
@@ -17,7 +17,10 @@ type
 
   RealVal () float64
   SetReal (r float64) bool
-// Adder, Multiplier, further arithmetics ?
+
+  Adder
+  Multiplier
+// further arithmetics ?
 }
 
 // Returns a new Object, that can hold real numbers

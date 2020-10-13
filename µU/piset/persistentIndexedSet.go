@@ -1,6 +1,6 @@
 package piset
 
-// (c) Christian Maurer   v. 190805 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
 import (
   . "µU/obj"
@@ -26,7 +26,7 @@ type
 func new_(o Object, f Func) PersistentIndexedSet {
   x := new (persistentIndexedSet)
   x.Object = o.Clone().(Object)
-  x.PersistentSequence = pseq.New (x.Object)
+  x.PersistentSequence = pseq.New (x.Object, false)
   x.Func, x.Index = f, internal.New (f (o))
   x.Set = set.New (x.Index)
   x.Buffer = buf.New (uint(0))
@@ -61,14 +61,13 @@ func (x *persistentIndexedSet) build() {
   if x.PersistentSequence.Empty() { return }
   x.PersistentSequence.Trav (func (a Any) {
     x.Object = a.(Object).Clone().(Object)
-//    e, ok := x.Object.(Editor); if ok { e.Write (0, 0) }
     if x.Object.Empty() {
       x.Buffer.Ins (i)
     } else {
       x.Index.Set (x.Func (x.Object), i)
       x.Set.Ins (x.Index)
     }
-    i ++
+    i++
   })
   x.Jump (false)
 }
@@ -111,13 +110,13 @@ func (x *persistentIndexedSet) NumPred (p Pred) uint {
 
 func (x *persistentIndexedSet) Ex (a Any) bool {
   x.Index.Set (x.Func (a), 0)
-  return x.Set.Ex (x.Index)
+  ex := x.Set.Ex (x.Index)
+  return ex
 }
 
 func (x *persistentIndexedSet) Ins (a Any) {
   object := x.object (a)
-  if object.Empty() { return }
-  if x.Ex (object) { return }
+  if object.Empty() || x.Ex (object) { return }
   var p uint
   if x.Buffer.Num() == 0 {
     p = x.PersistentSequence.Num()
@@ -154,8 +153,9 @@ func (x *persistentIndexedSet) Get() Any {
 }
 
 func (x *persistentIndexedSet) Put (a Any) {
-  if x.Set.Empty() { return }
-  x.Index.Set (x.Func (a), x.Index.Pos())
+  if x.Set.Empty() {
+    return
+  }
   x.Set.Put (x.Index)
   x.PersistentSequence.Put (a)
 }
@@ -171,7 +171,6 @@ func (x *persistentIndexedSet) Del() Any {
   object := x.Object.Clone().(Object)
   object.Clr()
   x.PersistentSequence.Put (object)
-  x.Set.Del()
   x.Buffer.Ins (x.Index.Pos())
 /*
   if x.Set.Empty() {

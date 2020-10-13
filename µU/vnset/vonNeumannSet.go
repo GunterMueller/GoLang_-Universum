@@ -1,9 +1,8 @@
 package vnset
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 201009 - license see µU.go
 
 import (
-  . "µU/add"
   . "µU/obj"
   "µU/str"
 )
@@ -118,7 +117,7 @@ func (x *set) String() string {
 }
 
 func (x *set) Defined (s string) bool {
-  str.OffAllSpaces(&s)
+  str.OffBytes (&s, ' ')
   if len(s) == 1 {
     if '0' <= s[0] && s[0] <= '9' {
       *x = *smallord[uint(s[0]) - uint('0')]

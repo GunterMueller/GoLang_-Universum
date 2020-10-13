@@ -1,6 +1,6 @@
 package seq
 
-// (c) Christian Maurer   v. 170424 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
 import
   . "µU/obj"
@@ -9,7 +9,6 @@ type
 
   Object
   Sorter
-  Iterator
   Seeker
 
   Reverse() // destroys the order, if x is ordered

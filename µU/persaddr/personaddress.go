@@ -1,6 +1,6 @@
 package persaddr
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 201010 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,7 +9,6 @@ import (
   "µU/addr"
   "µU/atom"
   "µU/mol"
-  "µU/masks"
 )
 type
   personAddress struct {
@@ -18,7 +17,7 @@ type
 
 func new_() PersonAddress {
   x := new (personAddress)
-  x.Molecule = mol.New()
+  x.Molecule = mol.New (2)
   a := atom.New (pers.New())
   a.SetFormat (pers.LongTB)
   a.Colours (col.Yellow(), col.Black())
@@ -26,13 +25,6 @@ func new_() PersonAddress {
   a = atom.New (addr.New())
   a.Colours (col.LightGreen(), col.Black())
   x.Ins (a, 2, 0)
-  m := masks.New()
-  m.Ins ("Str./Nr.:", 2,  0) // TODO: von addr übernehmen
-  m.Ins ("Tel.:",     2, 39)
-  m.Ins ("PLZ:",      3,  0)
-  m.Ins ("Ort:",      3, 11)
-  m.Ins ("Funk:",     3, 39)
-  x.SetMask(m)
   return x
 }
 
@@ -61,16 +53,13 @@ func (x *personAddress) Less (Y Any ) bool {
 }
 
 func (x *personAddress) Index() Func {
-  return func (X Any) Any {
-    x, ok := X.(*personAddress)
-    if ! ok { TypeNotEqPanic (x, X) }
+  return func (a Any) Any {
+    x, ok := a.(*personAddress)
+    if ! ok { TypeNotEqPanic (x, a) }
     return x.Component(0).(atom.Atom)
   }
 }
 
-var
-  nn = pers.New()
-
 func (x *personAddress) RotOrder() {
-  nn.RotOrder()
+  x.Component(0).(Orderer).RotOrder()
 }

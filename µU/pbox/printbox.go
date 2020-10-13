@@ -1,6 +1,6 @@
 package pbox
 
-// (c) Christian Maurer   v. 161216 - license see µU.go
+// (c) Christian Maurer   v. 200902 - license see µU.go
 
 import (
   "µU/str"
@@ -10,6 +10,7 @@ import (
 type
   printbox struct {
                 f font.Font
+                s font.Size
                   }
 
 func NLines () uint {
@@ -21,7 +22,7 @@ func NColumns () uint {
 }
 
 func new_() Printbox {
-  return &printbox { font.Roman }
+  return &printbox { font.Roman, font.Normal }
 }
 
 func (x *printbox) SetFont (f font.Font) {
@@ -32,11 +33,21 @@ func (x *printbox) Font() font.Font {
   return x.f
 }
 
+func (x *printbox) SetFontsize (s font.Size) {
+  x.s = s
+}
+
+func (x *printbox) Fontsize() font.Size {
+  return x.s
+}
+
 func (x *printbox) Print (s string, l, c uint) {
   if l >= prt.NLines() || c >= prt.NColumns() { return }
   str.OffSpc (&s)
   if len (s) == 0 { return }
-  prt.Print (s, l, c, x.f)
+  prt.SetFont (x.f)
+  prt.SetFontsize (x.s)
+  prt.Print (s, l, c)
 }
 
 func (x *printbox) PageReady() {

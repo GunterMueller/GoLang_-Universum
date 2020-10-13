@@ -1,6 +1,6 @@
 package mol
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 201004 - license see µU.go
 
 import (
   . "µU/obj"
@@ -26,6 +26,6 @@ type
 // Sort ()
 }
 
-// Returns a new empty molecule.
+// Returns a new empty molecule with n atoms.
 // TODO more information
-func New() Molecule { return new_() }
+func New (n uint) Molecule { return new_(n) }

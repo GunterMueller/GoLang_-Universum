@@ -1,11 +1,11 @@
 package str
 
-// (c) Christian Maurer   v. 200402 - license see µU.go
+// (c) Christian Maurer   v. 201008 - license see µU.go
 
 //     latin-1-strings (without any bloody UTF-8-stuff)
 
 // Returns true, iff s contains UTF8-runes.
-func DevilsDung (s *string) bool { return devilsDung(s) }
+func DevilsDung (s string) bool { return devilsDung(s) }
 
 // Returns a string of n spaces.
 func New (n uint) string { return new_(n) }
@@ -111,6 +111,9 @@ func Ins1 (s *string, c byte, p uint) { ins(s,string(c),p) }
 // the bytes of s starting at p; otherwise t is appended to s.
 func Ins (s *string, t string, p uint) { ins(s,t,p) }
 
+// TODO Spec
+func Append (s *string, b byte) { app(s,b) }
+
 // If s contains at least p + n bytes, then n bytes, beginning
 // at position p, otherwise all bytes, are removed from s.
 // Otherwise s is unchanged.
@@ -126,15 +129,15 @@ func Part (s string, p, n uint) string { return part(s,p,n) }
 // In case len(s) == n, nothing is changed.
 func Norm (s *string, n uint) { norm(s,n) }
 
-// As far as existent, all spaces are removed from s.
-func OffAllSpaces (s *string) { offAllSpaces(s) }
+// As far as existent, all b's are removed from s.
+func OffBytes (s *string, b byte) { offBytes(s,b) }
 
 // As far as existent, for left resp. !left leading resp. trailing spaces
 // are removed from s and s is filled up with spaces on the other side
 // to its former length.
 func Move (s *string, left bool) { move(s,left) }
 
-// As far as existent, leading and trailing and spaces are removed from s.
+// As far as existent, leading and trailing spaces are removed from s.
 func OffSpc (s *string) { offSpc(s) }
 
 // If p < len(s), a space is inserted in at position p
@@ -169,3 +172,6 @@ func SplitLine (s *string) string { return splitLine(s) }
 // Pre: b is one of '(', '[', '{', '<'
 // My work is so secret that even I do not now what I am doing.
 func SplitBrackets (s string, sep, b byte) []string { return splitBrackets (s,sep,b) }
+
+// TODO Spec
+func SplitByte (s string, b byte) ([]string, uint) { return splitByte(s,b) }

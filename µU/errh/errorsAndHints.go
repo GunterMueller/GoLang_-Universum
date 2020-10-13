@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 191125 - license see µU.go
+// (c) Christian Maurer   v. 200717 - license see µU.go
 
 import (
 //  "µU/env"
@@ -218,6 +218,14 @@ func conc3 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint) string {
   return s + " " + s1 + " " + s2
 }
 
+func conc4 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint, s3 string, n3 uint) string {
+  s += " " + nat.String (n)
+  s1 += " " + nat.String(n1)
+  s2 += " " + nat.String(n2)
+  s3 += " " + nat.String(n3)
+  return s + " " + s1 + " " + s2 + " " + s3
+}
+
 func proceed2 (s string, n uint, s1 string, n1 uint) {
   do (conc2(s, n, s1, n1), true)
 }
@@ -228,6 +236,10 @@ func error2 (s string, n uint, s1 string, n1 uint) {
 
 func error3 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint) {
   do (conc3(s, n, s1, n1, s2, n2), false)
+}
+
+func error4 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint, s3 string, n3 uint) {
+  do (conc4(s, n, s1, n1, s2, n2, s3, n3), false)
 }
 
 func error0Pos (s string, l, c uint) {

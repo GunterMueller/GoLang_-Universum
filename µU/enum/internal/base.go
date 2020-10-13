@@ -1,6 +1,6 @@
 package internal
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 201005 - license see µU.go
 
 import (
   "µU/ker"
@@ -31,17 +31,17 @@ var (
 )
 
 func new_(t uint8, s [NFormats][]string) Base {
-  x:= new (base)
+  x := new (base)
   x.typ, x.s = t, s
   x.num = uint8(len (s[Short]))
-  m:= [NFormats]uint { uint(0), uint(0) }
-  for f:= Short; f < NFormats; f++ {
-    for i, t:= range (s[f]) {
+  m := [NFormats]uint { uint(0), uint(0) }
+  for f := Short; f < NFormats; f++ {
+    for i, t := range (s[f]) {
       s[f][i] = str.Lat1 (t)
-      w:= uint(len (s[f][i]))
+      w := uint(len (s[f][i]))
       if m[f] < w { m[f] = w }
     }
-    for i, _:= range (s[f]) { str.Norm (&s[f][i], m[f]) } // TODO gefährlich
+    for i, _ := range (s[f]) { str.Norm (&s[f][i], m[f]) } // TODO gefährlich
     x.wd[f] = m[f]
   }
 //  x.wd = m
@@ -51,9 +51,9 @@ func new_(t uint8, s [NFormats][]string) Base {
 }
 
 func (x *base) imp (Y Any) *base {
-  y, ok:= Y.(*base)
+  y, ok := Y.(*base)
   if ! ok {
-    if x == Y { ker.Panic ("enum/base/imp: x == Y") }
+    if x == Y { ker.Panic ("enum/internal/imp: x == Y") }
     TypeNotEqPanic (x, Y)
   }
   return y
@@ -80,12 +80,12 @@ func (x *base) Clr() {
 }
 
 func (x *base) Eq (Y Any) bool {
-  y:= x.imp (Y)
+  y := x.imp (Y)
   return x.typ == y.typ && x.b == y.b
 }
 
 func (x *base) Copy (Y Any) {
-  y:= x.imp (Y)
+  y := x.imp (Y)
   x.typ, x.b = y.typ, y.b
 //  x.s = y.s // [NFormats][]string
   x.num = y.num
@@ -95,7 +95,7 @@ func (x *base) Copy (Y Any) {
 }
 
 func (x *base) Clone() Any {
-  y:= New (x.typ, x.s)
+  y := new_(x.typ, x.s)
   y.Copy (x)
   return x
 }
@@ -104,15 +104,15 @@ func (x *base) Codelen() uint {
   return 1
 }
 
-func (x *base) Encode() []byte {
-  b:= make ([]byte, 1)
-  b[0] = byte(x.b)
-  return b
+func (x *base) Encode() Stream {
+  s := make (Stream, 1)
+  s[0] = byte(x.b)
+  return s
 }
 
-func (x *base) Decode (b []byte) {
-  if b[0] < x.num {
-    x.b = uint8(b[0])
+func (x *base) Decode (s Stream) {
+  if s[0] < x.num {
+    x.b = uint8(s[0])
   } else {
     x.b = 0
   }
@@ -123,14 +123,16 @@ func (x *base) Less (Y Any) bool {
 }
 
 func (x *base) String() string {
-  s:= x.s[x.Format][x.b]
+  f := x.s[x.Format]
+// errh.Error2 ("string", uint(x.b), "bluse", uint(len(f)))
+  s := f[x.b]
   str.OffSpc (&s)
   return s
 }
 
 func (x *base) Defined (s string) bool {
-  for b:= uint8(0); b < x.num; b++ {
-    if p, ok:= str.EquivSub (s, x.s[x.Format][b]); p == 0 && ok {
+  for b := uint8(0); b < x.num; b++ {
+    if p, ok := str.EquivSub (s, x.s[x.Format][b]); p == 0 && ok {
       x.b = b
       return true
     }
@@ -145,7 +147,7 @@ func (x *base) Colours (f, b col.Colour) {
 func (x *base) Write (l, c uint) {
   bx.Colours (x.cF, x.cB)
   bx.Wd (x.wd[x.Format])
-  s:= x.String()
+  s := x.String()
   str.Norm (&s, x.wd[x.Format])
   bx.Write (s, l, c)
 }
@@ -154,8 +156,8 @@ func (x *base) selected (l, c uint) bool {
   if x.num == 0 { return false }
   if x.num == 1 { return true }
   x.Write (l, c)
-  i:= uint(0)
-  h:= x.num / 2
+  i := uint(0)
+  h := x.num / 2
   if h < 5 { h = 5 }
   if h > x.num { h = x.num }
   errh.Hint (errh.ToSelect)
@@ -171,10 +173,10 @@ func (x *base) selected (l, c uint) bool {
 
 func (x *base) Edit (l, c uint) {
   x.Write (l, c)
-  s:= x.String()
+  s := x.String()
   for {
     bx.Edit (&s, l, c)
-    if C, _:= kbd.LastCommand(); C == kbd.Search {
+    if C, _ := kbd.LastCommand(); C == kbd.Search {
       if x.selected (l, c) {
         break
       }

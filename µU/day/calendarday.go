@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 200507 - license see µU.go
+// (c) Christian Maurer   v. 200902 - license see µU.go
 
 import (
   . "µU/ker"
@@ -1714,6 +1714,6 @@ func attribute (a Any) {
     x.SetFont (font.Italic)
   default:
     x.Colours (WeekdayF, MonthB)
-    x.SetFont (font.Slanted)
+    x.SetFont (font.Italic)
   }
 }

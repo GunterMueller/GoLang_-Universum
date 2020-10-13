@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 181221 - license see µU.go
+// (c) Christian Maurer   v. 201007 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,16 +11,17 @@ const ( // Format
   Long
   NFormats
 )
-const ( // details s. corresponding files
-  Title = uint8(iota)
+type
+  Type = uint8; const ( // details s. corresponding files
+  Title = Type(iota)
+  AudioC
+  BookC
   Writer
   Composer
-  RecordLabel
   AudioMedium
-  SparsCode
   Religion
   Subject
-  LexicalCategory
+  Wortart
   Casus
   Genus
   Persona
@@ -29,8 +30,7 @@ const ( // details s. corresponding files
   Modus
   GenusVerbi
   Comparatio
-  Engine
-  NEnums
+  NTypes
 )
 type
   Enumerator interface { // A set of at most 256 enumerated elements,
@@ -44,7 +44,7 @@ type
   Printer
 
 // Returns the type of x.
-  Typ() uint8
+  Typ() uint8 // Type
 
 // Returns the number of elements in the type of x.
   Num() uint8
@@ -58,8 +58,15 @@ type
 // Returns true, iff the type of x has an n-th element.
 // In this case x is that element, otherwise x is empty.
   Set (n uint8) bool
+
+// If s equals an entry in sort,
+// then the number of that entry is returned,
+// otherwise 0.
+  Found (s string, sort uint8, f Format) uint8
 }
+var
+  N []Type
 
 // Pre: e < NEnums.
-// Returns a new empty enumerator for objects of Title e.
-func New (e uint8) Enumerator { return new_(e) }
+// Returns a new empty enumerator for objects of Type t.
+func New (t Type) Enumerator { return new_(t) }

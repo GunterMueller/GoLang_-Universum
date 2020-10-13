@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 181024 - license see µU.go
+// (c) Christian Maurer   v. 200714 - license see µU.go
 //
 // >>>  References:
 // >>>  CLR  = Cormen, Leiserson, Rivest        (1990)
@@ -978,3 +978,12 @@ func (x *graph) Write() {
   x.Trav1Cond (x.writeE)
   x.TravCond (x.writeV)
 }
+
+func (x *graph) ExVtx (a Any) Any {
+/*/
+Wenn ein vertex in x existiert, dessen Inhalt mit a identisch ist, wird der Zeiger auf diesen vertex geliefert, sonst nil.
+/*/
+  return nil
+}
+
+// func (x *graph) WriteEdge (v, v1 vtx.Vertex, c col.Colour) { }

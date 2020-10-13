@@ -14,7 +14,8 @@ func (x *distributedGraph) dfs (o Op) {
     x.time = 0
     x.child[0] = true
     x.visited[0] = true
-    x.ch[0].Send(x.time) // root sendet als Erster
+//    x.ch[0].Send(x.time) // root sendet als Erster
+    x.send (0, x.time) // root sendet als Erster
   }
   x.distance, x.diameter = x.n, inf
   for i := uint(0); i < x.n; i++ {
@@ -63,7 +64,8 @@ func (x *distributedGraph) dfs (o Op) {
         x.distance, x.diameter = k, t // k, t für o.a. Prüfung retten
         x.child[k] = true // versuchsweise
       }
-      x.ch[k].Send(t) // für k == u Probe, sonst Echo
+//      x.ch[k].Send(t) // für k == u Probe, sonst Echo
+      x.send (k, t) // für k == u Probe, sonst Echo
       mutex.Unlock()
       done <- 0
     }(i)

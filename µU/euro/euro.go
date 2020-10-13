@@ -1,11 +1,10 @@
 package euro
 
-// (c) Christian Maurer   v. 191107 - license see µU.go
+// (c) Christian Maurer   v. 201009 - license see µU.go
 
 import (
   "math"
   . "µU/obj"
-  . "µU/add"
   "µU/str"
   "µU/col"
   "µU/scr"

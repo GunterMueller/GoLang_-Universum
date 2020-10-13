@@ -1,6 +1,6 @@
 package psp
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 200902 - license see µU.go
 
 import (
   "os"
@@ -124,8 +124,6 @@ func (x *postscriptPage) SetFont (f font.Font) { // TODO
     s = "terminus-normal 16"
   case font.Bold:
     s = "terminus-bold"
-  case font.Slanted:
-    s = "Times-Roman" // nonsense
   case font.Italic:
     s = "Times-Roman-Italic" // nonsense
   }

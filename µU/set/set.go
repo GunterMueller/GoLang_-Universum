@@ -1,6 +1,6 @@
 package set
 
-// (c) Christian Maurer   v. 170424 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
 import (
   "µU/ker"
@@ -293,7 +293,7 @@ func (x *set) ExGeq (a Any) bool {
     return false
   }
   x.actual = t
-  return true
+  return true // XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX
 }
 
 func (x *set) Trav (op Op) {
@@ -394,4 +394,12 @@ func (x *set) Decode (b []byte) {
     i += k
     x.Ins (a)
   }
+}
+
+func (x *set) Write (x0, x1, y, dy uint, f func (Any) string) {
+  x.anchor.write (x0, x1, y, dy, f)
+}
+
+func (x *set) Write1 (f func (Any) string) {
+  x.anchor.write1 (0, f)
 }

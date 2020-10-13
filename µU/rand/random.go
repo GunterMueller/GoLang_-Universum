@@ -1,6 +1,6 @@
 package rand
 
-// (c) Christian Maurer   v. 170327 - license see µU.go
+// (c) Christian Maurer   v. 200913 - license see µU.go
 
 // see D. E. Knuth, The Art of Computer Programming, 3.2.1.1-2, 3.6 i)-vi)
 
@@ -47,6 +47,14 @@ func productModM (a, x uint) uint {
   a += x
   if a >= modulus { a -= modulus }
   return a
+}
+
+func byte_(b byte) byte {
+  n := natural (uint(b))
+  if b == 0 {
+    n = n % 256
+  }
+  return byte(n)
 }
 
 func natural (n uint) uint {

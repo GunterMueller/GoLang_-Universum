@@ -1,9 +1,13 @@
 package rand
 
-// (c) Christian Maurer   v. 170327 - license see µU.go
+// (c) Christian Maurer   v. 200913 - license see µU.go
 
 // The random generator is initialized.
 func Init() { _init() }
+
+// Returns for n == 0 a random number < 256,
+// otherwise a random number < n.
+func Byte (b byte) byte { return byte_(b) }
 
 // Returns for n == 0 a random number < 2^32,
 // otherwise a random number < n.

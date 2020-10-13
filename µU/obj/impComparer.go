@@ -8,6 +8,14 @@ func isComparer (a Any) bool {
   return ok
 }
 
+/*/
+func sless (a, b Stream) {
+  for i := 0; i < len(b); i++ {
+    if a[i]
+  }
+}
+/*/
+
 func less (a, b Any) bool {
   switch a.(type) {
   case bool:

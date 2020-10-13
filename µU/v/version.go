@@ -10,15 +10,15 @@ import (
 )
 const ( // v.
   yy = 20
-  mm =  6
-  dd =  3
+  mm = 10
+  dd = 12
 )
 var
   v day.Calendarday = day.New()
 
 func init() {
-  v.Set(dd, mm, 2000 + yy)
-  v.SetFormat(day.Yymmdd)
+  v.Set (dd, mm, 2000 + yy)
+  v.SetFormat (day.Yymmdd)
 }
 
 func colours() (col.Colour, col.Colour, col.Colour) {
@@ -30,13 +30,13 @@ func colours() (col.Colour, col.Colour, col.Colour) {
 
 func want (y, m, d uint) {
   wanted := day.New()
-  wanted.SetFormat(day.Yymmdd)
-  if wanted.Set(d, m, 2000 + y) {
-    if v.Less(wanted) {
+  wanted.SetFormat (day.Yymmdd)
+  if wanted.Set (d, m, 2000 + y) {
+    if v.Less (wanted) {
       errh.Error0("Your " + ker.Mu + " " + v.String() + " is outdated. You need " + wanted.String() + ".")
       ker.Halt(-1)
     }
   } else {
-    ker.Panic("parameters for v.Want are nonsense")
+    ker.Panic ("parameters for v.Want are nonsense")
   }
 }

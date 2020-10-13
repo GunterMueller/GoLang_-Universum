@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 201004 - license see µU.go
 
 type
   Object interface {
@@ -39,8 +39,8 @@ func Atomic (a Any) bool {
 // Returns true, iff the type of a implements Object.
 func IsObject (a Any) bool {
   _, o := a.(Object)
-  _, e := a.(Editor) // Editor implements Object
-  return o || e
+//  _, e := a.(Editor) // Editor implements Object
+  return o // || e
 }
 
 // Returns true, iff a is atomic or implements Object

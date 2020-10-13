@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 170818 - license see µU.go
+// (c) Christian Maurer   v. 200904 - license see µU.go
 
 // #include <stdlib.h>
 // #include <X11/X.h>
@@ -18,33 +18,22 @@ func (X *xwindow) ActFontsize() font.Size {
   return X.fontsize
 }
 
-// /usr/share/fonts/misc
 func (X *xwindow) SetFontsize (s font.Size) {
   X.fontsize = s
-  const (mf = "misc-fixed"; te = "terminus")
-  name := "-"
-  switch s { case font.Tiny, font.Small:
-    name += mf + "-medium"
-  case font.Normal, font.Big, font.Huge:
-    name += "xos4-" + te + "-bold"
-  default:
-    return
-  }
+  name := "-xos4-terminus-bold"
   h := int(font.Ht (s))
-//  name += "-r-*-*-" + strconv.Itoa(h) + "-*-*-*-*-*-iso8859-15" // not found in openSUSE 42.3
+  if s < font.Normal {
+    name = "-misc-fixed-medium"
+  }
   name += "-r-*-*-" + strconv.Itoa(h) + "-*-*-*-*-*-*-*"
   f := C.CString (name); defer C.free (unsafe.Pointer(f))
-  if dpy == nil { panic ("xwin.SetFontheight: dpy == nil") }
+  if dpy == nil { panic ("xwin.SetFontsize: dpy == nil") }
   X.fsp = C.XLoadQueryFont (dpy, f)
-  if X.fsp == nil {
-    if s <= font.Small { name = mf } else { name = te }
-    panic (name + "-font is not installed !")
-  }
+  if X.fsp == nil { panic ("terminus-fonts are not installed !") }
   X.ht1 = uint(h)
   X.wd1, X.bl1 = uint(X.fsp.max_bounds.width), uint(X.fsp.max_bounds.ascent)
   if X.bl1 + uint(X.fsp.max_bounds.descent) != X.ht1 { panic ("xwin: font bl + d != ht") }
-//  C.XSetFont (dpy, X.gc, C.Font(X.fsp.fid))
-//  X.nLines, X.nColumns = X.ht / X.ht1, X.wd / X.wd1
+  C.XSetFont (dpy, X.gc, C.Font(X.fsp.fid))
 }
 
 func (X *xwindow) Wd1() uint {

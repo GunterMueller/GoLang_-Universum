@@ -15,9 +15,9 @@ type
   All (p Pred) bool
 
 // Returns true, iff there is an element in x, for which p returns true.
-// In that case the actual element of x is for f/!f the last/first such
+// In that case the actual element of x is for b/!b the last/first such
 // element, otherwise the actual element of x is the same as before.
-  ExPred (p Pred, f bool) bool
+  ExPred (p Pred, b bool) bool
 
 // Returns true, iff there is an element in x in direction f
 // from the actual element of x, for which p returns true.

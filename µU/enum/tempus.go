@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 140522 - license see µU.go
+// (c) Christian Maurer   v. 201007 - license see µU.go
 
 const (
   UndefTempus = uint8(iota)
@@ -12,11 +12,16 @@ const (
   FuturII
   NTempora
 )
-var
-  lTempus, sTempus []string =
-  []string { "", "Präsens", "Imperfekt", "Futur I", "Perfekt", "Plusquamp.", "Futur II" },
-  []string { "", "Präs.", "Impf.", "Fut.I", "Perf.", "Plusq.", "Fut.II" }
+var (
+  lTempus = []string {"",
+                      "Präsens", "Imperfekt", "Futur I",
+                      "Perfekt", "Plusquamp.", "Futur II"}
+  sTempus = []string {"",
+                      "Präs.", "Impf.", "Fut.I",
+                      "Perf.", "Plusq.", "Fut.II"}
+)
 
 func init() {
-  l[Tempus], s[Tempus] = lTempus, sTempus
+  l[Tempus] = lTempus
+  s[Tempus] = sTempus
 }

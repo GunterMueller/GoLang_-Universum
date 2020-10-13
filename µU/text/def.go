@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 200910 - license see µU.go
 
 import (
   . "µU/obj"
@@ -24,6 +24,7 @@ type
 
   Len() uint
   ProperLen() uint
+  Byte (n uint) byte
   Pos (b byte) (uint, bool)
 
 // experimental:

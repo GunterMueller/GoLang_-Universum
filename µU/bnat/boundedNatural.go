@@ -1,6 +1,6 @@
 package bnat
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 201008 - license see µU.go
 
 import (
   . "µU/obj"
@@ -56,6 +56,7 @@ func (x *natural) Clr() {
 func (x *natural) Copy (Y Any) {
   y := x.imp (Y)
   x.wd = y.wd
+  x.f, x.b = y.f, y.b
   x.n = y.n
 }
 
@@ -79,13 +80,11 @@ func (x *natural) Codelen() uint {
 }
 
 func (x *natural) Encode() []byte {
-  if x.n == x.invalid { println("bnat.Enc", x.n) }
   return Encode (uint64(x.n))
 }
 
 func (x *natural) Decode (bs []byte) {
   x.n = Decode (uint64(0), bs).(uint64)
-  if x.n == x.invalid { println("bnat.Dec", x.n) }
 }
 
 func (x *natural) Defined (s string) bool {
@@ -103,12 +102,12 @@ func (x *natural) String() string {
   return nat.StringFmt (uint(x.n), x.wd, false)
 }
 
-func (x *natural) Colours (f, b col.Colour) {
-  x.f, x.b = f, b
+func (n *natural) Colours (f, b col.Colour) {
+  n.f, n.b = f, b
 }
 
-func (x *natural) Write (l, c uint) {
-  x.WriteGr (8 * int(c), 16 * int(l))
+func (n *natural) Write (l, c uint) {
+  n.WriteGr (8 * int(c), 16 * int(l))
 }
 
 func (x *natural) Edit (l, c uint) {

@@ -1,9 +1,11 @@
 package seq
 
-// (c) Christian Maurer   v. 170501 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
-import
+import (
+  . "µU/ker"
   . "µU/obj"
+)
 type (
   cell struct {
               Any
@@ -404,9 +406,7 @@ func (x *sequence) Sort() {
 }
 
 func (x *sequence) ExGeq (a Any) bool {
-  if ! x.ordered {
-    return false // TODO Panic ?
-  }
+  if ! x.ordered { Panic ("x is not ordered") }
   x.check (a)
   p := uint(0)
   for l := x.anchor.next; l != x.anchor; l, p = l.next, p + 1 {

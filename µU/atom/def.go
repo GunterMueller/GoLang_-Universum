@@ -1,6 +1,6 @@
 package atom
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 201005 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,6 +11,7 @@ const (
   TruthValue
   Character
   Text
+  Texts
   Natural
   Real
   Clocktime

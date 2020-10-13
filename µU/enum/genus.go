@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 140527 - license see µU.go
+// (c) Christian Maurer   v. 201007 - license see µU.go
 
 const (
   UndefGenus = uint8(iota)
@@ -9,11 +9,11 @@ const (
   Ne
   NGenera
 )
-var
-  lGenus, sGenus []string =
-  []string { "", "masculinum", "femininum", "neutrum" },
-  []string { "", "m.", "f.", "n." }
-
+var (
+  lGenus = []string {"", "masculinum", "femininum", "neutrum"}
+  sGenus = []string {"", "m.", "f.", "n."}
+)
 func init() {
-  l[Genus], s[Genus] = lGenus, sGenus
+  l[Genus] = lGenus
+  s[Genus] = sGenus
 }

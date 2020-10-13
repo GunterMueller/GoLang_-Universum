@@ -1,6 +1,6 @@
 package atomic
 
-// (c) Christian Maurer   v. 190816 - license see µU.go
+// (c) Christian Maurer   v. 201008 - license see µU.go
 
 // Tools for the construction of locking algorithms.
 // The execution of any of these cannot be interrupted
@@ -22,11 +22,11 @@ func FetchAndIncrement (n *uint) uint
 
 // Pre: n + k < math.MaxUint32 resp. < math.MaxUint64.
 // *n is incremented by k.
-func Add (n *uint, k uint)
+func Inc (n *uint, k uint)
 
 // Pre: n + k < math.MaxUint32 resp. < math.MaxUint64.
 // *n is incremented by 1.
-func Inc (n *uint)
+func Inc1 (n *uint)
 
 // Pre: n + k < math.MaxUint32 resp. < math.MaxUint64.
 // *n is incremented by k. Returns the former value of *n.

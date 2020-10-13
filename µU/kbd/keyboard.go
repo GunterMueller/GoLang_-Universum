@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 200517 - license see µU.go
+// (c) Christian Maurer   v. 200928 - license see µU.go
 
 import (
 //  "µU/spc"
@@ -74,7 +74,9 @@ const (
 //  onOff     = 113
 //  lower     = 114
 //  louder    = 115
-  doofR     = 127
+  doofL     = 125
+  doofR     = 126
+  windoof   = 127
 // AltGr-keys:
   backslash =  92
   braceL    = '{'

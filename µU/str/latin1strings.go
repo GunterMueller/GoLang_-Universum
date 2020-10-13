@@ -1,13 +1,13 @@
 package str
 
-// (c) Christian Maurer   v. 200402 - license see µU.go
+// (c) Christian Maurer   v. 201008 - license see µU.go
 
 import
   "µU/z"
 const
   spc = byte(' ')
 
-func devilsDung (s *string) bool {
+func devilsDung (s string) bool {
   return z.DevilsDung (s)
 }
 
@@ -253,6 +253,14 @@ func ins (s *string, t string, p uint) {
   *s = (*s)[:p] + t + (*s)[p:]
 }
 
+func app (s *string, b byte) {
+  n := uint(len(*s))
+  bs := make ([]byte, n + 1)
+  copy (bs[:n], []byte(*s))
+  bs[n] = b
+  *s = string(bs)
+}
+
 func rem (s *string, p, n uint) {
   if n == 0 { return }
   l := uint(len (*s))
@@ -295,24 +303,25 @@ func offSpc (s *string) {
   *s = (*s)[:n]
 }
 
-func offAllSpaces (s *string) {
+func offBytes (s *string, b byte) {
   n := len (*s)
   if n == 0 { return }
-  b := make ([]byte, n)
+  ss := make ([]byte, n)
   i, j := 0, 0
-  loop: for j < n {
+  loop:
+  for j < n {
     if j == n { break }
-    for (*s)[j] == spc {
+    for (*s)[j] == b {
       j++
       if j == n {
         break loop
       }
     }
-    b[i] = (*s)[j]
-    i ++
-    j ++
+    ss[i] = (*s)[j]
+    i++
+    j++
   }
-  *s = string(b[0:i])
+  *s = string(ss[0:i])
 }
 
 func move (s *string, left bool) {
@@ -484,4 +493,29 @@ func splitBrackets (s string, sep, b byte) []string {
     ss[i] = part (s, p[i]+1, l[i])
   }
   return ss
+}
+
+func splitByte (s string, b byte) ([]string, uint) {
+  ss, n := make([]string, 0), uint(0)
+  if s == "" {
+    return ss, n
+  }
+  if s[0] == '/' {
+    s = s[1:]
+  }
+  l := len(s)
+  if l > 1 && s[l-1] == '/' {
+    s = s[:l-1]
+  }
+  for {
+    p, c := pos (s, b)
+    if ! c {
+      ss = append (ss, s)
+      break
+    }
+    ss = append (ss, s[:p])
+    s = s[p+1:]
+    n++
+  }
+  return ss, n
 }

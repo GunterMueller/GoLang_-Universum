@@ -1,17 +1,15 @@
 package pseq
 
-// (c) Christian Maurer   v. 190314 - license see µU.go
-
-// >>> still a lot of things TODO
+// (c) Christian Maurer   v. 201012 - license see µU.go
 
 import (
   "io"
   "reflect"
+  "sort"
   . "µU/ker"
   . "µU/obj"
   "µU/str"
 //  "µU/errh"
-//  "µU/seq"
   "µU/pseq/internal"
 )
 
@@ -22,25 +20,20 @@ const (
 type
   persistentSequence struct {
        name, tmpName string
+             ordered bool
          emptyObject Any
                      Any
                 file internal.File
         owner, group uint
       size, pos, num uint64
            buf, buf1 []byte
-             ordered bool
                      }
-//var
-//  filenames seq.Sequence
 /*
-  Among others the following problems are not yet solved:
-  1. Not more than 1 psequence must be (re-)named with the same name.
-     Help: Put names at (re-)defining into the sequence "filenames" and
-           remove them at terminating.
-  2. Access to psequences is only possible, if the rights are named correspondingly.
+  The following two problems are not yet solved:
+  1. Access to psequences is only possible, if the rights are named correspondingly.
      At the moment clients are not protected from trying to access persistent Sequences
      without having the rights to.
-  3. The following trivial handling of read/write-errors should be replaced by an error-based concept.
+  2. The trivial handlings of read/write-errors should be replaced by an error-based concept.
 */
 
 var
@@ -62,7 +55,7 @@ func (x *persistentSequence) check (a Any) {
   CheckTypeEq (x.emptyObject, a)
 }
 
-func new_(a Any) PersistentSequence {
+func new_(a Any, o bool) PersistentSequence {
   switch a.(type) {
   case Equaler, Coder:
     ; // ok
@@ -81,7 +74,7 @@ func new_(a Any) PersistentSequence {
   x.file = internal.New()
   x.buf = make ([]byte, x.size)
   x.buf1 = make ([]byte, x.size)
-  x.ordered = false
+  x.ordered = o
   return x
 }
 
@@ -97,18 +90,10 @@ func (x *persistentSequence) imp (a Any) *persistentSequence {
 }
 
 func (x *persistentSequence) Fin() {
-///*
-//  n := str.Length (x.name)
-//  if filenames.Ex (x.name, n) {
-//    filenames.Del()
-//  } else {
-//    Fehler
-//  }
-///*
   x.file.Fin()
 }
 
-func Length (n string) uint { // < -- uint64 !
+func Length (n string) uint { // <-- uint64 !
   return uint(internal.DirectLength (n))
 }
 
@@ -125,7 +110,7 @@ func accessible (Name string, Zugriff Zugriffe) bool {
 func (x *persistentSequence) Name (N string) {
 //  if ! files.Defined (N) { Fehler }
   x.name = N
-//  str.DelSpaces (&x.name)
+//  str.OffSpc (&x.name)
 //  n := str.Length (x.name)
 //  if filenames.Ex (x.name, n) {
 //    // Fehlersituation, siehe oben Bemerkung 1.
@@ -142,6 +127,12 @@ func (x *persistentSequence) Name (N string) {
 func (x *persistentSequence) Rename (n string) {
   if str.Empty (n) || n == x.name {
     return
+  }
+  f := New(byte(0), x.ordered)
+  f.Name (n)
+  if ! f.Empty() {
+    Panic ("a file with the name " + n + " already exister")
+    f.Fin()
   }
   x.name = n
   x.file.Rename (x.name)
@@ -205,44 +196,14 @@ func (x *persistentSequence) Copy (Y Any) {
 }
 
 func (x *persistentSequence) Clone () Any {
-  y := new_(Clone(x.emptyObject))
+  y := new_(Clone(x.emptyObject), x.ordered)
   y.Copy(x)
   return y
 }
 
-func (x *persistentSequence) leq (Y Any) bool { // TODO
-  y := x.imp (Y)
-  if y.name == x.name { return true }
-  if x.num != y.num { return false }
-  for i := null; i < x.num; i++ {
-    x.read (x.buf)
-/*
-    for x.pos < x.num {
-      for {
-        Gx1.read (x1.buf)
-        if equal (x.buf, x1. buf)
-          continue
-        } else {
-        }
-      }
-    if ! equal (x.buf, x1.buf) {
-      return false
-    }
-*/
-  }
-  return true
-}
-
-func (x *persistentSequence) Less (Y Object) bool { // TODO
-  y := x.imp (Y)
-  if y.name == x.name { return false }
-  if x.num == y.num { return false }
-  return x.leq (Y)
-}
-
 func (x *persistentSequence) Num() uint {
-  return uint(x.file.Length() / x.size)
-//  return uint(x.num)
+  if x.num != x.file.Length() / x.size { Panic ("num != Num") }
+  return uint(x.num)
 }
 
 func (x *persistentSequence) NumPred (p Pred) uint {
@@ -278,7 +239,7 @@ func (x *persistentSequence) Step (forward bool) {
       x.pos++
     }
   } else if x.pos > 0 {
-    x.pos --
+    x.pos--
   }
 }
 
@@ -295,7 +256,7 @@ func (x *persistentSequence) Jump (forward bool) {
 }
 
 func (x *persistentSequence) Offc() bool {
-  return x.pos * x.size == x.file.Length()
+  return x.Pos() == x.Num()
 }
 
 func (x *persistentSequence) Eoc (forward bool) bool {
@@ -311,9 +272,8 @@ func (x *persistentSequence) Pos() uint {
 
 func (x *persistentSequence) Get() Any {
   x.file.Seek (x.pos * x.size)
-  if x.file.Position() != x.pos * x.size { Panic1 ("pseq", 10000000 + uint(x.pos)) }
   x.read (x.buf)
-  return Clone (Decode (Clone (x.Any), x.buf))
+  return Clone (Decode (x.Any, x.buf))
 }
 
 func (x *persistentSequence) Put (a Any) {
@@ -323,100 +283,58 @@ func (x *persistentSequence) Put (a Any) {
   x.num = x.file.Length() / x.size
 }
 
-func (x *persistentSequence) insert (a Any) {
-  if x.pos >= x.num {
-    x.pos = x.num
-    x.file.Seek (x.file.Length())
-    x.write (Encode (a))
-    x.pos++
-    x.num++
-    return
-  }
-// x.pos < x.num:
-  x1 := new_(x.emptyObject).(*persistentSequence)
-  x1.Name (x.tmpName)
-  x1.Clr()
-  x.file.Seek (0)
-  if x.pos > 0 {
-    for i := null; i < x.pos; i++ {
-      x.read (x.buf)
-      x1.write (x.buf)
+func (x *persistentSequence) ins (a Any) {
+  n, p := x.Num(), x.Pos()
+  if p >= n {
+    p = n
+  } else {
+    for j := n; j > p; j-- {
+      x.Seek (j - 1)
+      b := x.Get()
+      x.Seek (j)
+      x.Put (b)
     }
   }
-  x1.write (Encode (a))
-  if x.pos < x.num {
-    for i := x.pos; i < x.num; i++ {
-      x.read (x.buf)
-      x1.write (x.buf)
-    }
-  }
-  x.pos++
-  x.num++
-  n := x.num
-  p := x.pos
-  x.file.Clr()
-  x1.file.Rename (x.name)
-  x1.file.Fin()
-  x1.Fin()
-  x.file.Name (x.name)
-  x.pos = p
-  x.num = n // == x.file.length() / x.size
+  x.Seek (p)
+  x.Put (a)
+  x.Seek (p + 1)
 }
 
-func (x *persistentSequence) insertOrd (a Any) {
-  ps := new_(x.emptyObject).(*persistentSequence)
-  ps.Name (x.tmpName)
-  ps.Clr()
-  x.file.Seek (0)
-  i := null
-  n := x.num
+func (x *persistentSequence) insOrd (a Any) {
   inserted := false
-  p := null
-  code := Encode (a)
-  for {
-    if i == x.num {
-      if ! inserted {
-        p = i
-        ps.write (code)
+  n := x.Num()
+  for i := uint(0); i < n; i++ {
+    x.Seek (i)
+    b := x.Get()
+    if Eq (a, b) {
+      return
+    }
+    if Less (a, b) {
+      for j := n; j > i; j-- {
+        x.Seek (j - 1)
+        b = x.Get()
+        x.Seek (j)
+        x.Put (b)
       }
+      x.Seek (i)
+      x.Put (a)
+      inserted = true
       break
     }
-    x.read (x.buf)
-    if ! inserted {
-      if Less (code, x.buf) {
-        p = i
-        ps.write (code)
-        inserted = true
-      }
-      if ! inserted {
-        if ! Less (x.buf, code) {
-          inserted = true
-        }
-      }
-    }
-    ps.write (x.buf)
-    i++
   }
-  x.file.Clr()
-  ps.file.Rename (x.name)
-  ps.file.Fin()
-  ps.Fin()
-  x.file.Name (x.name)
-  x.num = x.file.Length() / x.size
-  if x.num != n + 1 {
-    // noch untersuchen
+  if ! inserted {
+    x.Seek (n)
+    x.Put (a)
   }
-  x.pos = p + 1
 }
 
 func (x *persistentSequence) Ins (a Any) {
   x.check (a)
   if x.ordered {
-    x.insertOrd (a)
+    x.insOrd (a)
   } else {
-    x.insert (a)
+    x.ins (a)
   }
-  if x.num != uint64(x.Num()) { Panic ("pseq.Ins: num bug") }
 }
 
 func (x *persistentSequence) Del() Any {
@@ -424,9 +342,9 @@ func (x *persistentSequence) Del() Any {
     return nil
   }
   n := x.num
-  x1 := new_(x.emptyObject).(*persistentSequence)
-  x1.Name (x.tmpName)
-  x1.Clr()
+  y := new_(x.emptyObject, x.ordered).(*persistentSequence)
+  y.Name (x.tmpName)
+  y.Clr()
   x.file.Seek (0)
   var a Any
   for i := null; i < x.num; i++ {
@@ -435,20 +353,20 @@ func (x *persistentSequence) Del() Any {
 //      a = Decode (x.Any, x.buf)
       a = Decode (Clone (x.Any), x.buf)
     } else {
-      x1.write (x.buf)
+      y.write (x.buf)
     }
   }
   if x.pos == x.num - 1 && x.pos > 0 {
-    x.pos --
+    x.pos--
   }
   p := x.pos
   x.file.Clr()
-  x1.file.Rename (x.name)
-  x1.file.Fin()
-  x1.Fin()
+  y.file.Rename (x.name)
+  y.file.Fin()
+  y.Fin()
   x.file.Name (x.name)
   x.pos = p
-  x.num = x.file.Length() / x.size // x.num --
+  x.num = x.file.Length() / x.size // x.num--
   if x.num + 1 != n {
 // errh.Error2 ("what to devil", uint(x.num + 1), "is here loose", uint(n))
   }
@@ -483,7 +401,7 @@ func (x *persistentSequence) ExPred (p Pred, f bool) bool {
     } else if i == 0 {
       break
     } else {
-      i --
+      i--
     }
   }
   return false
@@ -506,7 +424,7 @@ func (x *persistentSequence) StepPred (p Pred, f bool) bool {
     if f {
       i++
     } else {
-      i --
+      i--
     }
   }
   for {
@@ -527,7 +445,7 @@ func (x *persistentSequence) StepPred (p Pred, f bool) bool {
       if i == 0 {
         break
       } else {
-        i --
+        i--
       }
     }
   }
@@ -548,22 +466,59 @@ func (x *persistentSequence) All (p Pred) bool {
 }
 
 func (x *persistentSequence) Ordered() bool {
-  if x.num <= 1 { return true }
+  if x.Num() <= 1 { return true }
   x.file.Seek (0)
-  x.read (x.buf)
+  x.read (x.buf1)
   for i := one; i < x.num; i++ {
-    x.read (x.buf1)
-    if Less (x.buf1, x.buf) {
+    x.read (x.buf)
+    if Less (x.buf, x.buf1) {
       return false
     }
-    copy (x.buf, x.buf1)
-    i++
+    copy (x.buf1, x.buf)
   }
   return true
 }
 
 func (x *persistentSequence) Sort() {
-// TODO
+  if x.ordered { return }
+  n := x.Num()
+  if n <= 1 { return }
+  s := make([]Any, 0)
+  for i := uint(0); i < n; i++ {
+    x.Seek(i)
+    s = append (s, x.Get())
+  }
+  sort.Slice (s, func (k, n int) bool { return Less (s[k], s[n]) })
+  for i := uint(0); i < n; i++ {
+    x.Seek (i)
+    x.Put (s[i])
+  }
+  x.ordered = true
+}
+
+func (x *persistentSequence) ExGeq (a Any) bool {
+  if ! x.ordered { Panic ("x is not ordered") }
+  n := x.Num()
+  if n == 0 { return false }
+/*/
+  x.Seek (n/2)
+  b := x.Get().(Any)
+  if a < b {
+    search first half
+  } else if Eq (a, b) {
+    return true
+  } else {
+   search second half
+  }
+/*/
+// XXX not efficient TODO binary search
+  for i := uint(0); i < n; i++ {
+    x.Seek(i)
+    if ! Less (x.Get(), a) {
+      return true
+    }
+  }
+  return false
 }
 
 func (x *persistentSequence) Trav (op Op) {
@@ -576,7 +531,6 @@ func (x *persistentSequence) Trav (op Op) {
     if uint64(wasRead) < x.size {
       copy (x.buf, Encode (x.emptyObject)) // provisorisch
     }
-//    x.Any = Decode (x.emptyObject, x.buf)
     x.Any = Decode (Clone (x.emptyObject), x.buf)
     op (x.Any)
     if ! equal (x.buf, Encode (x.Any)) {
@@ -613,9 +567,9 @@ func (x *persistentSequence) Cut (Y Iterator, p Pred) {
   if y == nil { return }
   y.Clr()
   if x.name == y.name { return }
-  x2 := new_(x.emptyObject).(*persistentSequence)
-  x2.Name (x.tmpName)
-  x2.Clr()
+  x1 := new_(x.emptyObject, x.ordered).(*persistentSequence)
+  x1.Name (x.tmpName)
+  x1.Clr()
   x.file.Seek (0)
   x.pos = 0
   for i := null; i < x.num; i++ {
@@ -624,14 +578,14 @@ func (x *persistentSequence) Cut (Y Iterator, p Pred) {
       y.write (x.buf)
       y.pos++
     } else {
-      x2.write (x.buf)
+      x1.write (x.buf)
       x.pos++
     }
   }
   x.file.Clr()
-  x2.file.Rename (x.name)
-  x2.file.Fin()
-  x2.Fin()
+  x1.file.Rename (x.name)
+  x1.file.Fin()
+  x1.Fin()
   x.file.Name (x.name)
   y.file.Fin()
   if x.num != uint64(x.Num()) { Panic ("pseq.Cut: x.num bug") }
@@ -639,7 +593,7 @@ func (x *persistentSequence) Cut (Y Iterator, p Pred) {
 }
 
 func (x *persistentSequence) ClrPred (p Pred) {
-  y := new_(x.emptyObject).(*persistentSequence)
+  y := new_(x.emptyObject, x.ordered).(*persistentSequence)
   if y == nil { return }
   if x.num == 0 { return }
   x.file.Seek (0)
@@ -667,7 +621,7 @@ func (x *persistentSequence) Split (Y Iterator) {
   if y == nil { return }
   if x.num == 0 { return }
   y.Clr()
-  ps := new_(x.emptyObject).(*persistentSequence)
+  ps := new_(x.emptyObject, x.ordered).(*persistentSequence)
   ps.Name (x.tmpName)
   ps.Clr()
   x.file.Seek (0)
@@ -725,7 +679,7 @@ func (x *persistentSequence) join (Y PersistentSequence) {
     more effective: see concatenate
   }
 */
-  ps := new_(x.emptyObject).(*persistentSequence)
+  ps := new_(x.emptyObject, x.ordered).(*persistentSequence)
   ps.Name (x.tmpName)
   ps.Clr()
   x.file.Seek (0)
@@ -801,7 +755,3 @@ func (x *persistentSequence) Join (Y Iterator) {
     x.concatenate (y)
   }
 }
-
-/* func init() {
-  filenames = seq.New (string)
-} */

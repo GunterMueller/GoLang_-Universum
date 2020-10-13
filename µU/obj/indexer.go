@@ -9,7 +9,6 @@ type
   Editor
 
   Index() Func
-  RotOrder()
 }
 
 func IsIndexer (a Any) bool {

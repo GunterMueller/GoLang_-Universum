@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 140522 - license see µU.go
+// (c) Christian Maurer   v. 201010 - license see µU.go
 
 const (
   UndefNumerus = uint8(iota)
@@ -8,13 +8,12 @@ const (
   Plur
   NNumeri
 )
-var
-  lNum, sNum []string =
-//  []string { "", "Sing.", "Plur." },
-//  []string { "", "Sg.", "Pl." }
-  []string { "", "Singular", "Plural" },
-  []string { "", "Sing.", "Plur." }
+var (
+  lNumerus = []string {"", "Singular", "Plural"}
+  sNumerus = []string {"", "Sing.", "Plur."}
+)
 
 func init() {
-  l[Numerus], s[Numerus] = lNum, sNum
+  l[Numerus] = lNumerus
+  s[Numerus] = sNumerus
 }

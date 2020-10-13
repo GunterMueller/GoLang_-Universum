@@ -2,9 +2,6 @@ package cons
 
 // (c) Christian Maurer   v. 140713 - license see µU.go
 
-//import
-//  "µU/linewd"
-
 func (X *console) Transparent() bool {
   return X.transparent
 }
@@ -21,7 +18,7 @@ func (X *console) Write1 (b byte, l, c uint) {
 //  X.lineWd = linewd.Thin
   for i := uint(0); i < X.ht1; i++ {
     for j := uint(0); j < X.wd1; j++ {
-      if pointed (X.fontsize, b, i, j) {
+      if X.pointed (X.fontsize, b, i, j) {
         X.codeF = f
       } else {
         X.codeF = X.codeB
@@ -71,7 +68,7 @@ func (X *console) Write1Gr (b byte, x, y int) {
 //  X.lineWd = linewd.Thin
   for i := uint(0); i < X.ht1; i++ {
     for j := uint(0); j < X.wd1; j++ {
-      if pointed (X.fontsize, b, i, j) {
+      if X.pointed (X.fontsize, b, i, j) {
         X.codeF = f
         X.Point (x + int(j), y + int(i))
       } else if ! X.transparent {
@@ -99,7 +96,7 @@ func (X *console) Write1InvGr (b byte, x, y int) {
   if x < X.x || x >= X.x + int(X.wd - X.wd1) || y < X.y || y >= X.y + int(X.ht - X.ht1) { return }
   for i := uint(0); i < X.ht1; i++ {
     for j := uint(0); j < X.wd1; j++ {
-      if pointed (X.fontsize, b, i, j) {
+      if X.pointed (X.fontsize, b, i, j) {
         X.PointInv (x + int(j), y + int(i))
       } else if ! X.transparent {
         X.PointInv (x + int(j), y + int(i))

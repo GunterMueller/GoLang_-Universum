@@ -1,11 +1,12 @@
 package mol
 
-// (c) Christian Maurer   v. 170419 - license see µU.go
+// (c) Christian Maurer   v. 201004 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/kbd"
   "µU/col"
+//  "µU/errh"
   "µU/font"
   "µU/atom"
   "µU/masks"
@@ -18,15 +19,21 @@ type
                   masks.MaskSequence
                   }
 
-func new_() Molecule {
-  return new(molecule)
+func new_(n uint) Molecule {
+  x := new(molecule)
+  x.uint8 = uint8(n)
+  return x
 }
 
 func (x *molecule) imp (Y Any) *molecule {
   y, ok := Y.(*molecule)
   if ! ok { TypeNotEqPanic (x, Y) }
+/*/
   if x.uint8 != y.uint8 {
-    println ("mol.New: x.uint8 ==", x.uint8,"!= y.uint8 ==", y.uint8); TypeNotEqPanic (x, Y) }
+    println ("mol.imp: x.uint8 ==", x.uint8,"!= y.uint8 ==", y.uint8);
+    TypeNotEqPanic (x, Y)
+  }
+/*/
   for i := uint8(0); i < y.uint8; i++ {
     if ! x.comp[i].Equiv (y.comp[i]) { TypeNotEqPanic (x.comp[i], y.comp[i]) }
   }
@@ -45,7 +52,6 @@ func (x *molecule) Component (n uint) Any {
 func (x *molecule) Ins (a atom.Atom, l, c uint) {
   x.comp = append (x.comp, a.Clone().(atom.Atom))
   x.l, x.c = append (x.l, l), append (x.c, c)
-  x.uint8++
 }
 
 func (x *molecule) Del (n uint) {
@@ -100,13 +106,13 @@ func (x *molecule) Copy (Y Any) {
 }
 
 func (x *molecule) Clone() Any {
-  y := new_()
+  y := new_(uint(x.uint8))
   y.Copy (x)
   return y
 }
 
 func (x *molecule) less (y *molecule, n uint) bool {
-  if n > uint(x.uint8) { return false }
+  if n >= uint(x.uint8) { return false }
   if x.comp[n].Less (y.comp[n]) { return true }
   if x.comp[n].Eq (y.comp[n]) { return x.less (y, n + 1) }
   return false
@@ -117,7 +123,7 @@ func (x *molecule) Less (Y Any) bool {
 }
 
 func (x *molecule) Colours (f, b col.Colour) {
-  for i := uint8(0); i + 1 < x.uint8; i++ {
+  for i := uint8(0); i < x.uint8; i++ {
      x.comp[i].Colours (f, b)
   }
 }
@@ -136,7 +142,8 @@ func (x *molecule) Write (l, c uint) {
 func (x *molecule) Edit (l, c uint) {
   x.Write (l, c)
   i := uint8(0)
-  loop: for {
+  loop:
+  for {
     x.comp[i].Edit (l + x.l[i], c + x.c[i])
     switch C, d := kbd.LastCommand(); C {
     case kbd.Esc:
@@ -144,7 +151,7 @@ func (x *molecule) Edit (l, c uint) {
     case kbd.Enter:
       if d == 0 {
         if i + 1 < x.uint8 {
-          i ++
+          i++
         } else {
           break loop
         }
@@ -153,13 +160,13 @@ func (x *molecule) Edit (l, c uint) {
       }
     case kbd.Down:
       if i + 1 < x.uint8 {
-        i ++
+        i++
       } else {
         i = 0
       }
     case kbd.Up:
       if i > 0 {
-        i --
+        i--
       } else {
         i = x.uint8 - 1
       }
@@ -167,6 +174,16 @@ func (x *molecule) Edit (l, c uint) {
       i = 0
     case kbd.End:
       i = x.uint8 - 1
+    case kbd.Tab:
+      if d == 0 {
+        if i + 1 < x.uint8 {
+          i++
+        }
+      } else {
+        if i > 0 {
+          i--
+        }
+      }
     }
   }
 }
@@ -195,6 +212,7 @@ func (x *molecule) Codelen() uint {
 func (x *molecule) Encode() []byte {
   bs := make ([]byte, x.Codelen())
   i, a := uint(0), uint(1)
+if x.uint8 > 5 { println (x.uint8); panic ("Kackfurzer") }
   bs[0] = x.uint8
   i += a
   for k := uint8(0); k < x.uint8; k++ {
@@ -208,6 +226,7 @@ func (x *molecule) Encode() []byte {
 func (x *molecule) Decode (bs []byte) {
   i, a := uint(0), uint(1)
   x.uint8 = bs[0]
+if x.uint8 > 5 { println ("Schweinekopp", x.uint8); x.uint8 = 5 }
   i += a
   for k := uint8(0); k < x.uint8; k++ {
     a = x.comp[k].Codelen()

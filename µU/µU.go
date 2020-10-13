@@ -1,6 +1,6 @@
 package main
 
-/* (c) 1986-2019  Christian Maurer
+/* (c) 1986-2020  Christian Maurer
        christian.maurer-berlin.eu proprietary - all rights reserved
 
   Das Mikrouniversum µU ist nur zum Einsatz in der Lehre konstruiert  und hat deshalb einen
@@ -61,11 +61,14 @@ import (
   "µU/fig2"
   "µU/piset"
   "µU/persaddr"
-  "µU/pset"
+  "µU/pids"
 //  "µU/words"
+  "µU/mol"
   "µU/schol"
   "µU/gram"
+  "µU/eye"
   "µU/audio"
+  "µU/book"
   "µU/v"
   "µU/car"
   "µU/schan"
@@ -156,7 +159,8 @@ func joke (x, x1, y, imx, imy, imw int, c col.Colour, s string) {
 
 func drive (cl, cf, cb col.Colour, d chan bool) {
   x := (nx - wdtext) / 2
-  y := ((int(screen.NLines()) - 30) / 2 + 3) * ny1
+//  y := ((int(screen.NLines()) - 30) / 2 + 3) * ny1
+  y := ((int(screen.NLines()) - 31) / 2 + 3) * ny1
   x1 := x + wdtext - car.W
   dr (x, x1, y +  0 * ny1, cl, false)
   dr (x, x1, y +  2 * ny1, cf, false)
@@ -213,11 +217,14 @@ func main() { // get all packages compiled and show the license
   fuday.New()
   fig2.Touch()
   piset.Touch()
-  pset.New(persaddr.New())
-//  words.New(0, 0)
-  schol.New()
   gram.Touch()
+  eye.New()
+  persaddr.New()
+  pids.Touch()
+  mol.Touch()
+  schol.New()
   audio.New()
+  book.New()
   schan.New(0)
   achan.New(0)
   lock.NewMutex()
@@ -243,7 +250,7 @@ func main() { // get all packages compiled and show the license
   cl, cf, cb := v.Colours()
   circ (ht / 2, cf);
   circ (wd - ht / 2, cl)
-  errh.MuLicense (ker.Mu, v.String(), "1986-2019  Christian Maurer   https://maurer-berlin.eu/mu", cl, cf, cb)
+  errh.MuLicense (ker.Mu, v.String(), "1986-2020  Christian Maurer   https://maurer-berlin.eu/mu", cl, cf, cb)
   screen.ScrColourB (cb)
   done := make(chan bool)
   go drive (cl, cf, cb, done)

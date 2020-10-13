@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 190312 - license see µU.go
+// (c) Christian Maurer   v. 200928 - license see µU.go
 
 import
   "runtime"
@@ -11,7 +11,7 @@ type (
 // conditions
   Cond func() bool
   CondSpectrum func (uint) bool
-// Nvalued functions
+// uint-valued functions
   NFunc func() uint
   NFuncSpectrum func (uint) uint
 // operations
@@ -33,7 +33,6 @@ type (
 
 // Stmt[Spectrum]
 func Nothing() { runtime.Gosched() }
-func Something (n uint) { print(n, " ") }
 func NothingSp (i uint) { Nothing() }
 
 // Op[Spectrum]

@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 191124 - license see µU.go
+// (c) Christian Maurer   v. 201009 - license see µU.go
 
 import (
   "strconv"
@@ -83,7 +83,8 @@ func newWH (x, y, w, h uint) Screen {
     X.XWindow = xwin.NewWH (x, y, w, h)
     width, height = w, h
   } else {
-    X.Console = cons.NewWH (x/8, y/16, w/8, h/16)
+//    X.Console = cons.NewWH (x/8, y/16, w/8, h/16)
+    X.Console = cons.NewWH (x, y, w, h)
     width, height = cons.MaxRes()
 //    ker.Panic ("newWH is not yet implemented for tty-consoles")
   }

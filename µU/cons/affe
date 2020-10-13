@@ -1,0 +1,1 @@
+println (X.wd1, X.ht1); Fin(); os.Exit(0)

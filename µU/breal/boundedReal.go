@@ -1,6 +1,6 @@
 package breal
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 200913 - license see µU.go
 
 // TODO: more than 2 digits after the decimal point
 
@@ -99,7 +99,7 @@ func (x *breal) Decode (b []byte) {
 
 func (x *breal) Defined (s string) bool {
   if uint(len (s)) > x.wd { return false }
-  str.OffAllSpaces (&s)
+  str.OffBytes (&s, ' ')
 //  n := x.wd / 2
 //  P, L := make ([]uint, n), make ([]uint, n)
 //  n = nat.NDigitSequences (s, &P, &L)
@@ -178,4 +178,65 @@ func (x *breal) SetReal (r float64) bool {
     return true
   }
   return false
+}
+
+func (x *breal) Zero() bool {
+  return x.float64 == 0. // XXX epsilon
+}
+
+func (x *breal) Add (Y ...Adder) {
+  n := len(Y)
+  y := make([]*breal, n)
+  for i:= 0; i < n; i++ {
+    y[i] = x.imp(Y[i])
+    x.float64 += y[i].float64
+  }
+}
+
+func (x *breal) Sub (Y ...Adder) {
+  n := len(Y)
+  y := make([]*breal, n)
+  for i:= 0; i < n; i++ {
+    y[i] = x.imp(Y[i])
+    x.float64 -= y[i].float64
+  }
+}
+
+func (x *breal) One() bool {
+  return x.float64 == 1. // XXX epsilon
+}
+
+func (x *breal) Mul (Y ...Any) {
+  n := len(Y)
+  y := make([]*breal, n)
+  for i:= 0; i < n; i++ {
+    y[i] = x.imp(Y[i])
+    x.float64*= y[i].float64
+  }
+}
+
+func (x *breal) Sqr() {
+  q := x.float64 * x.float64
+  x.float64 = q
+}
+
+func (x *breal) Power (n uint) {
+  switch n {
+  case 0:
+    x.float64 = 1
+  case 1:
+    return
+  default:
+    q := x.float64
+    for i := uint(1); i < n; i++ {
+      q *= x.float64
+    }
+    x.float64 = q
+  }
+}
+
+func (x *breal) DivBy (Y Any) {
+  y := x.imp(Y)
+  if Zero(y) { DivBy0Panic() }
+  x.float64 /= x.imp(Y).float64
 }

@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 201010 - license see µU.go
 
 import (
   . "µU/obj"
@@ -13,11 +13,30 @@ type
                     internal.Base
                     }
 var
-  l, s [NEnums][]string
+  l, s [NTypes][]string
 
-func new_(e uint8) Enumerator {
-  if e >= NEnums { ker.Panic ("enum.New: Parameter >= NEnums") }
-  return &enumerator { internal.New (e, [internal.NFormats][]string { s[e], l[e] }) }
+func init() {
+  N = make([]uint8, NTypes)
+  N[Title] = uint8(len(l[Title]))
+  N[AudioC] = uint8(len(l[AudioC]))
+  N[BookC] = uint8(len(l[BookC]))
+  N[AudioMedium] = uint8(len(l[AudioMedium]))
+  N[Religion] = uint8(len(l[Religion]))
+  N[Subject] = uint8(len(l[Subject]))
+  N[Wortart] = NWortarten
+  N[Casus] = NCasus
+  N[Genus] = NGenera
+  N[Persona] = NPersonae
+  N[Numerus] = NNumeri
+  N[Tempus] = NTempora
+  N[Modus] = NModi
+  N[GenusVerbi] = NGeneraVerbi
+  N[Comparatio] = NComparationes
+}
+
+func new_(t uint8) Enumerator {
+  if t >= NTypes { ker.Panic ("enum.New: Parameter >= NEnums") }
+  return &enumerator { internal.New (t, [internal.NFormats][]string { s[t], l[t] }) }
 }
 
 func (x *enumerator) imp(Y Any) *enumerator {
@@ -51,4 +70,19 @@ func (x *enumerator) Less (Y Any) bool {
 
 func (x *enumerator) Set (e uint8) bool {
   return x.Base.Set (uint8(e))
+}
+
+func (x *enumerator) Found (ss string, t Type, f Format) uint8 {
+  var s0 []string
+  if f == Short {
+    s0 = s[t]
+  } else {
+    s0 = l[t]
+  }
+  for i := uint8(0); i < N[t]; i++ {
+    if ss == s0[i] {
+      return i
+    }
+  }
+  return uint8(0)
 }

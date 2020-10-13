@@ -36,14 +36,14 @@ TEXT ·FetchAndIncrement(SB),NOSPLIT,$0
   MOVQ AX, ret+8(FP)
   RET
 
-TEXT ·Add(SB),NOSPLIT,$0
+TEXT ·Inc(SB),NOSPLIT,$0
   MOVQ n+0(FP), BP
   MOVQ k+8(FP), AX
   LOCK
   XADDQ AX, 0(BP)
   RET
 
-TEXT ·Inc(SB),NOSPLIT,$0
+TEXT ·Inc1(SB),NOSPLIT,$0
   MOVQ n+0(FP), BP
   MOVQ $1, AX
   LOCK

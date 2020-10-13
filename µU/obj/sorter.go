@@ -1,17 +1,21 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
 type
   Sorter interface {
 
-//
-  Ordered () bool
+  Iterator
 
-//
-  Sort ()
+// Returns true, iff x is ordered.
+  Ordered() bool
 
-//
+// x is ordered.
+  Sort()
+
+// Pre: x is ordered.
+// Returns true, iff x contains objects b with Leq (a, b).
+// In this case, the next Get operation returns the smallest such object.
   ExGeq (a Any) bool
 }
 

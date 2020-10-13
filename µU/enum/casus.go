@@ -1,11 +1,7 @@
 package enum
 
-// (c) Christian Maurer   v. 140522 - license see µU.go
+// (c) Christian Maurer   v. 201007 - license see µU.go
 
-var
-  lCasus, sCasus []string =
-  []string { "", "Nominativ", "Genitiv", "Dativ", "Akkusativ", "Ablativ" },
-  []string { "", "Nom.", "Gen.", "Dat.", "Akk.", "Abl." }
 const (
   UndefCasus = uint8(iota)
   Nom
@@ -15,7 +11,12 @@ const (
   Abl
   NCasus
 )
+var (
+  lCasus = []string {"", "Nominativ", "Genitiv", "Dativ", "Akkusativ", "Ablativ"}
+  sCasus = []string {"", "Nom.",      "Gen.",    "Dat.",  "Akk.",      "Abl."}
+)
 
 func init() {
-  l[Casus], s[Casus] = lCasus, sCasus
+  l[Casus] = lCasus
+  s[Casus] = sCasus
 }

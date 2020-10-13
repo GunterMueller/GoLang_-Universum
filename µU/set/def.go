@@ -1,6 +1,6 @@
 package set
 
-// (c) Christian Maurer   v. 170424 - license see µU.go
+// (c) Christian Maurer   v. 201011 - license see µU.go
 
 import
   . "µU/obj"
@@ -9,7 +9,7 @@ type
 
   Object
   Sorter
-  Iterator
+// Split is not yet implemented!
 
 // Undocumented.
 // (My work is so secret, that even I don't know what I'm doing.)
