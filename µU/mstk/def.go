@@ -1,13 +1,14 @@
 package mstk
 
-// (c) Christian Maurer   v. 170320 - license see µU.go
+// (c) Christian Maurer   v. 201030 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/stk"
 )
 type
-  MStack interface { // Do not call Empty as it's value is not reliable !
+  MStack interface { // To be used by concurrent processes, but:
+                     // do not call Empty as it's value is not reliable !
                      // A process calling Pop or Top is blocked, until x is not empty.
   stk.Stack
 }

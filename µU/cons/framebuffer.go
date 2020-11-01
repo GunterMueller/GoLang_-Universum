@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 171221 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 //#include <stdlib.h>
 //#include <fcntl.h>
@@ -47,6 +47,7 @@ import (
   "unsafe"
   "syscall"
   "strconv"
+  . "µU/obj"
   . "µU/shape"
   . "µU/mode"
   "µU/ker"
@@ -61,7 +62,7 @@ const (
 var (
   fbmemsize uint
   fbmem, fbcop,
-  emptyBackground []byte
+  emptyBackground Stream
   visible bool // only for console switching
 )
 
@@ -102,7 +103,7 @@ func resMaxConsole() (uint, uint) {
   return 0, 0
 }
 
-func framebuffer() (x, y, b uint, fb []byte) {
+func framebuffer() (x, y, b uint, fb Stream) {
   var xc, yc, bc, ac C.int
   f := C.framebuffer (&xc, &yc, &bc, &ac)
   x, y, b = uint(xc), uint(yc), uint(bc)
@@ -130,8 +131,8 @@ func framebufferOk() bool {
   if uint(len (fbmem)) != fbmemsize {
     ker.Panic ("len (fbmem) == " + strconv.Itoa(len(fbmem)) + " != fbmemsize == " + strconv.Itoa(int(fbmemsize)))
   }
-  fbcop = make ([]byte, fbmemsize)
-  emptyBackground = make ([]byte, fbmemsize) // TODO each X needs it's own emptyBackground ?
+  fbcop = make (Stream, fbmemsize)
+  emptyBackground = make (Stream, fbmemsize) // TODO each X needs it's own emptyBackground ?
   ker.ConsoleInit()
   ker.SetAction (syscall.SIGUSR1, consoleOff)
   ker.SetAction (syscall.SIGUSR2, consoleOn)

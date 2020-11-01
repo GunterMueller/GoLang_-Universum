@@ -309,7 +309,8 @@ func posTime (all bool, sec uint) {
 }
 
 func switch_() {
-  switch status { case playing:
+  switch status {
+  case playing:
     C.pause (C.int(cdd))
   case paused:
     C.resume (C.int(cdd))
@@ -329,7 +330,8 @@ func fin1() {
 func volume (c Controller) uint8 {
   l, r:= uint(volume_left), uint(volume_right)
   sum:= l + r
-  switch c { case Left:
+  switch c {
+  case Left:
     return volume_left
   case Right:
     return volume_right
@@ -341,7 +343,8 @@ func volume (c Controller) uint8 {
 }
 
 func ctrl1 (c Controller, lauter bool) {
-  switch c { case Left:
+  switch c {
+  case Left:
     if lauter {
       if volume_left < MaxVol { volume_left ++ }
     } else {
@@ -379,7 +382,8 @@ func ctrl (c Controller, i uint8) {
   l, r, j:= uint(volume_left), uint(volume_right), uint(i)
   sum:= l + r
   mid:= sum / 2
-  switch c {case Left:
+  switch c {
+  case Left:
     l = j
   case Right:
     r = j

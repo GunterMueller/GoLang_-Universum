@@ -1,6 +1,6 @@
 package breal
 
-// (c) Christian Maurer   v. 200913 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 // TODO: more than 2 digits after the decimal point
 
@@ -87,13 +87,13 @@ func (x *breal) Codelen() uint {
   return 8
 }
 
-func (x *breal) Encode() []byte {
-  b := make ([]byte, x.Codelen())
+func (x *breal) Encode() Stream {
+  b := make (Stream, x.Codelen())
   copy (b[:8], Encode (x.float64))
   return b
 }
 
-func (x *breal) Decode (b []byte) {
+func (x *breal) Decode (b Stream) {
   x.float64 = float64(Decode (float64(0), b[:8]).(float64))
 }
 

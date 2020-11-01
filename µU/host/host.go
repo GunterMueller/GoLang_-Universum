@@ -1,6 +1,6 @@
 package host
 
-// (c) Christian Maurer   v. 190820 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "os"; "net"
@@ -127,13 +127,13 @@ func (x *host) Codelen() uint {
   return uint(len(x.ip))
 }
 
-func (x *host) Encode() []byte {
-  b := make ([]byte, x.Codelen())
+func (x *host) Encode() Stream {
+  b := make (Stream, x.Codelen())
   copy (b, x.ip)
   return b
 }
 
-func (x *host) Decode (b []byte) {
+func (x *host) Decode (b Stream) {
   copy (x.ip, b)
   if ! x.Defined (x.ip.String()) { Panic ("oops " + x.ip.String()) }
 }
@@ -279,7 +279,7 @@ func (x *host) Marked() bool {
   return x.bool
 }
 
-func (x *host) IP() []byte {
+func (x *host) IP() Stream {
   return x.ip
 }
 

@@ -1,6 +1,6 @@
 package ker
 
-// (c) Christian Maurer   v. 180106 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 const (
   T6 = 54
@@ -16,49 +16,49 @@ func p6txt (n, k uint) {
   }
 }
 
-func p6number (b []byte) (uint, int) {
+func p6number (s []byte) (uint, int) {
   i:= 0
-  for '0' <= b[i] && b[i] <= '9' { i ++ }
+  for '0' <= s[i] && s[i] <= '9' { i++ }
   n := uint(0)
   for j := 0; j < i; j++ {
-    n = 10 * n + uint(b[j] - '0')
+    n = 10 * n + uint(s[j] - '0')
   }
   return n, i
 }
 
-func P6Txt (w, h uint, bs []byte) int {
+func P6Txt (w, h uint, s []byte) int {
   p6txt (w, tw)
   p6txt (h, tw + 5)
   j := T6
-  copy (bs[:j], p6t)
+  copy (s[:j], p6t)
   return j
 }
 
-func P6dec (bs []byte) (uint, uint, uint, int) {
+func P6dec (s []byte) (uint, uint, uint, int) {
   w, h, fix := uint(0), uint(0), uint(0)
-  p6 := string (bs[:2])
+  p6 := string (s[:2])
   if p6 != "P6" { return 0, 0, 0, 0 }
   i, di := 3, 0
-  if bs[i] == '#' { // ignore comment
+  if s[i] == '#' { // ignore comment
     for {
       i++
-      if bs[i] < ' ' {
+      if s[i] < ' ' {
         i++ // ignore LF
         break
       }
     }
   }
-  w, di = p6number (bs[i:])
+  w, di = p6number (s[i:])
   i += 1 + di // ignore LF or space
-  h, di = p6number (bs[i:])
+  h, di = p6number (s[i:])
   i += 1 + di
-  fix, di = p6number (bs[i:])
+  fix, di = p6number (s[i:])
   i += 1 + di
   return w, h, fix, i
 }
 
-func P6Size (bs []byte) (uint, uint) {
-  w, h, fix, _ := P6dec (bs)
+func P6Size (s []byte) (uint, uint) {
+  w, h, fix, _ := P6dec (s)
   if fix != 255 { w, h = uint(0), uint(0) }
   return w, h
 }

@@ -15,7 +15,7 @@ type
   Stringer
   Printer
 
-  RealVal () float64
+  RealVal() float64
   SetReal (r float64) bool
 
   Adder

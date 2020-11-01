@@ -1,6 +1,6 @@
 package box
 
-// (c) Christian Maurer   v. 200402 - license see µU.go
+// (c) Christian Maurer   v. 201016 - license see µU.go
 
 import (
   "strconv"
@@ -241,50 +241,11 @@ func (b *box) done (s *string, x, y uint) bool {
     } else {
       return true
     }
-  case kbd.Help, kbd.Search:
-    return true
-  case kbd.Act, kbd.Cfg:
-    return true
-  case kbd.Mark:
-//    b.marked = *s
-    return true
-  case kbd.Demark:
-//    b.marked = ""
-    return true
-  case kbd.Cut:
-    scr.Copy (*s)
-    *s = New (b.width)
-    return true
-  case kbd.Copy:
-    scr.Copy (*s)
-    return true
-  case kbd.Paste:
-    *s = scr.Paste ()
-    return true
-  case kbd.Red, kbd.Green, kbd.Blue:
+  case kbd.Help, kbd.Search, kbd.Act, kbd.Cfg, kbd.Mark, kbd.Demark,
+       kbd.Cut, kbd.Copy, kbd.Paste, kbd.Red, kbd.Green, kbd.Blue:
     return true
   case kbd.Print:
     return true
-  case kbd.Roll:
-    return true
-  case kbd.Pause:
-    return true
-  case kbd.Go:
-    ;
-  case kbd.Here, kbd.Drag, kbd.To:
-    ; // return true
-  case kbd.This, kbd.Drop, kbd.There:
-    ;
-  case kbd.That, kbd.Move:
-    ;
-  case kbd.Hither:
-    t := (*s)
-    t = t[:b.index] + scr.Paste() + t[b.index:]
-    if ProperLen(t) > b.width { t = t[:b.width] }
-    *s = t
-    b.write (*s, x, y)
-  case kbd.Nav:
-    ;
   }
   return false
 }
@@ -447,7 +408,8 @@ func (b *box) doneNumerical (s *string, x, y uint) bool {
     }
 */
   case kbd.Back:
-    switch b.depth { case 0:
+    switch b.depth {
+    case 0:
       if b.overwritable {
         if b.index == 0 {
         } else {
@@ -520,15 +482,8 @@ func (b *box) doneNumerical (s *string, x, y uint) bool {
       return true
     }
 */
-  case kbd.Go:
-    ;
-  case kbd.Here, kbd.Drag, kbd.To:
-    return true
-  case kbd.This, kbd.Drop, kbd.There:
-    ;
-  case kbd.That, kbd.Move, kbd.Hither:
-    ;
-  default:
+  case kbd.Help, kbd.Search, kbd.Act, kbd.Cfg, kbd.Mark, kbd.Demark,
+       kbd.Cut, kbd.Copy, kbd.Paste, kbd.Red, kbd.Green, kbd.Blue:
     return true
   }
   return false
@@ -817,22 +772,4 @@ func (b *box) EditGr (s *string, x, y int) {
 
 func Edited() bool {
   return edited
-}
-
-func (b *box) Copy() {
-  scr.Copy (b.string)
-}
-
-func (b *box) Paste() {
-  b.string = scr.Paste()
-  Norm (&b.string, b.width)
-}
-
-func (b *box) Copy7 (i int) {
-  scr.Copy7 (b.string, i)
-}
-
-func (b *box) Paste7 (i int) {
-  b.string = scr.Paste7 (i)
-  Norm (&b.string, b.width)
 }

@@ -1,6 +1,6 @@
 package pids
 
-// Christian Maurer   v. 201010 - license see µU.go
+// Christian Maurer   v. 201017 - license see µU.go
 
 import (
   "µU/ker"
@@ -111,6 +111,11 @@ func (x *persistentIndexerSequence) Operate (l, c uint) {
     case kbd.Help:
       errh.Help (help)
       errh.Hint (hint)
+    case kbd.Search:
+      a.(Editor).Edit (l, c)
+/*/
+      x.all.TravPred ()
+/*/
     }
     errh.DelHint()
   }

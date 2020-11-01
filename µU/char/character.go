@@ -1,6 +1,6 @@
 package char
 
-// (c) Christian Maurer   v. 171007 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -157,12 +157,12 @@ func (x *character) Codelen() uint {
   return 1
 }
 
-func (x *character) Encode() []byte {
-  b := make ([]byte, 1)
+func (x *character) Encode() Stream {
+  b := make (Stream, 1)
   b[0] = x.byte
   return b
 }
 
-func (x *character) Decode (b []byte) {
+func (x *character) Decode (b Stream) {
   x.byte = b[0]
 }

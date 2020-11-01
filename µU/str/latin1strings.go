@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 201008 - license see µU.go
+// (c) Christian Maurer   v. 201027 - license see µU.go
 
 import
   "µU/z"
@@ -121,7 +121,7 @@ func toUpper (s *string) {
   if n == 0 { return }
   b := make ([]byte, n)
   for i := uint(0); i < n; i++ {
-    b[i] = z.Cap ((*s)[i])
+    b[i] = z.Upper ((*s)[i])
   }
   *s = string(b)
 }
@@ -138,7 +138,7 @@ func toLower (s *string) {
 
 func toUpper0 (s *string) {
   if len (*s) == 0 { return }
-  *s = string(z.Cap ((*s)[0])) + (*s)[1:]
+  *s = string(z.Upper ((*s)[0])) + (*s)[1:]
 }
 
 func toLower0 (s *string) {
@@ -148,7 +148,7 @@ func toLower0 (s *string) {
 
 func cap0 (s string) bool {
   if s == "" { return false }
-  return s[0] == z.Cap (s[0])
+  return s[0] == z.Upper (s[0])
 }
 
 func equiv (s, t string) bool {
@@ -292,15 +292,7 @@ func norm (s *string, n uint) {
 }
 
 func offSpc (s *string) {
-  n := len (*s)
-  for n > 0 && (*s)[0] == spc {
-    *s = (*s)[1:]
-    n--
-  }
-  for n > 0 && (*s)[n-1] == spc {
-    n--
-  }
-  *s = (*s)[:n]
+  offBytes (s, ' ')
 }
 
 func offBytes (s *string, b byte) {
@@ -495,17 +487,10 @@ func splitBrackets (s string, sep, b byte) []string {
   return ss
 }
 
-<<<<<<< HEAD
 func splitByte (s string, b byte) ([]string, uint) {
   ss, n := make([]string, 0), uint(0)
   if s == "" {
     return ss, n
-=======
-func splitByte (s string, b byte) (uint, []string) {
-  ss := make([]string, 0)
-  if s == "" {
-    return 0, ss
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
   }
   if s[0] == '/' {
     s = s[1:]
@@ -514,13 +499,7 @@ func splitByte (s string, b byte) (uint, []string) {
   if l > 1 && s[l-1] == '/' {
     s = s[:l-1]
   }
-<<<<<<< HEAD
   for {
-=======
-  n := uint(0)
-  for {
-    n++
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
     p, c := pos (s, b)
     if ! c {
       ss = append (ss, s)
@@ -528,12 +507,7 @@ func splitByte (s string, b byte) (uint, []string) {
     }
     ss = append (ss, s[:p])
     s = s[p+1:]
-<<<<<<< HEAD
     n++
   }
   return ss, n
-=======
-  }
-  return n, ss
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
 }

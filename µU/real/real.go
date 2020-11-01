@@ -1,6 +1,6 @@
 package real
 
-// (c) Christian Maurer   v. 170423 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "math"
@@ -79,16 +79,17 @@ func Codelen() uint {
   return 8
 }
 
-func Encode (x float64) []byte {
+func Encode (x float64) obj.Stream {
   return obj.Encode (x) // obj.Encode (math.Float64bits (x))
 }
 
-func Decode (b []byte) float64 {
-  return obj.Decode (0., b).(float64) // math.Float64frombits (obj.Decode (uint64(0), b).(uint64))
+func Decode (s obj.Stream) float64 {
+  return obj.Decode (0., s).(float64) // math.Float64frombits (obj.Decode (uint64(0), b).(uint64))
 }
 
 /* func val (op Operation, x, y float64) float64 {
-  switch op { case Plus:
+  switch op {
+  case Plus:
     return x + y
   case Minus:
     return x - y

@@ -1,11 +1,12 @@
 package cons
 
-// (c) Christian Maurer   v. 200903 - license see µU.go
+// (c) Christian Maurer   v. 201016 - license see µU.go
 
 // >>> This package only serves the implementations of µU/mouse,
 //     mu/kbd and mu/cons; it must not no be used elsewhere.
 
 import (
+  . "µU/obj"
   . "µU/linewd"
   . "µU/shape"
   . "µU/ptr"
@@ -36,10 +37,6 @@ type
   Console interface {
 
   Fin()
-
-// experimental ////////////////////////////////////////////////////////
-
-  Moved (x, y int) bool
 
 // colours /////////////////////////////////////////////////////////////
 
@@ -187,14 +184,12 @@ type
 // serialisation ///////////////////////////////////////////////////////
 
   Codelen (w, h uint) uint
-  Encode (x, y, w, h uint) []byte
-  Decode (bs []byte)
+  Encode (x, y, w, h uint) Stream
+  Decode (bs Stream)
 
 // cut buffer //////////////////////////////////////////////////////////
 
 // not yet implemented TODO
   Copy (s string)
   Paste() string
-  Copy7 (s string, b int)
-  Paste7 (b int) string
 }

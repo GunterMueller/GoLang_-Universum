@@ -1,6 +1,6 @@
 package edg
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -185,8 +185,8 @@ func (x *edge) Codelen() uint {
   return 35
 }
 
-func (x *edge) Encode() []byte {
-  bs := make ([]byte, x.Codelen())
+func (x *edge) Encode() Stream {
+  bs := make (Stream, x.Codelen())
   bs[0] = 0; if x.bool { bs[0] = 1 }
   i, a := uint(1), Codelen(x.Any)
   copy (bs[i:i+a], Encode(x.Any))
@@ -215,7 +215,7 @@ func (x *edge) Encode() []byte {
   return bs
 }
 
-func (x *edge) Decode (bs []byte) {
+func (x *edge) Decode (bs Stream) {
   x.bool = bs[0] == 1
   i, a := uint(1), Codelen(x.Any)
   x.Any = Decode (x.Any, bs[i:i+a])

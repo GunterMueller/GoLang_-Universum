@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 200906 - license see µU.go
+// (c) Christian Maurer   v. 201024 - license see µU.go
 
 import
   . "µU/obj"
@@ -75,10 +75,16 @@ func Cd (p string) { cd(p) }
 // Spec: The source is the doc.
 func Cd0() { cd0() }
 
+// Pre: d is a name of a directory entry.
+//      The calling process has the necessary access rights.
+// d ist now contained as subdirectory of the actual directory
+// in the file system tree.
+func Sub (d string) { sub(d) }
+
 // Pre: p is a path and d is a name of a directory entry.
 //      The calling process has the necessary access rights.
-// Returns true, iff d is now contained as directory in the
-// file system tree and appended to p.
+// Returns true, iff d is now contained as directory
+// in the file system tree and appended to p.
 // Otherwise nothing has happened.
 // The actual path of the calling process is not changed.
 func Ins (p, d string) bool { return ins(p,d) }
@@ -91,6 +97,10 @@ func Ins (p, d string) bool { return ins(p,d) }
 // Otherwise nothing has happend.
 // The actual path of the calling process is not changed.
 func Del (p, n string) bool { return del(p,n) }
+
+// Pre: f is a file and d a subdirectory in the actual directory.
+// f is moved into d.
+func Move (f, d string) { move(f,d) }
 
 // Returns the number of entries in the actual directory.
 func Num() uint { return num() }

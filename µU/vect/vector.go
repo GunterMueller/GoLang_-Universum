@@ -1,6 +1,6 @@
 package vect
 
-// (c) Christian Maurer   v. 201009 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "math"
@@ -316,8 +316,8 @@ func (x *vector) Codelen() uint {
   return 3 * clfloat
 }
 
-func (x *vector) Encode() []byte {
-  b := make ([]byte, x.Codelen())
+func (x *vector) Encode() Stream {
+  b := make (Stream, x.Codelen())
   i, a := uint(0), clfloat
   for d := 0; d < 3; d++ {
     copy (b[i:i+a], Encode (x.x[d]))
@@ -326,7 +326,7 @@ func (x *vector) Encode() []byte {
   return b
 }
 
-func (x *vector) Decode (b []byte) {
+func (x *vector) Decode (b Stream) {
   i, a := uint(0), clfloat
   for d := 0; d < 3; d++ {
     x.x[d] = Decode (null, b[i:i+a]).(float64)

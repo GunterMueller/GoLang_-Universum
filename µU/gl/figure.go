@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 191008 - license see µU.go
+// (c) Christian Maurer   v. 201027 - license see µU.go
 
 import (
   "math"
@@ -50,7 +50,7 @@ func fail() {
 }
 
 func fail1() {
-  panic("some pre not ok")
+  panic("some pre not met")
 }
 
 func point (x []float64) {
@@ -58,6 +58,11 @@ func point (x []float64) {
   begin (Points)
   vertex (x[0], x[1], x[2])
   end()
+}
+
+func line1 (x []float64) {
+  vertex (x[0], x[1], x[2])
+  vertex (x[3], x[4], x[5])
 }
 
 func line (x []float64) {
@@ -295,9 +300,7 @@ func pyramid (x, y, z, a, b, h float64) {
   vertex (x + a, y - b, z)
 //  vertex (x + a, y + b, z)
   end()
-  begin (Quads)
   horRectangle (x - a, y - b, z, x + a, y + b, false)
-  end()
 }
 
 func pyramidC (c []col.Colour, x, y, z, a, b, h float64) {
@@ -313,10 +316,8 @@ func pyramidC (c []col.Colour, x, y, z, a, b, h float64) {
   colour (c[3])
   vertex (x + a, y + b, z)
   end()
-  begin (Quads)
   colour (c[4])
   horRectangle (x - a, y - b, z, x + a, y + b, false)
-  end()
 }
 
 func octahedron (x, y, z, r float64) {
@@ -484,13 +485,6 @@ func cone (x, y, z, r, h float64) {
   vertex (x, y, z + h)
   for l := 0; l <= N; l++ {
     vertex (x + r * cos[l], y + r * sin[l], z)
-/*
-  n := vectors(N + 2)
-  n[0] = vect.New3 (0, 0, 1)
-  for l := 0; l <= N; l++ {
-    n[l+1] = vect.New3 (cos[l], sin[l], r / (h - z))
-    n[l+1].Norm()
-*/
   }
   end()
   circle (/* c, */ x, y, z, -r)
@@ -584,7 +578,7 @@ func torus (x, y, z, R, r float64) {
   end()
 }
 
-func horTorus (x, y, z, R, r, a float64) { // XXX a ?
+func verTorus (x, y, z, R, r, a float64) { // XXX a ?
   if r <= 0 || R <= 0 { fail() }
   for a <= -180 { a += 180 }
   for a >=  180 { a -= 180 }

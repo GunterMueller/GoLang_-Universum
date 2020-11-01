@@ -1,10 +1,6 @@
 package prt
 
-<<<<<<< HEAD
-// (c) Christian Maurer   v. 201011 - license see µU.go
-=======
-// (c) Christian Maurer   v. 200902 - license see µU.go
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
+// (c) Christian Maurer   v. 201016 - license see µU.go
 
 import (
   "os/exec"
@@ -25,8 +21,8 @@ var (
   tex, dvi, log, ps pseq.PersistentSequence
   texname, dviname, logname, psname, patternname string
   page [][]string // only for one page TODO allow more pages
-  nC = [S]uint { 136, 102, 85, 74, 50 }
-  nL = [S]uint { 108,  80, 60, 48, 33 }
+  nC = [S]uint {136, 102, 85, 74, 50, 40} // XXX 40
+  nL = [S]uint {108,  80, 60, 48, 33, 24} // XXX 24
   dH, dW [S]string
   actualFont = Roman
   actualSize = Normal
@@ -34,13 +30,14 @@ var (
   initialized bool
 )
 
-//                           6 pt                   8 pt                   10 pt       12 pt                   17 pt
-func init() { //             Tiny                   Small                  Normal      Big                     Huge
-  cm[Roman]   = [S]string { "cmtt8 scaled 750",    "cmtt8",               "cmtt10",   "cmtt12",               "cmtt12 scaled 1440" }
-  cm[Bold]    = [S]string { "cmbtt10 scaled 600",  "cmbtt8",              "cmbtt10",  "cmbtt10 scaled 1200",  "cmbtt10 scaled 1728" }
-  cm[Italic]  = [S]string { "cmitt10 scaled 600",  "cmitt10 scaled 800",  "cmitt10",  "cmitt10 scaled 1200",  "cmitt10 scaled 1728" }
-  dH          = [S]string { "7.2",                 "9.6",                 "12",       "14.4",                 "2.074" } // 246.2 / nL * 72.27 / 25.4
-  dW          = [S]string { "3.661",               "4.446",               "5.412",    "6.224",                "9.352" } // 159.2 / nC * 72.27 / 25.4
+//                        6 pt                  8 pt                  10 pt      12 pt                  14pt                   17 pt
+func init() { //          Tiny                  Small                 Normal     Big                    Large                  Huge
+  cm[Roman]  = [S]string {"cmtt8 scaled 750",   "cmtt8",              "cmtt10",  "cmtt12",              "cmtt12 scaled 1200",  "cmtt12 scaled 1440"}
+  cm[Bold]   = [S]string {"cmbtt10 scaled 600", "cmbtt8",             "cmbtt10", "cmbtt10 scaled 1200", "cmbtt10 scaled 1440", "cmbtt10 scaled 1728"}
+  cm[Italic] = [S]string {"cmitt10 scaled 600", "cmitt10 scaled 800", "cmitt10", "cmitt10 scaled 1200", "cmitt10 scaled 1440", "cmitt10 scaled 1728"}
+  dH         = [S]string {"7.2",                "9.6",                "12",      "14.4",                "17.28",               "20.74"} // 246.2 / nL * 72.27 / 25.4
+  dW         = [S]string {"3.661",              "4.446",              "5.412",   "6.224",               "7.629",               "9.352"} // 159.2 / nC * 72.27 / 25.4
+//                                                                                                       ^^^^^^ XXX
 }
 
 func setFont (f Font) {
@@ -83,16 +80,16 @@ func _init() {
   N := files.Tmp()
   null := byte(0)
   patternname = N + "*"
-  tex = pseq.New (null, false)
+  tex = pseq.New (null)
   texname = N + "tex"
   tex.Name (texname)
-  dvi = pseq.New (null, false)
+  dvi = pseq.New (null)
   dviname = N + "dvi"
   dvi.Name (dviname)
-  log = pseq.New (null, false)
+  log = pseq.New (null)
   logname = N + "log"
   log.Name (logname)
-  ps = pseq.New (null, false)
+  ps = pseq.New (null)
   psname = N + "ps"
   ps.Name (psname)
 }
@@ -171,6 +168,6 @@ func goPrint() {
   exec.Command ("dvips", dviname, "-o", psname).Run()
   time.Msleep (100)
   exec.Command (PrintCommand, psname, "-o", "fit-to-page").Run()
-  tex.Clr(); log.Clr(); dvi.Clr(); ps.Clr()
+//  tex.Clr(); log.Clr(); dvi.Clr(); ps.Clr()
 //  pseq.Erase (texname); pseq.Erase (logname); pseq.Erase (dviname); pseq.Erase (psname) // TODO
 }

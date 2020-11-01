@@ -1,10 +1,6 @@
 package pers
 
-<<<<<<< HEAD
-// (c) Christian Maurer   v. 201004 - license see µU.go
-=======
-// (c) Christian Maurer   v. 200908 - license see µU.go
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -346,12 +342,8 @@ func (x *person) Edit (l, c uint) {
   if C, _ := kbd.LastCommand(); C == kbd.Up {
     i = 4
   }
-<<<<<<< HEAD
   loop:
   for {
-=======
-  loop: for {
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
     switch i {
     case 0:
       x.surname.Edit (l, c + csn)
@@ -491,11 +483,11 @@ func (x *person) Codelen() uint {
   return                              45
 }
 
-func (x *person) Encode() []byte {
+func (x *person) Encode() Stream {
   return Encodes (x.field, x.cl)
 }
 
-func (x *person) Decode (bs []byte) {
+func (x *person) Decode (bs Stream) {
   Decodes (bs, x.field, x.cl)
   x.surname = x.field[0].(text.Text)
   x.firstName = x.field[1].(text.Text)

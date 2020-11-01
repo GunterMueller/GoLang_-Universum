@@ -1,6 +1,6 @@
 package addr
 
-// (c) Christian Maurer   v. 201004 - license see µU.go
+// (c) Christian Maurer   v. 201024 - license see µU.go
 
 import (
   . "µU/obj"
@@ -13,6 +13,7 @@ import (
   "µU/text"
   "µU/bnat"
   "µU/phone"
+  "µU/cntry"
 )
 const (
   lenStreet = uint(28)
@@ -27,13 +28,14 @@ type
      phonenumber,
       cellnumber phone.PhoneNumber
            email text.Text
+                 cntry.Country
                  }
 var (
   bx = box.New()
   pbx = pbox.New()
   cF, cB = col.LightCyan(), col.Black()
   mask masks.MaskSequence = masks.New()
-  cst, cpc, cci, cph, cce, cem uint
+  cst, cpc, cci, cph, cce, cem, cco uint
 )
 
 func new_() Address {
@@ -42,6 +44,8 @@ func new_() Address {
   x.Natural = bnat.New (5)
   x.phonenumber, x.cellnumber = phone.New(), phone.New()
   x.email = text.New (lenEmail)
+  x.Country = cntry.New()
+  x.Country.SetFormat (cntry.Long)
   x.Colours (cF, cB)
   return x
 }
@@ -58,7 +62,8 @@ func (x *address) Empty() bool {
          x.city.Empty() &&
          x.phonenumber.Empty() &&
          x.cellnumber.Empty() &&
-         x.email.Empty()
+         x.email.Empty() &&
+         x.Country.Empty()
 }
 
 func (x *address) Clr() {
@@ -68,6 +73,7 @@ func (x *address) Clr() {
   x.phonenumber.Clr()
   x.cellnumber.Clr()
   x.email.Clr()
+  x.Country.Clr()
 }
 
 func (x *address) Clone() Any {
@@ -84,6 +90,7 @@ func (x *address) Copy (Y Any) {
   x.phonenumber.Copy (y.phonenumber)
   x.cellnumber.Copy (y.cellnumber)
   x.email.Copy (y.email)
+  x.Country.Copy (y.Country)
 }
 
 func (x *address) Eq (Y Any) bool {
@@ -93,7 +100,8 @@ func (x *address) Eq (Y Any) bool {
          x.city.Eq (y.city) &&
          x.phonenumber.Eq (y.phonenumber) &&
          x.cellnumber.Eq (y.cellnumber) &&
-         x.email.Eq (y.email)
+         x.email.Eq (y.email) &&
+         x.Country.Eq (y.Country)
 }
 
 func (x *address) Equiv (Y Any) bool {
@@ -122,6 +130,7 @@ func (x *address) Colours (f, b col.Colour) {
   x.phonenumber.Colours (f, b)
   x.cellnumber.Colours (f, b)
   x.email.Colours (f, b)
+  x.Country.Colours (f, b)
 }
 
 func (x *address) Write (l, c uint) {
@@ -132,13 +141,15 @@ func (x *address) Write (l, c uint) {
   x.phonenumber.Write (l + 1, c + cph)
   x.cellnumber.Write (l + 1, c + cce)
   x.email.Write (l + 2, c + cem)
+  x.Country.Write (l + 2, c + cco)
 }
 
 func (x *address) Edit (l, c uint) {
+  const n = 6
   x.Write (l, c)
   i := 0
   if C, _:= kbd.LastCommand(); C == kbd.Up {
-    i = 5
+    i = n
   }
   loop: for {
     switch i {
@@ -154,20 +165,22 @@ func (x *address) Edit (l, c uint) {
       x.cellnumber.Edit (l + 1, c + cce)
     case 5:
       x.email.Edit (l + 2, c + cem)
+    case 6:
+      x.Country.Edit (l + 2, c + cco)
     }
     switch C, d:= kbd.LastCommand(); C {
     case kbd.Esc:
       break loop
     case kbd.Enter:
       if d == 0 {
-        if i < 5 { i++ } else { break loop }
+        if i < n { i++ } else { break loop }
       } else {
         break loop
       }
     case kbd.Down, kbd.Right:
-      if i < 5 { i ++ } else { break loop }
+      if i < n { i++ } else { break loop }
     case kbd.Up, kbd.Left:
-      if i > 0 { i -- } else { break loop }
+      if i > 0 { i-- } else { break loop }
     }
   }
 }
@@ -179,6 +192,7 @@ func (x *address) SetFont (f font.Font) {
   x.phonenumber.SetFont (f)
   x.cellnumber.SetFont (f)
   x.email.SetFont (f)
+  x.Country.SetFont (f)
 }
 
 func (x *address) Print (l, c uint) {
@@ -200,13 +214,14 @@ func (x *address) Codelen() uint {
          x.Natural.Codelen() +         //  8
          lenCity +                     // 22
          2 * x.phonenumber.Codelen() + // 12
-         lenEmail                      // 40
+         lenEmail +                    // 40
+         x.Country                     //  2
 */
-  return                                 110
+  return                                 112
 }
 
-func (x *address) Encode() []byte {
-  b:= make ([]byte, x.Codelen())
+func (x *address) Encode() Stream {
+  b:= make (Stream, x.Codelen())
   i, a:= uint(0), lenStreet
   copy (b[i:i+a], x.street.Encode())
   i += a
@@ -223,10 +238,13 @@ func (x *address) Encode() []byte {
   i += a
   a = lenEmail
   copy (b[i:i+a], x.email.Encode())
+  i += a
+  a = x.Country.Codelen()
+  copy (b[i:i+a], x.Country.Encode())
   return b
 }
 
-func (x *address) Decode (b []byte) {
+func (x *address) Decode (b Stream) {
   i, a:= uint(0), lenStreet
   x.street = Decode (x.street, b[i:i+a]).(text.Text)
   i += a
@@ -243,19 +261,23 @@ func (x *address) Decode (b []byte) {
   i += a
   a = lenEmail
   x.email = Decode (x.email, b[i:i+a]).(text.Text)
+  i += a
+  a = x.Country.Codelen()
+  x.Country = Decode (x.Country, b[i:i+a]).(cntry.Country)
 }
 
 func init() {
-  cst, cpc, cci, cph, cce, cem = 10, 45, 57, 10, 34, 10
+  cst, cpc, cci, cph, cce, cem, cco = 10, 45, 57, 10, 34, 10, 57
 //           1         2         3         4         5         6         7
 // 01234567890123456789012345678901234567890123456789012345678901234567890123456789
 // Str./Nr.: ____________________________  PLZ: _____  Ort: ______________________
 //     Tel.: ________________  Funk: ________________
-//   E-Mail: ________________________________________
+//   E-Mail: ________________________________________ Land: ______________________
   mask.Ins ("Str./Nr.:", 0,  0)
   mask.Ins ("PLZ:",      0, 40)
   mask.Ins ("Ort:",      0, 52)
   mask.Ins ("Tel.:",     1,  4)
   mask.Ins ("Funk:",     1, 28)
   mask.Ins ("E-Mail:",   2,  2)
+  mask.Ins ("Land:",     2, 51)
 }

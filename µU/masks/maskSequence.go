@@ -1,6 +1,6 @@
 package masks
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -136,8 +136,8 @@ func (x *maskSequence) Codelen() uint { // TODO cF, cB
   return c
 }
 
-func (x *maskSequence) Encode() []byte {
-  b := make ([]byte, x.Codelen())
+func (x *maskSequence) Encode() Stream {
+  b := make (Stream, x.Codelen())
   i, a := uint(0), uint(4)
   copy (b[i:i+a], Encode (x.num))
   i += a
@@ -147,7 +147,7 @@ func (x *maskSequence) Encode() []byte {
     copy (b[i:i+a], Encode (n))
     i += a
     a = uint(n)
-    copy (b[i:i+a], []byte(x.mask[k]))
+    copy (b[i:i+a], Stream(x.mask[k]))
     i += a
     a = uint(4)
     n = uint32(x.l[k] + 256 * x.c[k])
@@ -162,7 +162,7 @@ func (x *maskSequence) Encode() []byte {
   return b
 }
 
-func (x *maskSequence) Decode (b []byte) { // TODO cF, cB
+func (x *maskSequence) Decode (b Stream) { // TODO cF, cB
   i, a := uint(0), uint(4)
   x.num = Decode (uint(0), b[i:i+a]).(uint)
   i += a

@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 170814 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 // #include <stdlib.h>
 // #include <X11/X.h>
@@ -9,6 +9,7 @@ import
   "C"
 import (
   "unsafe"
+  . "µU/obj"
   "µU/z"
 )
 
@@ -24,7 +25,7 @@ func (X *xwindow) WriteNat (n uint, l, c uint) {
   t := "00"
   if n > 0 {
     const M = 10
-    bs := make ([]byte, M)
+    bs := make (Stream, M)
     for i := 0; i < M; i++ {
       bs[M - 1 - i] = byte('0' + n % 10)
       n = n / M

@@ -4,19 +4,19 @@ package font
 
 var (
   sign = []string {"r", "b", "i"}
-  size = []string {"t", "s", "n", "b", "l", "h"}
-  width  = []uint { 5,   6,   8,  12,  14,  16}
-  height = []uint { 7,  10,  16,  24,  28,  32}
+  size = []string {"t", "s", "n", "b", "b", "b"}
+  width  = []uint {  5,   6,   8,  12,  14,  16}
+  height = []uint {  7,  10,  16,  24,  28,  32}
 )
 
 func init() {
-  Name = []string{ "tiny  ", //  6pt
+  Name = []string {"tiny  ", //  6pt
                    "small ", //  8pt
                    "normal", // 10pt
                    "big",    // 12pt
                    "large ", // 14pt
                    "huge  ", // 17pt
-                 }
+                  }
 }
 
 func code (f Font, s Size) string {

@@ -1,6 +1,6 @@
 package seq
 
-// (c) Christian Maurer   v. 201011 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import
   . "µU/obj"
@@ -11,9 +11,11 @@ type
   Sorter
   Seeker
 
-  Reverse() // destroys the order, if x is ordered
+// Pre: x is not ordered.
+  Reverse()
 }
 
 // Pre: a is atomic or of a type implementing Object.
-// Returns a new empty sequence for objects of the type of a.
+// Returns a new empty sequence with pattern object a,
+// i.e. for objects of the type of a.
 func New (a Any) Sequence { return new_(a) }

@@ -71,9 +71,11 @@ func init() {
 }
 
 func wait() { // TODO -> kbd, other name
-  loop: for {
+  loop:
+  for {
     _, c, _  := kbd.Read()
-    switch c { case kbd.Enter, kbd.Esc, kbd.Back, kbd.Here, kbd.Drag:
+    switch c {
+    case kbd.Enter, kbd.Esc, kbd.Back, kbd.Here, kbd.Drag:
       break loop
     }
   }

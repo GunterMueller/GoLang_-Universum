@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 190402 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
 //  "µU/ker"
@@ -183,8 +183,8 @@ func (x *vertex) Codelen() uint {
          4 * x.f.Codelen()
 }
 
-func (x *vertex) Encode() []byte {
-  bs := make ([]byte, x.Codelen())
+func (x *vertex) Encode() Stream {
+  bs := make (Stream, x.Codelen())
   i, a  := uint(0), x.EditorGr.(Object).Codelen()
   copy (bs[i:i+a], x.EditorGr.(Object).Encode())
   i += a
@@ -208,7 +208,7 @@ func (x *vertex) Encode() []byte {
   return bs
 }
 
-func (x *vertex) Decode (bs []byte) {
+func (x *vertex) Decode (bs Stream) {
   i, a  := uint(0), x.EditorGr.(Object).Codelen()
 //  if a + 2 + 2 * c0 + 4 * col.Codelen() >= uint(len(bs)) { return false }
   x.EditorGr.(Object).Decode (bs[i:i+a])

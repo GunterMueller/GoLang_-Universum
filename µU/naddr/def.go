@@ -1,6 +1,6 @@
 package naddr
 
-// (c) Christian Maurer   v. 171127 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -22,7 +22,7 @@ type
   HostPort() (host.Host, uint16)
 
 // Returns the IPv6-number and the port of x.
-//  IPPort() ([]byte, uint16) // ? XXX
+//  IPPort() (Stream, uint16) // ? XXX
 
 // Returns the port of x.
   Port() uint16

@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 191019 - license see µU.go
+// (c) Christian Maurer   v. 201031 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -18,17 +18,20 @@ package scr
    No process is in the exclusive possession of the screen. */
 
 import (
+  "µU/obj"
   . "µU/shape"
   . "µU/linewd"
-  "µU/show"
   "µU/mode"
-  "µU/cons"
+  "µU/xwin"
   "µU/ptr"
   "µU/col"
   "µU/font"
 )
-const
-  ClearScreen = cons.ClearScreen
+const (
+  Look = xwin.Look
+  Walk = xwin.Walk
+  Fly  = xwin.Fly
+)
 
 // Returns true, if the calling process runs under X.
 func UnderX() bool { return underX }
@@ -76,28 +79,32 @@ func Act() Screen { return act() }
 // Scr (NAct()) == Act().
 // func NAct() uint { return nAct() }
 
+// Returns a new screen with the size of the physical screen.
+// The keyboard is switched to raw mode.
 func New (x, y uint, m mode.Mode) Screen { return new_(x,y,m) }
 
+// Returns a new screen of the size given by the mode m.
+// The keyboard is switched to raw mode.
 func NewMax() Screen { return newMax() }
 
+// Pre: The size of the screen given by x, y, w, h
+//      fits into the available physical screen.
+// Returns a new screen with upper left corner (x, y),
+// width w and height h. The keyboard is switched to raw mode.
 func NewWH (x, y, w, h uint) Screen { return newWH(x,y,w,h) }
 
 type
   Screen interface {
 
-// Spec TODO
+// The keyboard is switched back to normal mode.
   Fin()
 
 // Spec TODO
   Flush()
 
-// Spec TODO
+// Under X, in the title bar of the window framing the screen 
+// the string n appears, unless the screen was opened by a call of NewMax.
   Name (n string)
-
-
-// experimental ////////////////////////////////////////////////////////
-
-  Movex (x, y int)
 
 // Returns the actual mode.
   ActMode() mode.Mode
@@ -481,47 +488,40 @@ type
 // Pre: 0 < w, x + w < Wd, 0 < h, y + h < Ht.
 // Returns the byte sequence, that serializes the pixels
 // in the rectangle between (x, y) and (x + w, y + h).
-  Encode (x, y, w, h uint) []byte
+  Encode (x, y, w, h uint) obj.Stream
 
 // Pre: bs is the result of a call of Encode for some rectangle.
 // The pixels of that rectangle are drawn on the screen;
 // the rest of the screen is not changed.
-  Decode (bs []byte)
+  Decode (s obj.Stream)
 
 // ppm-serialisation ///////////////////////////////////////////////////
 
 // TODO Spec
-  P6Size (bs []byte) (uint, uint)
+  P6Size (s obj.Stream) (uint, uint)
 
 // TODO Spec
   P6Codelen (w, h uint) uint
 
 // TODO Spec
-  P6Encode (x, y, w, h uint) []byte
+  P6Encode (x, y, w, h uint) obj.Stream
 
 // TODO Spec
-  P6Decode (x, y uint, bs []byte)
+  P6Decode (x, y uint, s obj.Stream)
 
 // cut buffer //////////////////////////////////////////////////////////
-// At the time being - only implemented for use under X
 
-// TODO Spec
+// The content of the cutbuffer is the former *s and *s is now empty.
   Cut (s *string)
 
-// TODO Spec
+// The content of the cutbuffer is s.
   Copy (s string)
 
-// TODO Spec
+// Returns the content of the cutbuffer.
   Paste() string
-
-// TODO Spec
-  Copy7 (s string, b int)
-
-// TODO Spec
-  Paste7 (b int) string
 
 // openGL //////////////////////////////////////////////////////////////
 
-  Start (m show.Mode, draw func(), ex, ey, ez, fx, fy, fz, nx, ny, nz float64)
-  Go()
+// Pre: m <= Fly
+  Go (m int, draw func(), ex, ey, ez, fx, fy, fz, nx, ny, nz float64)
 }

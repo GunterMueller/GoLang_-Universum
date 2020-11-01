@@ -1,6 +1,6 @@
 package fmon
 
-// (c) Christian Maurer   v. 190822 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import
   . "µU/obj"
@@ -26,7 +26,7 @@ type
 // Its type is the type of a, i.e. objects of this type are passed
 // between server and clients.
 // For a == nil the server returns upon a monitor call a byte stream
-// (object of type []byte); in this case the caller is responsible
+// (object of type Stream); in this case the caller is responsible
 // for decoding that stream into an object of the type of the object,
 // that he sent as first argument in his monitor function call F.
 // fs(_,i) for i < n is the i-th monitor function and ps(_, i) is the

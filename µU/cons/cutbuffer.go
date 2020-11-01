@@ -1,21 +1,17 @@
 package cons
 
-// (c) Christian Maurer   v. 190528 - license see µU.go
+// (c) Christian Maurer   v. 201016 - license see µU.go
+
+import
+  . "µU/obj"
+var
+  buffer Stream
 
 func (x *console) Copy (s string) {
-// TODO
+  buffer = make(Stream, len(s))
+  copy (buffer[:], Stream(s))
 }
 
 func (x *console) Paste() string {
-// TODO
-  return ""
-}
-
-func (x *console) Copy7 (s string, b int) {
-// TODO
-}
-
-func (x *console) Paste7 (b int) string {
-// TODO
-  return ""
+  return string(buffer[:])
 }

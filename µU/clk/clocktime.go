@@ -1,6 +1,6 @@
 package clk
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/ker"
@@ -308,13 +308,13 @@ func (x *clocktime) Codelen() uint {
   return 4 // Codelen(uint32(0))
 }
 
-func (x *clocktime) Encode() []byte {
-  bs := make([]byte, x.Codelen())
+func (x *clocktime) Encode() Stream {
+  bs := make(Stream, x.Codelen())
   copy (bs, Encode(uint32(x.internalCode())))
   return bs
 }
 
-func (x *clocktime) Decode(bs []byte) {
+func (x *clocktime) Decode(bs Stream) {
   n := uint(Decode(uint32(0), bs).(uint32))
   x.second = n % ms
   n /= ms

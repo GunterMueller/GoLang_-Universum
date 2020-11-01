@@ -1,6 +1,6 @@
 package naddr
 
-// (c) Christian Maurer   v. 170106 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -71,15 +71,15 @@ func (x *netAddress) Codelen() uint {
   return x.Host.Codelen() + 2
 }
 
-func (x *netAddress) Encode() []byte {
-  b := make ([]byte, x.Codelen())
+func (x *netAddress) Encode() Stream {
+  b := make (Stream, x.Codelen())
   cl := x.Host.Codelen()
   copy (b[:cl], x.Host.Encode())
   copy (b[cl:], Encode (x.uint16))
   return b
 }
 
-func (x *netAddress) Decode (b []byte) {
+func (x *netAddress) Decode (b Stream) {
   cl := x.Host.Codelen()
   x.Host.Decode (b[:cl])
   x.uint16 = Decode (x.uint16, b[cl:]).(uint16)
@@ -126,7 +126,7 @@ func (x *netAddress) HostPort() (host.Host, uint16) {
   return x.Host.Clone().(host.Host), x.uint16
 }
 
-func (x *netAddress) IPPort() ([]byte, uint16) {
+func (x *netAddress) IPPort() (Stream, uint16) {
   f := x.Host.GetFormat()
   x.Host.SetFormat (host.IPnumber)
   defer x.Host.SetFormat(f)

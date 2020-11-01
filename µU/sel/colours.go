@@ -74,7 +74,8 @@ func init() {
 func write (FZ, B, x, y int) {
   f := scr.ColF()
   for i := 0; i < FZ; i++ {
-    switch FZ { case 16:
+    switch FZ {
+    case 16:
       scr.ColourF (pattern16[i])
     default:
       scr.ColourF (pattern[i])

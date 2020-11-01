@@ -1,9 +1,8 @@
 package pseq
 
-// (c) Christian Maurer   v. 201012 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
-  "io"
   "reflect"
   "sort"
   . "µU/ker"
@@ -26,43 +25,36 @@ type
                 file internal.File
         owner, group uint
       size, pos, num uint64
-           buf, buf1 []byte
+           buf, buf1 Stream
                      }
 /*
-  The following two problems are not yet solved:
-  1. Access to psequences is only possible, if the rights are named correspondingly.
-     At the moment clients are not protected from trying to access persistent Sequences
-     without having the rights to.
-  2. The trivial handlings of read/write-errors should be replaced by an error-based concept.
+  The following problem is not yet solved:
+  Access to psequences is only possible, if the rights are set correspondingly.
+  At the moment clients are not protected from trying to access persistent Sequences
+  without having the rights to.
 */
 
 var
   wasRead, wasWritten int
 
-func (x *persistentSequence) read (bs []byte) {
+func (x *persistentSequence) read (bs Stream) {
   r, _ := x.file.Read (bs[:x.size])
   wasRead = r
 }
 
-func (x *persistentSequence) write (bs []byte) {
+func (x *persistentSequence) write (bs Stream) {
   w, _ := x.file.Write (bs[:x.size])
   if uint64(w) < x.size {
     wasWritten = w
   }
 }
 
-func (x *persistentSequence) check (a Any) {
-  CheckTypeEq (x.emptyObject, a)
-}
-
-func new_(a Any, o bool) PersistentSequence {
+func new_(a Any) PersistentSequence {
   switch a.(type) {
   case Equaler, Coder:
     ; // ok
   default:
-    if Atomic(a) || Streamic(a) {
-      ; // ok
-    } else {
+    if ! Atomic(a) && ! Streamic(a) {
       panic("not Atomic or Streamic or Equaler and Coder, but" + reflect.TypeOf(a).String())
     }
   }
@@ -72,10 +64,13 @@ func new_(a Any, o bool) PersistentSequence {
   x.num = null
   x.size = uint64(Codelen(a))
   x.file = internal.New()
-  x.buf = make ([]byte, x.size)
-  x.buf1 = make ([]byte, x.size)
-  x.ordered = o
+  x.buf = make (Stream, x.size)
+  x.buf1 = make (Stream, x.size)
   return x
+}
+
+func (x *persistentSequence) check (a Any) {
+  CheckTypeEq (x.emptyObject, a)
 }
 
 func (x *persistentSequence) imp (a Any) *persistentSequence {
@@ -128,7 +123,7 @@ func (x *persistentSequence) Rename (n string) {
   if str.Empty (n) || n == x.name {
     return
   }
-  f := New(byte(0), x.ordered)
+  f := new_(byte(0))
   f.Name (n)
   if ! f.Empty() {
     Panic ("a file with the name " + n + " already exister")
@@ -150,55 +145,12 @@ func (x *persistentSequence) Clr() {
   x.num = 0
 }
 
-func equal (as, bs []byte) bool {
+func equal (as, bs Stream) bool {
   if len (as) != len (bs) { return false }
   for i, a := range (as) {
     if a != bs[i] { return false }
   }
   return true
-}
-
-func (x *persistentSequence) e (y *persistentSequence, r Rel) bool {
-  if y.name == x.name { return true }
-  if x.num != y.num { return false }
-  for i := null; i < x.num; i++ {
-    x.read (x.buf)
-    y.read (y.buf)
-    if ! r (x.buf, y.buf) {
-      return false
-    }
-  }
-  return true
-}
-
-func (x *persistentSequence) Eq (Y Any) bool {
-  return x.e (x.imp (Y), Eq)
-}
-
-func (x *persistentSequence) cp (y *persistentSequence) {
-// alpha Version
-  x.file.Clr()
-  x.file = internal.New()
-  _, err := io.Copy (x.file, y.file)
-  if err != nil { Panic ("pseq.cp.bug: io.Copy did not work") }
-  x.emptyObject = Clone (y.emptyObject)
-  x.Any = Clone (y.Any)
-  x.buf = make ([]byte, x.size)
-  x.buf1 = make ([]byte, x.size)
-  x.ordered = y.ordered
-  x.num = y.num
-  x.Name (y.name + ".Copy")
-}
-
-func (x *persistentSequence) Copy (Y Any) {
-  y := x.imp(Y)
-  x.cp (y)
-}
-
-func (x *persistentSequence) Clone () Any {
-  y := new_(Clone(x.emptyObject), x.ordered)
-  y.Copy(x)
-  return y
 }
 
 func (x *persistentSequence) Num() uint {
@@ -342,7 +294,7 @@ func (x *persistentSequence) Del() Any {
     return nil
   }
   n := x.num
-  y := new_(x.emptyObject, x.ordered).(*persistentSequence)
+  y := new_(x.emptyObject).(*persistentSequence)
   y.Name (x.tmpName)
   y.Clr()
   x.file.Seek (0)
@@ -500,6 +452,7 @@ func (x *persistentSequence) ExGeq (a Any) bool {
   if ! x.ordered { Panic ("x is not ordered") }
   n := x.Num()
   if n == 0 { return false }
+// XXX not efficient TODO binary search
 /*/
   x.Seek (n/2)
   b := x.Get().(Any)
@@ -511,7 +464,6 @@ func (x *persistentSequence) ExGeq (a Any) bool {
    search second half
   }
 /*/
-// XXX not efficient TODO binary search
   for i := uint(0); i < n; i++ {
     x.Seek(i)
     if ! Less (x.Get(), a) {
@@ -567,7 +519,7 @@ func (x *persistentSequence) Cut (Y Iterator, p Pred) {
   if y == nil { return }
   y.Clr()
   if x.name == y.name { return }
-  x1 := new_(x.emptyObject, x.ordered).(*persistentSequence)
+  x1 := new_(x.emptyObject).(*persistentSequence)
   x1.Name (x.tmpName)
   x1.Clr()
   x.file.Seek (0)
@@ -593,7 +545,7 @@ func (x *persistentSequence) Cut (Y Iterator, p Pred) {
 }
 
 func (x *persistentSequence) ClrPred (p Pred) {
-  y := new_(x.emptyObject, x.ordered).(*persistentSequence)
+  y := new_(x.emptyObject).(*persistentSequence)
   if y == nil { return }
   if x.num == 0 { return }
   x.file.Seek (0)
@@ -621,7 +573,7 @@ func (x *persistentSequence) Split (Y Iterator) {
   if y == nil { return }
   if x.num == 0 { return }
   y.Clr()
-  ps := new_(x.emptyObject, x.ordered).(*persistentSequence)
+  ps := new_(x.emptyObject).(*persistentSequence)
   ps.Name (x.tmpName)
   ps.Clr()
   x.file.Seek (0)
@@ -679,7 +631,7 @@ func (x *persistentSequence) join (Y PersistentSequence) {
     more effective: see concatenate
   }
 */
-  ps := new_(x.emptyObject, x.ordered).(*persistentSequence)
+  ps := new_(x.emptyObject).(*persistentSequence)
   ps.Name (x.tmpName)
   ps.Clr()
   x.file.Seek (0)

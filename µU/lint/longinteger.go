@@ -1,10 +1,6 @@
 package lint
 
-<<<<<<< HEAD
-// (c) Christian Maurer   v. 201009 - license see µU.go
-=======
-// (c) Christian Maurer   v. 200902 - license see µU.go
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
+// (c) Christian Maurer   v. 201014 - license see µU.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 
@@ -112,11 +108,11 @@ func (x *longInteger) Codelen() uint {
   return uint(len (x.n.Bytes()))
 }
 
-func (x *longInteger) Encode() []byte {
+func (x *longInteger) Encode() Stream {
   return x.n.Bytes()
 }
 
-func (x *longInteger) Decode (b []byte) {
+func (x *longInteger) Decode (b Stream) {
   x.n.SetBytes (b)
 }
 
@@ -180,15 +176,9 @@ func (x *longInteger) SetFont (f font.Font) {
 }
 
 func (x *longInteger) Print (l, c uint) {
-<<<<<<< HEAD
   s := x.String()
   c0 := c
   for i := 0; i < len (s); i++ {
-=======
-  s:= x.String()
-  c0:= c
-  for i:= 0; i < len (s); i++ {
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
     prt.SetFont (x.Font)
     prt.Print1 (s[i], l, c)
     if c + 1 < prt.NColumns() {

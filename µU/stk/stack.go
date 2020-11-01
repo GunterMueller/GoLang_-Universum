@@ -1,6 +1,6 @@
 package stk
 
-// (c) Christian Maurer   v. 170316 - license see µU.go
+// (c) Christian Maurer   v. 201030 - license see µU.go
 
 import (
   . "µU/obj"

@@ -1,10 +1,11 @@
 package cons
 
-// (c) Christian Maurer   v. 191117 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "sync"
   "strconv"
+  . "µU/obj"
   . "µU/linewd"
   . "µU/shape"
   . "µU/mode"
@@ -19,12 +20,12 @@ type
             x, y int
           wd, ht uint
 nLines, nColumns uint
-         archive []byte
-          shadow [][]byte
+         archive Stream
+          shadow []Stream
             buff bool
         wd1, ht1 uint
 cF, cB, cFA, cBA col.Colour
-    codeF, codeB []byte
+    codeF, codeB Stream
       scrF, scrB col.Colour
           lineWd Linewidth
         fontsize font.Size
@@ -83,10 +84,10 @@ func newCons (x, y uint, m Mode) Console {
                strconv.Itoa(X.x) + " + " + strconv.Itoa(int(X.wd)) + " > " + strconv.Itoa (int(width)) + " or " +
                strconv.Itoa(X.y) + " + " + strconv.Itoa(int(X.ht)) + " > " + strconv.Itoa (int(height)))
   }
-  X.archive = make([]byte, fbmemsize)
-  X.shadow = make([][]byte, X.ht)
+  X.archive = make(Stream, fbmemsize)
+  X.shadow = make([]Stream, X.ht)
   for i := 0; i < int(X.ht); i++ {
-    X.shadow[i] = make([]byte, X.wd * colourdepth)
+    X.shadow[i] = make(Stream, X.wd * colourdepth)
   }
   X.initMouse()
   X.pg = make([][]bool, X.ht)
@@ -123,10 +124,10 @@ func newConsWH (x, y, w, h uint) Console {
     ker.Panic ("new console too large: " + a + " + " + b + " > " + c + " or " +
                                            d + " + " + e + " > " + f)
   }
-  X.archive = make([]byte, fbmemsize)
-  X.shadow = make([][]byte, X.ht)
+  X.archive = make(Stream, fbmemsize)
+  X.shadow = make([]Stream, X.ht)
   for i := 0; i < int(X.ht); i++ {
-    X.shadow[i] = make([]byte, X.wd * colourdepth)
+    X.shadow[i] = make(Stream, X.wd * colourdepth)
   }
   X.initMouse()
   X.pg = make([][]bool, X.ht)

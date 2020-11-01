@@ -1,6 +1,6 @@
 package tval
 
-// (c) Christian Maurer   v. 200906 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -91,13 +91,13 @@ func (x *truthValue) Codelen() uint {
   return uint(1)
 }
 
-func (x *truthValue) Encode() []byte {
-  b := make ([]byte, 1)
+func (x *truthValue) Encode() Stream {
+  b := make (Stream, 1)
   b[0] = byte(x.value)
   return b
 }
 
-func (x *truthValue) Decode (b []byte) {
+func (x *truthValue) Decode (b Stream) {
   x.value = value(b[0])
 }
 

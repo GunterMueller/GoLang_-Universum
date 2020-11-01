@@ -1,6 +1,6 @@
 package vect
 
-// (c) Christian Maurer   v. 201009 - license see µU.go
+// (c) Christian Maurer   v. 201027 - license see µU.go
 
 import
   . "µU/obj"
@@ -88,10 +88,11 @@ type
 // Returns true, if |x| is quasi 1.
   Normed() bool
 
-// If x and y are collinear, nothing had happened. Otherwise: 
+// If x and y are collinear, nothing had happened. Otherwise:
+// x is rotated around y by the angle a, i.e.
 // x = cos(a) * x0 + <x0, y> * (1 - cos(a)) * y + sin(a) * [y, x0]
 // where x0 denotes x before.
-  Rot (W Vector, a float64)
+  Rot (y Vector, a float64)
 
 // Spec TODO
   Minimax (Min, Max Vector)

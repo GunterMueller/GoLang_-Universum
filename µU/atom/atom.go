@@ -1,6 +1,6 @@
 package atom
 
-// (c) Christian Maurer   v. 201010 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "reflect"
@@ -138,11 +138,11 @@ func (x *atom) Codelen() uint {
   return x.Object.Codelen()
 }
 
-func (x *atom) Encode() []byte {
+func (x *atom) Encode() Stream {
   return x.Object.Encode()
 }
 
-func (x *atom) Decode (bs []byte) {
+func (x *atom) Decode (bs Stream) {
   x.Object.Decode (bs)
 }
 

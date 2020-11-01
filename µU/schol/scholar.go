@@ -1,6 +1,6 @@
 package schol
 
-// (c) Christian Maurer   v. 170410 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 // >>> TODO: simplify it into a Molecule
 
@@ -156,7 +156,8 @@ func (x *scholar) Clone() Any {
 
 func (x *scholar) Eq (Y Any) bool {
   y := x.imp (Y)
-  switch x.Format { case Minimal, VeryShort:
+  switch x.Format {
+  case Minimal, VeryShort:
     return x.Person.Eq (y.Person)
   case Short:
     return x.Person.Eq (y.Person) &&
@@ -200,7 +201,8 @@ func (x *scholar) FullAged() bool {
 func (x *scholar) SetFormat (f Format) {
   if f < NFormats {
     x.Format = f
-    switch f { case Minimal:
+    switch f {
+    case Minimal:
       x.Person.SetFormat (pers.ShortB)
     case Short:
       x.LanguageSequence.SetFormat (langs.Short)
@@ -230,7 +232,8 @@ var
   cLs, cPb, cNa, cAd, cLg, cAg, cRe uint
 
 func (x *scholar) writeMask (l, c uint) { // complicated, see TODO top
-  switch x.Format { case Minimal:
+  switch x.Format {
+  case Minimal:
     lLs = 0; cLs = 0
   case VeryShort:
     lLs = 0; cLs = 0
@@ -273,7 +276,8 @@ Religionszugehörigkeit: ______________________
 func (x *scholar) Write (l, c uint) {
   x.writeMask (l, c)
   x.Person.Write (l, c)
-  switch x.Format { case Minimal, VeryShort:
+  switch x.Format {
+  case Minimal, VeryShort:
   default:
     x.LanguageSequence.Write (l + lLs, c + cLs)
   }
@@ -295,8 +299,10 @@ func (x *scholar) Edit (l, c uint) {
   const nKomponenten = 8
   x.Write (l, c)
   i := 1
-  loop: for {
-    switch i { case 1:
+  loop:
+  for {
+    switch i {
+    case 1:
     x.Person.Edit (l, c)
     case 2:
       if x.Format == Long {
@@ -391,7 +397,8 @@ Religionszugehörigkeit: ______________________
     lAd = 3; cAd = 0; lLg = 7; cLg = 0; lAg = 9; cAg = 0
     lLs = 12; cLs = 15; lRe = 17; cRe = 25
   }
-  switch x.Format { case Minimal, VeryShort:
+  switch x.Format {
+  case Minimal, VeryShort:
   default:
     pbx.Print ("langSeq:", l + lLs, c + cLs - 15)
   }
@@ -406,7 +413,8 @@ Religionszugehörigkeit: ______________________
 func (x *scholar) Print (l, c uint) {
   x.printMask (l, c)
   x.Person.Print (l, c)
-  switch x.Format { case Minimal, VeryShort:
+  switch x.Format {
+  case Minimal, VeryShort:
   default:
     x.LanguageSequence.Print (l + lLs, c + cLs)
   }
@@ -425,11 +433,11 @@ func (x *scholar) Codelen() uint {
   return c
 }
 
-func (x *scholar) Encode() []byte {
+func (x *scholar) Encode() Stream {
   return Encodes (x.field, x.cl)
 }
 
-func (x *scholar) Decode (bs []byte) {
+func (x *scholar) Decode (bs Stream) {
   Decodes (bs, x.field, x.cl)
   x.Person = x.field[0].(pers.Person)
   x.Text = x.field[1].(text.Text)

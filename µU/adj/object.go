@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 171112 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "µU/ker"
@@ -78,8 +78,8 @@ func (x *adjacencyMatrix) Codelen() uint {
   return 4 + (1 + x.uint * x.uint) * (v + e)
 }
 
-func (x *adjacencyMatrix) Encode() []byte {
-  bs := make ([]byte, x.Codelen())
+func (x *adjacencyMatrix) Encode() Stream {
+  bs := make (Stream, x.Codelen())
   v, e := Codelen(x.v), Codelen(x.e)
   copy (bs[:4], Encode (uint32(x.uint)))
   i := uint(4)
@@ -98,7 +98,7 @@ func (x *adjacencyMatrix) Encode() []byte {
   return bs
 }
 
-func (x *adjacencyMatrix) Decode (bs []byte) {
+func (x *adjacencyMatrix) Decode (bs Stream) {
   v, e := Codelen(x.v), Codelen(x.e)
   x.uint = uint(Decode (uint32(0), bs[:4]).(uint32))
   i := uint(4)

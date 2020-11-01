@@ -1,6 +1,6 @@
 package phone
 
-// (c) Christian Maurer   v. 200913 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -116,7 +116,8 @@ func (x *phonenumber) String() string {
   if x.uint32 > 0 {
     t := nat.String (uint(x.uint32))
     n := len (t)
-    switch n { case 4, 5:
+    switch n {
+    case 4, 5:
       t = t[0:n-2] + " " + t[n-2:]
     case 6, 7:
       t = t[0:n-4] + " " + t[n-4:n-2] + " " + t[n-2:]
@@ -171,14 +172,14 @@ func (x *phonenumber) Codelen() uint {
          4   // Codelen (x.uint32)
 }
 
-func (x *phonenumber) Encode() []byte {
-  bs := make ([]byte, x.Codelen())
+func (x *phonenumber) Encode() Stream {
+  bs := make (Stream, x.Codelen())
   copy (bs[0:2], Encode (x.uint16))
   copy (bs[2:6], Encode (x.uint32))
   return bs
 }
 
-func (x *phonenumber) Decode (bs []byte) {
+func (x *phonenumber) Decode (bs Stream) {
   x.uint16 = Decode (x.uint16, bs[0:2]).(uint16)
   x.uint32 = Decode (x.uint32, bs[2:6]).(uint32)
 }

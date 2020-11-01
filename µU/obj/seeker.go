@@ -1,11 +1,11 @@
 package obj
 
-// (c) Christian Maurer   v. 200228 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 type
   Seeker interface {
 
-  Collector
+  Iterator
 
 // Returns Num(), iff Offc(); returns otherwise
 // the position of the actual object of x (starting at 0).
@@ -21,12 +21,3 @@ func IsSeeker (a Any) bool {
   _, ok := a.(Seeker)
   return ok
 }
-
-/*
-type
-  SeekerIterator interface {
-
-  Iterator
-  Seeker
-}
-*/

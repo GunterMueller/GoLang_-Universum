@@ -19,8 +19,6 @@ import (
   "µU/gra"
   "µU/adj"
   "µU/ego"
-  "µU/mcorn"
-  "sync"
 )
 type
   distributedGraph struct {
@@ -58,9 +56,6 @@ type
             leader uint
                    HeartbeatAlg; ElectAlg; TravAlg
                    Op
-              C, D uint // for Dijkstra/Scholten
-              corn mcorn.MCornet
-                   sync.Mutex
                    }
 const (
   p0 = nchan.Port0
@@ -118,7 +113,7 @@ func new_(g gra.Graph) DistributedGraph {
   x.HeartbeatAlg, x.ElectAlg, x.TravAlg = HeartbeatGraph, ChangRoberts, DFS
   x.leader = x.me
   x.Op = Ignore
-  x.corn = mcorn.New(uint(0))
+//  x.corn = mcorn.New(uint(0))
   return x
 }
 

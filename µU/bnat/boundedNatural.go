@@ -1,6 +1,6 @@
 package bnat
 
-// (c) Christian Maurer   v. 201008 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -79,11 +79,11 @@ func (x *natural) Codelen() uint {
   return 8
 }
 
-func (x *natural) Encode() []byte {
+func (x *natural) Encode() Stream {
   return Encode (uint64(x.n))
 }
 
-func (x *natural) Decode (bs []byte) {
+func (x *natural) Decode (bs Stream) {
   x.n = Decode (uint64(0), bs).(uint64)
 }
 

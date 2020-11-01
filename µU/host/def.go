@@ -1,6 +1,6 @@
 package host
 
-// (c) Christian Maurer   v. 190820 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -23,7 +23,7 @@ type
   Marker
 
 // Returns the IPv4-number of x as byte sequence.
-  IP() []byte
+  IP() Stream
 
 // Returns true, if x has the name s.
   Equiv (s string) bool

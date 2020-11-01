@@ -87,7 +87,8 @@ func (x *heap) Lift (n uint) {
 // Returns the former pointer to the n-th node of x,
 // and this pointer is now nil.
 func (x *heap) last (n uint) *heap {
-  switch n { case 1:
+  switch n {
+  case 1:
     return x
   case 2:
     y := x.left
@@ -107,7 +108,8 @@ func (x *heap) last (n uint) *heap {
 
 func (x *heap) Del (n uint) (Heap, Any) {
   y := x.last (n)
-  switch n { case 1:
+  switch n {
+  case 1:
     y = nil
   case 2:
     // see above

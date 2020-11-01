@@ -1,6 +1,6 @@
 package langs
 
-// (c) Christian Maurer   v. 170810 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -141,7 +141,8 @@ func (x *languageSequence) Colours (f, b col.Colour) {
 
 func (x *languageSequence) writeMask (l, c uint) {
   bx.ScrColours()
-  switch x.Format { case Short:
+  switch x.Format {
+  case Short:
 /*        1         2         3         4
 012345678901234567890123456789012345678901
 _ (__-__)  e (__-__)  g (__-__)  _ (__-__) */
@@ -206,7 +207,8 @@ func (x *languageSequence) Edit (l, c uint) {
     i := uint(0)
     loop_i: for {
       weg := false
-      switch i { case 0: // lang
+      switch i {
+      case 0: // lang
         for {
           for {
             x.lang[n].Edit (l + lLa[x.Format][n], c + cLa[x.Format][n])
@@ -274,7 +276,8 @@ func (x *languageSequence) Edit (l, c uint) {
 }
 
 func (x *languageSequence) printMask (l, c uint) {
-  switch x.Format { case Short:
+  switch x.Format {
+  case Short:
     for n := uint(0); n < max; n++ {
       pbx.Print ("(  -  )", l, c + cFr[x.Format][n] - 1)
     }
@@ -307,8 +310,8 @@ func (x *languageSequence) Codelen() uint {
   return max * (x.lang[0].Codelen() + 1)
 }
 
-func (x *languageSequence) Encode()[]byte {
-  b := make ([]byte, x.Codelen())
+func (x *languageSequence) Encode() Stream {
+  b := make (Stream, x.Codelen())
   i := uint(0)
   for n := uint(0); n < max; n++ {
     a := x.lang[n].Codelen()
@@ -316,20 +319,20 @@ func (x *languageSequence) Encode()[]byte {
     i += a
     c := byte (x.from[n].Val() + 16 * x.to[n].Val())
     copy (b[i:i+1], Encode (c))
-    i ++
+    i++
   }
   return b
 }
 
-func (x *languageSequence) Decode (b[]byte) {
+func (x *languageSequence) Decode (s Stream) {
   i := uint(0)
   for n := uint(0); n < max; n++ {
     a := x.lang[n].Codelen()
-    x.lang[n].Decode (b[i:i+a])
+    x.lang[n].Decode (s[i:i+a])
     i += a
-    c := uint(Decode (byte(0), b[i:i+1]).(byte))
+    c := uint(Decode (byte(0), s[i:i+1]).(byte))
     x.from[n].SetVal (c % 16)
     x.to[n].SetVal (c / 16)
-    i ++
+    i++
   }
 }

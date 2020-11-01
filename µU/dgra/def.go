@@ -2,10 +2,8 @@ package dgra
 
 // (c) Christian Maurer   v. 200728 - license see µU.go
 
-import (
-  . "µU/obj"
+import
   "µU/gra"
-)
 type
   DistributedGraph interface {
 
@@ -35,9 +33,6 @@ type
   SetElectAlgorithm (a ElectAlg) // see electAlgorithms.go
   ElectAlgorithm() ElectAlg
   Leader() uint
-
-  DijkstraScholten (o Op)
-  DijkstraScholten1 (o Op)
 }
 
 // Pre: The values of the edges of g + nchan.Port0 are the ports

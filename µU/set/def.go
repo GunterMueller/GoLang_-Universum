@@ -1,13 +1,12 @@
 package set
 
-// (c) Christian Maurer   v. 201011 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import
   . "µU/obj"
 type
-  Set interface {
+  Set interface { // ordered sets of elements, that are atomic or implement Object.
 
-  Object
   Sorter
 // Split is not yet implemented!
 
@@ -19,4 +18,4 @@ type
 
 // Pre: a is atomic or of a type implementing Object.
 // Returns a new empty set for objects of the type of a.
-func New(a Any) Set { return new_(a) }
+func New (a Any) Set { return new_(a) }

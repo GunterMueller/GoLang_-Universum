@@ -1,6 +1,8 @@
 package navi
 
 // (c) Christian Maurer   v. 120909 - license see µU.go
+//
+// >>> TODO has to be completely reconstructed !
 
 // Pre: /dev/input/navi is readable for world.
 // If there is e.g. a rule in /etc/udev/rules.d with the line:
@@ -16,4 +18,4 @@ func Exists () bool { return exists() }
 
 func Channel () (chan Command) { return navipipe }
 
-// func Read () (spc.GridCoord, spc.GridCoord) { return read() }
+// func Read() (spc.GridCoord, spc.GridCoord) { return read() }

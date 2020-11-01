@@ -1,6 +1,6 @@
 package euro
 
-// (c) Christian Maurer   v. 201009 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "math"
@@ -215,9 +215,11 @@ func (x *euro) Defined (s string) bool {
   }
   n, ok := nat.Natural (t[0])
   if ! ok { return false }
-  switch a { case 1:
+  switch a {
+  case 1:
     if hatKomma && k < P[0] { // Komma vor der Ziffernfolge
-      switch L[0] { case 1:
+      switch L[0] {
+      case 1:
         x.cent = 10 * n
       case 2:
         x.cent = n
@@ -241,7 +243,8 @@ func (x *euro) Defined (s string) bool {
       x.cent = hundred * n
     }
     if n, ok = nat.Natural (t[1]); ! ok { return false }
-    switch L [1] { case 1:
+    switch L[1] {
+    case 1:
       x.cent += 10 * n
     case 2:
       x.cent += n
@@ -289,12 +292,12 @@ func (x *euro) Codelen() uint {
   return 4 // Codelen (uint32(0))
 }
 
-func (x *euro) Encode() []byte {
-  bs := make ([]byte, 4)
+func (x *euro) Encode() Stream {
+  bs := make (Stream, 4)
   bs = Encode (uint32(x.cent))
   return bs
 }
 
-func (x *euro) Decode (bs []byte) {
+func (x *euro) Decode (bs Stream) {
   x.cent = uint(Decode (uint32(0), bs).(uint32))
 }

@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 201004 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "µU/rand"
@@ -54,7 +54,7 @@ func randomkonsonant() byte {
 }
 
 func (x *text) Generate() {
-  b := make ([]byte, x.uint)
+  b := make (Stream, x.uint)
   b[0] = upper [rand.Natural (uint(len (upper)))]
   for i := uint(1); i < x.uint; i++ {
     b[i] = lower [rand.Natural (uint(len (lower)))]
@@ -172,11 +172,11 @@ func (x *text) Codelen() uint {
   return x.uint
 }
 
-func (x *text) Encode() []byte {
-  return ([]byte)(x.string)
+func (x *text) Encode() Stream {
+  return (Stream)(x.string)
 }
 
-func (x *text) Decode (b []byte) {
+func (x *text) Decode (b Stream) {
   if uint(len (b)) == x.uint {
     x.string = string(b)
 //    str.Lat1 (&x.string)
@@ -241,9 +241,9 @@ func (x *text) ProperLen() uint {
   return str.ProperLen (x.string)
 }
 
-func (x *text) IsCap0() bool {
+func (x *text) IsUpper0() bool {
   s := x.String()
-  return z.IsCap (s[0])
+  return z.IsUppercaseLetter (s[0])
 }
 
 func (x *text) ToUpper() {

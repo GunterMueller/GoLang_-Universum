@@ -13,7 +13,8 @@ func isRealValuator (a Any) bool {
 
 func realVal (a Any) float64 {
   var r float64 = 1.0
-  switch a.(type) { case RealValuator:
+  switch a.(type) {
+  case RealValuator:
     r = (a.(RealValuator)).RealVal()
   case bool:
     if ! a.(bool) {

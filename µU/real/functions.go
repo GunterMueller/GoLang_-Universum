@@ -1,11 +1,13 @@
 package real
 
-// (c) Christian Maurer   v. 140803 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 // >>> lots of things TODO, particularly format
 
-import
+import (
   "math"
+  "µU/obj"
+)
 const
   FN = 6 // maximal length of function names
 var (
@@ -207,13 +209,13 @@ func CodelenFunc() uint {
   return 1
 }
 
-func EncodeFunc (f Function) []byte {
-  b := make ([]byte, 1)
+func EncodeFunc (f Function) obj.Stream {
+  b := make (obj.Stream, 1)
   b[0] = byte(f)
   return b
 }
 
-func DecodeFunc (b []byte) Function {
+func DecodeFunc (b obj.Stream) Function {
   if b[0] < NFunctions {
     return Function(b[0])
   }

@@ -1,6 +1,6 @@
 package pos
 
-// (c) Christian Maurer   v. 161216 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "math"
@@ -90,8 +90,8 @@ func (x *position) Codelen() uint {
   return 3 * 2
 }
 
-func (x *position) Encode() []byte {
-  bs := make ([]byte, x.Codelen())
+func (x *position) Encode() Stream {
+  bs := make (Stream, x.Codelen())
   i, a := uint(0), uint(2)
   copy (bs[i:i+a], Encode (int16(x.x)))
   i += a
@@ -101,7 +101,7 @@ func (x *position) Encode() []byte {
   return bs
 }
 
-func (x *position) Decode (bs []byte) {
+func (x *position) Decode (bs Stream) {
   i, a := uint(0), uint(2)
   x.x = int(Decode (int16(0), bs[i:i+a]).(int16))
   i += a

@@ -1,10 +1,6 @@
 package str
 
-<<<<<<< HEAD
-// (c) Christian Maurer   v. 201008 - license see µU.go
-=======
-// (c) Christian Maurer   v. 200825 - license see µU.go
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
+// (c) Christian Maurer   v. 201013 - license see µU.go
 
 //     latin-1-strings (without any bloody UTF-8-stuff)
 
@@ -13,7 +9,6 @@ func DevilsDung (s string) bool { return devilsDung(s) }
 
 // Returns a string of n spaces.
 func New (n uint) string { return new_(n) }
-// func Clr (n uint) string { return new_(n) } XXX
 
 // s consists only of spaces (in its original length).
 func Clr (s *string) { clr(s) }
@@ -178,8 +173,4 @@ func SplitLine (s *string) string { return splitLine(s) }
 func SplitBrackets (s string, sep, b byte) []string { return splitBrackets (s,sep,b) }
 
 // TODO Spec
-<<<<<<< HEAD
 func SplitByte (s string, b byte) ([]string, uint) { return splitByte(s,b) }
-=======
-func SplitByte (s string, b byte) (uint, []string) { return splitByte (s,b) }
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84

@@ -124,7 +124,6 @@ func (x *base) Less (Y Any) bool {
 
 func (x *base) String() string {
   f := x.s[x.Format]
-// errh.Error2 ("string", uint(x.b), "bluse", uint(len(f)))
   s := f[x.b]
   str.OffSpc (&s)
   return s

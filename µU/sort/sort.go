@@ -7,9 +7,8 @@ import
 
 
 func quicksort (a []Any, min, max int) {
-  i:= min
-  j:= max
-  m:= a [(i + j) / 2]
+  i, j := min, max
+  m := a [(i + j) / 2]
   for i <= j {
     for Less (a[i], m) {
       if i < max { i++ }
@@ -31,7 +30,7 @@ func quicksort (a []Any, min, max int) {
 
 
 func sort_ (a []Any) {
-  n:= len (a)
+  n := len (a)
   if n <= 1 { return }
   quicksort (a, 0, n - 1)
 }

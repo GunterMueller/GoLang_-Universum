@@ -65,7 +65,8 @@ var
 func edit() {
   c, d:= kbd.LastCommand ()
   if d > 2 { d = 2 }
-  switch c { case kbd.Back:
+  switch c {
+  case kbd.Back:
     if width < maxWidth {
       w:= width * mm [d]
       if w > maxWidth {

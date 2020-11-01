@@ -1,12 +1,12 @@
 package z
 
-// (c) Christian Maurer   v. 201008 - license see µU.go
+// (c) Christian Maurer   v. 201027 - license see µU.go
 
 const
   delta = 'a' - 'A'
 
 func init() {
-  ord := []byte(" 0123456789Aa  BbCcDdEeFfGgHhIiJjKkLlMmNnOo  PpQqRrSs TtUu  VvWwXxYyZz")
+  ord := []byte (" 0123456789Aa  BbCcDdEeFfGgHhIiJjKkLlMmNnOo  PpQqRrSs TtUu  VvWwXxYyZz")
 //                            Ää                            Öö        ß    Üü
 //               0         1         2         3         4         5         6
 //               0123456789012345678901234567890123456789012345678901234567890123456789
@@ -47,7 +47,7 @@ func isLowerUmlaut (b byte) bool {
   return false
 }
 
-func isCapUmlaut (b byte) bool {
+func isUpperUmlaut (b byte) bool {
   switch b {
   case Ä, Ö, Ü:
     return true
@@ -123,7 +123,7 @@ func Equiv (a, b byte) bool {
   return a & 31 == b & 31
 }
 
-func cap (b byte) byte {
+func upper (b byte) byte {
   switch b {
   case Ae, Oe, Ue:
     return b - 32
@@ -132,22 +132,6 @@ func cap (b byte) byte {
     return b - delta
   }
   return b
-}
-
-func isCapLetter (b byte) bool {
-  return 'A' <= b && b <= 'Z' || isCapUmlaut(b)
-}
-
-func isLowerLetter (b byte) bool {
-  return 'a' <= b && b <= 'z' || isLowerUmlaut(b)
-}
-
-func isLetter (b byte) bool {
-  return isCapLetter(b) || IsLowerLetter(b)
-}
-
-func isDigit (b byte) bool {
-  return '0' <= b && b <= '9'
 }
 
 func lower (b byte) byte {
@@ -159,6 +143,22 @@ func lower (b byte) byte {
     return b + delta
   }
   return b
+}
+
+func isUppercaseLetter (b byte) bool {
+  return 'A' <= b && b <= 'Z' || isUpperUmlaut(b)
+}
+
+func isLowercaseLetter (b byte) bool {
+  return 'a' <= b && b <= 'z' || isLowerUmlaut(b)
+}
+
+func isLetter (b byte) bool {
+  return isUppercaseLetter(b) || IsLowercaseLetter(b)
+}
+
+func isDigit (b byte) bool {
+  return '0' <= b && b <= '9'
 }
 
 var (

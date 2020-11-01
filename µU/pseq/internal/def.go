@@ -1,7 +1,9 @@
 package internal
 
-// (c) Christian Maurer   v. 150122 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
+import
+  . "µU/obj"
 type
   File interface {
 
@@ -14,8 +16,8 @@ type
   Seek (p uint64)
   Position() uint64
 
-  Read (bs []byte) (int, error)
-  Write (bs []byte) (int, error)
+  Read (s Stream) (int, error)
+  Write (s Stream) (int, error)
 }
 
 func DirectLength (n string) uint64 { return directLength(n) }

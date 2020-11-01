@@ -1,1 +1,10 @@
-println (X.wd1, X.ht1); Fin(); os.Exit(0)
+  Decode (bs Stream)
+
+// cut buffer //////////////////////////////////////////////////////////
+
+// not yet implemented TODO
+  Copy (s string)
+  Paste() string
+  Copy7 (s string, b int)
+  Paste7 (b int) string
+}

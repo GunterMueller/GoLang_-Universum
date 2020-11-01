@@ -1,6 +1,6 @@
 package mol
 
-// (c) Christian Maurer   v. 201004 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -209,8 +209,8 @@ func (x *molecule) Codelen() uint {
   return c
 }
 
-func (x *molecule) Encode() []byte {
-  bs := make ([]byte, x.Codelen())
+func (x *molecule) Encode() Stream {
+  bs := make (Stream, x.Codelen())
   i, a := uint(0), uint(1)
 if x.uint8 > 5 { println (x.uint8); panic ("Kackfurzer") }
   bs[0] = x.uint8
@@ -223,7 +223,7 @@ if x.uint8 > 5 { println (x.uint8); panic ("Kackfurzer") }
   return bs
 }
 
-func (x *molecule) Decode (bs []byte) {
+func (x *molecule) Decode (bs Stream) {
   i, a := uint(0), uint(1)
   x.uint8 = bs[0]
 if x.uint8 > 5 { println ("Schweinekopp", x.uint8); x.uint8 = 5 }

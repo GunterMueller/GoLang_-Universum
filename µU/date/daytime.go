@@ -1,6 +1,6 @@
 package date
 
-// (c) Christian Maurer   v. 200902 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -220,15 +220,15 @@ func (x *daytime) Codelen() uint {
   return x.Calendarday.Codelen() + x.Clocktime.Codelen()
 }
 
-func (x *daytime) Encode() []byte {
-  b := make ([]byte, x.Codelen())
+func (x *daytime) Encode() Stream {
+  b := make (Stream, x.Codelen())
   a := x.Calendarday.Codelen()
   copy (b[:a], x.Calendarday.Encode())
   copy (b[a:], x.Clocktime.Encode())
   return b
 }
 
-func (x *daytime) Decode (b []byte) {
+func (x *daytime) Decode (b Stream) {
   a := x.Calendarday.Codelen()
   x.Calendarday.Decode (b[:a])
   x.Clocktime.Decode (b[a:])

@@ -1,51 +1,50 @@
 package z
 
-// (c) Christian Maurer   v. 200403 - license see µU.go
+// (c) Christian Maurer   v. 201013 - license see µU.go
 
 const (
-  Ä                = byte(196) // 'Ä'
-  ÄÄ = 'Ä'
-  Ö                = byte(214) // 'Ö'
-  Ü                = byte(220) // 'Ü'
-  Ae               = byte(228) // 'ä'
-  Oe               = byte(246) // 'ö'
-  Ue               = byte(252) // 'ü'
-  Sz               = byte(223) // 'ß'
-//NoBreakSpace     = byte(160)
-//InvExclamation   = byte(161) // '¡'
-  Cent             = byte(162) // '¢'
-  Pound            = byte(163) // '£'
-  Euro             = byte(164) // '€'
-  Yen              = byte(165) // '¥'
-  BrokenBar        = byte(166) // '¦'
-  Paragraph        = byte(167) // '§'
-//Diaeresis        = byte(168) // '¨'
-  Copyright        = byte(169) // '©'
-  Female           = byte(170) // 'ª'
-  LeftDoubleAngle  = byte(171) // '«'
-  Not              = byte(172) // '¬'
-//SoftHyphen       = byte(173)
-  Registered       = byte(174) // '®'
-//Macron           = byte(175) // '¯'
-  Degree           = byte(176) // '°'
-  PlusMinus        = byte(177) // '±'
-  ToThe2           = byte(178) // '²'
-  ToThe3           = byte(179) // '³'
-//Acute            = byte(180) // '´'
-  Mu               = byte(181) // 'µ'
-  Pilcrow          = byte(182) // '¶'
-  Dot              = byte(183) // '·`
-//Cedilla          = byte(184) // '·'
-  ToThe1           = byte(185) // '¹'
-  Male             = byte(186) // 'º'
-  RightDoubleAngle = byte(187) // '»'
-  Quarter          = byte(188) // '¼'
-  Half             = byte(189) // '½'
-  ThreeQuarters    = byte(190) // '¾'
-//InvQuestionMark  = byte(191) // '¿'
-  Times            = byte(215) // '×'
-  EmptySet         = byte(216) // 'Ø'
-  Division         = byte(247) // '÷'
+  Ä                = byte(0xc4) // 'Ä'
+  Ö                = byte(0xd6) // 'Ö'
+  Ü                = byte(0xdc) // 'Ü'
+  Ae               = byte(0xe4) // 'ä'
+  Oe               = byte(0xf6) // 'ö'
+  Ue               = byte(0xfc) // 'ü'
+  Sz               = byte(0xdf) // 'ß'
+//NoBreakSpace     = byte(0xa0) // ' '
+//InvExclamation   = byte(0xa1) // '¡'
+  Cent             = byte(0xa2) // '¢'
+  Pound            = byte(0xa3) // '£'
+  Euro             = byte(0xa4) // '€'
+  Yen              = byte(0xa5) // '¥'
+  BrokenBar        = byte(0xa6) // '¦'
+  Paragraph        = byte(0xa7) // '§'
+//Diaeresis        = byte(0xa8) // '¨'
+  Copyright        = byte(0xa9) // '©'
+  Female           = byte(0xaa) // 'ª'
+  LeftDoubleAngle  = byte(0xab) // '«'
+  Not              = byte(0xac) // '¬'
+//SoftHyphen       = byte(0xad)
+  Registered       = byte(0xae) // '®'
+//Macron           = byte(0xaf) // '¯'
+  Degree           = byte(0xb0) // '°'
+  PlusMinus        = byte(0xb1) // '±'
+  ToThe2           = byte(0xb2) // '²'
+  ToThe3           = byte(0xb3) // '³'
+//Acute            = byte(0xb4) // '´'
+  Mu               = byte(0xb5) // 'µ'
+  Pilcrow          = byte(0xb6) // '¶'
+  Dot              = byte(0xb7) // '·`
+//Cedilla          = byte(0xb8) // '·'
+  ToThe1           = byte(0xb9) // '¹'
+  Male             = byte(0xba) // 'º'
+  RightDoubleAngle = byte(0xbb) // '»'
+  Quarter          = byte(0xbc) // '¼'
+  Half             = byte(0xbd) // '½'
+  ThreeQuarters    = byte(0xbe) // '¾'
+//InvQuestionMark  = byte(0xbf) // '¿'
+  Times            = byte(0xd7) // '×'
+  EmptySet         = byte(0xd8) // 'Ø'
+  Division         = byte(0xf7) // '÷'
 )
 
 // Returns true, if b is one of the constants that are defined
@@ -59,7 +58,7 @@ func String (b byte) string { return str(b) }
 func IsLowerUmlaut (b byte) bool { return isLowerUmlaut(b) }
 
 // Returns true, if b is a capital german umlaut.
-func IsCapUmlaut (b byte) bool { return isCapUmlaut(b) }
+func IsUpperUmlaut (b byte) bool { return isUpperUmlaut(b) }
 
 // Returns true, if b is 194 or 195.
 func OpensHell (b byte) bool { return opensHell(b) }
@@ -71,24 +70,27 @@ func DevilsDung (s string) bool { return devilsDung(s) }
 // are converted to the corresponding latin1-bytes.
 func ToHellWithUTF8 (s *string) { toHellWithUTF8(s) }
 
-// Returns b transformed into the corresponding capital.
+// Returns b transformed into the corresponding upper-case letter.
 // Beware: Cap('ß') = 'ß' !
-func Cap (b byte) byte { return cap(b) }
+func Upper (b byte) byte { return upper(b) }
 
-// Returns b transformed into the corresponding small letter.
+// Returns b transformed into the corresponding lower-case letter.
 func Lower (b byte) byte { return lower(b) }
 
-// Returns true, iff b equals its corresponding capital letter.
-func IsCap (b byte) bool { return b == cap(b) }
+// Returns true, iff b equals its corresponding upper-case letter.
+func IsUpper (b byte) bool { return b == upper(b) }
 
-// Returns true, iff b is a capital letter.
-func IsCapLetter (b byte) bool { return isCapLetter(b) }
+// Returns true, iff b equals its corresponding lower-case letter.
+func IsLower (b byte) bool { return b == lower(b) }
 
-// Returns true, iff b is a small letter.
-func IsLowerLetter (b byte) bool { return isLowerLetter(b) }
+// Returns true, iff b is an upper-case letter.
+func IsUppercaseLetter (b byte) bool { return isUppercaseLetter(b) }
+
+// Returns true, iff b is an lower-case letter.
+func IsLowercaseLetter (b byte) bool { return isLowercaseLetter(b) }
 
 // Returns true, iff b is a letter.
-func IsLetter (b byte) bool { return isCapLetter(b) || isLowerLetter(b) }
+func IsLetter (b byte) bool { return isUppercaseLetter(b) || isLowercaseLetter(b) }
 
 // Returns true, iff b is a vowel or a german Umlaut.
 func IsVowel (b byte) bool { return isVowel (b) }

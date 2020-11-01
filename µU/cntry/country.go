@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 201024 - license see µU.go
 
 import (
   . "µU/obj"
@@ -18,8 +18,8 @@ import (
 const
   length = 22
 type
-  id byte; const (
-              undefined = iota
+  id = byte; const (
+              undefined = id(iota)
 /* Europa */  Albanien; Andorra; Belgien; BosnienHerzegowina; Bulgarien
               Dänemark; Deutschland; Estland; Finnland; Frankreich
               Griechenland; Großbritannien; Irland; Island; Italien; Kroatien
@@ -58,8 +58,8 @@ type
               nNations)
 type (
   attribut struct {
-              iso,       // len 4
-              tld,       // len 3
+              iso,       // len 3
+              tld,       // len 2
              name string
            prefix uint16
               kfz,
@@ -97,7 +97,8 @@ func (x *country) imp (Y Any) *country {
 }
 
 func (x *country) InContinent (c Continent) bool {
-  switch c { case Europa:
+  switch c {
+  case Europa:
     return Albanien <= x.id && x.id <= Zypern
   case Afrika:
     return Ägypten <= x.id && x.id <= Zentralafrika
@@ -118,12 +119,8 @@ func (x *country) Empty() bool {
 func (x *country) Clr() {
   x.id = undefined
   x.attribut.iso = "   "
-  x.attribut.tld = "  "
-  switch x.Format { case Tld:
-    x.attribut.name = str.New (2)
-  case Long:
-    x.attribut.name = str.New (length)
-  }
+  x.attribut.tld = str.New (2)
+  x.attribut.name = str.New (length)
   x.attribut.prefix = 0
   x.attribut.kfz = "   "
   x.attribut.ioc = "   "
@@ -141,7 +138,8 @@ func (x *country) Copy (Y Any) {
   x.attribut.ioc = y.attribut.ioc
   x.attribut.fifa = y.attribut.fifa
   x.Format = y.Format
-  x.cF = y.cB
+  x.cF = y.cF
+  x.cB = y.cB
 }
 
 func (x *country) Clone() Any {
@@ -168,22 +166,27 @@ func (x *country) Defined (t string) bool {
     x.Clr()
     return true
   }
-  for c := id(undefined); c < nNations; c++ {
-    x.id = c
+  for c := 0; c < int(nNations); c++ {
+    x.id = byte(c)
     x.attribut = list[c]
-    switch x.Format { case Tld:
-      if t == x.attribut.tld { return true }
+    switch x.Format {
+    case Tld:
+      if t == x.attribut.tld {
+        x.name = list[c].name
+        return true
+      }
     case Long:
-      if str.Sub0 (t, x.attribut.name) { return true }
-    default:
-      return false
+      if str.Sub0 (t, x.attribut.name) {
+        x.tld = list[c].tld
+        return true
+      }
     }
   }
   return false
 }
 
-func (x *country) Colours (S, H col.Colour) {
-  x.cF, x.cB = S, H
+func (x *country) Colours (f, b col.Colour) {
+  x.cF, x.cB = f, b
 }
 
 func (x *country) GetFormat() Format {
@@ -193,7 +196,8 @@ func (x *country) GetFormat() Format {
 func (x *country) SetFormat (f Format) {
   if f < NFormats {
     x.Format = f
-    switch x.Format { case Tld:
+    switch x.Format {
+    case Tld:
       bx.Wd (2)
     case Long:
       bx.Wd (length)
@@ -205,7 +209,8 @@ func (x *country) SetFormat (f Format) {
 
 func (x *country) Write (Z, S uint) {
   bx.Colours (x.cF, x.cB)
-  switch x.Format { case Tld:
+  switch x.Format {
+  case Tld:
     bx.Write (x.attribut.tld, Z, S)
   case Long:
     bx.Clr (Z, S)
@@ -226,7 +231,8 @@ func (x *country) Edit (Z, S uint) {
   bx.Colours (x.cF, x.cB)
   var l uint
   for {
-    switch x.Format { case Tld:
+    switch x.Format {
+    case Tld:
       l = 2
       bx.Edit (&x.attribut.tld, Z, S)
     case Long:
@@ -237,8 +243,12 @@ func (x *country) Edit (Z, S uint) {
     }
     if C, _ := kbd.LastCommand(); C == kbd.Search {
       n := uint(x.id)
-      sel.Select (func (P, Z, S uint, V, H col.Colour) { x.attribut = list[id(P)]; x.Colours (V, H); x.Write (Z, S) },
-                    nNations, scr.NLines(), l, &n, Z, S, x.cB, x.cF)
+      sel.Select (func (P, Z, S uint, V, H col.Colour) {
+                    x.attribut = list[id(P)]
+                    x.Colours (V, H)
+                    x.Write (Z, S)
+                  },
+                  uint(nNations), scr.NLines(), l, &n, Z, S, x.cB, x.cF)
       if id(n) == nNations {
         n = uint(x.id) // Nation unverändert
       } else {
@@ -248,10 +258,14 @@ func (x *country) Edit (Z, S uint) {
       break
     } else {
       var ok bool
-      switch x.Format { case Tld:
+      switch x.Format {
+      case Tld:
         ok = x.Defined (x.attribut.tld)
       case Long:
+//        f := x.Format
+//        x.Format = Tld
         ok = x.Defined (x.attribut.name)
+//        x.Format = f
       }
       if ok {
         break
@@ -269,7 +283,8 @@ func (x *country) SetFont (f font.Font) {
 
 func (x *country) Print (l, c uint) {
   pbx.SetFont (x.Font)
-  switch x.Format { case Tld:
+  switch x.Format {
+  case Tld:
     pbx.Print (x.attribut.tld, l, c)
   case Long:
     pbx.Print (x.attribut.name, l, c)
@@ -280,28 +295,41 @@ func (x *country) Codelen() uint {
   return 2
 }
 
-func (x *country) Encode() []byte {
-  b := make ([]byte, x.Codelen())
-  b[0] = x.attribut.tld[0]
-  b[1] = x.attribut.tld[1]
-  return b
+func (x *country) Encode() Stream {
+  s := make (Stream, 2)
+  s[0] = x.attribut.tld[0]
+  s[1] = x.attribut.tld[1]
+  return s
 }
 
-func (x *country) Decode (b []byte) {
-  t := string(b)
+func (x *country) Decode (s Stream) {
+  t := string(s)
+  f := x.Format
+  x.Format = Tld
   if ! x.Defined (t) {
     x.Clr()
   }
+  x.SetFormat (f)
 }
 
-func def (n id, N string, I string, D string, V uint16, K, O, F string) {
-  list[n].tld = D
-  list[n].name = str.Lat1 (N)
-  list[n].iso = I
-  list[n].prefix = V
-  list[n].kfz = K
-  list[n].ioc = O
-  list[n].fifa = F
+func (x *country) Name (t string) {
+  for i := uint(0); i < uint(len(list)); i++ {
+    if t == list[i].tld {
+      x.name = list[i].name
+      return
+    }
+  }
+  x.name = str.New (length)
+}
+
+func def (n id, name, iso, tld string, prefix uint16, kfz, loc, fifa string) {
+  list[n].tld = tld
+  list[n].name = str.Lat1 (name)
+  list[n].iso = iso
+  list[n].prefix = prefix
+  list[n].kfz = kfz
+  list[n].ioc = loc
+  list[n].fifa = fifa
 }
 
 func init() {

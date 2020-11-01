@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 200910 - license see µU.go
+// (c) Christian Maurer   v. 201027 - license see µU.go
 
 import (
   . "µU/obj"
@@ -33,7 +33,7 @@ type
 // x besteht aus Y ab Position p der Länge n, Rest Leerzeichen
   Cut (Y Text, p, n uint)
 
-  IsCap0() bool
+  IsUpper0() bool
   ToUpper()
   ToLower()
   ToUpper0()

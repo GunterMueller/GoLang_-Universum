@@ -5,7 +5,8 @@ package main
 
   Das Mikrouniversum µU ist nur zum Einsatz in der Lehre konstruiert  und hat deshalb einen
   rein akademischen Charakter.  Es liefert u.a. eine Reihe von Beispielen für mein Lehrbuch
-  "Nichtsequentielle und Verteilte Programmierung mit Go"  (Springer Vieweg 2018 und 2019).
+  "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2019) und dessen
+  Übersetzung  "Nonsequential and Distributed Programming with Go"  (Springer Nature 2021).
   Für Zwecke der Lehre an Universitäten und in Schulen sind die Quellen des Mikrouniversums
   uneingeschränkt verwendbar; jede Form weitergehender Nutzung ist jedoch strikt untersagt.
 
@@ -25,9 +26,7 @@ package main
   Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, z. B. zum Abfackeln von Rechnern,
   zur Entgleisung von Eisenbahnen, zum GAU in Atomkraftwerken  oder zum Absturz des Mondes.
   Deshalb wird vor der Verwendung irgendwelcher Quellen von µU in Programmen zu ernsthaften
-  Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.)
-
-  Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen. */
+  Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.) */
 
 import (
   "µU/env"
@@ -35,8 +34,7 @@ import (
   "µU/time"
   . "µU/obj"
   "µU/sort"
-  "µU/cdrom";
-//  "µU/mode"
+  "µU/cdrom"
   "µU/kbd"
   "µU/col"
   "µU/scr"
@@ -62,11 +60,9 @@ import (
   "µU/piset"
   "µU/persaddr"
   "µU/pids"
-//  "µU/words"
   "µU/mol"
   "µU/schol"
   "µU/gram"
-  "µU/eye"
   "µU/audio"
   "µU/book"
   "µU/v"
@@ -218,7 +214,6 @@ func main() { // get all packages compiled and show the license
   fig2.Touch()
   piset.Touch()
   gram.Touch()
-  eye.New()
   persaddr.New()
   pids.Touch()
   mol.Touch()

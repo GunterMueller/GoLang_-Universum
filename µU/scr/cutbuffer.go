@@ -26,18 +26,3 @@ func (X *screen) Paste() string {
   }
   return X.Console.Paste()
 }
-
-func (X *screen) Copy7 (s string, b int) {
-  if underX {
-    X.XWindow.Copy7 (s, b)
-  } else {
-    X.Console.Copy7 (s, b)
-  }
-}
-
-func (X *screen) Paste7 (b int) string {
-  if underX {
-    return X.XWindow.Paste7 (b)
-  }
-  return X.Console.Paste7 (b)
-}

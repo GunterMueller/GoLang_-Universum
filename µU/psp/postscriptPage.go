@@ -1,12 +1,13 @@
 package psp
 
-// (c) Christian Maurer   v. 200902 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "os"
   "strconv"
   "math"
   "µU/ker"
+  . "µU/obj"
   "µU/z"
   "µU/col"
   "µU/scr"
@@ -34,7 +35,7 @@ func (x *postscriptPage) Sy (pt int) float64 {
 }
 
 func (x *postscriptPage) write (s string) {
-  x.file.Write ([]byte(s))
+  x.file.Write (Stream(s))
 }
 
 func (x *postscriptPage) newpath() {

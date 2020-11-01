@@ -1,9 +1,10 @@
 package img
 
-// (c) Christian Maurer   v. 201011 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "os/exec"
+  . "µU/obj"
   "µU/time"
   "µU/str"
   "µU/scr"
@@ -23,7 +24,7 @@ func put (n string, x, y, w, h uint) {
 //  if scr.UnderX() { errh.Hint (errh.ToWait) }
   buf := scr.P6Encode (x, y, w, h)
   if scr.UnderX() { errh.DelHint() }
-  file := pseq.New (buf, false)
+  file := pseq.New (buf)
   file.Name (filename)
   file.Clr()
   file.Put (buf)
@@ -45,10 +46,10 @@ func size_(n string) (uint, uint) {
   filename := n + suffix
   l := pseq.Length (filename)
   if l == 0 { return 0, 0 }
-  buf := make ([]byte, l)
-  file := pseq.New (buf, false)
+  buf := make (Stream, l)
+  file := pseq.New (buf)
   file.Name (filename)
-  buf = file.Get().([]byte)
+  buf = file.Get().(Stream)
   file.Fin()
   return scr.P6Size (buf)
 }
@@ -60,10 +61,10 @@ func get (n string, x, y uint) {
   filename := n + suffix
   l := pseq.Length (filename)
   if l == 0 { return }
-  buf := make ([]byte, l)
-  file := pseq.New (buf, false)
+  buf := make (Stream, l)
+  file := pseq.New (buf)
   file.Name (filename)
-  buf = file.Get().([]byte)
+  buf = file.Get().(Stream)
   file.Fin()
   scr.P6Decode (x, y, buf)
 }

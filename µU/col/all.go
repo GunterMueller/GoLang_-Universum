@@ -564,7 +564,7 @@ func allColours() []Colour {
                    Purple2(), // X
                    Purple3(), // X
                    Purple4(), // X
-                   Tpurple(), // X
+                   TPurple(), // X
                    MediumPurple1(), // X
                    MediumPurple2(), // X
                    MediumPurple3(), // X

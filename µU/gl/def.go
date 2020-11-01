@@ -1,18 +1,27 @@
 package gl
 
-// (c) Christian Maurer   v. 191027 - license see µU.go
+// (c) Christian Maurer   v. 201027 - license see µU.go
 
 // #include <GL/gl.h>
 import
   "C"
-import (
+import
   "µU/col"
-  "µU/vect"
-)
 type
   Figure C.GLenum; const (
-  Points = Figure(iota); Lines; LineLoop; LineStrip; Triangles; TriangleStrip;
-           TriangleFan; Quads; QuadStrip; Polygons; NFigures; Light // ; Start
+  Points = Figure(iota)
+  Lines
+  LineLoop
+  LineStrip
+  Triangles
+  TriangleStrip
+  TriangleFan
+  Quads
+  QuadStrip
+  Polygons
+  NFigures
+  Light
+//  Start
 )
 const (
   MaxL = 16 // <= GL.GL_MAX_LIGHTS
@@ -46,9 +55,12 @@ func PushMatrix() { pushMatrix() }
 func PopMatrix() { popMatrix() }
 func Enable (i uint) { enable(i) }
 func ShadeModel (m uint) { shadeModel(m) }
+func Error() string { return error() }
 
 func Point (x ...float64) { point(x) }
 func Line (x ...float64) { line(x) }
+// For long series of lines: The client has to include them into Begin (gl.Lines) - End()
+func Line1 (x ...float64) { line1(x) }
 func Lineloop (x ...float64) { lineloop(x) }
 func Linestrip (x ...float64) { linestrip(x) }
 func Triangle (x...float64) { triangle(x) }
@@ -85,7 +97,7 @@ func Cylinder (x, y, z, r, h float64) { cylinder (x,y,z,r,h) }
 func CylinderSegment (x, y, z, r, h, a, b float64) { cylinderSegment (x,y,z,r,h,a,b) }
 func HorCylinder (x, y, z, r, l, a float64) { horCylinder (x,y,z,r,l,a) }
 func Torus (x, y, z, R, r float64) { torus (x,y,z,R,r) }
-func HorTorus (x, y, z, R, r, a float64) { horTorus(x,y,z,R,r,a) }
+func VerTorus (x, y, z, R, r, a float64) { verTorus(x,y,z,R,r,a) }
 // func Paraboloid (x, y, z, p float64) { paraboloid(x,y,z,p) }
 // func HorParaboloid (x, y, z, p, a float64) { horParaboloid(x,y,z,p,a) }
 func Curve (w uint, f1, f2, f3 func (float64) float64, t0, t1 float64) { curve(w,f1,f2,f3,t0,t1) }
@@ -149,14 +161,18 @@ func Window1 (w, d, h, f float64, c col.Colour) { window1(w,d,h,f,c) }
 
 // Pre: n < MaxL, 0 <= h[i] <= 1 für i = 0, 1.
 // If Light n is already switched on, nothing has happened.
-// Otherwise it is now switched on at position v
-// in colour c with ambience h[0] and diffusion h[1].
-func InitLight (n uint, v, h vect.Vector, r, g, b byte) { initLight(n,v,h,r,g,b) }
+// Otherwise it is now switched on at position v0, v1, v2 in colour c
+// with ambience h[0] and diffusion h[1]. // XXX
+func InitLight (n uint, x, y, z, h0, h1, h2 float64, r, g, b byte) {
+  initLight(n,x,y,z,h0,h1,h2,r,g,b)
+}
 
-// Pre: Light n is switched on.
-// Light n has position v.
-func PosLight (n uint, v vect.Vector) { posLight(n,v) }
+// Pre: n < MaxL; Light n is switched on.
+// Light n has position x, y, z.
+func PosLight (n uint, x, y, z float64) { posLight(n,x,y,z) }
 
+// Pre: n < MaxL.
 func ActualizeLight (n uint) { actLight(n) }
 
+// Pre: n < MaxL.
 func Lamp (n uint) { lamp(n) }

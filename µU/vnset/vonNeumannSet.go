@@ -1,6 +1,6 @@
 package vnset
 
-// (c) Christian Maurer   v. 201009 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -80,11 +80,11 @@ func (x *set) Codelen() uint {
   return uint(len(x.String()))
 }
 
-func (x *set) Encode() []byte {
-  return []byte(x.String())
+func (x *set) Encode() Stream {
+  return Stream(x.String())
 }
 
-func (x *set) Decode (bs []byte) {
+func (x *set) Decode (bs Stream) {
   x.Defined(string(bs))
 }
 

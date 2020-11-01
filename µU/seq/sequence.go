@@ -1,6 +1,6 @@
 package seq
 
-// (c) Christian Maurer   v. 201011 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/ker"
@@ -15,7 +15,8 @@ type (
   sequence struct {
               num,
               pos uint
-   anchor, actual *cell
+           anchor,
+           actual *cell
           ordered bool
                   }
 )
@@ -65,12 +66,18 @@ func (x *sequence) Clr() {
   x.num, x.pos = 0, 0
 }
 
-func (x *sequence) ins (a Any) {
-  c := new (cell)
-  c.Any = Clone (a)
-  c.next, c.prev = x.actual, x.actual.prev
-  x.actual.prev.next = c
-  x.actual.prev = c
+func (x *sequence) e (y *sequence, r Rel) bool {
+  if x.num != y.num { return false }
+  for l, l1 := x.anchor.next, y.anchor.next; l != x.anchor; l, l1 = l.next, l1.next {
+    if ! r (l.Any, l1.Any) {
+      return false
+    }
+  }
+  return true
+}
+
+func (x *sequence) Eq (Y Any) bool {
+  return x.e (x.imp (Y), Eq)
 }
 
 func (x *sequence) Copy (Y Any) {
@@ -87,20 +94,6 @@ func (x *sequence) Clone() Any {
   y := new_(Clone(x.anchor.Any))
   y.Copy (x)
   return y
-}
-
-func (x *sequence) e (y *sequence, r Rel) bool {
-  if x.num != y.num { return false }
-  for l, l1 := x.anchor.next, y.anchor.next; l != x.anchor; l, l1 = l.next, l1.next {
-    if ! r (l.Any, l1.Any) {
-      return false
-    }
-  }
-  return true
-}
-
-func (x *sequence) Eq (Y Any) bool {
-  return x.e (x.imp (Y), Eq)
 }
 
 func (x *sequence) Less (Y Any) bool {
@@ -122,6 +115,51 @@ func (x *sequence) Less (Y Any) bool {
     l = l.next
   }
   return true
+}
+
+func (x *sequence) Codelen() uint {
+  n := uint(4) // Codelen (uint32(0))
+  for l := x.anchor.next; l != x.anchor; l = l.next {
+    n += 4 + Codelen (l.Any)
+  }
+  return n
+}
+
+func (x *sequence) Encode() []byte {
+  b := make ([]byte, x.Codelen())
+  i, a := uint32(0), uint32(4)
+  copy (b[i:a], Encode (uint32(x.num)))
+  i += 4
+  for l := x.anchor.next; l != x.anchor; l = l.next {
+    n := uint32(Codelen (l.Any))
+    copy (b[i:i+a], Encode (n))
+    i += a
+    copy (b[i:i+n], Encode (l.Any))
+    i += n
+  }
+  return b
+}
+
+func (x *sequence) Decode (bs []byte) {
+  x.Clr()
+  i, a := uint32(0), uint32(4)
+  x.num = uint(Decode (uint32(0), bs[i:a]).(uint32))
+  i += a
+  for j := uint32(0); j < uint32(x.num); j++ {
+    n := Decode (uint32(0), bs[i:i+a]).(uint32)
+    i += a
+    x.ins (Decode (Clone (x.anchor.Any), bs[i:i+n]))
+    i += n
+  }
+  return
+}
+
+func (x *sequence) ins (a Any) {
+  c := new (cell)
+  c.Any = Clone (a)
+  c.next, c.prev = x.actual, x.actual.prev
+  x.actual.prev.next = c
+  x.actual.prev = c
 }
 
 func (x *sequence) Num() uint {
@@ -156,11 +194,11 @@ func (x *sequence) Step (forward bool) {
   if forward {
     if x.actual != x.anchor {
       x.actual = x.actual.next
-      x.pos ++
+      x.pos++
     }
   } else if x.actual != x.anchor.next {
     x.actual = x.actual.prev
-    x.pos --
+    x.pos--
   }
 }
 
@@ -217,11 +255,11 @@ func (x *sequence) Seek (i uint) {
   }
   for x.pos < i {
     x.actual = x.actual.next
-    x.pos ++
+    x.pos++
   }
   for x.pos > i {
     x.actual = x.actual.prev
-    x.pos --
+    x.pos--
   }
 }
 
@@ -238,7 +276,7 @@ func (x *sequence) Put (a Any) {
     x.ins (a)
     x.actual = x.actual.prev
     x.pos = x.num
-    x.num ++
+    x.num++
   } else {
     x.actual.Any = Clone (a)
   }
@@ -246,8 +284,8 @@ func (x *sequence) Put (a Any) {
 
 func (x *sequence) insert (a Any) {
   x.ins (a)
-  x.num ++
-  x.pos ++
+  x.num++
+  x.pos++
 }
 
 func (x *sequence) Ins (a Any) {
@@ -258,7 +296,7 @@ func (x *sequence) Ins (a Any) {
     for x.actual != x.anchor {
       if Less (x.actual.Any, a) {
         x.actual = x.actual.next
-        x.pos ++
+        x.pos++
       } else {
         if Less (a, x.actual.Any) {
           break
@@ -277,7 +315,7 @@ func (x *sequence) InsRel (a Any, r Rel) {
   for x.actual != x.anchor {
     if r (x.actual.Any, a) {
       x.actual = x.actual.next
-      x.pos ++
+      x.pos++
     } else {
       break
     }
@@ -361,9 +399,11 @@ func (x *sequence) Ordered() bool {
     if Less (l.Any, l.next.Any) {
       l = l.next
     } else {
+      x.ordered = false
       return false
     }
   }
+  x.ordered = true
   return true
 }
 
@@ -375,7 +415,7 @@ func (x *sequence) Sort() {
   if l.next == x.anchor { return }
   x.anchor.next = l.next
   l.next.prev = x.anchor
-  x.num --
+  x.num--
   var y *sequence
   y = new_(x.anchor.Any).(*sequence)
   l1 := x.anchor.next
@@ -388,8 +428,8 @@ func (x *sequence) Sort() {
       l1.next, l1.prev = y.anchor, y.anchor.prev
       l1.prev.next = l1
       y.anchor.prev = l1
-      x.num --
-      y.num ++
+      x.num--
+      y.num++
     }
     l1 = l2
   }
@@ -399,7 +439,7 @@ func (x *sequence) Sort() {
   y.anchor.next = l
   l.prev = y.anchor
   l.next.prev = l
-  y.num ++
+  y.num++
   x.concatenate (y)
   x.actual = x.anchor
   x.pos = x.num
@@ -432,7 +472,7 @@ func (x *sequence) Filter (Y Iterator, p Pred) {
   for l := x.anchor.next; l != x.anchor; l = l.next {
     if p (l.Any) {
       y.ins (l.Any)
-      y.num ++
+      y.num++
     }
   }
   y.pos = x.num
@@ -469,8 +509,8 @@ func (x *sequence) Cut (Y Iterator, p Pred) {
       l.next, l.prev = y.anchor, y.anchor.prev
       l.prev.next = l
       y.anchor.prev = l
-      x.num --
-      y.num ++
+      x.num--
+      y.num++
     }
     l = l1
   }
@@ -491,9 +531,9 @@ func (x *sequence) ClrPred (p Pred) {
       a.prev, a.next = nil, nil
       if x.actual == a {
         x.actual = l
-        x.pos ++
+        x.pos++
       }
-      x.num --
+      x.num--
     }
   }
 }
@@ -558,9 +598,8 @@ func (x *sequence) Join (Y Iterator) {
   }
 }
 
-// Not documented - destroys the order, if x is ordered !!!
 func (x *sequence) Reverse() {
-//  if x.ordered { return }
+  if x.ordered { return }
   l := x.anchor
   l1 := l.next
   for l1 != x.anchor {
@@ -571,9 +610,8 @@ func (x *sequence) Reverse() {
   }
 }
 
-// Not documented - destroys the order, if x is ordered !!!
 func (x *sequence) Rotate (forward bool) {
-//  if x.ordered { return }
+  if x.ordered { return }
   if x.anchor.next == x.anchor || x.anchor.next == x.anchor.prev {
     return
   }
@@ -592,61 +630,5 @@ func (x *sequence) Rotate (forward bool) {
     l.next, l.prev = x.anchor, x.anchor.prev
     x.anchor.prev = l
     l.prev.next = l
-  }
-}
-
-func (x *sequence) MinCodelen() uint {
-  return Codelen (x.num)
-}
-
-func (x *sequence) Codelen() uint {
-  n := uint(4) // Codelen (uint32(0))
-  for l := x.anchor.next; l != x.anchor; l = l.next {
-    n += 4 + Codelen (l.Any)
-  }
-  return n
-}
-
-func (x *sequence) Encode() []byte {
-  b := make ([]byte, x.Codelen())
-  i, a := uint32(0), uint32(4)
-  copy (b[i:a], Encode (uint32(x.num)))
-  i += 4
-  for l := x.anchor.next; l != x.anchor; l = l.next {
-    n := uint32(Codelen (l.Any))
-    copy (b[i:i+a], Encode (n))
-    i += a
-    copy (b[i:i+n], Encode (l.Any))
-    i += n
-  }
-  return b
-}
-
-func (x *sequence) Decode (bs []byte) {
-  x.Clr()
-  i, a := uint32(0), uint32(4)
-  x.num = uint(Decode (uint32(0), bs[i:a]).(uint32))
-  i += a
-  for j := uint32(0); j < uint32(x.num); j++ {
-    n := Decode (uint32(0), bs[i:i+a]).(uint32)
-    i += a
-    x.ins (Decode (Clone (x.anchor.Any), bs[i:i+n]))
-    i += n
-  }
-  return
-}
-
-func (x *sequence) Slice() []Any {
-  a := make ([]Any, x.Num())
-  for i, l := 0, x.anchor.next; l != x.anchor; i, l = i+1, l.next {
-    a[i] = Clone (l.Any)
-  }
-  return a
-}
-
-func (x *sequence) Deslice (b []Any) {
-  x.Clr()
-  for _, a := range b {
-    x.Ins (a)
   }
 }

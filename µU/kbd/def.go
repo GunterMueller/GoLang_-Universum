@@ -1,11 +1,8 @@
 package kbd
 
-// (c) Christian Maurer   v. 191125 - license see µU.go
+// (c) Christian Maurer   v. 201028 - license see µU.go
 
 // >>> implements only a german keyboard !
-
-//import
-//  "µU/spc"
 
 /* We distinguish between three groups of keys to operate and control a system with keyboard and mouse:
 

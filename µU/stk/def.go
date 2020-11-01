@@ -1,19 +1,16 @@
 package stk
 
-// (c) Christian Maurer   v. 170316 - license see µU.go
+// (c) Christian Maurer   v. 201030 - license see µU.go
 
 import
   . "µU/obj"
 type
-  Stack interface {
+  Stack interface { // Not to be used by concurrent processes !
 
 // a is the object on top of x, the stack below a is x before.
   Push (a Any)
 
 // Returns true, iff there is no object on x.
-// In the concurrent case, this value is not reliable,
-// as another process could have pushed on object on the stack
-// immediately after the call.
   Empty() bool
 
 // If x was empty, nothing has happened.

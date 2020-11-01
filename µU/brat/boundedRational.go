@@ -1,6 +1,6 @@
 package brat
 
-// (c) Christian Maurer   v. 201009 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "math"
@@ -149,7 +149,8 @@ func (x *rational) Defined (s string) bool {
   }
   str.Move (&s, true)
   x.geq0 = s[0] != '-'
-  switch s[0] { case '+', '-':
+  switch s[0] {
+  case '+', '-':
     str.Rem (&s, 0, 1)
   }
   n := str.ProperLen (s)
@@ -233,8 +234,8 @@ func (x *rational) Codelen() uint {
   return 2 * 4 + 1
 }
 
-func (x *rational) Encode() []byte {
-  b := make ([]byte, x.Codelen())
+func (x *rational) Encode() Stream {
+  b := make (Stream, x.Codelen())
   copy (b[:4], Encode (x.num))
   copy (b[4:8], Encode (x.denom))
   b[9] = 0
@@ -242,7 +243,7 @@ func (x *rational) Encode() []byte {
   return b
 }
 
-func (x *rational) Decode (b []byte) {
+func (x *rational) Decode (b Stream) {
   x.num = Decode (uint(0), b[:4]).(uint)
   x.denom = Decode (uint(0), b[4:8]).(uint)
   x.geq0 = b[9] == 1

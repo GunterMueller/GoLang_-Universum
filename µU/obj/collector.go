@@ -1,9 +1,9 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 // Collections of elements of type object or of variables of
-// a concrete atomic type (bool, [u]int.., float.., string, ...).
+// an atomic type (bool, [u]int.., float.., string, ...).
 // Every collection has either exactly one actual element
 // or its actual element is undefined.
 //
@@ -15,9 +15,9 @@ package obj
 type
   Collector interface {
 
-// Empty:   Returns true, iff x does not contain any element.
-// Clr:     x is empty; its actual element is undefined.
-//  Clearer // ! included to avoid clash in pseq
+// Empty: Returns true, iff x does not contain any element.
+// Clr:   x is empty; its actual element is undefined.
+  Clearer
 
 // Returns true, iff the actual element of x is undefined.
   Offc() bool
@@ -26,19 +26,18 @@ type
   Num() uint
 
 // Pre: a has the type of the elements in x. 
-// If x does not carry any order:
+// If x is not ordered:
 //   If the actual element of x was undefined, a copy of a
 //   is appended in x (i.e. it is now the last element in x),
 //   otherwise x is inserted directly before the actual element.
-// Otherwise, i.e. if x is ordered w.r.t. to an order
-// relation r (a reflexive, transitive and antisymmetric
-// relation "<=") or a strict order relation r (an irreflexive
-// and transitive relation "<"):
+// Otherwise, i.e. if x is ordered (where the order relation r
+// is reflexive, transitive and antisymmetric "<=") or strict
+// (transitive and antisymmetric "<")
 //   x is inserted behind the last element b in x, for which
 //   r(b,a) == true, i.e. that under r "is smaller" than a.
-//   If an element b with b == a or b.Eq(a) resp. was already
-//   contained in x, then, if r is a strict order, nothing
-//   has changed; otherwise, i.e. if r is an order,
+//   If an element b with Eq (b, a) was already contained in x,
+//   then, if r is a strict order, nothing has changed;
+//   otherwise, i.e. if r is an order,
 //   then a copy of a is contained once more in x.
 //   So x is now still ordered w.r.t. r.
 // In both cases all other elements and their order in x
@@ -66,24 +65,22 @@ type
   Get() Any
 
 // Pre: a has the type of the elements in x. 
-// If the actual element of x was undefined, a copy of a is appended
-// behind the end of x and is now the actual element of x.
+// If x was empty or if the actual element of x was undefined, a copy of a
+// is appended behind the end of x and is now the actual element of x.
 // Otherwise the actual element of x is replaced by a.
   Put (a Any)
 
-// Returns nil, if the actual element of x is not undefined,
-// otherwise, the actual element and that was removed from x,
-// and the actual element is now the element after it,
+// Returns nil, if the actual element of x is undefined.
+// Otherwise, the actual element and was removed from x,
+// and now the actual element is the element after it,
 // if the former actual element was not the last element of x.
-// In that case the actual element of x is now undefined.
+// In that case the actual element of x now is undefined.
   Del() Any
 
 // Returns true, iff a is contained in x. In that case
-// case the first such element is the actual element of x;
+// the first such element is the actual element of x;
 // otherwise, the actual element is the same as before.
   Ex (a Any) bool
-
-//  ExPred (p Pred) bool
 }
 
 func IsCollector (a Any) bool {

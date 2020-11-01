@@ -1,9 +1,11 @@
 package real
 
-// (c) Christian Maurer   v. 140803 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
-import
+import (
   "math"
+  "µU/obj"
+)
 var
   opSymbol = [NOperations]byte { 'n', '+', '-', '*', '/', '^' } // 'n' <- ' ' ?
 
@@ -65,15 +67,15 @@ func CodelenOp() uint {
   return 1
 }
 
-func EncodeOp (op Operation) []byte {
-  b:= make ([]byte, 1)
-  b[0] = opSymbol[op]
-  return b
+func EncodeOp (op Operation) obj.Stream {
+  s := make (obj.Stream, 1)
+  s[0] = opSymbol[op]
+  return s
 }
 
-func DecodeOp (b []byte) Operation {
-  if b[0] < NOperations {
-    return Operation(b[0])
+func DecodeOp (s obj.Stream) Operation {
+  if s[0] < NOperations {
+    return Operation(s[0])
   }
   return NoOp
 }

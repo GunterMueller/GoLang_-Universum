@@ -1,6 +1,8 @@
 package navi
 
-// (c) Christian Maurer   v. 121204 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
+//
+// >>> TODO has to be completely reconstructed !
 
 // Pre: /dev/input/navi is readable for world.
 // If there is e.g. a rule in /etc/udev/rules.d with the line:
@@ -46,7 +48,7 @@ func init() {
 // The 3dconnexion SpaceNavigator has the rightoriented trihedral (x, y, z) = (right, back, bottomn):
 // it delivers the movements in 0..2 and the rotations around the corresponding axes (consequently - viewed
 // in opposition to the direction of the axes - in mathematical positive sense) in NDirs+0..2 = 3..5.
-// In µU this is translated into the trihedral (x, y, z) = (right, front, top) defined in the package spc:
+// In µU this is translated into the triple (x, y, z) = (right, front, top) defined in the package spc:
 //  sign[Front], sign[Top] = -1, -1
   sign[1], sign[2] = -1, -1
   f, err := os.OpenFile ("/dev/input/navi", os.O_RDONLY, 0444)
@@ -89,7 +91,7 @@ func catch() {
   const
     M = 8
   var (
-    B = make ([]byte, M)
+    B = make (Stream, M)
     C Command
   )
   for {
@@ -99,10 +101,12 @@ func catch() {
     typ = B[6]
     code = B[7]
     C = dummy0
-    switch typ { case 0:
+    switch typ {
+    case 0:
       println ("navi.catch(): What the hell is going on HERE ?")
     case 1: // key
-      switch code { case 0:
+      switch code {
+      case 0:
         but = left // 2
       case 1:
         but = right // 1

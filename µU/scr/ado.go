@@ -1,8 +1,9 @@
 package scr
 
-// (c) Christian Maurer   v. 190528 - license see µU.go
+// (c) Christian Maurer   v. 201016 - license see µU.go
 
 import (
+  . "µU/obj"
   "µU/mode"
   . "µU/shape"
   . "µU/linewd"
@@ -14,8 +15,6 @@ import (
 func Fin() { actual.Fin() }
 func Flush() { actual.Flush() }
 func Name (s string) { actual.Name(s) }
-
-func Movex (x, y int) { actual.Movex(x,y) }
 
 func ActMode() mode.Mode { return actual.ActMode() }
 func X() uint { return actual.X() }
@@ -138,18 +137,12 @@ func UnderMouseGr (x, y, x1, y1 int, d uint) bool { return actual.UnderMouseGr(x
 func UnderMouse1 (x, y int, d uint) bool { return actual.UnderMouse1(x,y,d) }
 
 func Codelen (w, h uint) uint { return actual.Codelen(w,h) }
-func Encode (x, y, w, h uint) []byte { return actual.Encode(x,y,w,h) }
-func Decode (bs []byte) { actual.Decode(bs) }
+func Encode (x, y, w, h uint) Stream { return actual.Encode(x,y,w,h) }
+func Decode (bs Stream) { actual.Decode(bs) }
 
 func P6Codelen (w, h uint) uint { return actual.P6Codelen (w,h) }
-func P6Size (ps []byte) (uint, uint) { return actual.P6Size(ps) }
-func P6Encode (x, y, w, h uint) []byte { return actual.P6Encode(x,y,w,h) }
-func P6Decode (x, y uint, ps []byte) { actual.P6Decode(x,y,ps) }
+func P6Size (ps Stream) (uint, uint) { return actual.P6Size(ps) }
+func P6Encode (x, y, w, h uint) Stream { return actual.P6Encode(x,y,w,h) }
+func P6Decode (x, y uint, ps Stream) { actual.P6Decode(x,y,ps) }
 
 // func WriteGlx() { actual.WriteGlx() }
-
-// func Cut (s *string) { actual.Cut(s) }
-func Copy (s string) { actual.Copy(s) }
-func Paste() string { return actual.Paste() }
-func Copy7 (s string, i int) { actual.Copy7 (s, i) }
-func Paste7 (i int) string { return actual.Paste7 (i) }

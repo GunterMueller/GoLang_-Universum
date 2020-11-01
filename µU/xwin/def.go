@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 191019 - license see µU.go
+// (c) Christian Maurer   v. 201024 - license see µU.go
 
 // >>> This package only serves the implementations of µU/mouse,
 //     µU/kbd and µU/cons; it must not be used anywhere else.
@@ -8,9 +8,9 @@ package xwin
 import
   "C"
 import (
+  . "µU/obj"
   . "µU/linewd"
   . "µU/shape"
-  "µU/show"
   . "µU/ptr"
   . "µU/mode"
   "µU/col"
@@ -24,6 +24,11 @@ type
         }
 var
   Eventpipe chan Event = make (chan Event)
+const (
+  Look = iota
+  Walk
+  Fly
+)
 type
   XWindow interface {
 
@@ -178,21 +183,18 @@ type
 // serialisation ///////////////////////////////////////////////////////
 
   Codelen (w, h uint) uint
-  Encode (x, y, w, h uint) []byte
-  Decode (s []byte)
+  Encode (x, y, w, h uint) Stream
+  Decode (s Stream)
 
 // openGL //////////////////////////////////////////////////////////////
 
-  Start (m show.Mode, draw func(), ex, ey, ez, fx, fy, fz, nx, ny, nz float64)
-  Go()
+// Pre: m <= Fly.
+  Go (m int, draw func(), ex, ey, ez, fx, fy, fz, nx, ny, nz float64)
 
 // cut buffer //////////////////////////////////////////////////////////
 
   Copy (s string)
   Paste() string
-// Pre: 0 <= i <= 7.3G
-  Copy7 (s string, i int)
-  Paste7 (i int) string
 }
 
 // Returns a new window with left upper Corner (x, y)

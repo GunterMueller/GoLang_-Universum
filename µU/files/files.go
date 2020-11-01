@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 200906 - license see µU.go
+// (c) Christian Maurer   v. 201024 - license see µU.go
 
 import (
   "os"
@@ -158,12 +158,20 @@ func Temp (filename *string) {
 }
 /*/
 
+func sub (d string) {
+  os.Mkdir (d, 7 * 8 * 8 + 5 * 8 + 5)
+}
+
 func ins (path, d string) bool {
   return os.Mkdir (path + ker.Separator + d, worldRX) != nil
 }
 
 func del (path, s string) bool {
   return os.Remove (path + ker.Separator + s) != nil
+}
+
+func move (f, d string) {
+  os.Rename (f, d + "/" + f)
 }
 
 func num() uint {

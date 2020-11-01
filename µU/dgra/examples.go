@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 200714 - license see µU.go
+// (c) Christian Maurer   v. 201015 - license see µU.go
 
 import (
   "µU/env"
@@ -11,7 +11,6 @@ import (
   "µU/vtx"
   "µU/edg"
   "µU/gra"
-//  "µU/host"
   "µU/nchan"
 )
 
@@ -42,12 +41,13 @@ func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
       }
     }
   }
+//  if id >= 16 { ker.Panic ("no id as parameter") }
   g.Ex (v[id])
   g.SetWrite (vtx.W, edg.W)
   g = g.Star()
   d := new_(g).(*distributedGraph)
   d.setSize (n)
-  h := make([]string, n) // make([]host.Host, n)
+  h := make([]string, n)
   for i := uint(0); i < n; i++ {
     h[i] = env.Localhost()
   }

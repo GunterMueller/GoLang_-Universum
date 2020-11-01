@@ -1,6 +1,6 @@
 package set
 
-// (c) Christian Maurer   v. 201011 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   "µU/ker"
@@ -346,26 +346,6 @@ func (x *set) Join (Y Iterator) {
   x.Jump (false)
 }
 
-func (x *set) Codelen() uint {
-  n := uint(4)
-  x.Trav (func (a Any) { n += 4 + Codelen (a) })
-  return n
-}
-
-func (x *set) Encode() []byte {
-  b := make ([]byte, x.Codelen())
-  copy (b[:4], Encode (x.uint))
-  i := uint(4)
-  x.Trav (func (a Any) {
-            k := Codelen (a)
-            copy (b[i:i+4], Encode (k))
-            i += 4
-            copy (b[i:i+k], Encode (a))
-            i += k
-          })
-  return b
-}
-
 func (x *set) Ordered() bool {
   if x.uint <= 1 { return true }
   x.Jump (false)
@@ -383,7 +363,28 @@ func (x *set) Ordered() bool {
   return result
 }
 
-func (x *set) Decode (b []byte) {
+/*/
+func (x *set) Codelen() uint {
+  n := uint(4)
+  x.Trav (func (a Any) { n += 4 + Codelen (a) })
+  return n
+}
+
+func (x *set) Encode() Stream {
+  b := make (Stream, x.Codelen())
+  copy (b[:4], Encode (x.uint))
+  i := uint(4)
+  x.Trav (func (a Any) {
+            k := Codelen (a)
+            copy (b[i:i+4], Encode (k))
+            i += 4
+            copy (b[i:i+k], Encode (a))
+            i += k
+          })
+  return b
+}
+
+func (x *set) Decode (b Stream) {
   x.Clr()
   n := Decode (uint(0), b[:4]).(uint)
   i := uint(4)
@@ -395,6 +396,7 @@ func (x *set) Decode (b []byte) {
     x.Ins (a)
   }
 }
+/*/
 
 func (x *set) Write (x0, x1, y, dy uint, f func (Any) string) {
   x.anchor.write (x0, x1, y, dy, f)

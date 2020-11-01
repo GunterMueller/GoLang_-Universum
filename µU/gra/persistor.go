@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 201011 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -16,7 +16,7 @@ func (x *graph) Name (s string) {
   n := pseq.Length (x.filename)
   if n > 0 {
     buf := make(Stream, n)
-    f := pseq.New (buf, false)
+    f := pseq.New (buf)
     f.Name (x.filename)
     buf = f.Get().(Stream)
     f.Fin()
@@ -32,7 +32,7 @@ func (x *graph) Rename (s string) {
   n := pseq.Length (x.filename)
   if n > 0 {
     buf := make(Stream, n)
-    f := pseq.New (buf, false)
+    f := pseq.New (buf)
     f.Rename (x.name)
 //    buf = f.Get().(Stream)
     f.Fin()
@@ -43,7 +43,7 @@ func (x *graph) Rename (s string) {
 func (x *graph) Fin() {
   if ! str.Empty (x.name) {
     buf := x.Encode()
-    f := pseq.New (buf, false)
+    f := pseq.New (buf)
     f.Name (x.filename)
     f.Clr()
     f.Put (buf)

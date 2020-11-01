@@ -1,6 +1,6 @@
 package internal
 
-// (c) Christian Maurer   v. 150122 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -61,15 +61,15 @@ func (x *pair) Codelen() uint {
   return uint(len (x.name)) + 1
 }
 
-func (x *pair) Encode() []byte {
-  b := make ([]byte, x.Codelen())
+func (x *pair) Encode() Stream {
+  b := make (Stream, x.Codelen())
   n := uint(len (x.name))
   copy (b[0:n], x.name)
   b[n] = x.typ
   return b
 }
 
-func (x *pair) Decode (b []byte) {
+func (x *pair) Decode (b Stream) {
   n := uint(len (b))
   x.name = string(b[0:n])
   x.typ = b[n]

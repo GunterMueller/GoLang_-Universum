@@ -21,7 +21,8 @@ func (X *xwindow) ActLinewidth() Linewidth {
 func (X *xwindow) SetLinewidth (w Linewidth) {
   X.lineWd = w
   cw:= C.uint(0)
-  switch w { case Thick:
+  switch w {
+  case Thick:
     cw = C.uint(2)
   case Thicker:
     cw = C.uint(3)

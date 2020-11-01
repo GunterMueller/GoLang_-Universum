@@ -1,6 +1,6 @@
 package fig2
 
-// (c) Christian Maurer   v. 191125 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/obj"
@@ -184,7 +184,8 @@ func (f *figure2) convex() bool {
   case Rectangle, Circle, Ellipse, Image:
     return true
   case Polygon:
-    switch n { case 0, 1:
+    switch n {
+    case 0, 1:
       return false
     case 2:
       return true
@@ -477,7 +478,8 @@ func (f *figure2) editN() {
     K, T = kbd.Command()
     scr.MousePointer (true)
     n := uint(len (f.x))
-    switch K { case kbd.Esc:
+    switch K {
+    case kbd.Esc:
       break loop
     case kbd.Go,
          kbd.Here, kbd.This, kbd.That,
@@ -584,7 +586,8 @@ func (f *figure2) edit1() {
   f.invert1()
   loop: for {
     K, T := kbd.Command()
-    switch K { case kbd.This, kbd.That:
+    switch K {
+    case kbd.This, kbd.That:
       f.invert1()
       f.x[1], f.y[1] = scr.MousePosGr()
       switch f.Type {
@@ -756,7 +759,8 @@ func (f *figure2) Edit() {
   } else {
     n := uint(len (f.x))
 errh.Error ("Figur hat Länge", n)
-    switch f.Type { case Text:
+    switch f.Type {
+    case Text:
       f.editText()
     case Image:
       f.editImage()
@@ -771,7 +775,8 @@ errh.Error ("Figur hat Länge", n)
       loop: for {
         scr.MousePointer (true)
         c, _ := kbd.Command()
-        switch c { case kbd.Esc:
+        switch c {
+        case kbd.Esc:
           break loop
         case kbd.Enter, kbd.Tab, kbd.Search:
           f.colour = sel.Colour()
@@ -827,8 +832,8 @@ func (f *figure2) Codelen() uint {
   return uint(n)
 }
 
-func (f *figure2) Encode() []byte {
-  bs := make ([]byte, f.Codelen())
+func (f *figure2) Encode() Stream {
+  bs := make (Stream, f.Codelen())
   a := uint32(0)
   bs[a] = byte(f.Type)
   a++
@@ -860,7 +865,7 @@ func (f *figure2) Encode() []byte {
       copy (bs[a:a+4], Encode (int32(f.y[1])))
       a += 4
     }
-    copy (bs[a:a+n], []byte(f.string))
+    copy (bs[a:a+n], Stream(f.string))
     a += n
   }
   bs[a] = 0
@@ -869,7 +874,7 @@ func (f *figure2) Encode() []byte {
   return bs
 }
 
-func (f *figure2) Decode (bs []byte) {
+func (f *figure2) Decode (bs Stream) {
   a := uint32(0)
   f.Type = Type(bs[a])
   a ++

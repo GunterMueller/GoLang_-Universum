@@ -1,6 +1,6 @@
 package box
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 201016 - license see µU.go
 
 import (
   . "µU/obj"
@@ -67,21 +67,6 @@ type
 // Pre: y <= scr.Ht - scr.Ht1, x + scr.Wd1 * width of x < scr.NColumns, x + scr.Wd1 * len(s) < scr.NColumns.
 // Like Write, starting at pixelpos (column, line) == (x, y).
   EditGr (s *string, x, y int) // bug
-
-// TODO Spec
-//  Cut (s *string)
-
-// TODO Spec
-  Copy ()
-
-// TODO Spec
-  Paste()
-
-// TODO Spec
-  Copy7 (b int)
-
-// TODO Spec
-  Paste7 (b int)
 }
 
 // Returns an new box of width 0,

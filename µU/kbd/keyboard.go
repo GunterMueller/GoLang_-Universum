@@ -1,9 +1,9 @@
 package kbd
 
-// (c) Christian Maurer   v. 200928 - license see µU.go
+// (c) Christian Maurer   v. 201028 - license see µU.go
 
 import (
-//  "µU/spc"
+  . "µU/obj"
   "µU/xwin"
   "µU/z"
   "µU/mouse"
@@ -119,7 +119,7 @@ const (
 )
 var (
   shift, ctrl, alt, altGr, /* fn, */ mouseL, mouseM, mouseR bool
-  bb, aa []byte
+  bb, aa Stream
   kK [noKeycodes]Comm
   lastbyte byte
   lastcommand Comm
@@ -129,7 +129,7 @@ var (
 func init() {
   //           0         1         2         3         4         5         6         7         8         9
   //           012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
-  bb = []byte("  1234567890 '  qwertzuiop +  asdfghjkl  ^ #yxcvbnm,.- +               789-456+1230,  <           /")
+  bb = Stream("  1234567890 '  qwertzuiop +  asdfghjkl  ^ #yxcvbnm,.- +               789-456+1230,  <           /")
   //                       ß             ü            öä
   bb[12] = ß
   bb[26] = ü
@@ -137,7 +137,7 @@ func init() {
   bb[40] = ä
   //           0         1         2         3         4         5         6         7         8         9
   //           012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
-  aa = []byte("  !  $%&/()=?`  QWERTZUIOP ~  ASDFGHJKL    'YXCVBNM;:_ *               789-456+1230,  |           /")
+  aa = Stream("  !  $%&/()=?`  QWERTZUIOP ~  ASDFGHJKL    'YXCVBNM;:_ *               789-456+1230,  |           /")
   //             ¹²³             €       Ü            ÖÄ    ¢©   µ
   aa [3] = '"'
   aa [4] = paragraph
@@ -145,7 +145,7 @@ func init() {
   aa[39] = Ö
   aa[40] = Ä
   aa[41] = degree
-  for b:= 0; b < noKeycodes; b++ {
+  for b := 0; b < noKeycodes; b++ {
     kK[b] = Esc
   }
   kK[esc]    = Esc
@@ -263,7 +263,7 @@ func mouseEx() bool {
 }
 
 func byte_() byte {
-  b:= byte(0)
+  b := byte(0)
   for {
     b, _, _ = read()
     if b != 0 {
@@ -274,10 +274,9 @@ func byte_() byte {
 }
 
 func command() (Comm, uint) {
-  var ( c Comm; d uint )
+  c, d := None, uint(0)
   for {
     _, c, d = read()
-//    if b == 0 { break }
     if c != None { break }
   }
   return c, d
@@ -306,7 +305,7 @@ func depositByte (b byte) {
 }
 
 func wait (b bool) bool {
-  c0, d0:= lastcommand, lastdepth
+  c0, d0 := lastcommand, lastdepth
   var (c Comm; d uint)
   for {
     c, d = Command()
@@ -321,7 +320,7 @@ func wait (b bool) bool {
 }
 
 func waitFor (command Comm, depth uint) {
-  c0, d0:= lastcommand, lastdepth
+  c0, d0 := lastcommand, lastdepth
   for {
     c, d := Command()
     if c == command && d == depth { break }
@@ -330,7 +329,7 @@ func waitFor (command Comm, depth uint) {
 }
 
 func confirmed (w bool) bool {
-  c0, d0:= lastcommand, lastdepth
+  c0, d0 := lastcommand, lastdepth
   var ( c Comm; d, dmin uint )
   if w {
     dmin = 1
@@ -358,7 +357,7 @@ func confirmed (w bool) bool {
 
 /*
 func Control (n uint, i *uint) {
-  switch c, d:= LastCommand(); c {
+  switch c, d := LastCommand(); c {
   case Esc:
     break loop
   case Enter:

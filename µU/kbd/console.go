@@ -1,18 +1,18 @@
 package kbd
 
-// (c) Christian Maurer   v. 200929 - license see µU.go
+// (c) Christian Maurer   v. 201028 - license see µU.go
 
 import (
   "os"
   "µU/ker"
   "µU/term"
   "µU/mouse"
-  "µU/navi"
+//  "µU/navi"
 )
 var (
   keypipe chan byte
   mousepipe chan mouse.Command = nil
-  navipipe chan navi.Command
+//  navipipe chan navi.Command
 )
 
 func catch() {
@@ -73,7 +73,7 @@ func inputC (B *byte, C *Comm, D *uint) {
     b0 byte
     k, k1 uint
     mc mouse.Command
-    m3c navi.Command
+//    m3c navi.Command
     ok bool
   )
 loop:
@@ -89,6 +89,7 @@ loop:
         *D = 2
       }
       break loop
+/*/
     case m3c = <-navipipe:
       *C, *D = Go + Comm (m3c), 0
       if shift || ctrl {
@@ -98,6 +99,7 @@ loop:
         *D = 2
       }
       break loop
+/*/
     case b0, ok = <-keypipe:
       if ok {
         k = uint(b0)
@@ -176,6 +178,6 @@ func initConsole() {
   if mouse.Ex() {
     mousepipe = mouse.Channel()
   }
-  navipipe = navi.Channel()
+//  navipipe = navi.Channel()
   go catch()
 }

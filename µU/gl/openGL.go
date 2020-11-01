@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 191018 - license see µU.go
+// (c) Christian Maurer   v. 201025 - license see µU.go
 
 // #cgo LDFLAGS: -lGL -lGLU
 // #include <GL/gl.h>
@@ -13,7 +13,8 @@ import
   "µU/col"
 type (
   d = C.GLdouble
-  f = C.GLfloat
+  l = C.GLclampf
+  e = C.GLenum
 )
 
 func init() {
@@ -34,22 +35,21 @@ func clear() {
 
 func cls (c col.Colour) {
   r, g, b := c.R(), c.G(), c.B()
-  C.glClearColor (C.GLclampf(r), C.GLclampf(g), C.GLclampf(b), C.GLclampf(0.0))
+  C.glClearColor (l(r), l(g), l(b), l(0))
 }
 
 func colour (c col.Colour) {
   r, g, b := c.Float32()
-  C.glColor3f (f(r), f(g), f(b))
+  C.glColor3f (C.GLfloat(r), C.GLfloat(g), C.GLfloat(b))
 }
 
 func clearColor (c col.Colour) {
   r, g, b := c.Float64()
-  C.glClearColor (C.GLclampf(r), C.GLclampf(g), C.GLclampf(b), C.GLclampf(0));
+  C.glClearColor (l(r), l(g), l(b), l(0));
 }
 
 func begin (f Figure) {
-//  C.glBegin (C.uint(f))
-  C.glBegin (C.GLenum(f))
+  C.glBegin (e(f))
 }
 
 func end() {
@@ -85,19 +85,19 @@ func viewport (x, y int, w, h uint) {
 }
 
 func matrixMode (m uint) {
-  C.glMatrixMode (C.GLenum(m));
+  C.glMatrixMode (e(m));
 }
 
 func translate (x, y, z float64) {
-  C.glTranslatef (C.GLfloat(x), C.GLfloat(y), C.GLfloat(z));
+  C.glTranslated (d(x), d(y), d(z))
 }
 
 func rotate (a, x, y, z float64) {
-  C.glRotatef (C.GLfloat(a), C.GLfloat(x), C.GLfloat(y), C.GLfloat(z));
+  C.glRotated (d(a), d(x), d(y), d(z))
 }
 
 func scale (x, y, z float64) {
-  C.glScalef (C.GLfloat(x), C.GLfloat(y), C.GLfloat(z));
+  C.glScaled (d(x), d(y), d(z))
 }
 
 func pushMatrix() {
@@ -109,9 +109,27 @@ func popMatrix() {
 }
 
 func enable (i uint) {
-  C.glEnable (C.GLenum(i));
+  C.glEnable (e(i));
 }
 
 func shadeModel (m uint) {
-  C.glShadeModel (C.GLenum(m));
+  C.glShadeModel (e(m));
+}
+
+func error() string {
+  switch C.glGetError() {
+  case 0x500:
+    return "invalid enum"
+  case 0x501:
+    return "invalid value"
+  case 0x502:
+    return "operation illegal"
+  case 0x503:
+    return "stack overflow"
+  case 0x504:
+    return "stack underflow"
+  case 0x505:
+    return "out of memory"
+  }
+  return ""
 }

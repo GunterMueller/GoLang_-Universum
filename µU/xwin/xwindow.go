@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 191019 - license see µU.go
+// (c) Christian Maurer   v. 201030 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL
 // #include <stdio.h>
@@ -41,17 +41,17 @@ void fullscreen (Display *d, Window w, Window w0, int on) {
   XFlush (d);
 }
 
-void navi (Display *d, Window w, Atom a) {
-  XEvent e;
-  e.type = ClientMessage;
-  e.xclient.display = d;
-  e.xclient.window = w;
-  e.xclient.message_type = a;
-  e.xclient.send_event = False;
-  e.xclient.format = 16; // doesn't matter
-  if (XSendEvent (d, w, False, 0L, &e) < 0) ;
-  if (XSync (d, False) < 0) ;
-}
+// void navi (Display *d, Window w, Atom a) {
+//   XEvent e;
+//   e.type = ClientMessage;
+//   e.xclient.display = d;
+//   e.xclient.window = w;
+//   e.xclient.message_type = a;
+//   e.xclient.send_event = False;
+//   e.xclient.format = 16; // doesn't matter
+//   if (XSendEvent (d, w, False, 0L, &e) < 0) ;
+//   if (XSync (d, False) < 0) ;
+// }
 
 Window keyWin (XEvent *e) { return (*e).xkey.window; }
 unsigned int keyState (XEvent *e) { return (*e).xkey.state; }
@@ -121,8 +121,8 @@ import (
   "strconv"
   "sync"
   "time"
+  . "µU/obj"
   . "µU/shape"
-  "µU/show"
   "µU/ptr"
   ."µU/linewd"
   "µU/env"
@@ -147,7 +147,8 @@ type
               gc C.GC
   buffer, shadow C.Pixmap
             buff bool
-cF, cB, cFA, cBA,
+          cF, cB,
+        cFA, cBA,
       scrF, scrB col.Colour
           lineWd Linewidth
              fsp *C.XFontStruct
@@ -165,12 +166,10 @@ cF, cB, cFA, cBA,
 //       pointer ptr.Pointer
           xM, yM int
       subWindows []C.Window
-            mode show.Mode // only for openGL
-            draw func()
-             eye,
+          origin,
            focus,
-          normal vect.Vector
-           delta float64 // invariant: delta == distance (origin, focus)
+             top vect.Vector
+//           delta float64 // invariant: delta == distance (origin, focus)
                  }
 var (
   dspl string = env.Val ("DISPLAY")
@@ -248,7 +247,7 @@ func (X *xwindow) mousePointer (on bool) {
     X.SetPointer (ptr.Gumby)
   } else {
     var c C.XColor; c.red, c.green, c.blue = C.ushort(0), C.ushort(0), C.ushort(0)
-    s := C.CString(string([]byte{ 0, 8, 0, 0, 0, 0 })); defer C.free (unsafe.Pointer(s))
+    s := C.CString(string(Stream{ 0, 8, 0, 0, 0, 0 })); defer C.free (unsafe.Pointer(s))
     m := C.XCreateBitmapFromData (dpy, C.Drawable(X.win), s, C.uint(8), C.uint(8));
     cursor := C.XCreatePixmapCursor (dpy, m, m, &c, &c, C.uint(0), C.uint(0))
     C.XDefineCursor (dpy, X.win, cursor)
@@ -364,10 +363,7 @@ func newWH (x, y, w, h uint) XWindow {
   }
   X.clear()
 */
-  X.eye = vect.New()
-  X.focus = vect.New()
-  X.normal = vect.New()
-//  X.draw() = obj.Nothing()
+  X.origin, X.focus, X.top = vect.New(), vect.New(), vect.New()
   return X
 }
 
@@ -419,11 +415,11 @@ func (X *xwindow) Sub (n uint) C.Window {
   return C.Window(0)
 }
 
-func (X *xwindow) catchNavi() {
-  for {
-    C.navi (dpy, X.win, naviAtom)
-  }
-}
+// func (X *xwindow) catchNavi() {
+//   for {
+//     C.navi (dpy, X.win, naviAtom)
+//   }
+// }
 
 func (x *xwindow) Fin() {
   C.XFreePixmap (dpy, x.buffer)

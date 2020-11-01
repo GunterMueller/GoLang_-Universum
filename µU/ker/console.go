@@ -57,7 +57,8 @@ func Console1 (forward bool) {
   syscall.Syscall (syscall.SYS_IOCTL, 0, _GETSTATE, uintptr(unsafe.Pointer(&s)))
   a:= s.active
   if forward {
-    switch (a) { case xdm - 1:
+    switch (a) {
+    case xdm - 1:
       a = xdm + 1
     case msg - 1:
       a = msg + 1
@@ -67,7 +68,8 @@ func Console1 (forward bool) {
       a++
     }
   } else {
-    switch (a) { case 1:
+    switch (a) {
+    case 1:
       a = maxConsole
     case xdm + 1:
       a = xdm - 1

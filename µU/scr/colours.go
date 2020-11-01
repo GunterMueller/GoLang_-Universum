@@ -1,16 +1,17 @@
 package scr
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
+  "µU/obj"
   "µU/col"
 )
 var
   colourdepth uint // 1..4 in Byte
 
-func cc (c col.Colour) []byte {
+func cc (c col.Colour) obj.Stream {
   n := c.Code()
-  b := make([]byte, colourdepth)
+  b := make(obj.Stream, colourdepth)
   for i := 0; i < int(colourdepth); i++ {
     b[i] = byte(n)
     n >>= 8
@@ -20,11 +21,11 @@ func cc (c col.Colour) []byte {
 
 /*
 // Pre: len(bs) == colourdepth
-func cd (bs Stream) uint { // inverse of cc
+func cd (s obj.Stream) uint { // inverse of cc
   n:= uint(0)
-  if len(bs) == int(colourdepth) {
+  if len(s) == int(colourdepth) {
     for i:= int(colourdepth) - 1; i >= 0; i-- {
-      n = n * 1<<8 + uint(bs[i])
+      n = n * 1<<8 + uint(s[i])
     }
   }
   return n

@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 170814 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 func (X *screen) Codelen (w, h uint) uint {
   if underX {
@@ -16,10 +16,10 @@ func (X *screen) Encode (x, y, w, h uint) []byte {
   return X.Console.Encode (x, y, w, h)
 }
 
-func (X *screen) Decode (bs []byte) {
+func (X *screen) Decode (s []byte) {
   if underX {
-    X.XWindow.Decode (bs)
+    X.XWindow.Decode (s)
   } else {
-    X.Console.Decode (bs)
+    X.Console.Decode (s)
   }
 }

@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 200902 - license see µU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import (
   . "µU/ker"
@@ -204,7 +204,8 @@ func (x *calendarday) Equiv (Y Calendarday, p Period) bool {
     return y.year == emptyYear
   }
   if y.year == emptyYear { return false }
-  switch p { case Daily:
+  switch p {
+  case Daily:
     return x.Eq (y)
   case Weekly:
     c := x.internalCode()
@@ -234,7 +235,8 @@ func (x *calendarday) Equiv (Y Calendarday, p Period) bool {
 }
 
 func (x *calendarday) IsBeginning (p Period) bool {
-  switch p { case Daily:
+  switch p {
+  case Daily:
     break
   case Weekly:
     return x.Weekday (Daily) == Monday
@@ -254,7 +256,8 @@ func (x *calendarday) IsBeginning (p Period) bool {
 
 func (x *calendarday) SetBeginning (p Period) {
   if x.year == emptyYear { return }
-  switch p { case Daily:
+  switch p {
+  case Daily:
     return
   case Weekly:
     for w := x.Weekday (Daily); w > Monday; w-- {
@@ -277,7 +280,8 @@ func (x *calendarday) SetBeginning (p Period) {
 
 func (x *calendarday) SetEnd (p Period) {
   if x.year == emptyYear { return }
-  switch p { case Daily:
+  switch p {
+  case Daily:
     return
   case Weekly:
     for w := x.Weekday (Daily); w < Sunday; w++ {
@@ -412,7 +416,8 @@ func (x *calendarday) Inc (p Period) {
   if x.year == emptyYear { return }
   t := x.daysInMonth()
   d, m, y := x.day, x.month, x.year
-  switch p { case Daily:
+  switch p {
+  case Daily:
     if d < t {
       d ++
     } else {
@@ -501,7 +506,8 @@ func (x *calendarday) Dec (p Period) {
   if x.year == emptyYear { return }
   t := x.daysInMonth()
   d, m, y := x.day, x.month, x.year
-  switch p { case Daily:
+  switch p {
+  case Daily:
     if d > 1 {
       d --
     } else if m > 1 {
@@ -644,7 +650,8 @@ func (x *calendarday) weekday() Weekday {
 
 func (x *calendarday) Weekday (p Period) Weekday {
   d := x.Clone().(*calendarday)
-  switch p { case Daily:
+  switch p {
+  case Daily:
     ;
   case Weekly:
     return Monday
@@ -865,7 +872,8 @@ func (x *calendarday) Normal1() bool {
 }
 
 func (x *calendarday) IsWorkday() bool {
-  switch x.Weekday (Daily) { case Saturday, Sunday:
+  switch x.Weekday (Daily) {
+  case Saturday, Sunday:
     return false
   }
   return ! x.IsHoliday()
@@ -981,7 +989,8 @@ func (x *calendarday) String() string {
       s += " " + nat.StringFmt (x.year, 4, false)
     }
   case Qu:
-    switch (x.month - 1) / 3 { case 0:
+    switch (x.month - 1) / 3 {
+    case 0:
       s = "  I"
     case 1:
       s = " II"
@@ -1202,7 +1211,10 @@ func (x *calendarday) PosInYear() (uint, uint) {
 
 func (x *calendarday) changeWithMouse (p Period, vertical bool, a, l, c, l0, c0 uint) {
   if ! scr.MouseEx() { return }
-  switch p { case Daily, Decadic: return; default: }
+  switch p {
+  case Daily, Decadic:
+    return;
+  }
   lm, cm := scr.MousePos()
 //  if p == Yearly { SM += leftMargin }
   y := x.Clone().(*calendarday)
@@ -1216,7 +1228,8 @@ func (x *calendarday) changeWithMouse (p Period, vertical bool, a, l, c, l0, c0 
     if ! y.Equiv (A, p) {
       break
     }
-    switch p { case Weekly:
+    switch p {
+    case Weekly:
       lpos, cpos = y.PosInWeek (vertical, a)
       lpos += l0; cpos += c0
     case Monthly:
@@ -1488,10 +1501,12 @@ func (x *calendarday) Defined (s string) bool {
     str.Move (&T, true)
     n = str.ProperLen (T)
     if T [0] != 'I' { return false }
-    switch n { case 1:
+    switch n {
+    case 1:
       d.month = 1
     case 2:
-      switch T [1] { case 'I':
+      switch T [1] {
+      case 'I':
         d.month = 4
       case 'V':
         d.month = 10
@@ -1534,11 +1549,13 @@ func Date (m, d, y int) *calendarday {
 } */
 
 func (x *calendarday) Selected (cop CondOp) bool {
-  loop: for {
+  loop:
+  for {
     cop (x, true) // colour auffallend
     c, t := kbd.Command()
     cop (x, false) // colour normal
-    switch c { case kbd.Enter:
+    switch c {
+    case kbd.Enter:
       return true
     case kbd.Esc:
       break loop
@@ -1571,7 +1588,8 @@ func (X *calendarday) EditGr (x, y int) {
           cm, _ := kbd.Command()
           x.Change (cm, t)
           x.Write (l, c)
-          switch cm { case kbd.Enter, kbd.Here:
+          switch cm {
+          case kbd.Enter, kbd.Here:
             errh.DelHint(); return
           case kbd.Back, kbd.There:
             errh.DelHint(); break loop
@@ -1585,7 +1603,8 @@ func (X *calendarday) EditGr (x, y int) {
     } else {
       l, c := 16 * uint(y), 8 * uint(x)
       nErr ++
-      switch nErr { case 1:
+      switch nErr {
+      case 1:
         errh.Error0Pos ("Die Eingabe stellt kein Datum dar!", l + 1, c)
       case 2:
         errh.Error0Pos ("Das ist auch kein Datum!", l + 1, c)
@@ -1611,8 +1630,8 @@ func (x *calendarday) Codelen() uint {
   return Codelen(uint16(0))
 }
 
-func (x *calendarday) Encode() []byte {
-  B := make ([]byte, Codelen(uint16(0)))
+func (x *calendarday) Encode() Stream {
+  B := make (Stream, Codelen(uint16(0)))
   copy (B, Encode (uint16(x.internalCode())))
   return B
 }
@@ -1646,7 +1665,7 @@ func (x *calendarday) decode (n uint16) {
   }
 }
 
-func (x *calendarday) Decode (B []byte) {
+func (x *calendarday) Decode (B Stream) {
   c := Decode (uint16(0), B).(uint16)
   if c <= uint16(maxCode) {
     x.decode (c)
@@ -1656,7 +1675,7 @@ func (x *calendarday) Decode (B []byte) {
 }
 
 /*
-func decode (B []byte) Calendarday {
+func decode (B Stream) Calendarday {
   x  := new_().(*calendarday)
   c := Decode (uint16(0), B).(uint16)
   if c <= uint16(maxCode) {
@@ -1694,7 +1713,8 @@ func (x *calendarday) SetAttribute (p Op) {
 func attribute (a Any) {
   x, ok := a.(*calendarday)
   if ! ok { TypeNotEqPanic (x, a) }
-  switch x.Format { case Dd, Dd_mm_, Dd_mm_yy, Yymmdd, Yyyymmdd, Dd_mm_yyyy, Dd_M, Dd_M_yyyy:
+  switch x.Format {
+  case Dd, Dd_mm_, Dd_mm_yy, Yymmdd, Yyyymmdd, Dd_mm_yyyy, Dd_M, Dd_M_yyyy:
     if x.IsHoliday() {
       x.Colours (HolidayF, HolidayB)
       x.SetFont (font.Bold)

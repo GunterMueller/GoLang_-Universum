@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 191103 - license see µU.go
+// (c) Christian Maurer   v. 201030 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lGL -lGLU
 // #include <stdlib.h>
@@ -19,30 +19,27 @@ import (
   "math"
 //  "time"
 //  "µU/ker"
-  "µU/show"
   "µU/gl"
   "µU/glu"
-  "µU/col"
+//  "µU/col"
   "µU/spc"
 )
 const (
   um = math.Pi / 180
   epsilon = 1e-6
 )
+const (
+  right = 0; front = 1; top = 2
+  Esc = 9; Enter = 36; Back = 22; Tab = 23
+  Left = 113; Right = 114; Up = 111; Down = 116; PgUp = 112; PgDown = 117
+  Pos1 = 110; End = 115; Ins = 118; Del = 119
+  F1 = 67; F2 = 68; F3 = 69; F4 = 70; F9 = 75; F10 = 76; F11 = 96; F12 = 96
+  Shift = 1; Strg = 4; Alt = 8; AltGr = 128
+)
 type
   d = C.GLdouble
 var
   firstWrite = true
-
-func (X *xwindow) Start (m show.Mode, draw func(), ex, ey, ez, fx, fy, fz, nx, ny, nz float64) {
-  X.mode = m
-  X.draw = draw
-  X.eye.Set3 (ex, ey, ez)
-  X.focus.Set3 (fx, fy, fz)
-  X.delta = X.eye.Distance (X.focus)
-  X.normal.Set3 (nx, ny, nz)
-  X.normal.Norm()
-}
 
 /*/
 func (X *xwindow) fly() {
@@ -54,44 +51,16 @@ func (X *xwindow) fly() {
 }
 /*/
 
-func (X *xwindow) write() {
-  gl.ClearColor (col.White())
-  gl.Clear()
+func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz float64) {
+  X.origin.Set3 (ox, oy, oz)
+  X.focus.Set3 (fx, fy, fz)
+  X.top.Set3 (tx, ty, tz)
+  X.top.Norm()
   gl.Enable (gl.Depthtest)
   gl.ShadeModel (gl.Flat)
-  ex, ey, ez, fx, fy, fz, nx, ny, nz := spc.Get()
-  if math.Abs(fx) < epsilon { fx = 0 }; if math.Abs(fy) < epsilon { fy = 0 }
-  gl.MatrixMode (gl.Projection)
-  gl.LoadIdentity()
-//  gl.Viewport (0, 0, X.wd, X.ht)
-  glu.Perspective (60, X.proportion, 0.1, 1000.)
-//  gl.MatrixMode (gl.Modelview) // implies, that gluLookAt does not work
-  C.gluLookAt (d(ex), d(ey), d(ez), d(fx), d(fy), d(fz), d(nx), d(ny), d(nz))
-  X.draw()
-// if err := C.glGetError(); err != C.GL_NO_ERROR {println (err-1280)); ker.Panic ("openGL error")}
-  C.glXSwapBuffers (dpy, C.GLXDrawable(X.win))
-  C.glFinish()
-//  gl.MatrixMode (gl.Modelview) // obviously superfluous
-//  print("eye    "); fmt.Println (ex, ey, ez)
-//  print("focus  "); fmt.Println (fx, fy, fz)
-//  print("normal "); fmt.Println (nx, ny, nz)
-}
-
-func (X *xwindow) Go() {
-  const (
-    right = 0; front = 1; top = 2
-    Esc = 9; Enter = 36; Back = 22; Tab = 23
-    Left = 113; Right = 114; Up = 111; Down = 116; PgUp = 112; PgDown = 117
-    Pos1 = 110; End = 115; Ins = 118; Del = 119
-    F1 = 67; F2 = 68; F3 = 69; F4 = 70; F9 = 75; F10 = 76; F11 = 96; F12 = 96
-    Shift = 1; Strg = 4; Alt = 8; AltGr = 128
-  )
 //  gl.ShowLight (true)
-  ex, ey, ez := X.eye.Coord3()
-  fx, fy, fz := X.focus.Coord3()
-  nx, ny, nz := X.normal.Coord3()
-  spc.Set (ex, ey, ez, fx, fy, fz, nx, ny, nz)
-//  dfe := X.eye.Distance (X.focus)
+  spc.Set (ox, oy, oz, fx, fy, fz, tx, ty, tz)
+//  dfe := X.origin.Distance (X.focus)
 //  delta := dfe / 500.
 //  const nSteps = 3
 //  Phi, Delta := [nSteps]float64 { 1, 9, 90 }, [nSteps]float64 { 1, 10, 100 }
@@ -99,12 +68,26 @@ func (X *xwindow) Go() {
 //  step := 1
   var xev C.XEvent
   redraw := true
-//  if X.mode == show.Fly { go X.fly() }
-
+//  if m == Fly { go X.fly() }
   for {
 //    phi, delta := float64 (Phi[step]), delta0 * Delta[step]
     if redraw {
-      X.write()
+//      gl.Clear()
+      ex, ey, ez, fx, fy, fz, nx, ny, nz := spc.Get()
+      if math.Abs(fx) < epsilon { fx = 0 }; if math.Abs(fy) < epsilon { fy = 0 }
+      gl.MatrixMode (gl.Projection)
+      gl.LoadIdentity()
+//      gl.Viewport (0, 0, X.wd, X.ht)
+      glu.Perspective (60, X.proportion, 0.1, 10000.)
+      C.gluLookAt (d(ex), d(ey), d(ez), d(fx), d(fy), d(fz), d(nx), d(ny), d(nz))
+      draw()
+      if e := gl.Error(); e != "" { println ("openGL error: " + e) }
+      C.glXSwapBuffers (dpy, C.GLXDrawable(X.win))
+      C.glFinish()
+//      gl.MatrixMode (gl.Modelview) // obviously superfluous
+//      print("origin    "); fmt.Println (ex, ey, ez)
+//      print("focus  "); fmt.Println (fx, fy, fz)
+//      print("normal "); fmt.Println (nx, ny, nz)
     }
     redraw = true
     C.XNextEvent (dpy, &xev)
@@ -117,11 +100,11 @@ func (X *xwindow) Go() {
       case Esc:
         return
       case Left:
-        switch X.mode {
-        case show.Look:
+        switch m {
+        case Look:
           switch t {
           case 0:
-            spc.TurnAroundFocus (top, phi) // pan
+            spc.TurnAroundFocus (top, phi) // turn
           case Shift:
             spc.Move (right, delta0) // move
           case Strg:
@@ -129,28 +112,28 @@ func (X *xwindow) Go() {
           case Alt, AltGr:
             // TODO
           }
-        case show.Walk:
+        case Walk:
           switch t {
           case 0:
-            spc.Turn (top, phi) // pan
+            spc.Turn (top, phi) // turn
           case Shift:
             spc.Move (right, -delta0) // move
           case Strg:
             spc.Turn (front, phi) // roll
           }
-        case show.Fly:
+        case Fly:
           if t == 0 {
-            spc.Turn (top, phi) // pan
+            spc.Turn (top, phi) // turn
           } else {
             spc.Turn (front, phi) // roll
           }
         }
       case Right:
-        switch X.mode {
-        case show.Look:
+        switch m {
+        case Look:
           switch t {
           case 0:
-            spc.TurnAroundFocus (top, -phi) // pan
+            spc.TurnAroundFocus (top, -phi) // turn
           case Shift:
             spc.Move (right, -delta0) // move
           case Strg:
@@ -158,25 +141,25 @@ func (X *xwindow) Go() {
           case Alt, AltGr:
             // TODO
           }
-        case show.Walk:
+        case Walk:
           switch t {
           case 0:
-            spc.Turn (top, -phi) // pan
+            spc.Turn (top, -phi) // turn
           case Shift:
             spc.Move (right, delta0) // move
           case Strg:
             spc.Turn (front, -phi) // roll
           }
-        case show.Fly:
+        case Fly:
           if t == 0 {
-            spc.Turn (top, -phi) // pan
+            spc.Turn (top, -phi) // turn
           } else {
             spc.Turn (front, -phi) // roll
           }
         }
       case Up:
-        switch X.mode {
-        case show.Look:
+        switch m {
+        case Look:
           switch t {
           case 0:
             spc.TurnAroundFocus (right, phi) // tilt
@@ -187,19 +170,19 @@ func (X *xwindow) Go() {
           case Alt, AltGr:
 
           }
-        case show.Walk:
+        case Walk:
           switch t {
           case 0:
             spc.Turn (right, phi) // tilt
           case Shift:
             spc.Move (top, delta0) // move
           }
-        case show.Fly:
+        case Fly:
           spc.Turn (right, phi) // tilt
         }
       case Down:
-        switch X.mode {
-        case show.Look:
+        switch m {
+        case Look:
         switch t {
           case 0:
             spc.TurnAroundFocus (right, -phi) // tilt
@@ -210,49 +193,47 @@ func (X *xwindow) Go() {
           case Alt, AltGr:
 
           }
-        case show.Walk:
+        case Walk:
           switch t {
           case 0:
             spc.Turn (right, -phi) // tilt
           case Shift:
             spc.Move (top, -delta0) // move
           }
-        case show.Fly:
+        case Fly:
           spc.Turn (right, -phi) // tilt
         }
       case Enter:
-        switch X.mode {
-        case show.Look:
+        switch m {
+        case Look:
           if t == 0 {
             spc.Move (front, delta0) // move ahead
           } else {
             spc.Move (front, -delta0) // move back
           }
-        case show.Walk:
+        case Walk:
           if t == 0 {
             spc.Move (front, delta0) // move ahead
           } else {
             spc.Move (front, -delta0) // move back
             // spc.Move (front, delta0) // move TODO translate focus ?
           }
-        case show.Fly:
+        case Fly:
           // TODO increase speed
         }
       case Back:
-        switch X.mode {
-        case show.Look:
+        switch m {
+        case Look:
           spc.Move (front, -delta0) // move
-        case show.Walk:
+        case Walk:
           if t == 0 {
             spc.Move (front, -delta0) // move
           } else {
             spc.Move (front, -delta0) // move TODO translate focus ?
           }
-        case show.Fly:
+        case Fly:
           // TODO decrease speed
         }
-      case Tab:
-        spc.Invert() // pan 180°
       case Pos1:
         spc.Turn (front, phi)
       case End:
@@ -267,17 +248,17 @@ func (X *xwindow) Go() {
           step --
         }
       case F3:
-        if X.mode == show.Walk {
+        if m == Walk {
           if t == 0 {
-            spc.Invert() // pan 180°
+            spc.Invert() // turn 180°
           } else { // TODO
-            dfe = X.eye.Distance (X.focus)
+            dfe = X.origin.Distance (X.focus)
             spc.Move (front, 2 * dfe)
             spc.Invert()
           }
         }
       case F4:
-        dfe = X.eye.Distance (X.focus)
+        dfe = X.origin.Distance (X.focus)
         spc.Move (front, dfe)
         if t == 0 {
           spc.Move (right, dfe)
@@ -287,7 +268,7 @@ func (X *xwindow) Go() {
           spc.Turn (top, -90.)
         }
       case Del: // TODO
-        dfe = X.eye.Distance (X.focus)
+        dfe = X.origin.Distance (X.focus)
         spc.Move (top, dfe)
         spc.Move (front, dfe)
         spc.Turn (right, -90) // x -> rechts, y -> oben

@@ -8,10 +8,13 @@ import (
 )
 
 func set (Variable string, content *string) {
-  for i:= 0; i < len (Variable); i++ {
-    switch Variable[i] { case ' ', '=': return }
+  for i := 0; i < len (Variable); i++ {
+    switch Variable[i] {
+    case ' ', '=':
+    return
+    }
   }
-  err:= os.Setenv (Variable, *content) // int64
+  err := os.Setenv (Variable, *content) // int64
   if err != nil { panic ("no Variable") }
 }
 
@@ -62,7 +65,7 @@ func arg (i uint) string {
 
 func n (i uint) uint {
   if uint(len (os.Args)) > i {
-		if x, err := strconv.Atoi(os.Args[i]); err == nil && x > 0 {
+		if x, err  := strconv.Atoi(os.Args[i]); err == nil && x > 0 {
       return uint(x)
     }
   }
