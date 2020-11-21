@@ -22,7 +22,7 @@ type
   Get() Any
 }
 
-// Pre: a is atomic or of a type implementing Object (a != nil).
+// Pre: a is atomic or of a type implementing Object.
 // Returns a new empty queue for objects of the type of a.
 // a is the pattern object of this buffer.
 func New (a Any) Buffer { return new_(a) }

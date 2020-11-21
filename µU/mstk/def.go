@@ -16,4 +16,4 @@ type
 // Pre: a is atomic or of a type implementing Object.
 // Returns a new stack for elements of the type of a
 // to be used by concurrent processes.
-func New(a Any) MStack { return new_(a) }
+func New (a Any) MStack { return new_(a) }

@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 201013 - license see µU.go
+// (c) Christian Maurer   v. 201113 - license see µU.go
 
 //     latin-1-strings (without any bloody UTF-8-stuff)
 
@@ -26,6 +26,9 @@ func Lit (s string) bool { return lit(s) }
 // If p < len(s), the byte at position p of s is replaced by c.
 // Otherwise s is not changed.
 func Replace1 (s *string, p uint, c byte) { replace1 (s,p,c) }
+
+// All bytes b in s are replaced by []byte(t).
+func ReplaceAll (s *string, b byte, t string) { replaceAll (s,b,t) }
 
 // If p + len(t) <= len(s), the part of s starting at position p is replaced by t.
 // Otherwise s is not changed.
@@ -136,7 +139,7 @@ func OffBytes (s *string, b byte) { offBytes(s,b) }
 // to its former length.
 func Move (s *string, left bool) { move(s,left) }
 
-// As far as existent, leading and trailing spaces are removed from s.
+// As far as existent, all spaces are removed from s.
 func OffSpc (s *string) { offSpc(s) }
 
 // If p < len(s), a space is inserted in at position p
@@ -174,3 +177,10 @@ func SplitBrackets (s string, sep, b byte) []string { return splitBrackets (s,se
 
 // TODO Spec
 func SplitByte (s string, b byte) ([]string, uint) { return splitByte(s,b) }
+
+// Pre: s[0] == '('.
+// TODO Spec
+func RightBr (s string) uint { return rightBr (s) }
+
+// TODO Spec
+func StartsWithVar (s string) (string, uint, bool) { return startsWithVar(s) }

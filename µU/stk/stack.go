@@ -1,6 +1,6 @@
 package stk
 
-// (c) Christian Maurer   v. 201030 - license see µU.go
+// (c) Christian Maurer   v. 201103 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,7 +11,8 @@ type
                seq.Sequence
                }
 
-func new_ (a Any) Stack {
+func new_(a Any) Stack {
+  CheckAtomicOrObject (a)
   return &stack { seq.New(a) }
 }
 
@@ -20,14 +21,9 @@ func (x *stack) Push (a Any) {
   x.Sequence.Ins (a)
 }
 
-func (x *stack) Pop() {
-  if x.Sequence.Empty() { return }
-  x.Sequence.Seek (0)
-  x.Sequence.Del()
-}
-
-func (x *stack) Top() Any {
+func (x *stack) Pop() Any {
   if x.Sequence.Empty() { return nil }
   x.Sequence.Seek (0)
+  defer x.Sequence.Del()
   return x.Sequence.Get()
 }

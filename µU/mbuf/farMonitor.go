@@ -1,6 +1,6 @@
 package mbuf
 
-// (c) Christian Maurer   v. 171127 - license see µU.go
+// (c) Christian Maurer   v. 201101 - license see µU.go
 
 import (
   . "µU/obj"
@@ -19,6 +19,7 @@ type
                     }
 
 func newfm (a Any, h string, p uint16, s bool) MBuffer {
+  CheckAtomicOrObject(a)
   x := new(farMonitor)
   x.Any = Clone (a)
   x.Buffer = buf.New (a)

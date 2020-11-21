@@ -1,0 +1,11 @@
+       func (x *term) tree (s string) tree.Tree {
+
+build
+285:   x.Tree = x.tree (x.string)
+
+Insert
+297:   tree := t.(*term).tree (x.string)
+298:   x.Tree.Insert (s, tree)
+
+init
+322:   derivationTerm[f].tree (s)

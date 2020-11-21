@@ -1,6 +1,6 @@
 package vect
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201101 - license see µU.go
 
 import (
   "math"
@@ -246,7 +246,7 @@ func (x *vector) Flat (Y Vector) bool {
 }
 
 func (x *vector) Norm() {
-  a := math.Sqrt (x.Int (x))
+  a := math.Sqrt (x.x[0] * x.x[0] + x.x[1] * x.x[1] + x.x[2] * x.x[2])
   for d := 0; d < 3; d++ {
     x.x[d] /= a
   }

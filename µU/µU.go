@@ -56,7 +56,7 @@ import (
   "µU/date"
   "µU/fuday"
   "µU/img"
-  "µU/fig2"
+  "µU/fig"
   "µU/piset"
   "µU/persaddr"
   "µU/pids"
@@ -89,6 +89,7 @@ import (
   "µU/dgra"
   "µU/rpc"
   "µU/vnset"
+  "µU/term"
 )
 var (
   red = col.FlashRed()
@@ -211,7 +212,7 @@ func main() { // get all packages compiled and show the license
   menue.Touch()
   date.New()
   fuday.New()
-  fig2.Touch()
+  fig.Touch()
   piset.Touch()
   gram.Touch()
   persaddr.New()
@@ -241,6 +242,7 @@ func main() { // get all packages compiled and show the license
   dlock.New(0, nil, 0)
   rpc.Touch()
   vnset.EmptySet()
+  term.Touch()
   go input()
   cl, cf, cb := v.Colours()
   circ (ht / 2, cf);

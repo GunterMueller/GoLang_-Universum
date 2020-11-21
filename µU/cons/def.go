@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 201016 - license see µU.go
+// (c) Christian Maurer   v. 201102 - license see µU.go
 
 // >>> This package only serves the implementations of µU/mouse,
 //     mu/kbd and mu/cons; it must not no be used elsewhere.
@@ -138,7 +138,9 @@ type
 
   Polygon (xs, ys []int)
   PolygonInv (xs, ys []int)
+// Pre: The center of gravity of the polygon is inside the polygon.
   PolygonFull (xs, ys []int)
+// Pre: As above.
   PolygonFullInv (xs, ys []int)
   OnPolygon (xs, ys []int, a, b int, d uint) bool
 

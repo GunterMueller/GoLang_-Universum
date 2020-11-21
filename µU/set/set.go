@@ -293,7 +293,7 @@ func (x *set) ExGeq (a Any) bool {
     return false
   }
   x.actual = t
-  return true // XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX ? XXX
+  return true
 }
 
 func (x *set) Trav (op Op) {

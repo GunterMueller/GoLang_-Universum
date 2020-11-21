@@ -1,6 +1,6 @@
 package z
 
-// (c) Christian Maurer   v. 201027 - license see µU.go
+// (c) Christian Maurer   v. 201111 - license see µU.go
 
 const
   delta = 'a' - 'A'
@@ -159,6 +159,10 @@ func isLetter (b byte) bool {
 
 func isDigit (b byte) bool {
   return '0' <= b && b <= '9'
+}
+
+func isLetterOrDigit (b byte) bool {
+  return isLetter (b) || isDigit (b)
 }
 
 var (

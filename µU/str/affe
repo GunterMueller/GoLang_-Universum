@@ -1,0 +1,17 @@
+func RightBr (s string) uint {
+  n := 0
+  for i := 1; i < len(s); i++ {
+    b := s[i]
+    if b == '('
+      n++
+    }
+    if b == ')'
+      if n > 0 {
+        n--
+      } else {
+        return uint(i)
+      }
+    }
+  }
+  return 0
+}

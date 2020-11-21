@@ -1,6 +1,6 @@
 package real
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201112 - license see µU.go
 
 import (
   "math"
@@ -9,6 +9,7 @@ import (
   "µU/str"
   "µU/col"
   "µU/box"
+  "µU/nat"
   "µU/errh"
 )
 var
@@ -23,24 +24,62 @@ func NDigits (x float64) uint {
   return 1 + uint(math.Floor (math.Log (math.Abs (x)) / math.Ln10))
 }
 
-func valid (x float64) bool {
+func finite (x float64) bool {
   return ! math.IsInf (x, 1) && ! math.IsInf (x, -1) && ! math.IsNaN (x)
 }
 
-func number (s string) float64 {
-  if x, err := strconv.ParseFloat (s, 64); err == nil {
+func val (s string) float64 {
+  if x, e := strconv.ParseFloat (s, 64); e == nil {
     return x
   }
   return math.NaN()
 }
 
+func eq (x, y float64) bool {
+  return x == y // TODO
+}
+
 func defined (s string) (float64, bool) {
-  str.OffSpc (&s)
-  r, e := strconv.ParseFloat (s, 64)
-  if e != strconv.ErrSyntax {
-    return r, true
+// number = ["-"]digit{digit}[ "."digit{digit}]["e"|"E"["-"]digit{digit}]
+  str.OffBytes (&s, ' ')
+  x := 0.
+  n, t, p, l := nat.DigitSequences (s)
+  if uint(len(s)) > p[n-1]+l[n-1] {
+    return 0, false
   }
-  return math.NaN(), false
+  if n == 0 || n > 3 {
+    return 0., false
+  }
+  if n == 2 {
+    c := s[p[1] - 1]
+    if c != '.' && c != ',' {
+      return 0, false
+    }
+  }
+  n0, _ := nat.Natural (t[0])
+  x = float64(n0)
+  if n >= 2 {
+    n1, _ := nat.Natural (t[1])
+    z := 1.
+    for i := uint(0); i < l[1]; i++ {
+      z *= 10
+    }
+    x += float64(n1) / z
+  }
+  if n == 3 {
+    n2, _ := nat.Natural (t[2])
+    c := s[p[2] - 1]
+    if c != 'e' && c != 'E' {
+      return 0, false
+    }
+    z := 1.
+    for i := uint(0); i < n2; i++ {
+      z *= 10
+    }
+    x *= z
+  }
+  if s[0] == '-' { x = -x }
+  return x, true
 }
 
 func string_ (x float64) string {
@@ -64,7 +103,7 @@ func edit (x *float64, l, c uint) {
     _, ok := str.Pos (s, 'e')
     _, ok1 := str.Pos (s, 'E')
     if ! ok && ! ok1 {
-      *x = number (s)
+      *x = val (s)
       if ! math.IsNaN (*x) {
         break
       }
@@ -80,27 +119,19 @@ func Codelen() uint {
 }
 
 func Encode (x float64) obj.Stream {
-  return obj.Encode (x) // obj.Encode (math.Float64bits (x))
+  return obj.Encode (x)
 }
 
 func Decode (s obj.Stream) float64 {
-  return obj.Decode (0., s).(float64) // math.Float64frombits (obj.Decode (uint64(0), b).(uint64))
+  return obj.Decode (0., s).(float64)
 }
 
-/* func val (op Operation, x, y float64) float64 {
-  switch op {
-  case Plus:
-    return x + y
-  case Minus:
-    return x - y
-  case Times:
-    return x * y
-  case Div:
-    return x / x
-  case ToThe:
-    return math.Pow (x, y)
-  case Percent:
-    return x / 100.0 * y
+func realStarted (s string) (float64, uint, bool) {
+  n := uint(len(s))
+  for k := n; k > 0; k-- {
+    if x, ok := defined (s[:k]); ok {
+      return x, k, true
+    }
   }
-  return 0.0
-} */
+  return 0., n, false
+}

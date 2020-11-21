@@ -1,6 +1,6 @@
 package mstk
 
-// (c) Christian Maurer   v. 170320 - license see µU.go
+// (c) Christian Maurer   v. 201103 - license see µU.go
 
 import (
   "sync"
@@ -15,7 +15,7 @@ type
                 }
 
 func new_(a Any) MStack {
-  if a == nil { return nil } // XXX
+  CheckAtomicOrObject(a)
   x := new(mStack)
   x.Stack = stk.New(a)
   x.notEmpty.Lock()
@@ -35,16 +35,9 @@ func (x *mStack) Push (a Any) {
   x.notEmpty.Unlock()
 }
 
-func (x *mStack) Pop() {
-  x.notEmpty.Lock()
-  x.mutex.Lock()
-  x.Stack.Pop()
-  x.mutex.Unlock()
-}
-
-func (x *mStack) Top() Any {
+func (x *mStack) Pop() Any {
   x.notEmpty.Lock()
   x.mutex.Lock()
   defer x.mutex.Unlock()
-  return x.Stack.Top()
+  return x.Stack.Pop()
 }

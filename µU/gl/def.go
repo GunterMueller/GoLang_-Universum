@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 201027 - license see µU.go
+// (c) Christian Maurer   v. 201103 - license see µU.go
 
 // #include <GL/gl.h>
 import
@@ -63,12 +63,14 @@ func Line (x ...float64) { line(x) }
 func Line1 (x ...float64) { line1(x) }
 func Lineloop (x ...float64) { lineloop(x) }
 func Linestrip (x ...float64) { linestrip(x) }
-func Triangle (x...float64) { triangle(x) }
+func Triangle (x ...float64) { triangle(x...) }
 func Trianglestrip (x ...float64) { trianglestrip(x) }
 func Trianglefan (x ...float64) { trianglefan(x) }
 func Quad (x ...float64) { quad(x) }
 func Quadstrip (x ...float64) { quadstrip(x) }
 func Polygon (x ...float64) { polygon (x) }
+func Polygon1 (x, y, z []float64) { polygon1 (x,y,z) }
+func Curve (w uint, f1, f2, f3 func (float64) float64, t0, t1 float64) { curve(w,f1,f2,f3,t0,t1) }
 
 func HorRectangle (x, y, z, x1, y1 float64, up bool) { horRectangle(x,y,z,x1,y1,up) }
 func VertRectangle (x ...float64) { vertRectangle(x) }
@@ -98,16 +100,9 @@ func CylinderSegment (x, y, z, r, h, a, b float64) { cylinderSegment (x,y,z,r,h,
 func HorCylinder (x, y, z, r, l, a float64) { horCylinder (x,y,z,r,l,a) }
 func Torus (x, y, z, R, r float64) { torus (x,y,z,R,r) }
 func VerTorus (x, y, z, R, r, a float64) { verTorus(x,y,z,R,r,a) }
-// func Paraboloid (x, y, z, p float64) { paraboloid(x,y,z,p) }
-// func HorParaboloid (x, y, z, p, a float64) { horParaboloid(x,y,z,p,a) }
-func Curve (w uint, f1, f2, f3 func (float64) float64, t0, t1 float64) { curve(w,f1,f2,f3,t0,t1) }
-func Surface (f func (float64, float64) float64, x, y, z, x1, y1, z1 float64, wd, ht, g uint) {
-       surface (f,x,y,z,x1,y1,z1,wd,ht,g)
-}
-// func CoSy (x, y, z float64, mit bool) { coSy(x,y,z,mit) }
+func Surface (f func (float64, float64) float64, x, y, z, x1, y1, z1 float64, wd, ht, g uint) { surface (f,x,y,z,x1,y1,z1,wd,ht,g) }
 
-// furniture
-// (x, y, z) = left front corner, (w, d, h) = width, depth and height
+// furniture: (x, y, z) = left front corner, (w, d, h) = width, depth and height
 
 // p, l = thickness of table plate, legs
 func Table (x, y, z, w, d, h, p, l, a float64, c col.Colour) {

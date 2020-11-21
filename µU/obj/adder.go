@@ -1,11 +1,11 @@
 package obj
 
-// (c) Christian Maurer   v. 201011 - license see µU.go
+// (c) Christian Maurer   v. 201106 - license see µU.go
 
 type
   Adder interface {
 
-// Returns true, iff x is zero w.r.t. addition.
+// Returns true, iff x is neutral w.r.t. addition.
   Zero() bool
 
 // Pre: All y's are of a numerical type or implement Adder;

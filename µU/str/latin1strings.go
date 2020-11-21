@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 201027 - license see µU.go
+// (c) Christian Maurer   v. 201113 - license see µU.go
 
 import
   "µU/z"
@@ -68,6 +68,20 @@ func replace1 (s *string, p uint, c byte) {
   t := string(c)
   *s = (*s)[:p] + t + (*s)[p+1:]
   z.ToHellWithUTF8 (s)
+}
+
+func replaceAll (s *string, b byte, t string) {
+  n := len (*s)
+  bs := make([]byte, 0)
+  for i := 0; i < n; i++ {
+    c := (*s)[i]
+    if c == b {
+      bs = append (bs, []byte(t)...)
+    } else {
+      bs = append (bs, c)
+    }
+  }
+  *s = string(bs)
 }
 
 func replace (s *string, p uint, t string) {
@@ -404,10 +418,9 @@ func split (s string) (uint, []string, []uint) {
   spaceBefore := true
   n := uint(0)
   for i := uint(0); i < l; i++ {
-    switch s[i] {
-    case spc, byte(','), byte(';'):
+    if s[i] == spc {
       spaceBefore = true
-    default:
+    } else {
       if spaceBefore {
         t = append (t, string(s[i]))
         p = append (p, i)
@@ -510,4 +523,62 @@ func splitByte (s string, b byte) ([]string, uint) {
     n++
   }
   return ss, n
+}
+
+func rightBr (s string) uint {
+  n := 0
+  for i := 1; i < len(s); i++ {
+    b := s[i]
+    if b == '(' {
+      n++
+    }
+    if b == ')' {
+      if n > 0 {
+        n--
+      } else {
+        return uint(i)
+      }
+    }
+  }
+  return 0
+}
+
+func isVarString (s string) bool {
+  if ! z.IsLetter (s[0]) {
+    return false
+  }
+  n := properLen (s)
+  if n == 1 {
+    return true
+  }
+  for i := uint(1); i < n; i++ {
+    if ! z.IsLetterOrDigit (s[i]) {
+      return false
+    }
+  }
+  return true
+}
+
+func startsWithVar (s string) (string, uint, bool) {
+  n := uint(len(s))
+  if n == 1 && z.IsLetter(s[0]) {
+    return string(s[0]), 1, true
+  }
+  if n > 0 {
+    for p := uint(1); p < n; p++ {
+      if z.IsLetterOrDigit (s[p]) {
+      } else {
+        t := s[:p]
+        if isVarString (t) {
+          return t, p, true
+        } else {
+          break
+        }
+      }
+      if p == n - 1 {
+        return s, p + 1, true
+      }
+    }
+  }
+  return "", 0, false
 }

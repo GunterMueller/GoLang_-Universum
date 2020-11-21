@@ -39,7 +39,8 @@ cF, cB, cFA, cBA col.Colour
          mouseOn bool
          pointer ptr.Pointer
   xMouse, yMouse int
-              pg [][]bool // to fill polygons
+         polygon [][]bool // to fill polygons
+            done [][]bool // to fill polygons
         incident bool
    xx_, yy_, tt_ int // for incidence tests
                  }
@@ -90,9 +91,11 @@ func newCons (x, y uint, m Mode) Console {
     X.shadow[i] = make(Stream, X.wd * colourdepth)
   }
   X.initMouse()
-  X.pg = make([][]bool, X.ht)
-  for i := 0; i < int(X.ht); i++ {
-    X.pg[i] = make ([]bool, X.wd)
+  X.polygon = make([][]bool, X.wd)
+  X.done = make([][]bool, X.wd)
+  for i := 0; i < int(X.wd); i++ {
+    X.polygon[i] = make([]bool, X.ht)
+    X.done[i] = make([]bool, X.ht)
   }
   X.ScrColours (X.cF, X.cB)
   X.Cls()
@@ -130,8 +133,12 @@ func newConsWH (x, y, w, h uint) Console {
     X.shadow[i] = make(Stream, X.wd * colourdepth)
   }
   X.initMouse()
-  X.pg = make([][]bool, X.ht)
-  for i := 0; i < int(X.ht); i++ { X.pg[i] = make ([]bool, X.wd) }
+  X.polygon = make([][]bool, X.wd)
+  X.done = make([][]bool, X.wd)
+  for i := 0; i < int(X.wd); i++ {
+    X.polygon[i] = make([]bool, X.ht)
+    X.done[i] = make([]bool, X.ht)
+  }
   X.ScrColours (X.cF, X.cB)
   X.Cls()
   if first { defer goMouse(); first = false }

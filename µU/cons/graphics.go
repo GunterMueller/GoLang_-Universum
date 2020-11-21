@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 191117 - license see µU.go
+// (c) Christian Maurer   v. 201102 - license see µU.go
 
 import (
   "math"
@@ -567,7 +567,7 @@ func (X *console) RectangleFull (x, y, x1, y1 int) {
   if y1 >= int(X.ht) { y1 = int(X.ht) - 1 }
   for y <= y1 {
     X.horizontal (x, y, x1, X.Point)
-    y ++
+    y++
   }
 }
 
@@ -577,7 +577,7 @@ func (X *console) RectangleFullInv (x, y, x1, y1 int) {
   if y1 >= int(X.ht) { y1 = int(X.ht) - 1 }
   for y <= y1 {
     X.horizontal (x, y, x1, X.PointInv)
-    y ++
+    y++
   }
 }
 
@@ -613,54 +613,80 @@ func (X *console) PolygonInv (xs, ys []int) {
   }
 }
 
-func (X *console) set (x, y int) {
-  if X.pg[y][x] {
-    X.pg[y][x] = true
-    if y > 0 { X.set (x, y - 1) }
-    if x > 0 { X.set (x - 1, y) }
-    if y + 1 < int(X.ht) { X.set (x, y + 1) }
-    if x + 1 < int(X.wd) { X.set (x + 1, y) }
-  }
-}
-
 func (X *console) interior (x, y int, xs, ys []int) bool {
   return false // TODO winding number algorithm
 }
 
-func (X *console) PolygonFull (xs, ys []int) {
+func (X *console) mark (x, y int) {
+  X.polygon[x][y] = true
+  X.Point (x, y)
+}
+
+func (X *console) markInv (x, y int) {
+  X.polygon[x][y] = true
+  X.PointInv (x, y)
+}
+
+func (X *console) demark (x, y int) {
+  X.polygon[x][y] = false
+}
+
+func (X *console) dedone() {
+  for x := uint(0); x < X.wd; x++ {
+    for y := uint(0); y < X.ht; y++ {
+      X.done[x][y] = false
+    }
+  }
+}
+
+func (X *console) st (x, y int, f pointFunc) {
+  if X.polygon[x][y] {
+    return
+  }
+  if ! X.done[x][y] {
+    X.done[x][y] = true
+    f (x, y)
+    if y > 0 { X.st (x, y - 1, f) }
+    if x > 0 { X.st (x - 1, y, f) }
+    if y + 1 < int(X.ht) { X.st (x, y + 1, f) }
+    if x + 1 < int(X.wd) { X.st (x + 1, y, f) }
+  }
+}
+
+func (X *console) setInv (x, y int) {
+  X.st (x, y, X.PointInv)
+}
+
+func (X *console) set (x, y int) {
+  X.st (x, y, X.Point)
+}
+
+func (X *console) polygonFull (xs, ys []int, m, s pointFunc) {
   if ! ok2 (xs, ys) { return }
   n := len (xs)
   if n < 2 { return }
-  X.segs (xs, ys, X.set)
-/*
+  X.segs (xs, ys, m)
   xx, yy := 0, 0
   xMin, yMin := int(X.wd), int(X.ht)
   xMax, yMax := 0, 0
-  for i := 0; i <= int(n); i++ {
+  for i := 0; i < int(n); i++ {
     xx += xs[i]; yy += ys[i]
     if xs[i] < xMin { xMin = xs[i] }
     if ys[i] < yMin { yMin = ys[i] }
     if xs[i] > xMax { xMax = xs[i] }
     if ys[i] > yMax { yMax = ys[i] }
   }
-// need a point in the interior of the polygon (not on its boundary !)
-  x0, y0 := xx / (n + 1), yy / (n + 1) // stupid first attempt
-// TODO for ! X.interior (x0, y0, xs, ys) {
-//        x0, y0 = random ...
-//        or moving around xs[0], ys[0] or (x0, y0) ...
-//      }
-  X.set (x0, y0)
-  for j := yMin; j <= yMax; j++ {
-    for i := xMin; i <= xMax; i++ {
-      if X.pg[i][j] { X.Point (i, j) }
-    }
-  }
-*/
-  ker.Panic ("not yet implemented") // TODO
+  s (xx / n, yy / n)
+  X.segs (xs, ys, X.demark)
+  X.dedone()
+}
+
+func (X *console) PolygonFull (xs, ys []int) {
+  X.polygonFull (xs, ys, X.mark, X.set)
 }
 
 func (X *console) PolygonFullInv (xs, ys []int) {
-  ker.Panic ("not yet implemented") // TODO
+  X.polygonFull (xs, ys, X.markInv, X.setInv)
 }
 
 func (X *console) OnPolygon (xs, ys []int, a, b int, t uint) bool {

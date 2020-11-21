@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201104 - license see µU.go
 
 import (
   "µU/rand"
@@ -226,16 +226,22 @@ func (x *text) Pos (b byte) (uint, bool) {
   return str.Pos (x.string, b)
 }
 
+func (x *text) Replace1 (p uint, b byte) {
+  str.Replace1 (&x.string, p, b)
+}
+
 func (x *text) Rem (p, n uint) {
   str.Rem (&x.string, p, n)
   str.Norm (&x.string, x.uint)
 }
 
+/*/
 func (x *text) Cut (Y Text, p, n uint) {
   y := x.imp (Y)
   x.string = str.Part (y.String(), p, n)
   str.Norm (&x.string, x.uint)
 }
+/*/
 
 func (x *text) ProperLen() uint {
   return str.ProperLen (x.string)

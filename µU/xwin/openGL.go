@@ -72,7 +72,7 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
   for {
 //    phi, delta := float64 (Phi[step]), delta0 * Delta[step]
     if redraw {
-//      gl.Clear()
+      gl.Clear()
       ex, ey, ez, fx, fy, fz, nx, ny, nz := spc.Get()
       if math.Abs(fx) < epsilon { fx = 0 }; if math.Abs(fy) < epsilon { fy = 0 }
       gl.MatrixMode (gl.Projection)

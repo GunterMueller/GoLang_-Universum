@@ -1,6 +1,6 @@
 package mstk
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 201103 - license see µU.go
 
 import (
   . "µU/obj"
@@ -10,7 +10,6 @@ import (
 const (
   push = uint(iota)
   pop
-  top
   nFuncs
 )
 type
@@ -20,24 +19,21 @@ type
                     }
 
 func NewFarMonitor (a Any, h string, p uint16, s bool) MStack {
+  CheckAtomicOrObject (a)
   x := new (farMonitor)
   x.Stack = stk.New (a)
   c := func (a Any, i uint) bool {
          if i == push {
            return true
          }
-         return ! x.Stack.Empty() // top, pop
+         return ! x.Stack.Empty() // pop
        }
   f := func (a Any, i uint) Any {
-         switch i {
-         case push:
+         if i == push {
            x.Stack.Push (a)
-         case pop:
-           x.Stack.Pop()
-         case top:
-           return x.Stack.Top()
+           return a
          }
-         return a // push, pop
+         return x.Stack.Pop()
        }
   x.FarMonitor = fmon.New (a, nFuncs, f, c, h, p, s)
   return x
@@ -47,12 +43,7 @@ func (x *farMonitor) Push (a Any) {
   x.FarMonitor.F (a, push)
 }
 
-func (x *farMonitor) Pop() {
+func (x *farMonitor) Pop() Any {
   var a Any
-  x.FarMonitor.F(a, pop)
-}
-
-func (x *farMonitor) Top() Any {
-  var a Any
-  return x.FarMonitor.F(a, top)
+  return x.FarMonitor.F(a, pop)
 }

@@ -20,10 +20,10 @@ type
   Comm byte; const (
   None = Comm(iota)       // to distinguish between character- and command-keys, see specification of "Read"
   Esc                     // to leave the system (or a part of it)
-  Enter                   // to confirm or reject or correct at the end of an input,
+  Enter                   // to confirm or reject or correct at the end of an input
   Back                    // to move in the system forward or backward
-  Left; Right; Up; Down   // to move the cursor on the screen,
-  PgLeft; PgRight; PgUp; PgDown // XXX
+  Left; Right; Up; Down   // to move the cursor on the screen
+  PgLeft; PgRight; PgUp; PgDown // to move the cursor on the screen
   Pos1; End               // to move in the system in the corresponding direction
   Tab                     // for special purposes
   Del; Ins                // to remove or insert objects

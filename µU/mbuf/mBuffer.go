@@ -1,6 +1,6 @@
 package mbuf
 
-// (c) Christian Maurer   v. 171106 - license see µU.go
+// (c) Christian Maurer   v. 201101 - license see µU.go
 
 import (
   "sync"
@@ -15,6 +15,7 @@ type
                 }
 
 func new_(a Any) MBuffer {
+  CheckAtomicOrObject(a)
   x := new(mBuffer)
   x.Buffer = buf.New(a)
   x.notEmpty.Lock()

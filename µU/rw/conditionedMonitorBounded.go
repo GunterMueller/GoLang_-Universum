@@ -13,7 +13,7 @@ type
 
 func newCMB (m uint) ReaderWriter {
   var nR, nW uint
-//  var tR uint // number of readers within one turn XXX
+//  var tR uint // number of readers within one turn
   x := new(condMonitorBounded)
   if m == 0 { m = 1 }
   c := func (i uint) bool {

@@ -4,6 +4,7 @@ package vnset
 
 import (
   . "µU/obj"
+  "µU/z"
   "µU/str"
 )
 type
@@ -119,7 +120,7 @@ func (x *set) String() string {
 func (x *set) Defined (s string) bool {
   str.OffBytes (&s, ' ')
   if len(s) == 1 {
-    if '0' <= s[0] && s[0] <= '9' {
+    if z.IsDigit (s[0]) {
       *x = *smallord[uint(s[0]) - uint('0')]
       return true
     }

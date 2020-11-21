@@ -1,6 +1,6 @@
 package z
 
-// (c) Christian Maurer   v. 201013 - license see µU.go
+// (c) Christian Maurer   v. 201111 - license see µU.go
 
 const (
   Ä                = byte(0xc4) // 'Ä'
@@ -100,6 +100,9 @@ func IsConsonant (b byte) bool { return isConsonant (b) }
 
 // Returns true, iff b is a digit.
 func IsDigit (b byte) bool { return isDigit(b) }
+
+// Returns true, iff b is a letter or a digit.
+func IsLetterOrDigit (b byte) bool { return isLetterOrDigit(b) }
 
 // Returns the postscript name of b.
 func Postscript (b byte) string { return postscript(b) }
