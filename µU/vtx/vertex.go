@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201204 - license see µU.go
 
 import (
 //  "µU/ker"
@@ -18,7 +18,6 @@ type
            f, b,
          fa, ba col.Colour
                 }
-
 
 func new_(e EditorGr, w, h uint) Vertex {
   x := new (vertex)
@@ -174,12 +173,10 @@ func (x *vertex) Edit() {
   x.EditorGr.EditGr (x.x - int(w1) / 2 + 1, x.y - int(h1) / 2)
 }
 
-var c0 = C0()
-
 func (x *vertex) Codelen() uint {
   return x.EditorGr.(Object).Codelen() +
          2 +                  // width, height
-         2 * c0 +             // x, y
+         2 * C0 +             // x, y
          4 * x.f.Codelen()
 }
 
@@ -192,7 +189,7 @@ func (x *vertex) Encode() Stream {
   i++
   bs[i] = uint8(x.height)
   i++
-  a = c0
+  a = C0
   copy (bs[i:i+a], Encode(x.x))
   i +=a
   copy (bs[i:i+a], Encode(x.y))
@@ -210,14 +207,14 @@ func (x *vertex) Encode() Stream {
 
 func (x *vertex) Decode (bs Stream) {
   i, a  := uint(0), x.EditorGr.(Object).Codelen()
-//  if a + 2 + 2 * c0 + 4 * col.Codelen() >= uint(len(bs)) { return false }
+//  if a + 2 + 2 * C0 + 4 * col.Codelen() >= uint(len(bs)) { return false }
   x.EditorGr.(Object).Decode (bs[i:i+a])
   i += a
   x.width = uint(bs[i])
   i++
   x.height = uint(bs[i])
   i++
-  a = c0
+  a = C0
   x.x = Decode(0, bs[i:i+a]).(int)
   i += a
   x.y = Decode(0, bs[i:i+a]).(int)

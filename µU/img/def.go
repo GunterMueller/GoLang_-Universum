@@ -1,10 +1,10 @@
 package img
 
-// (c) Christian Maurer   v. 140130 - license see µU.go
+// (c) Christian Maurer   v. 201228 - license see µU.go
 
 // The pixels in the rectangle on the screen with top left
-// corner (x,y) of width w and height h are written to files
-// in the pnm- and png-format under the names "n.ppm"/"n.png".
+// corner (x,y) of width w and height h are written
+// to a file in the pnm-format under the name "n.ppm".
 func Put (n string, x, y, w, h uint) { put(n,x,y,w,h) }
 
 // The pixels of the whole screen are written to files
@@ -23,9 +23,9 @@ func Get (n string, x, y uint) { get(n,x,y) }
 
 // The pixels in the rectangle on the screen with top left
 // corner (x,y) of width w and height h are written to a file
-// under the name "tmp.ppm" and are printed.
-func Print (x, y, w, h uint) { print_(x,y,w,h) }
+// under the name "n.ppm" and are printed.
+func Print (n string, x, y, w, h uint) { print_(n,x,y,w,h) }
 
 // All pixels on the screen are written to a file
-// under the name "tmp.ppm" and are printed.
-func Print1 () { print1() }
+// under the name "n.ppm" and are printed.
+func Print1 (n string) { print1(n) }

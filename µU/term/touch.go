@@ -1,5 +1,5 @@
 package term
 
-// (c) Christian Maurer   v. 201107 - license see µU.go
+// (c) Christian Maurer   v. 201129 - license see µU.go
 
 func Touch() { }

@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 191105 - license see µU.go
+// (c) Christian Maurer   v. 201227 - license see µU.go
 
 import
   . "µU/obj"
@@ -22,14 +22,8 @@ func p6Encode (a, p Stream) {
     p[1] = a[2]
     p[2] = a[1]
   default:
-    for i := 0; i < P6; i++ {
-      p[i] = byte(0)
-    }
+    p[0] = 0
+    p[1] = 0
+    p[2] = 0
   }
-}
-
-func p6Colour (a Stream) Colour {
-  p := make (Stream, P6)
-  p6Encode (a, p)
-  return new3("", a[0], a[1], a[2])
 }

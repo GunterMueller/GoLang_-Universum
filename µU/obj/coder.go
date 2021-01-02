@@ -1,7 +1,9 @@
 package obj
 
-// (c) Christian Maurer   v. 200908 - license see µU.go
+// (c) Christian Maurer   v. 201230 - license see µU.go
 
+const
+  C0 = uint(8) // == Codelen(int(0)); == Codelen(uint(0))
 type
   Coder interface {
 
@@ -21,9 +23,6 @@ type
 // Returns true, iff a implements Coder.
 func IsCoder (a Any) bool { return isCoder(a) }
 
-// Returns Codelen(int(0)), equal to Codelen(uint(0)).
-func C0() uint { return c0 }
-
 // Pre: a is atomic or implements Object.
 // Returns the codelength of a.
 func Codelen (a Any) uint { return codelen(a) }
@@ -38,10 +37,10 @@ func Encode (a Any) Stream { return encode(a) }
 func Decode (a Any, b Stream) Any { return decode(a,b) }
 
 // Returns a byte sequence of length 16, that encodes a, b, c, d.
-func Encode4 (a, b, c, d uint32) Stream { return encode4 (a,b,c,d) }
+func Encode4 (a, b, c, d uint32) Stream { return encode4(a,b,c,d) }
 
-// Pre: len(s) == 16; b encodes 4 numbers of type uint32.
-// Returns those 4 numbers.
+// Pre: len(s) == 16; s encodes 4 numbers of type uint32.
+// Returns these 4 numbers.
 func Decode4 (s Stream) (uint32, uint32, uint32, uint32) { return decode4(s) }
 
 // Returns true, iff a is atomic or implements Coder.

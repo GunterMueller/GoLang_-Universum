@@ -1,10 +1,10 @@
 package vnset
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   . "µU/obj"
-  "µU/z"
+  "µU/char"
   "µU/str"
 )
 type
@@ -120,7 +120,7 @@ func (x *set) String() string {
 func (x *set) Defined (s string) bool {
   str.OffBytes (&s, ' ')
   if len(s) == 1 {
-    if z.IsDigit (s[0]) {
+    if char.IsDigit (s[0]) {
       *x = *smallord[uint(s[0]) - uint('0')]
       return true
     }
@@ -172,7 +172,7 @@ func (x *set) Singleton() VonNeumannSet {
 func (x *set) Doubleton (Y VonNeumannSet) VonNeumannSet {
   z := x.Singleton().(*set)
   if ! x.Eq(Y) {
-    z.elem = append(z.elem, Y.Clone().(*set))
+    z.elem = append (z.elem, Y.Clone().(*set))
   }
   return z
 }
@@ -191,7 +191,7 @@ func (x *set) Add (Y ...Adder) {
     y := x.imp(z)
     for _, e := range y.elem {
       if ! e.Element (x) {
-        x.elem = append(x.elem, e)
+        x.elem = append (x.elem, e)
       }
     }
   }
@@ -203,7 +203,7 @@ func (x *set) Sub (Y ...Adder) {
   m := EmptySet().(*set)
   for _, a := range x.elem {
     if ! a.Element(z) {
-      m.elem = append(m.elem, a)
+      m.elem = append (m.elem, a)
     }
   }
   *x = *m
@@ -245,13 +245,13 @@ func (x *set) BigIntersection() VonNeumannSet {
   for _, a := range x.elem[0].elem {
     ok := true
     for i := 1; i < n; i++ {
-      if !a.Element(x.elem[i]) {
+      if ! a.Element(x.elem[i]) {
         ok = false
         break
       }
     }
     if ok {
-      z.elem = append(z.elem, a)
+      z.elem = append (z.elem, a)
     }
   }
   return z

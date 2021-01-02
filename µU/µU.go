@@ -44,10 +44,10 @@ import (
   "µU/scale"
   "µU/pbar"
   "µU/files"
-  "µU/integ"
+  "µU/z"
   "µU/lint"
-  "µU/brat"
-  "µU/real"
+  "µU/q"
+  "µU/r"
   "µU/stk"
   "µU/buf"
   "µU/bbuf"
@@ -89,7 +89,7 @@ import (
   "µU/dgra"
   "µU/rpc"
   "µU/vnset"
-  "µU/term"
+  "µU/ppm"
 )
 var (
   red = col.FlashRed()
@@ -201,10 +201,10 @@ func main() { // get all packages compiled and show the license
   if cdrom.MaxVol == 0 {}
   scale.Lim(0,0,0,0,0)
   pbar.Touch()
-  integ.String(0)
+  z.String(0)
   lint.New(0)
-  brat.New()
-  real.String(0)
+  q.New()
+  r.String(0)
   stk.New(0)
   buf.New(0)
   bbuf.New(nil, 0)
@@ -242,7 +242,7 @@ func main() { // get all packages compiled and show the license
   dlock.New(0, nil, 0)
   rpc.Touch()
   vnset.EmptySet()
-  term.Touch()
+  ppm.Touch()
   go input()
   cl, cf, cb := v.Colours()
   circ (ht / 2, cf);

@@ -1,6 +1,6 @@
 package addr
 
-// (c) Christian Maurer   v. 201024 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,7 +11,7 @@ import (
   "µU/pbox"
   "µU/masks"
   "µU/text"
-  "µU/bnat"
+  "µU/bn"
   "µU/phone"
   "µU/cntry"
 )
@@ -23,7 +23,7 @@ const (
 type
   address struct {
           street text.Text
-                 bnat.Natural "postcode"
+                 bn.Natural "postcode"
             city text.Text
      phonenumber,
       cellnumber phone.PhoneNumber
@@ -41,7 +41,7 @@ var (
 func new_() Address {
   x := new(address)
   x.street, x.city = text.New (lenStreet), text.New (lenCity)
-  x.Natural = bnat.New (5)
+  x.Natural = bn.New (5)
   x.phonenumber, x.cellnumber = phone.New(), phone.New()
   x.email = text.New (lenEmail)
   x.Country = cntry.New()
@@ -249,7 +249,7 @@ func (x *address) Decode (b Stream) {
   x.street = Decode (x.street, b[i:i+a]).(text.Text)
   i += a
   a = x.Natural.Codelen()
-  x.Natural = Decode (x.Natural, b[i:i+a]).(bnat.Natural)
+  x.Natural = Decode (x.Natural, b[i:i+a]).(bn.Natural)
   i += a
   a = lenCity
   x.city = Decode (x.city, b[i:i+a]).(text.Text)

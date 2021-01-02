@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 170814 - license see µU.go
+// (c) Christian Maurer   v. 201229 - license see µU.go
 
 // #include <stdlib.h>
 // #include <X11/X.h>
@@ -9,10 +9,10 @@ import
   "C"
 
 func (X *xwindow) clr (x, y int, w, h uint) {
-  C.XSetForeground (dpy, X.gc, cc (X.scrB))
+  C.XSetForeground (dpy, X.gc, cu (X.scrB))
   C.XFillRectangle (dpy, C.Drawable(X.win), X.gc, C.int(x), C.int(y), C.uint(w), C.uint(h))
   C.XFillRectangle (dpy, C.Drawable(X.buffer), X.gc, C.int(x), C.int(y), C.uint(w), C.uint(h))
-  C.XSetForeground (dpy, X.gc, cc (X.scrF))
+  C.XSetForeground (dpy, X.gc, cu (X.scrF))
   C.XFlush (dpy)
 }
 
@@ -39,9 +39,9 @@ func (X *xwindow) Buf (on bool) {
   if X.buff == on { return }
   X.buff = on
   if on {
-    C.XSetForeground (dpy, X.gc, cc (X.scrB))
+    C.XSetForeground (dpy, X.gc, cu (X.scrB))
     C.XFillRectangle (dpy, C.Drawable(X.buffer), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
-    C.XSetForeground (dpy, X.gc, cc (X.scrF))
+    C.XSetForeground (dpy, X.gc, cu (X.scrF))
     C.XFlush (dpy)
   } else {
     X.buf2win()

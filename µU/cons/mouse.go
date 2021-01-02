@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201229 - license see µU.go
 
 import (
   . "µU/obj"
@@ -143,7 +143,7 @@ func (X *console) restore (x, y int) {
 }
 
 func (X *console) writePointer (x, y int) {
-  cB, cW, cG := col.Black().Cc(), col.LightWhite().Cc(), col.LightGray().Cc()
+  cB, cW, cG := col.Black().Cstream(), col.LightWhite().Cstream(), col.LightGray().Cstream()
   var p Stream
   for h := 0; h < pointerHt[X.pointer]; h++ {
     for w := 0; w < pointerWd[X.pointer]; w++ {

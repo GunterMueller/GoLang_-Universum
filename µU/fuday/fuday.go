@@ -1,9 +1,9 @@
 package fuday
 
-// (c) Christian Maurer   v. 161216 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
-  "µU/nat"
+  "µU/n"
   "µU/day"
 )
 type
@@ -80,17 +80,17 @@ func (x *fuDay) Lectures (b, e day.Calendarday) {
 func (x *fuDay) String() string {
   y := x.Year() % 100
   tmp.Set (1, 4, y)
-  s := nat.StringFmt (y, 2, true)
+  s := n.StringFmt (y, 2, true)
   if x.Calendarday.Less (tmp) {
     tmp.Dec (day.Yearly)
-    return "WS " + nat.StringFmt (tmp.Year() % 100, 2, true) + "/" + s
+    return "WS " + n.StringFmt (tmp.Year() % 100, 2, true) + "/" + s
   }
   tmp.Set (1, 10, y)
   if x.Calendarday.Less (tmp) {
     return "SS " + s
   }
   tmp.Inc (day.Yearly)
-  return "WS" + s + "/" + nat.StringFmt (tmp.Year() % 100, 2, true)
+  return "WS" + s + "/" + n.StringFmt (tmp.Year() % 100, 2, true)
 }
 
 func (x *fuDay) LectureDay (d day.Calendarday) bool {

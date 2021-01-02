@@ -1,22 +1,23 @@
 package term
 
-// (c) Christian Maurer   v. 201111 - license see µU.go
+// (c) Christian Maurer   v. 201218 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
-  "µU/real"
-  "µU/term/internal"
 )
 type
   FuncVal = func (string) float64
 type
   Term interface {
 
-  Clearer
-  Equaler
-  Stringer
+  Coder
   Editor
+  col.Colourer
+
+  String() string
+
+  Type() string
 
 // Returns the number of variables in x.
   Num() uint
@@ -24,35 +25,46 @@ type
 // Returns the variables of x.
   Variables() []string
 
-// f/b is the fore-/backgroundcolour of x.
-  SetColours (f, b col.Colour)
+// Returns x, but a bit simplified.
+  Simplification() Term
 
-// x is a bit simplified.
-  Simplify()
+// Returns a term ... TODO
+// Every occurence of the variable v of x is replaced by t.
+// >>> implementation under development
+  Insert (v string, t Term) Term
 
-// Every occurence of the variable s of x is replaced by t.
-  Insert (s string, t Term)
-
-//
-  VarTree (v string) tree.Tree
-//
-  FuncTree (f real.Function, a tree.Tree) tree.Tree
-
-// Pre: s occurs in x.
-// Returns the derivation of x to the variable s.
-  Derivation (s string) Term
-
-// Liefert den Wert von x, falls x keine Variable enthält, andernfalls NaN.
+// Pre: x does not contain any variables.
+// Returns the value of x.
   Val() float64
 
-// Liefert den Wert von x an den Stelle a für die Variablen von x,
-// falls er für sie definert ist, andernfalls NaN.
+// Pre: x contains exactly one variable.
+// Returns the value of x for with value a for that variable.
+  Val1 (a float64) float64
+
+// Pre: f defines values for all variables in x.
+// Returns the value of x.
   Vals (f FuncVal) float64
 
-// Liefert genau dann true, wenn entweder x genau eine Variable enthält
-// oder wenn x mehrere Variablen enthält und die/der Benutzer/in
-// an der Bildschirmposition (l, c) eine Variable eingegeben hat, die in x vorkommt.
+// Pre: v occurs in x.
+// Returns the derivation of x to the variable v.
+// >>> implementation under development
+  Derivation (v string) Term
+
+// Returns true, if either x contains exactly one variable or
+// iff x contains more variables and the user at the screen position (l, c)
+// has edited a variable, that is contained in x.
 //  Selected (l, c uint) (bool, string)
 }
 
-func New() Term { return new_() }
+// letter = 'A' | 'B' | ... | 'Z' | 'a' | 'b' | ... | 'z'
+// digit = '0' | '1' | ... | '9'
+// variable = letter { letter | digit }
+// function = 'sqr' | 'exp' | 'sin' etc. (see type Function in µU/r/def.go)
+// expression = int | uint | float64 | variable | function '('expression')' | '('sum')'
+// power = expression { '^' power }
+// product = power { '*'|'/' power }
+// sum = ['-'] product { '+'|'-' product }
+//
+// Pre: s describes a term due to the above EBNF.
+// Returns that term.
+func New (s string) Term { return new_(s) }

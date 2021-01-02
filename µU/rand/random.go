@@ -1,12 +1,12 @@
 package rand
 
-// (c) Christian Maurer   v. 200913 - license see µU.go
+// (c) Christian Maurer   v. 201226 - license see µU.go
 
 // see D. E. Knuth, The Art of Computer Programming, 3.2.1.1-2, 3.6 i)-vi)
 
 import (
   "math"
-  . "µU/ker"
+  "µU/ker"
   "µU/time"
 )
 const (
@@ -19,8 +19,8 @@ const (
   c = 453816692 //  modulusI * (1/2 - 1/6 * sqrt 3) // Knuth 3.6 v), 3.3.4 (41)
 )
 var (
-  maxNatF = float64(MaxNat())
-  modulusI = MaxInt()
+  maxNatF = float64(ker.MaxNat)
+  modulusI = ker.MaxInt
   modulus = uint(modulusI) // 2^31 - 1 is a prime number !
   modulusF = float64(modulus)
   randomNumber uint
@@ -62,10 +62,10 @@ func natural (n uint) uint {
   randomNumber += c
   if randomNumber >= modulus { randomNumber -= modulus }
   if n == 0 {
-    n = MaxNat()
+    n = ker.MaxNat
   }
   var r float64
-  if n == MaxNat() {
+  if n == ker.MaxNat {
     r = maxNatF
   } else if n <= modulus {
     r = float64(n)
@@ -83,8 +83,8 @@ func natural (n uint) uint {
 
 func integer (i int) int {
   var n uint
-  if i == 0 || i == MinInt() {
-    n = uint(MaxInt()) + 1 // 2^31
+  if i == 0 || i == ker.MinInt {
+    n = uint(ker.MaxInt) + 1 // 2^31
   } else if i < 0 {
     n = uint (-i)
   } else {

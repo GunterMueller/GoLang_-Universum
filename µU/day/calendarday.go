@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201226 - license see µU.go
 
 import (
   . "µU/ker"
@@ -15,7 +15,7 @@ import (
   "µU/errh"
   "µU/font"
   "µU/pbox"
-  "µU/nat"
+  "µU/n"
 )
 const (
   emptyYear = uint(1879)
@@ -138,8 +138,8 @@ func (x *calendarday) Update() {
   x.day, x.month, x.year = time.UpdateDate()
 }
 
-func (x *calendarday) Set (Tag, Monat, Jahr uint) bool {
-  if x.defined (Tag, Monat, Jahr) {
+func (x *calendarday) Set (d, m, y uint) bool {
+  if x.defined (d, m, y) {
     return true
   }
   x.Clr()
@@ -385,7 +385,7 @@ func (x *calendarday) Elapsed() bool {
 
 func (x *calendarday) Distance (Y Calendarday) uint {
   y := x.imp (Y)
-  if x.year == emptyYear || y.year == emptyYear { return MaxNat() }
+  if x.year == emptyYear || y.year == emptyYear { return MaxNat }
   c, c1 := x.internalCode(), y.internalCode()
   if c < c1 {
     return uint(c1 - c)
@@ -940,7 +940,7 @@ func (x *calendarday) String() string {
   switch x.Format {
   case Dd, Dd_mm_, Dd_mm_yy, Dd_mm_yyyy, Dd_M, Dd_M_yyyy:
     if x.day == 0 { Panic ("day.String: x.day == 0") }
-    s = nat.StringFmt (x.day, 2, mitNullen)
+    s = n.StringFmt (x.day, 2, mitNullen)
     if x.Format == Dd { return s }
     s += "."
     switch x.Format {
@@ -950,28 +950,28 @@ func (x *calendarday) String() string {
       if x.Format == Dd_M { return s }
       s += " "
     default:
-      s += nat.StringFmt (x.month, 2, mitNullen) + "."
+      s += n.StringFmt (x.month, 2, mitNullen) + "."
     }
     switch x.Format {
     case Dd_mm_:
       ;
     case Dd_mm_yy:
-      s += nat.StringFmt (x.year % 100, 2, true)
+      s += n.StringFmt (x.year % 100, 2, true)
     default: // Dd_mm_yyyy, Dd_M_yyyy:
-      s += nat.StringFmt (x.year, 4, false)
+      s += n.StringFmt (x.year, 4, false)
     }
   case Yymmdd:
-    s = nat.StringFmt (x.year % 100, 2, true) +
-        nat.StringFmt (x.month, 2, true) +
-        nat.StringFmt (x.day, 2, true)
+    s = n.StringFmt (x.year % 100, 2, true) +
+        n.StringFmt (x.month, 2, true) +
+        n.StringFmt (x.day, 2, true)
   case Yyyymmdd:
-    s = nat.StringFmt (x.year, 4, true) +
-        nat.StringFmt (x.month, 2, true) +
-        nat.StringFmt (x.day, 2, true)
+    s = n.StringFmt (x.year, 4, true) +
+        n.StringFmt (x.month, 2, true) +
+        n.StringFmt (x.day, 2, true)
   case Yy:
-    s = nat.StringFmt (x.year, 2, true)
+    s = n.StringFmt (x.year, 2, true)
   case Yyyy:
-    s = nat.StringFmt (x.year, 4, false)
+    s = n.StringFmt (x.year, 4, false)
   case Wd:
     s = WdShorttext [x.Weekday (Daily)]
   case WD:
@@ -981,12 +981,12 @@ func (x *calendarday) String() string {
     if x.Format == Mmm { s = str.Part (s, 0, 3) }
   case Myyyy:
     s = nameMonth [x.month] + " " +
-        nat.StringFmt (x.year, 4, false)
+        n.StringFmt (x.year, 4, false)
   case Wn, WN, WNyyyy:
-    s = nat.StringFmt (x.Weeknumber(), 2, false)
+    s = n.StringFmt (x.Weeknumber(), 2, false)
     if x.Format > Wn { s += ".Woche" }
     if x.Format == WNyyyy {
-      s += " " + nat.StringFmt (x.year, 4, false)
+      s += " " + n.StringFmt (x.year, 4, false)
     }
   case Qu:
     switch (x.month - 1) / 3 {
@@ -999,7 +999,7 @@ func (x *calendarday) String() string {
     case 3:
       s = " IV"
     }
-    s += "/" + nat.StringFmt (x.year, 2, true)
+    s += "/" + n.StringFmt (x.year, 2, true)
   }
   return s
 }
@@ -1282,7 +1282,7 @@ func (x *calendarday) writeYearMask (l, c uint) {
   }
   bx.Colours (WeekdayNameF, WeekdayNameB)
   y.Format = Wd
-  c2 := leftMargin + monthsHorizontally * 6 * 3 // 6: Spalten pro Monat, 3: tt-Format + 1 Zwischenraum
+  c2 := leftMargin + monthsHorizontally * 6 * 3 // 6: columsn per month, 3: tt-Format + 1 spaces
   bx.Wd (2) // len (WdShorttext)
   for m := uint(1); m <= maxmonth; m += monthsHorizontally {
     for w := Monday; w <= Sunday; w++ {
@@ -1375,14 +1375,13 @@ func isYear (y *uint) bool {
   return startYear <= *y && *y <= endYear
 }
 
-func isMonth (Monat *uint, Wort string) bool {
-  var T string
-  n := str.ProperLen (Wort)
+func isMonth (m *uint, s string) bool {
+  n := str.ProperLen (s)
   if n > 0 {
-    for m := uint(1); m <= maxmonth; m++ {
-      T = str.Part (nameMonth [m], 0, n)
-      if Wort == T { // str.QuasiEq (Wort, T) {
-        *Monat = uint(m)
+    for i := uint(1); i <= maxmonth; i++ {
+      t := str.Part (nameMonth[i], 0, n)
+      if s == t { // str.QuasiEq (s, t) {
+        *m = uint(i)
         return true
       }
     }
@@ -1403,14 +1402,14 @@ func (x *calendarday) Defined (s string) bool {
   d := x.Clone().(*calendarday)
   var T string
   var l, p uint
-  n, ss, P, L := nat.DigitSequences (s)
+  k, ss, P, L := n.DigitSequences (s)
   ok := false
   switch x.Format {
   case Dd, // e.g. " 8"
        Dd_mm_, // e.g. " 8.10."
        Dd_mm_yy, // e.g. " 8.10.07"
        Dd_mm_yyyy: // e.g. " 8.10.2007" *):
-    switch n {
+    switch k {
     case 1:
       l = 2
     case 2, 3:
@@ -1421,38 +1420,38 @@ func (x *calendarday) Defined (s string) bool {
   case Dd_M, // e.g. "8. Oktober"
        Dd_M_yyyy: // e.g. "8. Oktober 2007"
     if x.Format == Dd_M {
-      if n != 1 { return false }
+      if k != 1 { return false }
     } else {
-      if n != 2 { return false }
+      if k != 2 { return false }
     }
     if _, ok := str.Pos (s, '.'); ! ok { return false }
     if x.Format == Dd_M_yyyy {
 //      l = str.ProperLen (s)
 //      T = str.Part (s, p, l - p)
       T = ss[1]
-      if d.year, ok = nat.Natural (T); ! ok { return false }
+      if d.year, ok = n.Natural (T); ! ok { return false }
     }
     T = ss[0]
     str.Move (&T, true)
-    if d.day, ok = nat.Natural (T); ! ok { return false }
+    if d.day, ok = n.Natural (T); ! ok { return false }
     T = str.Part (s, p + 1, P[1] - p - 1)
     str.Move (&T, true)
     if ! isMonth (&d.month, T) { return false }
     return x.defined (d.day, d.month, d.year)
   case Yymmdd: // e.g. "090418"
-    if d.year, ok = nat.Natural (str.Part (s, 0, 2)); ! ok { return false }
-    if d.month, ok = nat.Natural (str.Part (s, 2, 2)); ! ok { return false }
-    if d.day, ok = nat.Natural (str.Part (s, 4, 2)); ! ok { return false }
+    if d.year, ok = n.Natural (str.Part (s, 0, 2)); ! ok { return false }
+    if d.month, ok = n.Natural (str.Part (s, 2, 2)); ! ok { return false }
+    if d.day, ok = n.Natural (str.Part (s, 4, 2)); ! ok { return false }
     return x.defined (d.day, d.month, d.year)
   case Yyyymmdd: // e.g. "20090418"
-    if d.year, ok = nat.Natural (str.Part (s, 0, 4)); ! ok { return false }
-    if d.month, ok = nat.Natural (str.Part (s, 4, 2)); ! ok { return false }
-    if d.day, ok = nat.Natural (str.Part (s, 6, 2)); ! ok { return false }
+    if d.year, ok = n.Natural (str.Part (s, 0, 4)); ! ok { return false }
+    if d.month, ok = n.Natural (str.Part (s, 4, 2)); ! ok { return false }
+    if d.day, ok = n.Natural (str.Part (s, 6, 2)); ! ok { return false }
     return x.defined (d.day, d.month, d.year)
   case Yy, // e.g. "08"
        Yyyy: // e.g. "2007"
-    if n != 1 { return false }
-    if d.year, ok = nat.Natural (ss[0]); ok {
+    if k != 1 { return false }
+    if d.year, ok = n.Natural (ss[0]); ok {
       return x.defined (d.day, d.month, d.year)
     } else {
       return false
@@ -1465,24 +1464,24 @@ func (x *calendarday) Defined (s string) bool {
     if ! isMonth (&d.month, s) { return false }
     return x.defined (d.day, d.month, d.year)
   case Myyyy: // e.g. "Oktober 2007"
-    if n != 1 { return false }
-    if d.year, ok = nat.Natural (ss[0]); ! ok { return false }
+    if k != 1 { return false }
+    if d.year, ok = n.Natural (ss[0]); ! ok { return false }
     if _, ok := str.Pos (s, ' '); ! ok { return false }
     if ! isMonth (&d.month, str.Part (s, 0, p)) { return false }
     return x.defined (d.day, d.month, d.year)
   case Wn, // e.g. "1" (.Woche)
        WN: // e.g. "1.Woche"
-    if n != 1 { return false }
-    n, ok = nat.Natural (T)
+    if k != 1 { return false }
+    k, ok = n.Natural (T)
     if ok {
-      if 0 < n && n <= 3 {
+      if 0 < k && k <= 3 {
         d.day, d.month, d.year = 1, 1, x.year
         c := d.internalCode()
         w := d.weekday()
         if w > Thursday { c += 7 } // see Weeknumber
         if c < uint16(w) { return false }
         c -= uint16(w) // so c is a Monday
-        d.Decode (Encode (uint(c) + 7 * n))
+        d.Decode (Encode (uint(c) + 7 * k))
         if d.year == x.year {
           x.day = d.day
           x.month = d.month
@@ -1494,14 +1493,14 @@ func (x *calendarday) Defined (s string) bool {
   case WNyyyy: // e.g. "1.Woche 2007"
     return false // not yet implemented
   case Qu: // e.g. "  I/06"
-    if n != 1 { return false }
+    if k != 1 { return false }
     if _, ok := str.Pos (s, '/'); ! ok { return false }
-    if d.year, ok = nat.Natural (ss[0]); ! ok { return false }
+    if d.year, ok = n.Natural (ss[0]); ! ok { return false }
     T = str.Part (s, 0, p)
     str.Move (&T, true)
-    n = str.ProperLen (T)
-    if T [0] != 'I' { return false }
-    switch n {
+    k = str.ProperLen (T)
+    if T[0] != 'I' { return false }
+    switch k {
     case 1:
       d.month = 1
     case 2:
@@ -1520,22 +1519,22 @@ func (x *calendarday) Defined (s string) bool {
     }
     return x.defined (d.day, d.month, d.year)
   }
-  if d.day, ok = nat.Natural (str.Part (s, P[0], l)); ! ok { return false }
-  if n == 1 {
+  if d.day, ok = n.Natural (str.Part (s, P[0], l)); ! ok { return false }
+  if k == 1 {
     if L [0] > 8 { return false } // maximal "Dd_mm_yyyy"
     if L [0] > 2 {
-      if d.month, ok = nat.Natural (str.Part (s, P [0] + 2, 2)); ! ok { return false }
+      if d.month, ok = n.Natural (str.Part (s, P [0] + 2, 2)); ! ok { return false }
     }
     if L [0] > 4 {
-      if d.year, ok = nat.Natural (str.Part (s, P [0] + 4, L [0] - 4)); ! ok { return false }
+      if d.year, ok = n.Natural (str.Part (s, P [0] + 4, L [0] - 4)); ! ok { return false }
     }
   } else { // n == 2, 3
-    if d.month, ok = nat.Natural (ss[1]); ! ok { return false }
-    if n == 2 && x.Empty() {
+    if d.month, ok = n.Natural (ss[1]); ! ok { return false }
+    if k == 2 && x.Empty() {
       d.year = today.(*calendarday).year
     }
-    if n == 3 {
-      if d.year, ok = nat.Natural (ss[2]); ! ok { return false }
+    if k == 3 {
+      if d.year, ok = n.Natural (ss[2]); ! ok { return false }
     }
   }
   return x.defined (d.day, d.month, d.year)

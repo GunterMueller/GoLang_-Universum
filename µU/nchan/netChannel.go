@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 190402 - license see µU.go
+// (c) Christian Maurer   v. 201204 - license see µU.go
 
 import (
 //  "strconv"
@@ -31,9 +31,6 @@ type
                     Stream "buffer"
                     error
                     }
-var
-  c0 = C0()
-
 
 func (x *netChannel) panicIfErr() {
   if x.error != nil {
@@ -72,12 +69,12 @@ func new_(a Any, me, i uint, n string, p uint16) NetChannel {
 }
 
 func (x *netChannel) Send (a Any) {
-  if x.Conn == nil { panic("no Conn") }
+  if x.Conn == nil { Panic ("no Conn") }
   if x.Any == nil {
     bs := Encode(a)
     bs = append (Encode(Codelen(a)), bs...)
     _, x.error = x.Conn.Write (bs)
-    if x.error != nil { println ("1. " + x.error.Error()) }
+    if x.error != nil { Panic (x.error.Error()) }
   } else {
     CheckTypeEq (x.Any, a)
     _, x.error = x.Conn.Write(Encode(a))
@@ -85,19 +82,19 @@ func (x *netChannel) Send (a Any) {
 }
 
 func (x *netChannel) Recv() Any {
-  if x.Conn == nil { panic("no Conn") }
+  if x.Conn == nil { Panic ("no Conn") }
   if x.Any == nil {
-    _, x.error = x.Conn.Read(x.Stream[:c0])
+    _, x.error = x.Conn.Read(x.Stream[:C0])
     if x.error != nil {
       return Clone(x.Any)
     }
-    x.uint = Decode (uint(0), x.Stream[:c0]).(uint)
-    _, x.error = x.Conn.Read (x.Stream[c0:c0+x.uint])
+    x.uint = Decode (uint(0), x.Stream[:C0]).(uint)
+    _, x.error = x.Conn.Read (x.Stream[C0:C0+x.uint])
     if x.error != nil {
-      println ("5. " + x.error.Error())
+//      Panic (x.error.Error())
       return Clone(x.Any)
     }
-    return x.Stream[c0:c0+x.uint]
+    return x.Stream[C0:C0+x.uint]
   }
   _, x.error = x.Conn.Read (x.Stream)
   return Decode(Clone(x.Any), x.Stream)

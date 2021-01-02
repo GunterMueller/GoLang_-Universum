@@ -27,6 +27,7 @@ type
     cursorShape,
      blinkShape Shape
        blinking bool
+//        phantom [][]col.Colour
                 }
 var (
   underX = xwin.UnderX()
@@ -48,6 +49,13 @@ func new_(x, y uint, m mode.Mode) Screen {
   X.Mode = m
   X.x, X.y = int(x), int(y)
   X.wd, X.ht = mode.Wd(m), mode.Ht(m)
+////  X.phantom = make([][]col.Colour, X.ht)
+//  X.phantom = make([][]col.Colour, 1600)
+////  for y := uint(0); y < X.ht; y++ {
+//  for y := uint(0); y < 1600; y++ {
+////    X.phantom[y] = make([]col.Colour, X.wd)
+//    X.phantom[y] = make([]col.Colour, 1600)
+//  }
   if underX {
     X.XWindow = xwin.New (x, y, m)
     width, height = xwin.MaxRes()
@@ -73,6 +81,10 @@ func new_(x, y uint, m mode.Mode) Screen {
 
 func newWH (x, y, w, h uint) Screen {
   X := new(screen)
+//  X.phantom = make([][]col.Colour, 1000)
+//  for y := uint(0); y < 1000; y++ {
+//    X.phantom[y] = make([]col.Colour, 1000)
+//  }
   actual = X
   scrList = append (scrList, X)
 //  X.Mode = mode.WH
@@ -199,3 +211,21 @@ func ok (m mode.Mode) bool {
   modeMax = maxMode()
   return mode.Wd(m) <= mode.Wd(modeMax) && mode.Ht(m) <= mode.Ht(modeMax)
 }
+
+/*/
+func (x *screen) Phantom() [][]col.Colour {
+  return x.phantom
+}
+
+func (X *screen) DrawPhantom() {
+//  for y := 0; y < int(X.ht); y++ {
+  for y := 0; y < 400; y++ {
+//    for x := 0; x < int(X.wd); x++ {
+    for x := 0; x < 600; x++ {
+      c := X.phantom[x][y]
+      ColourF (c)
+      Point (x, y)
+    }
+   }
+}
+/*/

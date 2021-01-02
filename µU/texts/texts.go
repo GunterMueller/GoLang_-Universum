@@ -1,6 +1,6 @@
 package texts
 
-// (c) Christian Maurer   v. 201005 - license see µU.go
+// (c) Christian Maurer   v. 201204 - license see µU.go
 
 import (
   . "µU/obj"
@@ -114,7 +114,7 @@ func (x *texts) Print (l, c uint) {
 }
 
 func (x *texts) Codelen() uint {
-  l := C0()
+  l := C0
   for i := uint(0); i < x.uint; i++ {
     l += x.n[i]
   }
@@ -123,7 +123,7 @@ func (x *texts) Codelen() uint {
 
 func (x *texts) Encode() Stream {
   s := make(Stream, x.Codelen())
-  i, a := uint(0), C0()
+  i, a := uint(0), C0
   copy (s[i:a], Encode(x.uint))
   i+= a
   for j := uint(0); j < x.uint; j++ {
@@ -135,7 +135,7 @@ func (x *texts) Encode() Stream {
 }
 
 func (x *texts) Decode (s Stream) {
-  i, a := uint(0), C0()
+  i, a := uint(0), C0
   x.uint = Decode(uint(0), s[i:a]).(uint)
   i+= a
   for i := uint(0); i < x.uint; i++ {

@@ -1,6 +1,6 @@
 package euro
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   "math"
@@ -10,7 +10,7 @@ import (
   "µU/scr"
   "µU/box"
   "µU/errh"
-  "µU/nat"
+  "µU/n"
   "µU/font"
   "µU/pbox"
 )
@@ -198,8 +198,8 @@ func (x *euro) Round (Y Euro) {
 
 func (x *euro) String() string {
   if x.Empty() { return str.New (length) }
-  return nat.StringFmt (x.cent / hundred, nDigits, false) + "," +
-         nat.StringFmt (x.cent % hundred, 2, true)
+  return n.StringFmt (x.cent / hundred, nDigits, false) + "," +
+         n.StringFmt (x.cent % hundred, 2, true)
 }
 
 func (x *euro) Defined (s string) bool {
@@ -207,22 +207,22 @@ func (x *euro) Defined (s string) bool {
     x.cent = undefined
     return true
   }
-  a, t, P, L := nat.DigitSequences (s)
+  a, t, P, L := n.DigitSequences (s)
   if len(t) == 0 { return false }
   k, hatKomma := str.Pos (s, ',')
   if ! hatKomma {
     k, hatKomma = str.Pos (s, '.')
   }
-  n, ok := nat.Natural (t[0])
+  i, ok := n.Natural (t[0])
   if ! ok { return false }
   switch a {
   case 1:
     if hatKomma && k < P[0] { // Komma vor der Ziffernfolge
       switch L[0] {
       case 1:
-        x.cent = 10 * n
+        x.cent = 10 * i
       case 2:
-        x.cent = n
+        x.cent = i
       default:
         return false
       }
@@ -230,7 +230,7 @@ func (x *euro) Defined (s string) bool {
     }
     if hatKomma && k >= P[0] + L[0] || ! hatKomma {
       if L[0] <= nDigits {
-        x.cent = hundred * n
+        x.cent = hundred * i
         return true
       }
     }
@@ -240,14 +240,14 @@ func (x *euro) Defined (s string) bool {
     if L[0] > nDigits {
       return false
     } else {
-      x.cent = hundred * n
+      x.cent = hundred * i
     }
-    if n, ok = nat.Natural (t[1]); ! ok { return false }
+    if i, ok = n.Natural (t[1]); ! ok { return false }
     switch L[1] {
     case 1:
-      x.cent += 10 * n
+      x.cent += 10 * i
     case 2:
-      x.cent += n
+      x.cent += i
     default:
       return false
     }

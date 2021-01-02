@@ -1,6 +1,6 @@
 package cr
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 201226 - license see µU.go
 
 import (
   "µU/ker"
@@ -26,7 +26,7 @@ func new_(nc, nr uint) CriticalResource {
   for r := uint(0); r < x.nR; r++ {
     x.stat[r].max = make ([]uint, x.nC)
     for c := uint(0); c < x.nC; c++ {
-      x.stat[r].max[c] = ker.MaxNat()
+      x.stat[r].max[c] = ker.MaxNat
     }
   }
   c := func (i uint) bool {

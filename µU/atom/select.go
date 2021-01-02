@@ -1,16 +1,16 @@
 package atom
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   "µU/scr"
   "µU/sel"
   "µU/enum"
   "µU/tval"
-  "µU/char"
+//  "µU/char"
   "µU/text"
-  "µU/bnat"
-  "µU/breal"
+  "µU/bn"
+  "µU/br"
   "µU/clk"
   "µU/day"
   "µU/euro"
@@ -47,17 +47,17 @@ func Selected (l, c uint) Atom {
     x.Object = enum.New (e)
   case TruthValue:
     x.Object = tval.New()
-  case Character:
-    x.Object = char.New()
+//  case Character:
+//    x.Object = char.New()
   case Text:
     n := uint(10) // TODO n editieren
     x.Object = text.New (n)
   case Natural:
     n := uint(2) // TODO n editieren
-    x.Object = bnat.New (n)
+    x.Object = bn.New (n)
   case Real:
     n := uint(6) // TODO n editieren
-    x.Object = breal.New (n)
+    x.Object = br.New (n)
   case Clocktime:
     x.Object = clk.New()
   case Calendarday:

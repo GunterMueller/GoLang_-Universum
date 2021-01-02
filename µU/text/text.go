@@ -1,11 +1,11 @@
 package text
 
-// (c) Christian Maurer   v. 201104 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   "µU/rand"
   . "µU/obj"
-  "µU/z"
+  "µU/char"
   "µU/str"
   "µU/col"
   "µU/scr"
@@ -60,7 +60,7 @@ func (x *text) Generate() {
     b[i] = lower [rand.Natural (uint(len (lower)))]
   }
   x.string = string (b)
-  z.ToHellWithUTF8 (&x.string)
+  char.ToHellWithUTF8 (&x.string)
 /*
   n := 3 + rand.Natural (x.uint - 2)
   if n >= x.uint {
@@ -249,7 +249,7 @@ func (x *text) ProperLen() uint {
 
 func (x *text) IsUpper0() bool {
   s := x.String()
-  return z.IsUppercaseLetter (s[0])
+  return char.IsUppercaseLetter (s[0])
 }
 
 func (x *text) ToUpper() {

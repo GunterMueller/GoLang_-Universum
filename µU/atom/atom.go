@@ -1,6 +1,6 @@
 package atom
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   "reflect"
@@ -11,11 +11,11 @@ import (
   "µU/col"
   "µU/enum"
   "µU/tval"
-  "µU/char"
+//  "µU/char"
   "µU/text"
   "µU/texts"
-  "µU/bnat"
-  "µU/breal"
+  "µU/bn"
+  "µU/br"
   "µU/clk"
   "µU/day"
   "µU/euro"
@@ -39,16 +39,16 @@ func new_(o Object) Atom {
     x.Object, x.uint = enum.New (o.(enum.Enumerator).Typ()), Enumerator
   case "tval":
     x.Object, x.uint = tval.New(), TruthValue
-  case "char":
-    x.Object, x.uint = char.New(), Character
+//  case "char":
+//    x.Object, x.uint = char.New(), Character
   case "text":
     x.Object, x.uint = text.New (o.(text.Text).Len()), Text
   case "texts":
     x.Object, x.uint = texts.New (o.(texts.Texts).Len()), Texts
-  case "bnat":
-    x.Object, x.uint = bnat.New (o.(bnat.Natural).Width()), Natural
-  case "breal":
-    x.Object, x.uint = breal.New (4), Real
+  case "bn":
+    x.Object, x.uint = bn.New (o.(bn.Natural).Width()), Natural
+  case "br":
+    x.Object, x.uint = br.New (4), Real
   case "clk":
     x.Object, x.uint = clk.New(), Clocktime
   case "day":

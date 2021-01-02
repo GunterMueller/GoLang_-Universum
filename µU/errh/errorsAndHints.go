@@ -1,16 +1,17 @@
 package errh
 
-// (c) Christian Maurer   v. 200717 - license see µU.go
+// (c) Christian Maurer   v. 201229 - license see µU.go
 
 import (
+  "strconv"
 //  "µU/env"
-  "µU/z"
+  "µU/char"
   "µU/str"
   "µU/kbd"
   "µU/col"
   . "µU/scr"
   "µU/box"
-  "µU/nat"
+  "µU/n"
 )
 var (
   errorbox, headbox, hintbox, licenseBox, choiceBox = box.New(), box.New(), box.New(), box.New(), box.New()
@@ -39,7 +40,7 @@ var (
   "                                                                                           ",
   " Die Quelltexte von µU sind äußerst sorgfältig entwickelt und werden laufend überarbeitet. ",
   " ABER:  Es gibt keine fehlerfreie Software - dies gilt natürlich auch für _diese_ Quellen. ",
-  " Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, z. B. zum Abfackeln von Rechnern, ",
+  " Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, char. B. zum Abfackeln von Rechnern, ",
   " zur Entgleisung von Eisenbahnen, zum GAU in Atomkraftwerken  oder zum Absturz des Mondes. ",
   " Deshalb wird vor der Verwendung irgendwelcher Quellen von µU in Programmen zu ernsthaften ",
   " Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.) ",
@@ -53,12 +54,12 @@ func init() {
   for i, l := range (license) { license[i] = str.Lat1 (l) }
   headbox.Colours (col.HeadF(), col.HeadB())
   hintbox.Colours (col.HintF(), col.HintB())
-//  errorbox.Colours (col.ErrorF, col.ErrorB)
+  errorbox.Colours (col.ErrorF(), col.ErrorB())
 //  pre() TODO theScreen not yet defined
 //  post() TODO theScreen not yet defined
 //                                         1         2         3         4         5         6         7
 //                               012345678901234567890123456789012345678901234567890123456789012345678901234567
-  ToWait            = str.Lat1 ("einen Augenblick bitte ...")
+  ToWait            = str.Lat1 ("bitte etwas Geduld ...")
   ToContinue        = str.Lat1 ("weiter: Einter")
   ToContinueOrNot   = str.Lat1 ("weiter: Einter                                                     fertig: Esc")
   ToCancel          = str.Lat1 ("                                                                abbrechen: Esc")
@@ -86,8 +87,8 @@ func pre() {
   if transparent { Transparence (false) }
   if first {
     first = false
-    errorbox = box.New()
-    errorbox.Colours (col.ErrorF(), col.ErrorB())
+//    errorbox = box.New()
+//    errorbox.Colours (col.ErrorF(), col.ErrorB())
   }
 //  actualFontsize = ActFontsize()
 //  if actualFontsize # Normal {
@@ -139,12 +140,12 @@ func hint (s string) {
   post()
 }
 
-func hint1 (s string, n uint) {
-  hint (s + " " + nat.String (n))
+func hint1 (s string, k uint) {
+  hint (s + " " + n.String (k))
 }
 
-func hint2 (s string, n uint, s1 string, n1 uint) {
-  hint (s + " " + nat.String (n) + " " + s1 + " " + nat.String (n1))
+func hint2 (s string, k uint, s1 string, k1 uint) {
+  hint (s + " " + n.String (k) + " " + s1 + " " + n.String (k1))
 }
 
 func delHint() {
@@ -184,11 +185,23 @@ func do (s string, enter bool) {
   Save (l, 0, NColumns(), 1)
   errorbox.Wd (NColumns())
   errorbox.Write (s, l, 0)
-  errorbox.Colours(col.ErrorF(), col.ErrorB())
+  errorbox.Colours (col.ErrorF(), col.ErrorB())
   kbd.Wait (enter)
   Restore (l, 0, NColumns(), 1)
   post()
   Flush()
+}
+
+func errorZ (s string, i int) {
+  if i < 0 {
+    do (s + " -" + n.String (uint(-i)), false)
+  } else {
+    error (s, uint(i))
+  }
+}
+
+func errorF (s string, f float64) {
+  do (s + " " + strconv.FormatFloat (f, 'e', 10, 64), false)
 }
 
 func proceed0 (s string) {
@@ -199,32 +212,32 @@ func error0 (s string) {
   do (s, false)
 }
 
-func proceed (s string, n uint) {
-  do (s + " " + nat.String(n), true)
+func proceed (s string, k uint) {
+  do (s + " " + n.String (k), true)
 }
 
-func error (s string, n uint) {
-  do (s + " " + nat.String(n), false)
+func error (s string, k uint) {
+  do (s + " " + n.String(k), false)
 }
 
-func conc2 (s string, n uint, s1 string, n1 uint) string {
-  s += " " + nat.String (n)
-  s1 += " " + nat.String(n1)
+func conc2 (s string, k uint, s1 string, k1 uint) string {
+  s += " " + n.String (k)
+  s1 += " " + n.String(k1)
   return s + " " + s1
 }
 
-func conc3 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint) string {
-  s += " " + nat.String (n)
-  s1 += " " + nat.String(n1)
-  s2 += " " + nat.String(n2)
+func conc3 (s string, k uint, s1 string, k1 uint, s2 string, k2 uint) string {
+  s += " " + n.String (k)
+  s1 += " " + n.String(k1)
+  s2 += " " + n.String(k2)
   return s + " " + s1 + " " + s2
 }
 
-func conc4 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint, s3 string, n3 uint) string {
-  s += " " + nat.String (n)
-  s1 += " " + nat.String(n1)
-  s2 += " " + nat.String(n2)
-  s3 += " " + nat.String(n3)
+func conc4 (s string, k uint, s1 string, k1 uint, s2 string, k2 uint, s3 string, k3 uint) string {
+  s += " " + n.String (k)
+  s1 += " " + n.String(k1)
+  s2 += " " + n.String(k2)
+  s3 += " " + n.String(k3)
   return s + " " + s1 + " " + s2 + " " + s3
 }
 
@@ -258,8 +271,8 @@ func error0Pos (s string, l, c uint) {
   post()
 }
 
-func errorPos (s string, n, l, c uint) {
-  s += " " + nat.String(n)
+func errorPos (s string, k, l, c uint) {
+  s += " " + n.String (k)
   error0Pos(s, l, c)
 }
 
@@ -277,7 +290,7 @@ func confirmed() bool {
   errorbox.Wd (w)
   errorbox.Write (s, l, 0)
   b, _, _ := kbd.Read()
-  a := z.Lower(b) == 'j'
+  a := char.Lower(b) == 'j'
   Restore (l, 0, w, 1)
   post()
   return a

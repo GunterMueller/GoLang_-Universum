@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 201024 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   "os"
@@ -10,7 +10,7 @@ import (
   "µU/ker"
   "µU/str"
   "µU/env"
-  "µU/nat"
+  "µU/n"
   "µU/files/internal"
 )
 const (
@@ -225,7 +225,7 @@ func TmpDir() string {
 }
 
 func Tmp() string {
-  return TmpDir() + nat.StringFmt (uint(os.Getpid()), 5, true) + ker.Dot
+  return TmpDir() + n.StringFmt (uint(os.Getpid()), 5, true) + ker.Dot
 }
 
 var (

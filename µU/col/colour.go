@@ -27,16 +27,20 @@ var (
 )
 
 func new_() Colour {
-  x := new(colour)
-  x.r, x.g, x.b = 0, 0, 0
-  return x
+  c := new(colour)
+  c.r, c.g, c.b = 0, 0, 0
+  return c
 }
 
 func new3 (n string, r, g, b byte) Colour {
-  x := new(colour)
-  x.string = n
-  x.r, x.g, x.b = r, g, b
-  return x
+  c := new(colour)
+  c.r, c.g, c.b = r, g, b
+  if n == "" {
+    c.string = c.String1()
+  } else {
+    c.string = n
+  }
+  return c
 }
 
 func (c *colour) imp (Y Any) *colour {
@@ -69,13 +73,14 @@ func (c *colour) SetB (b byte) {
   c.b = b
 }
 
-func (c *colour) Cc() Stream {
-  n, bs := c.Code(), make(Stream, Depth())
+func (c *colour) Cstream() Stream {
+  n := c.Code()
+  s := make(Stream, depth)
   for i := uint(0); i < depth; i++ {
-    bs[i] = byte(n)
+    s[i] = byte(n)
     n >>= 8
   }
-  return bs
+  return s
 }
 
 func (c *colour) IsBlack() bool {
@@ -190,7 +195,8 @@ func (c *colour) Contrast() {
 func ok (b byte) bool {
   if b < '9' {
     return true
-  } else if 'A' <= b && b <= 'F' {
+  }
+  if 'A' <= b && b <= 'F' {
     return true
   }
   return false
@@ -199,7 +205,8 @@ func ok (b byte) bool {
 func value (b byte) uint{
   if b < '9' {
     return uint(b - '0')
-  } else if 'A' <= b && b <= 'F' {
+  }
+  if 'A' <= b && b <= 'F' {
     return uint(b - 'A' + 10)
   }
   return 0
@@ -246,14 +253,15 @@ func (c *colour) Codelen() uint {
 }
 
 func (c *colour) Encode() Stream {
-  b := make (Stream, 3)
-  b[0], b[1], b[2] = c.r, c.g, c.b
-  return b
+  s := make(Stream, 3)
+  s[0], s[1], s[2] = c.r, c.g, c.b
+  return s
+  return Stream {c.r, c.g, c.b}
 }
 
-func (c *colour) Decode (b Stream) {
-  if len (b) == 3 {
-    c.r, c.g, c.b = b[0], b[1], b[2]
+func (c *colour) Decode (s Stream) {
+  if len(s) == 3 {
+    c.r, c.g, c.b = s[0], s[1], s[2]
   } else {
     c = lightWhite.(*colour)
   }

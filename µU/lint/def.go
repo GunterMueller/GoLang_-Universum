@@ -1,6 +1,6 @@
 package lint
 
-// (c) Christian Maurer   v. 201009 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   . "µU/obj"

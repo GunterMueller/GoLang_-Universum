@@ -189,14 +189,14 @@ func (x *host) Defined (s string) bool {
   x.Clr()
   x.ip = net.ParseIP(s) // s daraufhin prüfen, ob es eine IP-Nummer ist
   if x.ip != nil {
-    println ("host.Defined: s ist IP-Nummer mit x.ip =", x.ip.String())
-    // s ist eine IP-Nummer in der Form "a.b.c.d"
-  } else { // s ist keine IP-Nummer, sondern muss auf hostname getestet werden
+    Panic ("host.Defined: s is IP-number with x.ip == " + x.ip.String())
+    // s is a IP-number in the form of "a.b.c.d"
+  } else { // s is no IP-number, but has to be tested for hostname
 //    println ("host.Defined: x.ip == nil")
     addr, err := net.LookupHost(s) // schau'mer moi, ob's oana is
-    if err == nil { // mir hoam's, is oana
-      s = addr[0] // ist die IP-Nummer
-      if s == providerIP { return false } // chock out Scheißprovider
+    if err == nil { // mir hoam's, s'is oana
+      s = addr[0] // is the IP-number
+      if s == providerIP { return false } // chock out fucking provider
       if s == nullIP.String() { // s == "0.0.0.0"
         x.Clr()
         return true

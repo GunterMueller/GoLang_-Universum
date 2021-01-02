@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 201204 - license see µU.go
 
 import
   "math"
@@ -21,12 +21,7 @@ func clear (a Any) Any {
     return math.MaxInt16
   case int32:
     return math.MaxInt32
-  case int:
-    if c0 == 4 {
-      return math.MaxInt32
-    }
-    return math.MaxInt64
-  case int64:
+  case int, int64:
     return math.MaxInt64
   case uint8:
     return math.MaxInt8
@@ -34,12 +29,7 @@ func clear (a Any) Any {
     return math.MaxUint16
   case uint32:
     return math.MaxUint32
-  case uint:
-    if c0 == 4 {
-      return math.MaxUint32
-    }
-    return math.MaxUint64 / 2 // compiler-BUG
-  case uint64:
+  case uint, uint64:
     return math.MaxUint64 / 2 // compiler-BUG
   case float32:
     return math.MaxFloat32

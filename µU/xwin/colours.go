@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 170814 - license see µU.go
+// (c) Christian Maurer   v. 201229 - license see µU.go
 
 // #include <X11/X.h>
 // #include <X11/Xlib.h>
@@ -37,20 +37,18 @@ func (X *xwindow) ScrColB() col.Colour {
 func (X *xwindow) Colours (f, b col.Colour) {
   if ! initialized { panic ("xwin.Colours: ! initialized"); return }
   X.cF, X.cB = f, b
-  C.XSetForeground (dpy, X.gc, cc (X.cF))
-  C.XSetBackground (dpy, X.gc, cc (X.cB))
+  C.XSetForeground (dpy, X.gc, cu (X.cF))
+  C.XSetBackground (dpy, X.gc, cu (X.cB))
 }
 
 func (X *xwindow) ColourF (f col.Colour) {
-//  print ("/ ")
   X.cF = f
-  C.XSetForeground (dpy, X.gc, cc (X.cF))
-//  println ("// ")
+  C.XSetForeground (dpy, X.gc, cu (X.cF))
 }
 
 func (X *xwindow) ColourB (b col.Colour) {
   X.cB = b
-  C.XSetBackground (dpy, X.gc, cc (X.cB))
+  C.XSetBackground (dpy, X.gc, cu (X.cB))
 }
 
 func (X *xwindow) Cols() (col.Colour, col.Colour) {
@@ -65,6 +63,12 @@ func (X *xwindow) ColB() col.Colour {
   return X.cB
 }
 
+var gotPixelColours = false
+
 func (X *xwindow) Colour (x, y uint) col.Colour {
-  return X.scrB
+  if ! gotPixelColours {
+    X.GetPixelColours()
+    gotPixelColours = true
+  }
+  return X.colours[x][y]
 }

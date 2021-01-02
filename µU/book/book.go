@@ -1,13 +1,13 @@
 package book
 
-// (c) Christian Maurer   v. 201010 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
   "µU/text"
   "µU/enum"
-  "µU/bnat"
+  "µU/bn"
   "µU/masks"
   "µU/atom"
   "µU/mol"
@@ -52,7 +52,7 @@ func new_() Book {
   a.Colours (col.LightWhite(), col.DarkRed())
   x.Ins (a, 1, 49)
 
-  a = atom.New (bnat.New (3)) // Nr
+  a = atom.New (bn.New (3)) // Nr
   a.Colours (col.LightWhite(), col.DarkCyan())
   x.Ins (a, 4, 10)
 

@@ -76,7 +76,7 @@ loop:
       *B = 0
       *C = Expose
       *D = 0
-      println ("na siehste es geht doch")
+//      println ("na siehste es geht doch")
       break loop
     case C.KeyPress:
       if e.C < 9 {
@@ -205,7 +205,7 @@ loop:
         case e.C == 127:
           *B = backslash
         default:
-          println ("C.KeyPress: keycode ", e.C, "/ state ", e.S)
+          println ("C.KeyPress: keycode ", e.C, "/ state ", e.S) // XXX
         }
       }
       if *B > 0 || *C > 0 {
@@ -229,7 +229,7 @@ loop:
       case 5:
         *C = ScrollDown
       default:
-        println ("xwin.ButtonPress: button ", e.C ,"/ state ", e.S)
+        println ("xwin.ButtonPress: button ", e.C ,"/ state ", e.S) // XXX
       }
       if *C > 0 {
         break loop
@@ -262,7 +262,7 @@ loop:
       case 5:
         *C = ScrollDown
       default:
-        println ("xwin.ButtonRelease: button ", e.C ,"/ state ", e.S)
+        println ("xwin.ButtonRelease: button ", e.C ,"/ state ", e.S) // XXX
       }
       if *C > 0 {
         break loop

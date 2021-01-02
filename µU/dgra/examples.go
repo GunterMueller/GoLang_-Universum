@@ -1,13 +1,13 @@
 package dgra
 
-// (c) Christian Maurer   v. 201015 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   "µU/env"
   "µU/col"
   "µU/scr"
-  "µU/nat"
-  "µU/bnat"
+  "µU/n"
+  "µU/bn"
   "µU/vtx"
   "µU/edg"
   "µU/gra"
@@ -16,24 +16,24 @@ import (
 
 func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
   cf, ca, cb := col.Blue(), col.Red(), col.LightWhite()
-  n := uint(len(l))
-  if n != uint(len(es)) || n != uint(len(c)) { panic("len's different") }
-  wd := nat.Wd (n)
-  g := gra.New (dir, vtx.New(bnat.New(wd), wd, 1), edg.New(dir, uint32(nchan.Port0)))
-  v := make([]vtx.Vertex, n)
-  for i := uint(0); i < n; i++ {
-    b := bnat.New(wd)
+  k := uint(len(l))
+  if k != uint(len(es)) || k != uint(len(c)) { panic("len's different") }
+  wd := n.Wd (k)
+  g := gra.New (dir, vtx.New (bn.New(wd), wd, 1), edg.New(dir, uint32(nchan.Port0)))
+  v := make([]vtx.Vertex, k)
+  for i := uint(0); i < k; i++ {
+    b := bn.New(wd)
     b.SetVal(i)
     v[i] = vtx.New (b, wd, 1)
     v[i].Set (int(scr.Wd1()) * c[i], int(scr.Ht1()) * l[i])
     v[i].Colours (cf, cb); v[i].ColoursA (ca, cb)
     g.Ins (v[i])
   }
-  for i := uint(0); i < n; i++ {
+  for i := uint(0); i < k; i++ {
     for _, j := range es[i] {
       g.Ex2 (v[i], v[j])
       if ! g.Edged() {
-        e := edg.New (dir, uint32(nchan.Port(n, i, j, 0)))
+        e := edg.New (dir, uint32(nchan.Port (k, i, j, 0)))
         e.SetPos0 (v[i].Pos()); e.SetPos1 (v[j].Pos())
         e.Label(false)
         e.Colours (cf, cb); e.ColoursA (ca, cb)
@@ -46,9 +46,9 @@ func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
   g.SetWrite (vtx.W, edg.W)
   g = g.Star()
   d := new_(g).(*distributedGraph)
-  d.setSize (n)
-  h := make([]string, n)
-  for i := uint(0); i < n; i++ {
+  d.setSize (k)
+  h := make([]string, k)
+  for i := uint(0); i < k; i++ {
     h[i] = env.Localhost()
   }
   d.setHosts (h)

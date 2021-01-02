@@ -32,7 +32,7 @@ func (X *console) Cls() {
   if ! visible { return }
   l := int(colourdepth) * int(X.wd)
   a := 0
-  c := X.scrB.Cc()
+  c := X.scrB.Cstream()
   for j := 0; j < int(X.ht); j++ {
     for i := 0; i < int(X.wd); i++ {
       copy (emptyBackground[a:a+int(colourdepth)], c)

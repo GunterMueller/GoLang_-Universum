@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 201016 - license see µU.go
+// (c) Christian Maurer   v. 201230 - license see µU.go
 
 import (
   . "µU/obj"
@@ -140,9 +140,10 @@ func Codelen (w, h uint) uint { return actual.Codelen(w,h) }
 func Encode (x, y, w, h uint) Stream { return actual.Encode(x,y,w,h) }
 func Decode (bs Stream) { actual.Decode(bs) }
 
-func P6Codelen (w, h uint) uint { return actual.P6Codelen (w,h) }
-func P6Size (ps Stream) (uint, uint) { return actual.P6Size(ps) }
-func P6Encode (x, y, w, h uint) Stream { return actual.P6Encode(x,y,w,h) }
-func P6Decode (x, y uint, ps Stream) { actual.P6Decode(x,y,ps) }
+func P6Size (s Stream) (uint, uint) { return actual.P6Size(s) }
+func P6Codelen (w, h uint) uint { return actual.P6Codelen(w,h) }
+func P6Encode (w, h, x, y uint) Stream { return actual.P6Encode(w,h,x,y) }
+func P6Decode (s Stream, x, y uint) { actual.P6Decode(s,x,y) }
+func P6Header (w, h uint) string { return actual.P6Header(w,h) }
 
 // func WriteGlx() { actual.WriteGlx() }

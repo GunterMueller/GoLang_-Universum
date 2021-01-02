@@ -1,13 +1,13 @@
 package prt
 
-// (c) Christian Maurer   v. 201016 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   "os/exec"
   "µU/time"
   "µU/str"
   . "µU/font"
-  "µU/nat"
+  "µU/n"
   "µU/pseq"
   "µU/files"
 )
@@ -95,7 +95,7 @@ func _init() {
 }
 
 func voffset (mm uint) {
-  ins ("\\voffset " + nat.String (mm) + "mm\n")
+  ins ("\\voffset " + n.String (mm) + "mm\n")
 }
 
 func footline (s string) {
@@ -128,8 +128,8 @@ func startPage() {
     ins ("\n")
   }
   ins ("\\" + Code (Roman, actualSize) + "\n")
-  ins ("\\nL " + nat.String (nL[actualSize]) + "\n")
-  ins ("\\nC " + nat.String (nC[actualSize]) + "\n")
+  ins ("\\nL " + n.String (nL[actualSize]) + "\n")
+  ins ("\\nC " + n.String (nC[actualSize]) + "\n")
   ins ("\\dH " + dH[actualSize] + "pt\n")
   ins ("\\dW " + dW[actualSize] + "pt\n")
   ins ("\\voffset -5.4mm\n") // top margin: 1in - 5.4mm = 2cm

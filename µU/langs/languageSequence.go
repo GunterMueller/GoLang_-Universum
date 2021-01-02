@@ -1,6 +1,6 @@
 package langs
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   . "µU/obj"
@@ -10,7 +10,7 @@ import (
   "µU/errh"
   "µU/font"
   "µU/pbox"
-  "µU/bnat"
+  "µU/bn"
   "µU/enum"
 //  "µU/subject"
 )
@@ -26,7 +26,7 @@ const ( // Format
 type
   languageSequence struct {
               lang [max]enum.Enumerator
-          from, to [max]bnat.Natural
+          from, to [max]bn.Natural
             cF, cB col.Colour
                    Format
                    }
@@ -51,7 +51,7 @@ func new_() LanguageSequence {
   x := new (languageSequence)
   for n := uint(0); n < max; n++ {
     x.lang[n] = enum.New (enum.Subject)
-    x.from[n], x.to[n] = bnat.New (2), bnat.New (2)
+    x.from[n], x.to[n] = bn.New (2), bn.New (2)
   }
   x.cF, x.cB = scr.StartCols()
   return x

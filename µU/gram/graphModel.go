@@ -273,8 +273,8 @@ func (x *graphModel) Edit() {
       }
     case kbd.Print:
       errh.DelHint()
-      img.Put1 (".tmp.g")
-      img.Print1()
+      img.Put1 ("tmp.g")
+      img.Print1 ("graph")
       errh.Hint ("Graph editieren - Hilfe: F1, fertig: Esc")
     }
   }

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 201204 - license see µU.go
 
 import (
   "reflect"
@@ -57,11 +57,7 @@ func setVal (x *Any, n uint) {
   case uint:
     *x = n
   case uint64:
-    if n < 1<<32 {
-      *x = uint(n)
-    } else {
-      *x = uint(n % 1<<32)
-    }
+    *x = uint(n)
   case Valuator:
     (*x).(Valuator).SetVal(n)
   default:

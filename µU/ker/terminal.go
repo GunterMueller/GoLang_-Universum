@@ -32,16 +32,16 @@ type // <bits/termios.h>, <bits/types.h>
 var
   t termios
 
-func ReadTerminal (b *byte) {
+func readTerminal (b *byte) {
   syscall.Syscall (syscall.SYS_READ, 0, uintptr(unsafe.Pointer(b)), 1)
 }
 
-func TerminalFin() {
+func terminalFin() {
   syscall.Syscall (syscall.SYS_IOCTL, 0, KDSKBMODE, K_XLATE)
   syscall.Syscall (syscall.SYS_IOCTL, 0, TCSETS, uintptr(unsafe.Pointer(&t)))
 }
 
-func InitTerminal() {
+func initTerminal() {
   syscall.Syscall (syscall.SYS_IOCTL, 0, TCGETS, uintptr(unsafe.Pointer(&t)))
   var t1 termios
   syscall.Syscall (syscall.SYS_IOCTL, 0, TCGETS, uintptr(unsafe.Pointer(&t1)))

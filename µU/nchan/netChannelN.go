@@ -1,10 +1,10 @@
 package nchan
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 201225 - license see µU.go
 
 import (
   "net"
-//  . "µU/ker"
+  . "µU/ker"
   "µU/time"
   . "µU/obj"
 //  "µU/nat"
@@ -20,18 +20,17 @@ func (x *netChannel) serve (c net.Conn) {
       break
     }
     if x.Any == nil {
-      x.uint = uint(Decode (uint(0), x.Stream[:c0]).(uint))
-// println(nat.String(x.cport), nat.String(x.sport), "<<", x.uint)
-      x.in <- x.Stream[c0:c0+x.uint]
+      x.uint = uint(Decode (uint(0), x.Stream[:C0]).(uint))
+      x.in <- x.Stream[C0:C0+x.uint]
 // the calling process is blocked until until the server in the far monitor,
 // that had called newn, has sent his reply
       a := <-x.out
       _, x.error = c.Write(append(Encode(Codelen(a)), Encode(a)...))
-      if x.error != nil { println(x.error.Error()) }
+      if x.error != nil { Panic (x.error.Error()) }
     } else {
       x.in <- Decode (Clone (x.Any), x.Stream[:r])
       _, x.error = c.Write (Encode(<-x.out))
-      if x.error != nil { println(x.error.Error()) } // provisorial
+      if x.error != nil { Panic (x.error.Error()) } // provisorial
     }
   } // x.nClients--
   c.Close()

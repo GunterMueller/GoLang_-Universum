@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 190402 - license see µU.go
+// (c) Christian Maurer   v. 201204 - license see µU.go
 //
 // >>> Construction of a directed ring using the idea of Awerbuch's algorithm
 
@@ -37,7 +37,7 @@ func (x *distributedGraph) ring1() {
         x.cycle.Ex (x.actVertex)
         bs := append(Encode(x.me), x.cycle.Encode()...)
         bs = x.mon[k].F(bs, discover).(Stream)
-        x.cycle = x.decodedGraph(bs[c0:])
+        x.cycle = x.decodedGraph(bs[C0:])
         x.cycle.Write()
         pause()
       }
@@ -60,7 +60,7 @@ func (x *distributedGraph) ring1() {
 func (x *distributedGraph) r1 (a Any, i uint) Any {
   x.awaitAllMonitors()
   bs := a.(Stream)
-  s := Decode(uint(0), bs[:c0]).(uint)
+  s := Decode(uint(0), bs[:C0]).(uint)
   j := x.channel(s)
   switch i {
   case visit:
@@ -71,7 +71,7 @@ func (x *distributedGraph) r1 (a Any, i uint) Any {
         x.mon[k].F(Encode(x.me), visit)
       }
     }
-    x.cycle = x.decodedGraph(bs[c0:])
+    x.cycle = x.decodedGraph(bs[C0:])
     x.cycle.Ins (x.actVertex)
     a0, a1 := x.cycle.Get2()
     e := x.directedEdge (a0.(vtx.Vertex), a1.(vtx.Vertex))
@@ -84,7 +84,7 @@ func (x *distributedGraph) r1 (a Any, i uint) Any {
         x.child[k] = true
         bs := append(Encode(x.me), x.cycle.Encode()...)
         bs = x.mon[k].F(bs, discover).(Stream)
-        x.cycle = x.decodedGraph(bs[c0:])
+        x.cycle = x.decodedGraph(bs[C0:])
         x.cycle.Write()
         pause()
       }

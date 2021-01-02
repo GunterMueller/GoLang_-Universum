@@ -1,6 +1,6 @@
 package phil
 
-// (c) Christian Maurer   v. 171202 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   "sync"
@@ -9,7 +9,7 @@ import (
   "µU/col"
   "µU/mode"
   "µU/scr"
-  "µU/nat"
+  "µU/n"
   "µU/img"
 )
 const (
@@ -52,10 +52,10 @@ func init() {
   scr.New (0, 0, mode.SVGA)
   thinkColour = scr.ScrColB()
   s := env.Arg(1)
-  if n, ok := nat.Natural (s); ok {
-    if n < min { n = min }
-    if n > max { n = max }
-    NPhilos = n
+  if k, ok := n.Natural (s); ok {
+    if k < min { k = min }
+    if k > max { k = max }
+    NPhilos = k
   }
 }
 

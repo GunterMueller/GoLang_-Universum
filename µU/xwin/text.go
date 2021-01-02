@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201229 - license see µU.go
 
 // #include <stdlib.h>
 // #include <X11/X.h>
@@ -10,11 +10,11 @@ import
 import (
   "unsafe"
   . "µU/obj"
-  "µU/z"
+  "µU/char"
 )
 
 func (X *xwindow) Write1 (b byte, l, c uint) {
-  X.Write (z.String(b), l, c)
+  X.Write (char.String(b), l, c)
 }
 
 func (X *xwindow) Write (s string, l, c uint) {
@@ -44,19 +44,19 @@ func (X *xwindow) WriteNat (n uint, l, c uint) {
 }
 
 func (X *xwindow) Write1Gr (b byte, x, y int) {
-  X.WriteGr (z.String(b), x, y)
+  X.WriteGr (char.String(b), x, y)
 }
 
 func (X *xwindow) WriteGr (s string, x, y int) {
   C.XSetFont (dpy, X.gc, C.Font(X.fsp.fid)) // TODO TODO TODO
   n := C.uint(len (s))
   if ! X.transparent {
-    C.XSetForeground (dpy, X.gc, cc (X.cB))
+    C.XSetForeground (dpy, X.gc, cu (X.cB))
     if ! X.buff { C.XFillRectangle (dpy, C.Drawable(X.win), X.gc,
                                     C.int(x), C.int(y), n * C.uint(X.wd1), C.uint(X.ht1)) }
     C.XFillRectangle (dpy, C.Drawable(X.buffer), X.gc,
                       C.int(x), C.int(y), n * C.uint(X.wd1), C.uint(X.ht1))
-    C.XSetForeground (dpy, X.gc, cc (X.cF))
+    C.XSetForeground (dpy, X.gc, cu (X.cF))
   }
   cs := C.CString (s); defer C.free (unsafe.Pointer (cs))
   if ! X.buff { C.XDrawString (dpy, C.Drawable(X.win), X.gc, C.int(x), C.int(y) + C.int(X.bl1), cs, C.int(n)) }
@@ -65,7 +65,7 @@ func (X *xwindow) WriteGr (s string, x, y int) {
 }
 
 func (X *xwindow) Write1InvGr (b byte, x, y int) {
-  X.WriteInvGr (z.String(b), x, y)
+  X.WriteInvGr (char.String(b), x, y)
 }
 
 func (X *xwindow) WriteInvGr (s string, x, y int) {

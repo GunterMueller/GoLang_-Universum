@@ -1,0 +1,98 @@
+package ppm
+
+// (c) Christian Maurer   v. 201230 - license see µU.go
+
+import (
+  . "µU/obj"
+  "µU/col"
+  "µU/errh"
+  "µU/n"
+  "µU/pseq"
+)
+const (
+  suffix = ".ppm"
+  z = " "
+  black = " 000 000 000"
+  white = " 255 255 255"
+)
+type
+  p3 struct {
+     header,
+  emptyLine string
+            string
+            col.Colour
+          s []string
+       w, h int
+            pseq.PersistentSequence
+       name string
+            }
+
+func st (b byte) string {
+  return n.StringFmt (uint(b), 3, true)
+}
+
+func s3 (c col.Colour) string {
+  return z + st (c.R()) + z + st (c.G()) + z + st (c.B())
+}
+
+func new3 (w, h uint) PPM {
+  errh.Hint (errh.ToWait)
+  p := new(p3)
+  p.header = "P3 " + n.String(w) + z + n.String(h) + " 255" + string(lf)
+  for x := uint(0); x < w; x++ {
+    p.emptyLine += black // white
+  }
+  p.w, p.h = 12 * int(w), int(h)
+  p.Colour = col.Black()
+  p.s = make([]string, h)
+  p.string = p.header
+  for y := 0; y < p.h; y++ {
+    p.s[y] = p.emptyLine
+    p.string += p.s[y]
+  }
+  p.PersistentSequence = pseq.New (p.string)
+  errh.DelHint()
+  return p
+}
+
+func (p *p3) ColourF (c col.Colour) {
+   p.Colour = c
+}
+
+func (p *p3) Point (x, y int) {
+  if x < 0 || x >= p.w / 12 || y < 0 || y >= p.h { return }
+  b := Stream(p.s[y])
+  copy (b[12*x:12*x+12], Stream(s3 (p.Colour)))
+  p.s[y] = string(b)
+}
+
+func (p *p3) Name (n string) {
+  p.name = n
+  p.PersistentSequence.Name (p.name + suffix)
+}
+
+func (p *p3) Rename (n string) {
+  if n == p.name { return }
+  p.name = n
+  p.PersistentSequence.Rename (p.name + suffix)
+}
+
+func (p *p3) Write() {
+  // TODO
+}
+
+func (p *p3) Get() {
+  // TODO
+}
+
+func (p *p3) Put() {
+  p.string = p.header
+  for y := 0; y < p.h; y++ {
+    p.string += p.s[y] + string(lf)
+  }
+  p.PersistentSequence.Put (p.string)
+}
+
+func (p *p3) Fin() {
+  p.PersistentSequence.Fin()
+}

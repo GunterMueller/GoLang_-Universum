@@ -1,0 +1,45 @@
+package termtree
+
+type
+  tree struct {
+              Type
+    variables []string
+              float64
+           op r.Operation
+  left, right *tree
+            f r.Function
+          arg *tree
+     variable string
+              }
+
+func (t *tree) Less (U Any) bool {
+  u := t.imp(U)
+  if t.Empty() || u.Empty() { return false }
+  if t.IsRealTree() {
+    return ! u.IsRealTree()
+  } else if t.IsRealTree() {
+    return false
+  }
+  if t.IsVarTree() {
+    if u.IsVarTree() {
+      return false // XXX return t.Variables.Less (u.Variables)
+    } else {
+//    if u.isPower( {
+//      if u.left.isVariable() {
+//        return t.Less (u.left)
+//      }
+//    }
+    }
+  }
+  if t.Type == opType && t.op == r.Pow {
+    if t.left.Less (u) {
+      return true
+    }
+  }
+  if t.Type == opType && t.op == r.Pow {
+    if t.Less (u.left) {
+      return true
+    }
+  }
+  return false
+}

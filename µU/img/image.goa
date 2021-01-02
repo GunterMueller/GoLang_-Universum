@@ -1,0 +1,120 @@
+package img
+
+// (c) Christian Maurer   v. 201226 - license see µU.go
+
+import (
+//  "os/exec"
+  . "µU/obj"
+//  "µU/time"
+  "µU/str"
+  "µU/scr"
+//  "µU/prt"
+  "µU/errh"
+  "µU/pseq"
+)
+const
+  suffix = ".ppm"
+var
+  toPrint bool
+var
+  p3 bool
+
+func init() {
+  p3 = true
+  p3 = false
+}
+
+func put (n string, x, y, w, h uint) {
+  if str.Empty (n) { return }
+  str.OffSpc (&n)
+  filename := n + suffix
+  if scr.UnderX() { errh.Hint (errh.ToWait) }
+  if p3 {
+    s := scr.P3Encode (w, h, x, y)
+    file := pseq.New (s)
+    file = pseq.New (s)
+    file.Name (filename)
+    file.Clr()
+    file.Put (s)
+    file.Fin()
+  } else {
+    s := scr.P6Encode (w, h, x, y)
+    file := pseq.New (s)
+    file.Name (filename)
+    file.Clr()
+    file.Put (s)
+    file.Fin()
+
+  }
+  if scr.UnderX() { errh.DelHint() }
+/*/
+  if ! toPrint {
+    exec.Command ("pnmtopng", filename, ">", n, ".png").Run()
+    time.Msleep (100)
+    exec.Command ("rm", filename)
+  }
+/*/
+}
+
+func put1 (n string) {
+  put (n, scr.X(), scr.Y(), scr.Wd(), scr.Ht())
+}
+
+func size_(n string) (uint, uint) {
+  if str.Empty (n) { return 0, 0 }
+  str.OffSpc (&n)
+  filename := n + suffix
+  l := pseq.Length (filename)
+  if l == 0 { return 0, 0 }
+  if p3 {
+    s := str.New (l)
+    file := pseq.New (s)
+    file.Name (filename)
+    s = file.Get().(string)
+    file.Fin()
+    return scr.P3Size (s)
+  }
+  s := make(Stream, l)
+  file := pseq.New (s)
+  file.Name (filename)
+  s = file.Get().(Stream)
+  file.Fin()
+  return scr.P6Size (s)
+}
+
+func get (n string, x, y uint) {
+  if str.Empty (n) { return }
+  if ! scr.UnderX() { x += scr.X(); y += scr.Y() }
+  str.OffSpc (&n)
+  filename := n + suffix
+  l := pseq.Length (filename)
+  if l == 0 { return }
+  if p3 {
+    s := str.New (l)
+    file := pseq.New (s)
+    file.Name (filename)
+    s = file.Get().(string)
+    scr.P3Decode (s, x, y)
+    file.Fin()
+  } else {
+    s := make(Stream, l)
+    file := pseq.New (s)
+    file.Name (filename)
+    s = file.Get().(Stream)
+    scr.P6Decode (s, x, y)
+    file.Fin()
+  }
+}
+
+func print_(x, y, w, h uint) {
+  toPrint = true
+  filename := "tmp"
+  put (filename, x, y, w, h)
+  toPrint = false
+////  exec.Command (prt.PrintCommand, "-o", "landscape", "-o", "fit-to-page", filename + suffix).Run()
+//  exec.Command (prt.PrintCommand, "-o", "fit-to-page", filename + suffix).Run()
+}
+
+func print1() {
+  print_(0, 0, scr.Wd(), scr.Ht())
+}

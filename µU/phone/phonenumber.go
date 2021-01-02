@@ -1,6 +1,6 @@
 package phone
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,7 +9,7 @@ import (
   "µU/scr"
   "µU/box"
   "µU/errh"
-  "µU/nat"
+  "µU/n"
   "µU/font"
   "µU/pbox"
 )
@@ -78,9 +78,9 @@ func (x *phonenumber) Defined (s string) bool {
   str.Move (&s, true)
   l := str.ProperLen (s)
   if i, ok := str.Pos (s, ' '); ok {
-    n, ok := nat.Natural (s[1:i])
+    k, ok := n.Natural (s[1:i])
     if ok && s[0] == '0' {
-      x.uint16 = uint16(n)
+      x.uint16 = uint16(k)
       if l == i {
         return false
       }
@@ -97,7 +97,7 @@ func (x *phonenumber) Defined (s string) bool {
     x.uint16 = 0
     return true
   }
-  if tmp, ok := nat.Natural (s); ok {
+  if tmp, ok := n.Natural (s); ok {
     x.uint32 = uint32(tmp)
     return true
   } else {
@@ -110,11 +110,11 @@ func (x *phonenumber) Defined (s string) bool {
 func (x *phonenumber) String() string {
   s := ""
   if x.uint16 > 0 {
-    s = nat.String (uint(x.uint16))
+    s = n.String (uint(x.uint16))
     s = "0" + s
   }
   if x.uint32 > 0 {
-    t := nat.String (uint(x.uint32))
+    t := n.String (uint(x.uint32))
     n := len (t)
     switch n {
     case 4, 5:

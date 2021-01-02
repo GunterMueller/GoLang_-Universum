@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 201031 - license see µU.go
+// (c) Christian Maurer   v. 201230 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -11,7 +11,6 @@ package scr
         For use in a screen on a graphical user interface:
           X is installed.
         Programs for execution on far hosts are only called under X.
-  
    Fore-/background colour of the screen and actual fore-/backgroundcolour
    are White and Black. The screen is cleared and the cursor is off.
    In a console SIGUSR1 and SIGUSR2 are used internally and not any more available.
@@ -495,19 +494,21 @@ type
 // the rest of the screen is not changed.
   Decode (s obj.Stream)
 
-// ppm-serialisation ///////////////////////////////////////////////////
+// ppm-serialization ///////////////////////////////////////////////////
 
-// TODO Spec
-  P6Size (s obj.Stream) (uint, uint)
+  P6Header (w, h uint) string
 
 // TODO Spec
   P6Codelen (w, h uint) uint
 
 // TODO Spec
-  P6Encode (x, y, w, h uint) obj.Stream
+  P6Encode (w, h, x, y uint) obj.Stream
 
 // TODO Spec
-  P6Decode (x, y uint, s obj.Stream)
+  P6Decode (s obj.Stream, x, y uint)
+
+// TODO Spec
+  P6Size (s obj.Stream) (uint, uint)
 
 // cut buffer //////////////////////////////////////////////////////////
 
@@ -525,3 +526,6 @@ type
 // Pre: m <= Fly
   Go (m int, draw func(), ex, ey, ez, fx, fy, fz, nx, ny, nz float64)
 }
+
+// TODO Spec
+func HeaderData (s obj.Stream) (uint, uint, uint, int) { return headerData(s) }

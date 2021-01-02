@@ -1,36 +1,44 @@
 package str
 
-// (c) Christian Maurer   v. 201113 - license see µU.go
+// (c) Christian Maurer   v. 201220 - license see µU.go
 
 import
-  "µU/z"
+  "µU/char"
 const
   spc = byte(' ')
 
 func devilsDung (s string) bool {
-  return z.DevilsDung (s)
+  return char.DevilsDung (s)
+}
+
+func const_(c byte, n uint) string {
+  b := make([]byte, n)
+  for i := uint(0); i < n; i++ {
+    b[i] = c
+  }
+  return string(b)
 }
 
 func new_(n uint) string {
   if n == 0 {
     return ""
   }
-  return const_ (spc, n)
+  return const_(spc, n)
 }
 
 func clr (s *string) {
-  *s = const_ (spc, uint(len(*s)))
+  *s = const_(spc, uint(len(*s)))
 }
 
 func lat1 (s string) string {
-  z.ToHellWithUTF8 (&s)
+  char.ToHellWithUTF8 (&s)
   return s
 }
 
 func utf8 (s string) string {
   for i := len(s) - 1; i >= 0; i-- {
     c := s[i]
-    if z.IsLatin1 (c) {
+    if char.IsLatin1 (c) {
       s = s[:i] + string(c) + s[i+1:]
     }
   }
@@ -62,35 +70,6 @@ func lit (s string) bool {
   return true
 }
 
-func replace1 (s *string, p uint, c byte) {
-  n := len (*s)
-  if int(p) >= n { return }
-  t := string(c)
-  *s = (*s)[:p] + t + (*s)[p+1:]
-  z.ToHellWithUTF8 (s)
-}
-
-func replaceAll (s *string, b byte, t string) {
-  n := len (*s)
-  bs := make([]byte, 0)
-  for i := 0; i < n; i++ {
-    c := (*s)[i]
-    if c == b {
-      bs = append (bs, []byte(t)...)
-    } else {
-      bs = append (bs, c)
-    }
-  }
-  *s = string(bs)
-}
-
-func replace (s *string, p uint, t string) {
-  m := uint(len(t))
-  n := len (*s)
-  if p + m >= uint(n) { return }
-  *s = (*s)[:p] + t + (*s)[p+m:]
-}
-
 func empty (s string) bool {
   for i := 0; i < len (s); i++ {
     if s[i] != spc {
@@ -98,16 +77,6 @@ func empty (s string) bool {
     }
   }
   return true
-}
-
-func const_ (c byte, n uint) string {
-  s := ""
-  for i := uint(0); i < n; i++ {
-    t := string(c)
-    z.ToHellWithUTF8 (&t)
-    s += t
-  }
-  return s
 }
 
 func properLen (s string) uint {
@@ -135,7 +104,7 @@ func toUpper (s *string) {
   if n == 0 { return }
   b := make ([]byte, n)
   for i := uint(0); i < n; i++ {
-    b[i] = z.Upper ((*s)[i])
+    b[i] = char.Upper ((*s)[i])
   }
   *s = string(b)
 }
@@ -145,24 +114,24 @@ func toLower (s *string) {
   if n == 0 { return }
   b := make ([]byte, n)
   for i := uint(0); i < n; i++ {
-    b[i] = z.Lower ((*s)[i])
+    b[i] = char.Lower ((*s)[i])
   }
   *s = string(b)
 }
 
 func toUpper0 (s *string) {
   if len (*s) == 0 { return }
-  *s = string(z.Upper ((*s)[0])) + (*s)[1:]
+  *s = string(char.Upper ((*s)[0])) + (*s)[1:]
 }
 
 func toLower0 (s *string) {
   if len (*s) == 0 { return }
-  *s = string(z.Lower ((*s)[0])) + (*s)[1:]
+  *s = string(char.Lower ((*s)[0])) + (*s)[1:]
 }
 
 func cap0 (s string) bool {
   if s == "" { return false }
-  return s[0] == z.Upper (s[0])
+  return s[0] == char.Upper (s[0])
 }
 
 func equiv (s, t string) bool {
@@ -171,7 +140,7 @@ func equiv (s, t string) bool {
     return false
   }
   for i := uint(0); i < n; i++ {
-    if ! z.Equiv (s[i], t[i]) {
+    if ! char.Equiv (s[i], t[i]) {
       return false
     }
   }
@@ -188,10 +157,10 @@ func less (s, t string) bool {
     if i == n1 {
       return false
     }
-    if z.Less (s[i], t[i]) {
+    if char.Less (s[i], t[i]) {
       return true
     }
-    if z.Less (t[i], s[i]) {
+    if char.Less (t[i], s[i]) {
       return false
     }
     i++
@@ -218,7 +187,7 @@ func pos (s string, b byte) (uint, bool) {
 func equivPos (s string, b byte) (uint, bool) {
   n := uint(len (s))
   for i := uint(0); i < n; i++ {
-    if z.Equiv (s[i], b) {
+    if char.Equiv (s[i], b) {
       return i, true
     }
   }
@@ -226,8 +195,8 @@ func equivPos (s string, b byte) (uint, bool) {
 }
 
 func sub (s, t string) (uint, bool) {
-//  z.ToHellWithUTF8 (&s) // sicher ist sicher
-//  z.ToHellWithUTF8 (&t)
+//  char.ToHellWithUTF8 (&s) // sicher ist sicher
+//  char.ToHellWithUTF8 (&t)
   n := properLen (s)
   if n == 0 { return 0, true }
   k, m := uint(len (t)), properLen (t)
@@ -241,6 +210,25 @@ func sub (s, t string) (uint, bool) {
     }
   }
   return k, false
+}
+
+func subAll (s, t string) (uint, []uint) {
+  p := make([]uint, 0)
+  k := properLen (s)
+  s = s[:k]
+  if k == 0 { return 0, p }
+  m := properLen (t)
+  if k > m {
+    return 0, p
+  }
+  n := uint(0)
+  for i := uint(0); i + k <= m; i++ {
+    if s == t[i:i+k] {
+      p = append (p, i)
+      n++
+    }
+  }
+  return n, p
 }
 
 func sub0 (s, t string) bool {
@@ -258,13 +246,57 @@ func equivSub (s, t string) (uint, bool) {
 
 func ins1 (s *string, c byte, p uint) {
   t := string(c)
-  z.ToHellWithUTF8 (&t)
+  char.ToHellWithUTF8 (&t)
   ins (s, t, p)
 }
 
 func ins (s *string, t string, p uint) {
   if len (t) == 0 || p > uint(len (*s)) { return }
   *s = (*s)[:p] + t + (*s)[p:]
+}
+
+func insAll (s *string, v, t string) {
+  offSpc (s)
+  j := uint(len(v))
+  n, p := subAll (v, *s)
+  if n == 0 {
+    return
+  }
+  s1 := (*s)[:p[0]] + t
+  for i := uint(1); i < n; i++ {
+    s1 += (*s)[p[i-1]+j:p[i]] + t
+  }
+  s1 += (*s)[p[n-1]+j:]
+  *s = s1
+}
+
+func replace1 (s *string, p uint, c byte) {
+  n := len (*s)
+  if int(p) >= n { return }
+  t := string(c)
+  *s = (*s)[:p] + t + (*s)[p+1:]
+  char.ToHellWithUTF8 (s)
+}
+
+func replaceAll (s *string, b byte, t string) {
+  n := len (*s)
+  bs := make([]byte, 0)
+  for i := 0; i < n; i++ {
+    c := (*s)[i]
+    if c == b {
+      bs = append (bs, []byte(t)...)
+    } else {
+      bs = append (bs, c)
+    }
+  }
+  *s = string(bs)
+}
+
+func replace (s *string, p uint, t string) {
+  m := uint(len(t))
+  n := len (*s)
+  if p + m >= uint(n) { return }
+  *s = (*s)[:p] + t + (*s)[p+m:]
 }
 
 func app (s *string, b byte) {
@@ -411,7 +443,7 @@ func offNondigits (s *string) {
 }
 
 func split (s string) (uint, []string, []uint) {
-  z.ToHellWithUTF8 (&s)
+  char.ToHellWithUTF8 (&s)
   var t []string
   var p []uint
   l := properLen (s)
@@ -544,7 +576,7 @@ func rightBr (s string) uint {
 }
 
 func isVarString (s string) bool {
-  if ! z.IsLetter (s[0]) {
+  if ! char.IsLetter (s[0]) {
     return false
   }
   n := properLen (s)
@@ -552,7 +584,7 @@ func isVarString (s string) bool {
     return true
   }
   for i := uint(1); i < n; i++ {
-    if ! z.IsLetterOrDigit (s[i]) {
+    if ! char.IsLetterOrDigit (s[i]) {
       return false
     }
   }
@@ -561,12 +593,12 @@ func isVarString (s string) bool {
 
 func startsWithVar (s string) (string, uint, bool) {
   n := uint(len(s))
-  if n == 1 && z.IsLetter(s[0]) {
+  if n == 1 && char.IsLetter(s[0]) {
     return string(s[0]), 1, true
   }
   if n > 0 {
     for p := uint(1); p < n; p++ {
-      if z.IsLetterOrDigit (s[p]) {
+      if char.IsLetterOrDigit (s[p]) {
       } else {
         t := s[:p]
         if isVarString (t) {

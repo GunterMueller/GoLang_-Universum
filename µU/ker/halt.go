@@ -1,6 +1,6 @@
 package ker
 
-// (c) Christian Maurer   v. 170424 - license see µU.go
+// (c) Christian Maurer   v. 201226 - license see µU.go
 
 import (
   "os"
@@ -11,7 +11,7 @@ var (
   finished bool
 )
 
-func Fin() {
+func fin() {
   if finished { return }
   for _, h:= range handler {
     h()
@@ -19,42 +19,42 @@ func Fin() {
   finished = true
 }
 
-func Panic (s string) {
-  Fin()
+func panic_(s string) {
+  fin()
   panic (s)
 }
 
-func Oops() {
-  Panic ("oops")
-}
-
-func Todo() {
-  Panic ("TODO")
-}
-
-func Panic1 (s string, n uint) {
-  Fin()
+func panic1 (s string, n uint) {
+  fin()
   panic (s + strconv.Itoa (int(n)))
 }
 
-func Shit() {
-  Fin()
+func panic2 (s string, n uint, s1 string, n1 uint) {
+  fin()
+  panic (s + " " + strconv.Itoa (int(n)) + " " + s1 + " " + strconv.Itoa (int(n1)))
+}
+
+func prePanic() {
+  fin()
+  panic ("precondition not met")
+}
+
+func shit() {
+  fin()
   panic ("shit happens")
 }
 
-func StopErr (t string, n uint, e error) {
-  Fin()
-  s:= ""; if e != nil { s = " => " + e.Error() }
-  panic ("Fehler Nr. " + strconv.Itoa (int(n)) + ": " + t + s)
+func stopErr (t string, n uint, e error) {
+  fin()
+  s := ""; if e != nil { s = " => " + e.Error() }
+  panic ("error nr. " + strconv.Itoa (int(n)) + ": " + t + s)
 }
 
-func Halt (s int) {
-  Fin()
+func halt (s int) {
+  fin()
   os.Exit (s)
 }
 
-func InstallTerm (h func()) {
+func installTerm (h func()) {
   handler = append (handler, h)
 }
-
-// func init() { installFin (Fin) } // does not work: attempt to link returns "atexit not defined"

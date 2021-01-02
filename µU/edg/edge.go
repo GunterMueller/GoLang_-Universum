@@ -1,6 +1,6 @@
 package edg
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   . "µU/obj"
@@ -8,7 +8,7 @@ import (
   "µU/scr"
   "µU/errh"
   "µU/box"
-  "µU/nat"
+  "µU/n"
 )
 type
   edge struct {
@@ -32,7 +32,7 @@ func new_(d bool, a Any) Edge {
   }
   CheckUintOrValuator(a)
   x.Any = Clone(a)
-  x.wd = nat.Wd(Val(a))
+  x.wd = n.Wd(Val(a))
   x.label = true
   x.cf, x.cb = scr.StartCols()
   x.fa, x.ba = scr.StartColsA()
@@ -147,7 +147,7 @@ func (x *edge) Write1 (a bool) {
   if ! x.label { return }
   x0 -= int(scr.Wd1()) / 2; y0 -= int(scr.Ht1()) / 2
   bx.Colours (f, b)
-  s := nat.String(Val(x.Any))
+  s := n.String(Val(x.Any))
   bx.Wd(x.wd)
   bx.WriteGr (s, x0, y0)
 }
@@ -162,14 +162,14 @@ func (x *edge) Edit() {
     x.Any.(EditorGr).EditGr (x0, y0)
     return
   }
-  n := Val(x.Any)
-  s := nat.String(n)
-  bx.Wd(x.wd)
+  k := Val(x.Any)
+  s := n.String(k)
+  bx.Wd (x.wd)
   bx.Colours (x.cf, x.cb)
   for {
     bx.EditGr (&s, x0, y0)
-    if n, ok := nat.Natural(s); ok {
-      SetVal (&x.Any, n)
+    if i, ok := n.Natural(s); ok {
+      SetVal (&x.Any, i)
       break
     }
   }

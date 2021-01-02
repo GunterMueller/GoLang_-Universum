@@ -1,8 +1,8 @@
 package str
 
-// (c) Christian Maurer   v. 201113 - license see µU.go
+// (c) Christian Maurer   v. 201214 - license see µU.go
 
-//     latin-1-strings (without any bloody UTF-8-stuff)
+//     latin-1-strings (without any UTF-8-stuff)
 
 // Returns true, iff s contains UTF8-runes.
 func DevilsDung (s string) bool { return devilsDung(s) }
@@ -22,17 +22,6 @@ func UTF8 (s string) string { return utf8(s) }
 
 // Returns true, iff s has the form x{x|y}, where x = [A-Z]|[a-z], y = x|[0-9]|
 func Lit (s string) bool { return lit(s) }
-
-// If p < len(s), the byte at position p of s is replaced by c.
-// Otherwise s is not changed.
-func Replace1 (s *string, p uint, c byte) { replace1 (s,p,c) }
-
-// All bytes b in s are replaced by []byte(t).
-func ReplaceAll (s *string, b byte, t string) { replaceAll (s,b,t) }
-
-// If p + len(t) <= len(s), the part of s starting at position p is replaced by t.
-// Otherwise s is not changed.
-func Replace (s *string, p uint, t string) { replace (s,p,t) }
 
 // Returns true, iff s contains no bytes or only spaces.
 func Empty (s string) bool { return empty(s) }
@@ -95,6 +84,11 @@ func Sub0 (s, t string) bool { return sub0(s,t) }
 // otherwise p == len(t).
 func Sub (s, t string) (uint, bool) { return sub(s,t) }
 
+// Returns (n, p), iff s is n-times contained as connected part in t,
+// where the p's are the start positions of s;
+// returns otherwise 0, []uint{}.
+func SubAll (s, t string) (uint, []uint) { return subAll(s,t) }
+
 // Returns (p, true), iff s is up to trailing spaces and
 // up to the difference between small letters and corresponding capitals
 // contained as connected part in t.
@@ -112,6 +106,20 @@ func Ins1 (s *string, c byte, p uint) { ins(s,string(c),p) }
 // i.e. s consists of the first p bytes of s before, then t, and then
 // the bytes of s starting at p; otherwise t is appended to s.
 func Ins (s *string, t string, p uint) { ins(s,t,p) }
+
+// Every occurence of v in *s is replaced by t.
+func InsAll (s *string, v, t string) { insAll(s,v,t) }
+
+// If p < len(s), the byte at position p of s is replaced by c.
+// Otherwise s is not changed.
+func Replace1 (s *string, p uint, c byte) { replace1 (s,p,c) }
+
+// All bytes b in s are replaced by []byte(t).
+func ReplaceAll (s *string, b byte, t string) { replaceAll (s,b,t) }
+
+// If p + len(t) <= len(s), the part of s starting at position p is replaced by t.
+// Otherwise s is not changed.
+func Replace (s *string, p uint, t string) { replace (s,p,t) }
 
 // TODO Spec
 func Append (s *string, b byte) { app(s,b) }

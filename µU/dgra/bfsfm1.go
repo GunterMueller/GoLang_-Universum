@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 190402 - license see µU.go
+// (c) Christian Maurer   v. 201204 - license see µU.go
 
 import (
   . "µU/obj"
@@ -38,7 +38,7 @@ func (x *distributedGraph) bfsfm1 (o Op) {
           } else {
             x.child[k] = true
             c++
-            x.tree = x.decodedGraph(bs[c0:])
+            x.tree = x.decodedGraph(bs[C0:])
             x.tree.Write()
           }
         }
@@ -63,8 +63,8 @@ func (x *distributedGraph) bfsfm1 (o Op) {
 func (x *distributedGraph) b1 (a Any, i uint) Any {
   x.awaitAllMonitors()
   bs := a.(Stream)
-  x.distance = Decode(uint(0), bs[:c0]).(uint)
-  x.tree = x.decodedGraph(bs[c0:])
+  x.distance = Decode(uint(0), bs[:C0]).(uint)
+  x.tree = x.decodedGraph(bs[C0:])
   x.tree.Write()
   s := nrLocal(x.tree)
   j := x.channel(s)
@@ -93,7 +93,7 @@ func (x *distributedGraph) b1 (a Any, i uint) Any {
         if len(bs) == 0 {
           x.visited[k] = true
         } else {
-          x.tree = x.decodedGraph(bs[c0:])
+          x.tree = x.decodedGraph(bs[C0:])
           x.child[k] = true
           c++
           x.tree.Write()

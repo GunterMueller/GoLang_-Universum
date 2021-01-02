@@ -1,11 +1,10 @@
 package col
 
-// (c) Christian Maurer   v. 191107 - license see µU.go
+// (c) Christian Maurer   v. 201229 - license see µU.go
 
 import
  . "µU/obj"
-const
-  P6 = 3
+
 type
   Colour interface {
 
@@ -28,8 +27,8 @@ type
 
   SetR (b byte); SetG (b byte); SetB (b byte)
 
-// TODO Spec
-  Cc() Stream
+// Returns the stream consisting of x.R(), x.G() and x.B().
+  Cstream() Stream
 
 // TODO Spec
   Code() uint
@@ -69,8 +68,8 @@ func Depth() uint { return depth } // in bytes - must not be altered after the c
 // Returns the number of available colours, depending on depth.
 func NCols() uint { return nCols() }
 
-func P6Encode (a, p Stream) { p6Encode(a,p) }
-func P6Colour (a Stream) Colour { return p6Colour(a) }
+// func P6Encode (a, p Stream) { p6Encode(a,p) }
+// func P3Colour (a Stream) Colour { return p3Colour(a) }
 
 func AllColours() []Colour { return allColours() }
 

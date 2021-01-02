@@ -1,6 +1,6 @@
 package clk
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201226 - license see µU.go
 
 import (
   . "µU/ker"
@@ -13,7 +13,7 @@ import (
   "µU/font"
   "µU/pbox"
   "µU/errh"
-  "µU/nat"
+  "µU/n"
 )
 const (
   maxlength = 8 // maximal Formatlength for "Hh_mm_ss"
@@ -118,7 +118,7 @@ func (x *clocktime) Elapsed() bool {
 
 func (x *clocktime) Distance (Y Clocktime) uint {
   y := Y.(*clocktime)
-  if x.Empty() || y.Empty() { return MaxNat() }
+  if x.Empty() || y.Empty() { return MaxNat }
   c, d := x.internalCode(), y.internalCode()
   if d > c {
     return d - c
@@ -127,7 +127,7 @@ func (x *clocktime) Distance (Y Clocktime) uint {
 }
 
 func (x *clocktime) NSeconds() uint {
-  if x.Empty() { return MaxNat() }
+  if x.Empty() { return MaxNat }
   return x.internalCode()
 }
 
@@ -186,12 +186,12 @@ func (x *clocktime) String() string {
   if x.Empty() {
     return str.New (textlength[x.Format])
   }
-  s := nat.StringFmt(x.minute, 2, true)
+  s := n.StringFmt(x.minute, 2, true)
   if x.Format <= Hh_mm_ss {
-    s = nat.StringFmt(x.hour, 2, true) + "." + s
+    s = n.StringFmt(x.hour, 2, true) + "." + s
   }
   if x.Format >= Hh_mm_ss {
-    s += ":" + nat.StringFmt(x.second, 2, true)
+    s += ":" + n.StringFmt(x.second, 2, true)
   }
   return s
 }
@@ -207,29 +207,29 @@ func (x *clocktime) defined(h, m, s uint) bool {
 func (x *clocktime) Defined(t string) bool {
   x.Clr()
   if str.Empty(t) { return true }
-  n, ss, P, L := nat.DigitSequences(t)
-  if n == 0 || n > 3 { return false }
-  if n == 3 {
+  k, ss, P, L := n.DigitSequences(t)
+  if k == 0 || k > 3 { return false }
+  if k == 3 {
     if x.Format == Hh_mm { return false }
   }
   if L[0] >= textlength[x.Format] { return false }
   h, m, s, ok := uint(0), uint(0), uint(0), false
-  if n == 1 {
-    if h, ok = nat.Natural(str.Part(t, P[0], 2)); ! ok { return false }
+  if k == 1 {
+    if h, ok = n.Natural(str.Part (t, P[0], 2)); ! ok { return false }
     if L[0] > 2 {
-      if m, ok = nat.Natural(str.Part(t, P[0] + 2, 2)); ! ok { return false }
+      if m, ok = n.Natural(str.Part (t, P[0] + 2, 2)); ! ok { return false }
       if L[0] > 4 {
-        if s, ok = nat.Natural(str.Part(t, P[0] + 4, 2)); ! ok { return false }
+        if s, ok = n.Natural(str.Part (t, P[0] + 4, 2)); ! ok { return false }
       }
     }
   } else {
-    if h, ok = nat.Natural(ss[0]); ! ok { return false }
-    if m, ok = nat.Natural(ss[1]); ! ok { return false }
-    if n == 2 && x.Format == Mm_ss {
+    if h, ok = n.Natural(ss[0]); ! ok { return false }
+    if m, ok = n.Natural(ss[1]); ! ok { return false }
+    if k == 2 && x.Format == Mm_ss {
       s, m, h = m, h, 0
     }
-    if n == 3 {
-      if _, ok := nat.Natural(ss[2]); ! ok { return false }
+    if k == 3 {
+      if _, ok := n.Natural(ss[2]); ! ok { return false }
     }
   }
   return x.defined(h, m, s)

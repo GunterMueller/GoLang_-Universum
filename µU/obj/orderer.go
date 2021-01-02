@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 202010 - license see µU.go
+// (c) Christian Maurer   v. 201020 - license see µU.go
 
 type
   Orderer interface {

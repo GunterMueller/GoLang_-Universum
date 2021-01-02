@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 200728 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   "µU/ker"
@@ -9,7 +9,7 @@ import (
   "µU/time"
   "µU/col"
   "µU/scr"
-  "µU/nat"
+  "µU/n"
   "µU/str"
   "µU/errh"
   "µU/vtx"
@@ -61,10 +61,8 @@ const (
   p0 = nchan.Port0
   inf = uint(1<<16)
 )
-var (
-  c0 = C0()
+var
   done = make(chan int, 1)
-)
 
 func value (a Any) uint {
   return a.(vtx.Vertex).Content().(Valuator).Val()
@@ -302,21 +300,21 @@ func (x *distributedGraph) Blink() {
 }
 
 func (x *distributedGraph) ParentChildren() string {
-  s := "parent " + nat.String(x.parent)
+  s := "parent " + n.String (x.parent)
   cs := make([]uint, 0)
   for i := uint(0); i < x.n; i++ {
     if x.child[i] {
       cs = append(cs, x.nr[i])
     }
   }
-  n := len(cs)
-  if n > 0 {
+  k := len(cs)
+  if k > 0 {
     s += ", child"
-    if n > 1 {
+    if k > 1 {
       s += "ren"
     }
     for _, c := range cs {
-      s += " " + nat.String(c)
+      s += " " + n.String (c)
     }
   }
   return s

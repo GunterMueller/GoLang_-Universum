@@ -1,11 +1,11 @@
 package kbd
 
-// (c) Christian Maurer   v. 201028 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/xwin"
-  "µU/z"
+  "µU/char"
   "µU/mouse"
 //  "µU/navi"
 )
@@ -84,25 +84,25 @@ const (
   bracketL  = '['
   bracketR  = ']'
 // UTF-8-symbols:
-  degree     = z.Degree
-  twoSup     = z.ToThe2
-  threeSup   = z.ToThe3
-  Ä          = z.Ä
-  Ö          = z.Ö
-  Ü          = z.Ü
-  ä          = z.Ae
-  ö          = z.Oe
-  ü          = z.Ue
-  ß          = z.Sz
-  euro       = z.Euro
-  cent       = z.Cent
-  mu         = z.Mu
-  paragraph  = z.Paragraph
-  registered = z.Registered
-  female     = z.Female
-  copyright  = z.Copyright
-  male       = z.Male
-  division   = z.Division
+  degree     = char.Degree
+  twoSup     = char.ToThe2
+  threeSup   = char.ToThe3
+  Ä          = char.Ä
+  Ö          = char.Ö
+  Ü          = char.Ü
+  ä          = char.Ae
+  ö          = char.Oe
+  ü          = char.Ue
+  ß          = char.Sz
+  euro       = char.Euro
+  cent       = char.Cent
+  mu         = char.Mu
+  paragraph  = char.Paragraph
+  registered = char.Registered
+  female     = char.Female
+  copyright  = char.Copyright
+  male       = char.Male
+  division   = char.Division
 
 //  toolbox   = 501 // 501 % 256 = 245, % 128 = 117
   noKeycodes= 128

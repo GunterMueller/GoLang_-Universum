@@ -112,6 +112,20 @@ int lookupString (XEvent e) {
   printf("key %d %s %s\n", key, buffer, ";");
   return g;
 }
+
+unsigned long xGetPix (XImage *i, int x, int y) { return ((*((i)->f.get_pixel))((i), (x), (y))); }
+
+void xDestroyImg (XImage *i) { ((*((i)->f.destroy_image))((i))); }
+
+// unsigned short red (Display *d, unsigned long *c) {
+unsigned short red (Display *d, XColor *c) {
+  XQueryColor (d, XDefaultColormap (d, XDefaultScreen (d)), c); return c->red/256; }
+
+unsigned short green (Display *d, XColor *c) {
+  XQueryColor (d, XDefaultColormap (d, XDefaultScreen (d)), c); return c->green/256; }
+
+unsigned short blue (Display *d, XColor *c) {
+  XQueryColor (d, XDefaultColormap (d, XDefaultScreen (d)), c); return c->blue/256; }
 */
 import
   "C"
@@ -170,6 +184,7 @@ type
            focus,
              top vect.Vector
 //           delta float64 // invariant: delta == distance (origin, focus)
+         colours [][]col.Colour
                  }
 var (
   dspl string = env.Val ("DISPLAY")
@@ -186,15 +201,15 @@ var (
   actual *xwindow
   first bool = true // to start goSendEvents only once
   winList []*xwindow
-  txt = []string { "", "",
-                   "KeyPress", "KeyRelease", "ButtonPress", "ButtonRelease", "MotionNotify",
-                   "EnterNotify", "LeaveNotify", "FocusIn", "FocusOut", "KeymapNotify",
-                   "Expose", "GraphicsExpose", "NoExpose", "VisibilityNotify",
-                   "CreateNotify", "DestroyNotify", "UnmapNotify", "MapNotify", "MapRequest",
-                   "ReparentNotify", "ConfigureNotify", "ConfigureRequest", "GravityNotify",
-                   "ResizeRequest", "CirculateNotify", "CirculateRequest",
-                   "PropertyNotify", "SelectionClear", "SelectionRequest", "SelectionNotify",
-                   "ColormapNotify", "ClientMessage", "MappingNotify", "GenericEvent", "LASTEvent"}
+  txt = []string {"", "",
+                  "KeyPress", "KeyRelease", "ButtonPress", "ButtonRelease", "MotionNotify",
+                  "EnterNotify", "LeaveNotify", "FocusIn", "FocusOut", "KeymapNotify",
+                  "Expose", "GraphicsExpose", "NoExpose", "VisibilityNotify",
+                  "CreateNotify", "DestroyNotify", "UnmapNotify", "MapNotify", "MapRequest",
+                  "ReparentNotify", "ConfigureNotify", "ConfigureRequest", "GravityNotify",
+                  "ResizeRequest", "CirculateNotify", "CirculateRequest",
+                  "PropertyNotify", "SelectionClear", "SelectionRequest", "SelectionNotify",
+                  "ColormapNotify", "ClientMessage", "MappingNotify", "GenericEvent", "LASTEvent"}
   startSendEvents = make(chan int)
 )
 
@@ -215,7 +230,7 @@ func initX() {
   if C.XInitThreads() == 0 { panic ("XKern.XInitThreads error") }
   d := C.CString(dspl); defer C.free (unsafe.Pointer(d))
   dpy = C.XOpenDisplay (d); if dpy == nil { panic ("dpy == nil") }
-  screen := C.XDefaultScreen (dpy)
+  screen = C.XDefaultScreen (dpy)
   monitorWd, monitorHt = uint(C.XDisplayWidth (dpy, screen)),
                          uint(C.XDisplayHeight (dpy, screen))
   fullScreen = mode.ModeOf (uint(monitorWd), uint(monitorHt))
@@ -224,7 +239,7 @@ func initX() {
   initialized = true
 }
 
-func cc (c col.Colour) C.ulong {
+func cu (c col.Colour) C.ulong {
   return C.ulong(c.Code())
 }
 
@@ -234,11 +249,11 @@ func (X *xwindow) Name (n string) {
 }
 
 func (X *xwindow) clear() {
-  C.XSetForeground (dpy, X.gc, cc (X.scrB))
+  C.XSetForeground (dpy, X.gc, cu (X.scrB))
   C.XFillRectangle (dpy, C.Drawable(X.win), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
   C.XFillRectangle (dpy, C.Drawable(X.buffer), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
   C.XFillRectangle (dpy, C.Drawable(X.shadow), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
-  C.XSetForeground (dpy, X.gc, cc (X.scrF))
+  C.XSetForeground (dpy, X.gc, cu (X.scrF))
 }
 
 func (X *xwindow) mousePointer (on bool) {
@@ -364,6 +379,10 @@ func newWH (x, y, w, h uint) XWindow {
   X.clear()
 */
   X.origin, X.focus, X.top = vect.New(), vect.New(), vect.New()
+  X.colours = make([][]col.Colour, X.wd)
+  for x := uint(0); x < X.wd; x++ {
+    X.colours[x] = make([]col.Colour, X.ht)
+  }
   return X
 }
 
@@ -404,7 +423,7 @@ func (X *xwindow) OffFocus() bool {
 
 func (X *xwindow) Subwindow (x, y int, w, h uint) {
   s := C.XCreateSimpleWindow (dpy, X.win, C.int(x), C.int(y), C.uint(w), C.uint(h),
-                              0, cc (X.scrF), cc (X.scrB))
+                              0, cu (X.scrF), cu (X.scrB))
   X.subWindows = append (X.subWindows, s)
 }
 
@@ -572,7 +591,7 @@ func sendEvents() {
         ;
       case C.ClientMessage:
         mT := C.mT (&xev)
-        if mT != naviAtom { println ("unknown xclient.message_type ", uint32(mT)) }
+        if mT != naviAtom { println ("unknown xclient.message_type ", uint32(mT)) } // XXX
       case C.MappingNotify:
         ;
       case C.GenericEvent:
@@ -593,4 +612,20 @@ func sendEvents() {
       }
     }
   }
+}
+
+func (X *xwindow) GetPixelColours() {
+//  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(X.x), C.int(X.y), C.uint(X.wd), C.uint(X.ht),
+  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(0), C.int(0), C.uint(X.wd), C.uint(X.ht),
+                       C.ulong(1 << 24 - 1), C.XYPixmap)
+  var c C.XColor
+  for y := uint(0); y < X.ht; y++ {
+    for x := uint(0); x < X.wd; x++ {
+println (x, y)
+      c.pixel = C.xGetPix (ximg, C.int(x), C.int(y))
+      r, g, b := byte(C.red (dpy, &c)), byte(C.green (dpy, &c)), byte(C.blue (dpy, &c))
+      X.colours[x][y] = col.New3 ("", r, g, b)
+    }
+  }
+  C.xDestroyImg (ximg)
 }

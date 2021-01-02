@@ -1,11 +1,11 @@
 package naddr
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/str"
-  "µU/nat"
+  "µU/n"
   "µU/host"
 )
 type
@@ -99,9 +99,9 @@ const
   separator = byte(':')
 
 func (x *netAddress) Defined (s string) bool {
-  n := uint(len (s))
-  if i, ok := str.Pos (s, separator); ok && i < n {
-    if p, ok1 := nat.Natural (str.Part (s, i + 1, n - (i + 1))); ok1 && p < 1<<16 {
+  k := uint(len (s))
+  if i, ok := str.Pos (s, separator); ok && i < k {
+    if p, ok1 := n.Natural (str.Part (s, i + 1, k - (i + 1))); ok1 && p < 1<<16 {
       return x.Host.Defined (str.Part (s, 0, i))
     }
   }
@@ -110,7 +110,7 @@ func (x *netAddress) Defined (s string) bool {
 
 func (x *netAddress) String() string {
   x.Host.SetFormat (x.Format)
-  return x.Host.String() + string(separator) + nat.String (uint(x.uint16))
+  return x.Host.String() + string(separator) + n.String (uint(x.uint16))
 }
 
 func (x *netAddress) Set (h host.Host, p uint16) {

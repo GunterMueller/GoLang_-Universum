@@ -1,6 +1,6 @@
 package psp
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
 import (
   "os"
@@ -8,10 +8,11 @@ import (
   "math"
   "µU/ker"
   . "µU/obj"
-  "µU/z"
+  "µU/char"
   "µU/col"
   "µU/scr"
   "µU/font"
+  "µU/n" // bluse
 )
 type
   postscriptPage struct {
@@ -20,11 +21,13 @@ type
                         }
 
 func new_() PostscriptPage {
-  x:= new (postscriptPage)
+  x := new (postscriptPage)
   x.float64 = 0.4
   const ppi = ker.PointsPerInch
   return x
 }
+
+// func bluse() uint { return n.Wd (12) }
 
 func (x *postscriptPage) S (pt int) float64 {
   return float64(pt) / float64(scr.Wd()) * ker.A4wdPt
@@ -151,9 +154,9 @@ func (x *postscriptPage) SwitchFontsize (f font.Size) {
 func (x *postscriptPage) Write (s string, x0, y0 float64) {
   x.newpath()
   x.moveto (x0, y0)
-  for i:= 0; i < len (s); i++ {
-    if z.IsLatin1 (s[i]) {
-      x.write ("/" + z.Postscript (s[i]) + " glyphshow\n")
+  for i := 0; i < len (s); i++ {
+    if char.IsLatin1 (s[i]) {
+      x.write ("/" + char.Postscript (s[i]) + " glyphshow\n")
     } else {
       x.write ("(" + string(s[i]) + ") show\n")
     }
@@ -174,10 +177,10 @@ func (x *postscriptPage) Point (x1, y1 float64) {
 }
 
 func (x *postscriptPage) Points (xs, ys []float64) {
-  n:= len(xs)
+  n := len(xs)
   if n == 0 || len(ys) != n { return }
   x.newpath()
-  for i:= 0; i < n; i++ {
+  for i := 0; i < n; i++ {
     x.arc (xs[i], ys[i], 2 * x.float64, 0, 360)
     x.fill()
   }
@@ -192,10 +195,10 @@ func (x *postscriptPage) Line (x1, y1, x2, y2 float64) {
 }
 
 func (x *postscriptPage) Lines (x0, y0, x1, y1 []float64) {
-  n:= len(x0)
+  n := len(x0)
   if n < 1 || len(y0) != n || len(x1) != n || len(y1) != n { return }
   x.newpath()
-  for i:= 0; i < n; i++ {
+  for i := 0; i < n; i++ {
     x.moveto (x0[i], y0[i])
     x.lineto (x1[i], y1[i])
   }
@@ -204,7 +207,7 @@ func (x *postscriptPage) Lines (x0, y0, x1, y1 []float64) {
 }
 
 func (x *postscriptPage) Segments (xs, ys []float64) {
-  n:= len (xs)
+  n := len (xs)
   if n < 1 || len (ys) != n { return }
   if n == 1 {
     x.Point (xs[0], ys[0])
@@ -212,7 +215,7 @@ func (x *postscriptPage) Segments (xs, ys []float64) {
   }
   x.newpath()
   x.moveto (xs[0], ys[0])
-  for i:= 1; i < n; i++ {
+  for i := 1; i < n; i++ {
     x.lineto (xs[i], ys[i])
   }
   x.stroke()
@@ -230,7 +233,7 @@ func (x *postscriptPage) Rectangle (x0, y0, w, h float64, f bool) {
 }
 
 func (x *postscriptPage) Polygon (xs, ys []float64, f bool) {
-  n:= len (xs)
+  n := len (xs)
   if n < 1 || len (ys) != n { return }
   if n == 1 {
     x.Point (xs[0], ys[0])
@@ -238,7 +241,7 @@ func (x *postscriptPage) Polygon (xs, ys []float64, f bool) {
   }
   x.newpath()
   x.moveto (xs[0], ys[0])
-  for i:= 1; i < n; i++ {
+  for i := 1; i < n; i++ {
     x.lineto (xs[i], ys[i])
   }
   x.closepath()
@@ -287,20 +290,20 @@ func p (t, a float64, k uint) float64 {
 }
 
 func (x *postscriptPage) nodes (xs, ys []float64) int {
-  l:= len (xs)
+  l := len (xs)
   if l == 0 || l != len (ys) { return 0 }
-  n:= 0
-  for i:= 1; i < l; i++ {
-    dx, dy:= math.Abs (xs[i] - xs[i-1]), math.Abs (ys[i] - ys[i-1])
+  n := 0
+  for i := 1; i < l; i++ {
+    dx, dy := math.Abs (xs[i] - xs[i-1]), math.Abs (ys[i] - ys[i-1])
     n += int(math.Sqrt (dx * dx + dy * dy + 0.5))
   }
   return n
 }
 
-func bezier (t float64, n uint, xs, ys []float64) (float64, float64) {
+func bezier (t float64, k uint, xs, ys []float64) (float64, float64) {
   var x, y float64
-  for i:= uint(0); i <= n; i++ {
-    a:= float64(ker.Binomial (n, i)) * p (1 - t, 1, n - i) * p (t, 1, i)
+  for i := uint(0); i <= k; i++ {
+    a := float64(n.Binom (k, i)) * p (1 - t, 1, k - i) * p (t, 1, i)
     x += a * xs[i]
     y += a * ys[i]
   }
@@ -308,14 +311,14 @@ func bezier (t float64, n uint, xs, ys []float64) (float64, float64) {
 }
 
 func (x *postscriptPage) Curve (xs, ys []float64) {
-  n:= len (xs)
+  n := len (xs)
   if len (ys) != n { return }
   x.newpath()
-  m:= x.nodes (xs, ys)
+  m := x.nodes (xs, ys)
   if m == 0 { return }
   x.moveto (xs[0], ys[0])
-  for i:= 1; i < m; i++ {
-    xb, yb:= bezier (float64(i) / float64(m), uint(n - 1), xs, ys)
+  for i := 1; i < m; i++ {
+    xb, yb := bezier (float64(i) / float64(m), uint(n - 1), xs, ys)
     x.lineto (xb, yb)
   }
   x.stroke()

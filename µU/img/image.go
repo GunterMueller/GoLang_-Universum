@@ -1,11 +1,10 @@
 package img
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201228 - license see µU.go
 
 import (
   "os/exec"
   . "µU/obj"
-  "µU/time"
   "µU/str"
   "µU/scr"
   "µU/prt"
@@ -14,26 +13,19 @@ import (
 )
 const
   suffix = ".ppm"
-var
-  toPrint bool
 
 func put (n string, x, y, w, h uint) {
   if str.Empty (n) { return }
   str.OffSpc (&n)
   filename := n + suffix
-//  if scr.UnderX() { errh.Hint (errh.ToWait) }
-  buf := scr.P6Encode (x, y, w, h)
+  if scr.UnderX() { errh.Hint (errh.ToWait) }
+  s := scr.P6Encode (x, y, w, h)
   if scr.UnderX() { errh.DelHint() }
-  file := pseq.New (buf)
+  file := pseq.New (s)
   file.Name (filename)
   file.Clr()
-  file.Put (buf)
+  file.Put (s)
   file.Fin()
-  if ! toPrint {
-    exec.Command ("pnmtopng", filename + suffix, ">", n, ".png").Run()
-    time.Msleep (100)
-    exec.Command ("rm", filename)
-  }
 }
 
 func put1 (n string) {
@@ -46,12 +38,12 @@ func size_(n string) (uint, uint) {
   filename := n + suffix
   l := pseq.Length (filename)
   if l == 0 { return 0, 0 }
-  buf := make (Stream, l)
-  file := pseq.New (buf)
+  s := make (Stream, l)
+  file := pseq.New (s)
   file.Name (filename)
-  buf = file.Get().(Stream)
+  s = file.Get().(Stream)
   file.Fin()
-  return scr.P6Size (buf)
+  return scr.P6Size (s)
 }
 
 func get (n string, x, y uint) {
@@ -61,23 +53,19 @@ func get (n string, x, y uint) {
   filename := n + suffix
   l := pseq.Length (filename)
   if l == 0 { return }
-  buf := make (Stream, l)
-  file := pseq.New (buf)
+  s := make (Stream, l)
+  file := pseq.New (s)
   file.Name (filename)
-  buf = file.Get().(Stream)
+  s = file.Get().(Stream)
   file.Fin()
-  scr.P6Decode (x, y, buf)
+  scr.P6Decode (s, x, y)
 }
 
-func print_(x, y, w, h uint) {
-  toPrint = true
-  filename := "tmp"
-  put (filename, x, y, w, h)
-  toPrint = false
-//  exec.Command (prt.PrintCommand, "-o", "landscape", "-o", "fit-to-page", filename + suffix).Run()
-  exec.Command (prt.PrintCommand, "-o", "fit-to-page", filename + suffix).Run()
+func print_(n string, x, y, w, h uint) {
+  put (n, x, y, w, h)
+  exec.Command (prt.PrintCommand, "-o", "fit-to-page", n + suffix).Run()
 }
 
-func print1() {
-  print_(0, 0, scr.Wd(), scr.Ht())
+func print1 (n string) {
+  print_(n, 0, 0, scr.Wd(), scr.Ht())
 }

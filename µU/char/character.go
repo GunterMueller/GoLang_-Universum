@@ -1,168 +1,353 @@
 package char
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201128 - license see µU.go
 
-import (
-  . "µU/obj"
-  . "µU/shape"
-  "µU/z"
-  "µU/kbd"
-  "µU/col"
-  "µU/scr"
-  "µU/font"
-  "µU/pbox"
-)
-type
-  character struct {
-                   byte
-            cF, cB col.Colour
-                   font.Font
-                   }
-var
-  pbx = pbox.New()
+const
+  delta = 'a' - 'A'
 
-func new_() Character {
-  x := new (character)
-  x.byte = ' '
-  x.cF, x.cB = scr.StartCols()
-  return x
+func init() {
+  ord := []byte (" 0123456789Aa  BbCcDdEeFfGgHhIiJjKkLlMmNnOo  PpQqRrSs TtUu  VvWwXxYyZz")
+//                            Ää                            Öö        ß    Üü
+//               0         1         2         3         4         5         6
+//               0123456789012345678901234567890123456789012345678901234567890123456789
+  ord[13] = Ä
+  ord[14] = Ae
+  ord[43] = Ö
+  ord[44] = Oe
+  ord[53] = Sz
+  ord[58] = Ü
+  ord[59] = Ue
+  for b := byte(0); b < byte(len (ord)); b++ {
+    nr[b] = b
+    in[b] = true
+  }
 }
 
-func (x *character) imp (Y Any) byte {
-  y, ok := Y.(*character)
-  if ! ok { TypeNotEqPanic (x, Y) }
-  return y.byte
+func isLatin1 (b byte) bool {
+  switch b {
+  case Ä, Ö, Ü, Ae, Oe, Ue, Sz, Cent, Pound, Euro, Yen, BrokenBar, Paragraph, Copyright, Female,
+       LeftDoubleAngle, Not, Registered, Degree, PlusMinus, ToThe2, ToThe3, Mu, Pilcrow, Dot,
+       ToThe1, Male, RightDoubleAngle, Quarter, Half, ThreeQuarters, Times, EmptySet, Division:
+    return true
+  }
+  return false
 }
 
-func (x *character) SetByte (b byte) { // TODO UTF8
-  if b < ' ' { b = ' ' }
-  x.byte = b
+func str (b byte) string {
+  s := make ([]byte, 1)
+  s[0] = b
+  return string(s)
 }
 
-func (x *character) Empty() bool {
-  return x.byte == ' '
+func isLowerUmlaut (b byte) bool {
+  switch b {
+  case Ae, Oe, Ue, Sz:
+    return true
+  }
+  return false
 }
 
-func (x *character) Clr() {
-  x.byte = ' '
+func isUpperUmlaut (b byte) bool {
+  switch b {
+  case Ä, Ö, Ü:
+    return true
+  }
+  return false
 }
 
-func (x *character) Eq (Y Any) bool {
-  return x.byte == x.imp (Y)
+func opensHell (b byte) bool {
+  return b == byte(0xc2) ||
+         b == byte(0xc3)
 }
 
-func (x *character) Equiv (Y Any) bool {
-  return x.byte % 32 == x.imp (Y) % 32
-}
-
-func (x *character) Copy (Y Any) {
-  x.byte = x.imp (Y)
-}
-
-func (x *character) Clone() Any {
-  y := new_()
-  y.Copy (x)
-  return y
-}
-
-func (x *character) Val() uint {
-  return uint(x.byte)
-}
-
-func (x *character) SetVal (n uint) bool {
-  if n >= 1<<8 {
+func devilsDung (s string) bool {
+  n := len (s)
+  if n == 0 {
     return false
   }
-  b := byte (n)
-  if b < ' ' { b = ' ' } // TODO ausschalten unnützer Werte
-  x.byte = b
-  return true
-}
-
-func (x *character) ByteVal() byte {
-  return x.byte
-}
-
-func (x *character) Less (Y Any) bool {
-  return x.byte < x.imp (Y)
-}
-
-func (x *character) String() string {
-  return string(x.byte)
-}
-
-func (x *character) Defined (s string) bool {
-  if len (s) == 0 { return false }
-  if len (s) > 1 { return false } // TODO UTF8
-  x.byte = byte(s[0])
-  return true
-}
-
-func (x *character) Colours (f, b col.Colour) {
-  x.cF, x.cB = f, b
-}
-
-func (x *character) Write (l, c uint) {
-  scr.Colours (x.cF, x.cB)
-  scr.Write1 (x.byte, l, c)
-}
-
-func (x *character) Edit (l, c uint) {
-  b := x.byte
-  scr.Colours (x.cF, x.cB)
-  scr.Write1 (b, l, c)
-  loop: for {
-    scr.Warp (l, c, Understroke)
-    b = kbd.Byte()
-    switch {
-    case ' ' <= b, b < 128, z.IsLatin1(b):
-      break loop
+  for i := 0; i < n; i++ {
+    switch s[i] {
+    case 0xc2, 0xc3:
+      return true
     }
   }
-  scr.Write1 (b, l, c)
-  x.byte = b
+  return false
 }
 
-func (c *character) WriteGr (x, y int) {
-  scr.Colours (c.cF, c.cB)
-  scr.Write1Gr (c.byte, x, y)
-}
-
-func (h *character) EditGr (x, y int) {
-  b := h.byte
-  scr.Colours (h.cF, h.cB)
-  scr.Write1Gr (h.byte, x, y)
-  loop: for {
-    scr.WarpGr (uint(x), uint(y), Understroke)
-    b = kbd.Byte()
-    switch {
-    case ' ' <= b, b < 128, z.IsLatin1(b):
-      break loop
+func toHellWithUTF8 (s *string) {
+  n := len (*s)
+  if n == 0 { return }
+  bs := []byte(*s)
+  i, k := 0, 0
+  var b byte
+  for i < n {
+    b = bs[i]
+    switch b {
+    case 0xc2:
+      i++
+      b = bs[i]
+    case 0xc3:
+      i++
+      b = bs[i] + 64
+/*/
+    case 0xce:
+      i++
+      b = bs[i] + 11 * 64
+/*/
     }
+    bs[k] = b
+    i++
+    k++
   }
-  scr.Write1Gr (b, x, y)
-  h.byte = b
+  if k == n {
+    return
+  }
+  if k < n {
+    *s = string(bs[:k])
+  }
 }
 
-func (x *character) SetFont (f font.Font) {
-  x.Font = f
+func Equiv (a, b byte) bool {
+  switch {
+  case a < 'A':
+    return a == b
+  case a <= 'Z', 'a' <= a && a <= 'z', a == Ä, a == Ö, a == Ü, a == Ae, a == Oe, a == Ue:
+    // see below
+  default:
+    return a == b
+  }
+  return a & 31 == b & 31
 }
 
-func (x *character) Print (l, c uint) {
-  pbx.SetFont (x.Font)
-  pbx.Print (string(x.byte), l, c)
-}
-
-func (x *character) Codelen() uint {
-  return 1
-}
-
-func (x *character) Encode() Stream {
-  b := make (Stream, 1)
-  b[0] = x.byte
+func upper (b byte) byte {
+  switch b {
+  case Ae, Oe, Ue:
+    return b - 32
+  }
+  if 'a' <= b && b <= 'z' {
+    return b - delta
+  }
   return b
 }
 
-func (x *character) Decode (b Stream) {
-  x.byte = b[0]
+func lower (b byte) byte {
+  switch b {
+  case Ä, Ö, Ü:
+    return b + 32
+  }
+  if 'A' <= b && b <= 'Z' {
+    return b + delta
+  }
+  return b
+}
+
+func isUppercaseLetter (b byte) bool {
+  return 'A' <= b && b <= 'Z' || isUpperUmlaut(b)
+}
+
+func isLowercaseLetter (b byte) bool {
+  return 'a' <= b && b <= 'z' || isLowerUmlaut(b)
+}
+
+func isLetter (b byte) bool {
+  return isUppercaseLetter(b) || IsLowercaseLetter(b)
+}
+
+func isDigit (b byte) bool {
+  return '0' <= b && b <= '9'
+}
+
+func isLetterOrDigit (b byte) bool {
+  return isLetter (b) || isDigit (b)
+}
+
+var (
+  nr [256]byte
+  in [256]bool // in = make (map[byte] bool)
+)
+
+func Less (a, b byte) bool {
+  if a == b {
+    return false
+  }
+  if in[a] {
+    if in[b] {
+      return nr[a] < nr[b]
+    } else {
+      return true // Sonderzeichen hinter Buchstaben
+    }
+  } else {
+    if in[b] {
+      return false // s. o.
+    }
+  }
+  return a < b // nach ASCII
+}
+
+func isVowel (b byte) bool {
+  switch b {
+  case 'A', 'E', 'I', 'O', 'U', 'a', 'e', 'i', 'o', 'u', Ä, Ö, Ü, Ae, Oe, Ue:
+    return true
+  }
+  return false
+}
+
+func isConsonant (b byte) bool {
+  if isVowel (b) {
+    return false
+  }
+  if 'B' <= b && b <= 'Z' || 'b' <= b && b <= 'z' || b == Sz {
+    return true
+  }
+  return false
+}
+
+func postscript (b byte) string {
+  switch b {
+  case Ä:
+    return "Adieresis"
+  case Ö:
+    return "Odieresis"
+  case Ü:
+    return "Udieresis"
+  case Ae:
+    return "adieresis"
+  case Oe:
+    return "odieresis"
+  case Ue:
+    return "udieresis"
+  case Sz:
+    return "germandbls"
+  case Cent:
+    return "cent"
+  case Pound:
+    return "sterling"
+  case Euro:
+    return "euro"
+  case Yen:
+    return "yen"
+  case BrokenBar:
+    return "brokenbar"
+  case Paragraph:
+    return "section"
+  case Copyright:
+    return "copyright"
+  case Female:
+    return "ordfeminine"
+  case LeftDoubleAngle:
+    return "quotedblleft"
+  case Not:
+    return "logicalnot"
+  case Registered:
+    return "registered"
+  case Degree:
+    return "deg"
+  case PlusMinus:
+    return "plusminus"
+  case ToThe2:
+    return "twosuperior"
+  case ToThe3:
+    return "threesuperior"
+  case Mu:
+    return "mu"
+  case Pilcrow:
+    return "paragraph"
+  case Dot:
+    return "periodcentered"
+  case ToThe1:
+    return "onesuperior"
+  case Male:
+    return "ordmasculine"
+  case RightDoubleAngle:
+    return "quotedblright"
+  case Quarter:
+    return "onequarter"
+  case Half:
+    return "onehalf"
+  case ThreeQuarters:
+    return "threequarters"
+  case Times:
+    return "multiply"
+  case EmptySet:
+    return "emptyset"
+  case Division:
+    return "divisionslash"
+  }
+  return ""
+}
+
+func Latin1Byte (r rune) byte {
+  switch r {
+  case 'A': // C3 84
+    return Ä
+  case 'Ö': // C3 96
+    return Ö
+  case 'Ü': // C3 9C
+    return Ü
+  case 'ä': // C3 A4
+    return Ae
+  case 'ö': // C3 B6
+    return Oe
+  case 'ü': // C3 BC
+    return Ue
+  case 'ß': // C3 9F
+    return Sz
+  case '¢': // C2 A2
+    return Cent
+  case '£': // C2 A3
+    return Pound
+  case '€': // E2 82 AC
+    return Euro
+  case '¥': // C2 A5
+    return Yen
+  case '¦': // C2 A6
+    return BrokenBar
+  case '§': // C2 A7
+    return Paragraph
+  case '©': // C2 A9
+    return Copyright
+  case 'ª': // C2 AA
+    return Female
+  case '«': // C2 AB
+    return LeftDoubleAngle
+  case '¬': // C2 AC
+    return Not
+  case '®': // C2 AE
+    return Registered
+  case '°': // C2 B0
+    return Degree
+  case '±': // C2 B1
+    return PlusMinus
+  case '²': // C2 B3
+    return ToThe2
+  case '³': // C2 B2
+    return ToThe3
+  case 'µ': // C2 B5
+    return Mu
+  case '¶': // C2 B6
+    return Pilcrow
+  case '·': // C2 B7
+    return Dot
+  case '¹': // C2 B9
+    return ToThe1
+  case 'º': // C2 BA
+    return Male
+  case '»': // C2 BB
+    return RightDoubleAngle
+  case '¼': // C2 BC
+    return Quarter
+  case '½': // C2 BD
+    return Half
+  case '¾': // C2 BE
+    return ThreeQuarters
+  case '×': // C3 97
+    return Times
+  case 'Ø': // C2 98
+    return EmptySet
+  case '÷': // C3 B7
+    return Division
+//  case ' ': // CE BC
+//    return Pi
+  }
+  return 0
 }

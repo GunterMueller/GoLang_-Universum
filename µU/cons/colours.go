@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 201229 - license see µU.go
 
 import
   "µU/col"
@@ -28,7 +28,7 @@ func (X *console) ScrColourF (f col.Colour) {
 
 func (X *console) ScrColourB (b col.Colour) {
   X.scrB = b.Clone().(col.Colour)
-  c := b.Cc()
+  c := b.Cstream()
   a := 0
   for x := 0; x < int(width); x++ {
     for y := 0; y < int(height); y++ {
@@ -59,16 +59,16 @@ func (X *console) ScrColB() col.Colour {
 }
 
 func (X *console) Colours (f, b col.Colour) {
-  X.cF, X.codeF = f, f.Cc()
-  X.cB, X.codeB = b, b.Cc()
+  X.cF, X.codeF = f, f.Cstream()
+  X.cB, X.codeB = b, b.Cstream()
 }
 
 func (X *console) ColourF (f col.Colour) {
-  X.cF, X.codeF = f, f.Cc()
+  X.cF, X.codeF = f, f.Cstream()
 }
 
 func (X *console) ColourB (b col.Colour) {
-  X.cB, X.codeB = b, b.Cc()
+  X.cB, X.codeB = b, b.Cstream()
 }
 
 func (X *console) Cols() (col.Colour, col.Colour) {
@@ -89,5 +89,7 @@ func (X *console) Colour (x, y uint) col.Colour {
   }
   x += uint(X.x); y += uint(X.y)
   a := int(width * y + x) * int(colourdepth)
-  return col.P6Colour (fbcop [a:a+int(colourdepth)])
+  b := fbcop [a:a+int(colourdepth)]
+  return col.New3 ("", b[0], b[1], b[2])
+//  return col.P3Colour (b)
 }

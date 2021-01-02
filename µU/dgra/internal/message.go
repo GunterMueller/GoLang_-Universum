@@ -1,6 +1,6 @@
 package internal
 
-// (c) Christian Maurer   v. 200119 - license see µU.go
+// (c) Christian Maurer   v. 201204 - license see µU.go
 
 import
   . "µU/obj"
@@ -12,8 +12,6 @@ type
           maxnum uint
                  bool "reply ok"
 }
-var
-  c0 = C0()
 
 func new_() Message {
   return &message{ Candidate, 0, 0, 0, false }
@@ -46,19 +44,19 @@ func (x *message) Clone() Any {
 }
 
 func (x *message) Codelen() uint {
-  return 1 + 3 * c0 + 1
+  return 1 + 3 * C0 + 1
 }
 
 func (x *message) Encode() Stream {
   s := make(Stream, x.Codelen())
   s[0] = x.byte
   i := uint(1)
-  copy(s[i:i+c0], Encode(x.uint))
-  i += c0
-  copy(s[i:i+c0], Encode(x.num))
-  i += c0
-  copy(s[i:i+c0], Encode(x.maxnum))
-  i += c0
+  copy(s[i:i+C0], Encode(x.uint))
+  i += C0
+  copy(s[i:i+C0], Encode(x.num))
+  i += C0
+  copy(s[i:i+C0], Encode(x.maxnum))
+  i += C0
   s[i] = 0; if x.bool { s[i] = 1 }
   return s
 }
@@ -66,12 +64,12 @@ func (x *message) Encode() Stream {
 func (x *message) Decode (s Stream) {
   x.byte = s[0]
   i := uint(1)
-  x.uint = Decode(uint(0), s[i:i+c0]).(uint)
-  i += c0
-  x.num = Decode(uint(0), s[i:i+c0]).(uint)
-  i += c0
-  x.maxnum = Decode(uint(0), s[i:i+c0]).(uint)
-  i += c0
+  x.uint = Decode(uint(0), s[i:i+C0]).(uint)
+  i += C0
+  x.num = Decode(uint(0), s[i:i+C0]).(uint)
+  i += C0
+  x.maxnum = Decode(uint(0), s[i:i+C0]).(uint)
+  i += C0
   x.bool = s[i] == 1
 }
 
