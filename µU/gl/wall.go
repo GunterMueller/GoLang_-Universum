@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 191027
+// (c) Christian Maurer   v. 191027 - license see µU.go
 
 import (
   "math"

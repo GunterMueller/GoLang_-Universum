@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 170918 - license see µU.go
+// (c) Christian Maurer   v. 210106 - license see µU.go
 
 import
   "strconv"
@@ -30,20 +30,20 @@ func (X *console) urectangOk (x, y, x1, y1 *uint) bool {
 
 func (X *console) Cls() {
   if ! visible { return }
-  l := int(colourdepth) * int(X.wd)
-  a := 0
-  c := X.scrB.Cstream()
-  for j := 0; j < int(X.ht); j++ {
-    for i := 0; i < int(X.wd); i++ {
-      copy (emptyBackground[a:a+int(colourdepth)], c)
-      a += int(colourdepth)
+  a := uint(0)
+  c := X.scrB.EncodeInv()
+  for j := uint(0); j < X.ht; j++ {
+    for i := uint(0); i < X.wd; i++ {
+      copy (emptyBackground[a:a+colourdepth], c)
+      a += colourdepth
     }
   }
-  a = (X.y * int(width) + X.x) * int(colourdepth)
-  for j := 0; j < int(X.ht); j++ {
+  a = (uint(X.y) * width + uint(X.x)) * colourdepth
+  l := colourdepth * X.wd
+  for j := uint(0); j < X.ht; j++ {
     copy (fbmem[a:a+l], emptyBackground)
     copy (fbcop[a:a+l], emptyBackground)
-    a += int(width) * int(colourdepth)
+    a += width * colourdepth
   }
 }
 
@@ -62,7 +62,7 @@ func (X *console) ClrGr (x, y, x1, y1 int) {
   da := uint(x1 - x) * colourdepth
   a := uint(0)
 /*
-  c := col.Cc (X.ScrColB())
+  c := col.ColStream (X.ScrColB())
   for j := uint(0); j < da; j++ {
     copy (emptyBackground[a:a+colourdepth], c)
     a += colourdepth
@@ -82,7 +82,7 @@ func (X *console) Buf (on bool) {
   X.buff = on
 /*
   a := 0
-  c := col.Cc (X.ScrColB())
+  c := col.ColStream (X.ScrColB())
   for x := 0; x < int(X.wd); x++ {
     copy (emptyBackground[a:a+int(colourdepth)], c)
     a += int(colourdepth)
@@ -99,31 +99,17 @@ func (X *console) Buf (on bool) {
     }
     a += w
   }
-}
-
-func (x *console) Buffered () bool {
-  return x.buff
-}
-
-func Buf1 (on bool) {
-  for _, s := range consList {
-    s.buff = on
-  }
-/*
-  c := col.Cc (col.Black)
-  a := 0
-  for i := 0; i < int(width); i++ {
-    for j := 0; j < int(height); j++ {
-      copy (emptyBackground[a:a+int(colourdepth)], c)
-      a += int(colourdepth)
-    }
-  }
-*/
+/*/
   if on {
     copy (fbcop, emptyBackground)
   } else {
     copy (fbmem, fbcop)
   }
+/*/
+}
+
+func (X *console) Buffered () bool {
+  return X.buff
 }
 
 func (X *console) Save (l, c, w, h uint) {

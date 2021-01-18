@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 170818 - license see µU.go
+// (c) Christian Maurer   v. 210105 - license see µU.go
 
 import (
   "µU/ker"
@@ -15,7 +15,7 @@ func init() {
 }
 
 func maxMode() Mode {
-  width, height = resMaxConsole()
+  width, height = maxResConsole()
   return ModeOf (width, height)
 }
 

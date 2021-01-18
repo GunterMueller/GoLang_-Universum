@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 201030 - license see µU.go
+// (c) Christian Maurer   v. 210106 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL
 // #include <stdio.h>
@@ -112,20 +112,6 @@ int lookupString (XEvent e) {
   printf("key %d %s %s\n", key, buffer, ";");
   return g;
 }
-
-unsigned long xGetPix (XImage *i, int x, int y) { return ((*((i)->f.get_pixel))((i), (x), (y))); }
-
-void xDestroyImg (XImage *i) { ((*((i)->f.destroy_image))((i))); }
-
-// unsigned short red (Display *d, unsigned long *c) {
-unsigned short red (Display *d, XColor *c) {
-  XQueryColor (d, XDefaultColormap (d, XDefaultScreen (d)), c); return c->red/256; }
-
-unsigned short green (Display *d, XColor *c) {
-  XQueryColor (d, XDefaultColormap (d, XDefaultScreen (d)), c); return c->green/256; }
-
-unsigned short blue (Display *d, XColor *c) {
-  XQueryColor (d, XDefaultColormap (d, XDefaultScreen (d)), c); return c->blue/256; }
 */
 import
   "C"
@@ -184,7 +170,6 @@ type
            focus,
              top vect.Vector
 //           delta float64 // invariant: delta == distance (origin, focus)
-         colours [][]col.Colour
                  }
 var (
   dspl string = env.Val ("DISPLAY")
@@ -201,15 +186,15 @@ var (
   actual *xwindow
   first bool = true // to start goSendEvents only once
   winList []*xwindow
-  txt = []string {"", "",
-                  "KeyPress", "KeyRelease", "ButtonPress", "ButtonRelease", "MotionNotify",
-                  "EnterNotify", "LeaveNotify", "FocusIn", "FocusOut", "KeymapNotify",
-                  "Expose", "GraphicsExpose", "NoExpose", "VisibilityNotify",
-                  "CreateNotify", "DestroyNotify", "UnmapNotify", "MapNotify", "MapRequest",
-                  "ReparentNotify", "ConfigureNotify", "ConfigureRequest", "GravityNotify",
-                  "ResizeRequest", "CirculateNotify", "CirculateRequest",
-                  "PropertyNotify", "SelectionClear", "SelectionRequest", "SelectionNotify",
-                  "ColormapNotify", "ClientMessage", "MappingNotify", "GenericEvent", "LASTEvent"}
+  txt = []string { "", "",
+                   "KeyPress", "KeyRelease", "ButtonPress", "ButtonRelease", "MotionNotify",
+                   "EnterNotify", "LeaveNotify", "FocusIn", "FocusOut", "KeymapNotify",
+                   "Expose", "GraphicsExpose", "NoExpose", "VisibilityNotify",
+                   "CreateNotify", "DestroyNotify", "UnmapNotify", "MapNotify", "MapRequest",
+                   "ReparentNotify", "ConfigureNotify", "ConfigureRequest", "GravityNotify",
+                   "ResizeRequest", "CirculateNotify", "CirculateRequest",
+                   "PropertyNotify", "SelectionClear", "SelectionRequest", "SelectionNotify",
+                   "ColormapNotify", "ClientMessage", "MappingNotify", "GenericEvent", "LASTEvent"}
   startSendEvents = make(chan int)
 )
 
@@ -235,7 +220,7 @@ func initX() {
                          uint(C.XDisplayHeight (dpy, screen))
   fullScreen = mode.ModeOf (uint(monitorWd), uint(monitorHt))
   planes = C.uint(C.XDefaultDepth (dpy, screen))
-  col.SetDepth (uint(planes))
+//  col.SetDepth (uint(planes))
   initialized = true
 }
 
@@ -379,10 +364,6 @@ func newWH (x, y, w, h uint) XWindow {
   X.clear()
 */
   X.origin, X.focus, X.top = vect.New(), vect.New(), vect.New()
-  X.colours = make([][]col.Colour, X.wd)
-  for x := uint(0); x < X.wd; x++ {
-    X.colours[x] = make([]col.Colour, X.ht)
-  }
   return X
 }
 
@@ -591,7 +572,7 @@ func sendEvents() {
         ;
       case C.ClientMessage:
         mT := C.mT (&xev)
-        if mT != naviAtom { println ("unknown xclient.message_type ", uint32(mT)) } // XXX
+        if mT != naviAtom { println ("unknown xclient.message_type ", uint32(mT)) }
       case C.MappingNotify:
         ;
       case C.GenericEvent:
@@ -612,20 +593,4 @@ func sendEvents() {
       }
     }
   }
-}
-
-func (X *xwindow) GetPixelColours() {
-//  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(X.x), C.int(X.y), C.uint(X.wd), C.uint(X.ht),
-  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(0), C.int(0), C.uint(X.wd), C.uint(X.ht),
-                       C.ulong(1 << 24 - 1), C.XYPixmap)
-  var c C.XColor
-  for y := uint(0); y < X.ht; y++ {
-    for x := uint(0); x < X.wd; x++ {
-println (x, y)
-      c.pixel = C.xGetPix (ximg, C.int(x), C.int(y))
-      r, g, b := byte(C.red (dpy, &c)), byte(C.green (dpy, &c)), byte(C.blue (dpy, &c))
-      X.colours[x][y] = col.New3 ("", r, g, b)
-    }
-  }
-  C.xDestroyImg (ximg)
 }

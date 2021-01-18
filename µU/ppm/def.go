@@ -1,33 +1,21 @@
 package ppm
 
-// (c) Christian Maurer   v. 201230 - license see µU.go
+// (c) Christian Maurer   v. 210104 - license see µU.go
 
-import (
-  . "µU/obj"
-  "µU/col"
-)
-type
-  PPM interface { // portable pixmap files
+// The pixels in the screen are written to a file
+// in the ppm-format under the name n.ppm.
+func Put (n string) { put(n) }
 
-  Persistor
+// Returns (0, 0), if there is no file with the name n.ppm
+// containing an image in the ppm-format; returns otherwise
+// width and height of this image.
+func Size (n string) (uint, uint) { return size_(n) }
 
-  Set (w, h uint)
+// If there is no file with the name n.ppm containing an image
+// in the ppm-format, nothing has happened. Otherwise, that
+// image is drawn to the screen with (x, y) as top left corner.
+func Get (n string, x, y uint) { get(n,x,y) }
 
-  Get (n string)
-
-  Put()
-
-// x is written to the screen.
-  Write()
-
-// c is the actual colour.
-  ColourF (c col.Colour)
-
-// Pre: 0 <= x < width, 0 <= y < height of the calling ppm-file.
-// The point at screen position (x, y) is set in the actual colour in the calling ppm-file.
-  Point (x, y int)
-}
-
-// Returns a new ppm-file with width w and height h.
-// All its points are black.
-func New() PPM { return new_() }
+// All pixels in the screen are written to a file
+// with the name n.ppm and are printed.
+func Print (n string) { print_(n) }

@@ -1,11 +1,12 @@
 package set
 
-// (c) Christian Maurer   v. 201225 - license see µU.go
+// (c) Christian Maurer   v. 201003 - license see µU.go
 
 import (
   "µU/ker"
   . "µU/obj"
   "µU/scr"
+  "µU/str"
 )
 type
   balance byte; const (
@@ -373,6 +374,6 @@ func (x *tree) write (x0, x1, y, dy uint, f func (Any) string) {
 func (x *tree) write1 (d uint, f func (Any) string) {
   if x == nil { return }
   x.right.write1 (d + 1, f)
-//  println (str.New (6 * d) + f (x.Any))
+  println (str.New (6 * d) + f (x.Any))
   x.left.write1 (d + 1, f)
 }

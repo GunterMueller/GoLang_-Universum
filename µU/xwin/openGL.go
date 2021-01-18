@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 201225 - license see µU.go
+// (c) Christian Maurer   v. 201030 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lGL -lGLU
 // #include <stdlib.h>
@@ -18,7 +18,7 @@ import (
 //  "fmt"
   "math"
 //  "time"
-  "µU/ker"
+//  "µU/ker"
   "µU/gl"
   "µU/glu"
 //  "µU/col"
@@ -81,7 +81,7 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
       glu.Perspective (60, X.proportion, 0.1, 10000.)
       C.gluLookAt (d(ex), d(ey), d(ez), d(fx), d(fy), d(fz), d(nx), d(ny), d(nz))
       draw()
-      if e := gl.Error(); e != "" { ker.Panic ("openGL error: " + e) }
+      if e := gl.Error(); e != "" { println ("openGL error: " + e) }
       C.glXSwapBuffers (dpy, C.GLXDrawable(X.win))
       C.glFinish()
 //      gl.MatrixMode (gl.Modelview) // obviously superfluous

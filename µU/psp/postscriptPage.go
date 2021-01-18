@@ -12,7 +12,7 @@ import (
   "µU/col"
   "µU/scr"
   "µU/font"
-  "µU/n" // bluse
+  "µU/n"
 )
 type
   postscriptPage struct {
@@ -26,8 +26,6 @@ func new_() PostscriptPage {
   const ppi = ker.PointsPerInch
   return x
 }
-
-// func bluse() uint { return n.Wd (12) }
 
 func (x *postscriptPage) S (pt int) float64 {
   return float64(pt) / float64(scr.Wd()) * ker.A4wdPt

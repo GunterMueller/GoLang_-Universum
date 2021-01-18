@@ -38,7 +38,7 @@ type (
              }
 )
 
-func ConsoleInit() {
+func init_() {
   var m mode
   syscall.Syscall (syscall.SYS_IOCTL, 0, _GETMODE, uintptr(unsafe.Pointer(&m)))
   m.mode = _PROCESS
@@ -48,7 +48,7 @@ func ConsoleInit() {
   syscall.Syscall (syscall.SYS_IOCTL, 0, _SETMODE, uintptr(unsafe.Pointer(&m)))
 }
 
-func Console1 (forward bool) {
+func switch_(forward bool) {
   const (
     xdm = 7
     msg = 10 // messages
@@ -83,22 +83,22 @@ func Console1 (forward bool) {
   syscall.Syscall (syscall.SYS_IOCTL, 0, _WAITACTIVE, uintptr(a))
 }
 
-func Console (a uint8) {
+func console (a uint8) {
   if a <= 0 || a > maxConsole { return }
   syscall.Syscall (syscall.SYS_IOCTL, 0, _ACTIVATE, uintptr(a))
   syscall.Syscall (syscall.SYS_IOCTL, 0, _WAITACTIVE, uintptr(a))
 }
 
-func ActualConsole() uint {
+func actual() uint {
   var s stat
   syscall.Syscall (syscall.SYS_IOCTL, 0, _GETSTATE, uintptr(unsafe.Pointer(&s)))
   return uint(s.active)
 }
 
-func DeactivateConsole() {
+func deactivate() {
   syscall.Syscall (syscall.SYS_IOCTL, 0, _RELDISP, _ACKACQ)
 }
 
-func ActivateConsole() {
+func activate() {
   syscall.Syscall (syscall.SYS_IOCTL, 0, _RELDISP, _PROCESS)
 }

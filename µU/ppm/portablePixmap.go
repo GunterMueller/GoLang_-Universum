@@ -1,99 +1,60 @@
 package ppm
 
-// (c) Christian Maurer   v. 201231 - license see µU.go
+// (c) Christian Maurer   v. 210107 - license see µU.go
 
 import (
+  "os/exec"
   . "µU/obj"
-  "µU/col"
+  "µU/str"
   "µU/scr"
-  "µU/errh"
+  "µU/prt"
   "µU/pseq"
 )
-const (
-  lf = byte(10)
+const
   suffix = ".ppm"
-)
-type
-  ppm struct {
-     header string
-  w, h, max,
-     lh, ls int
-            Stream
-     fg, bg col.Colour
-            pseq.PersistentSequence
-       name string
-            }
 
-func new_() PPM {
-  p := new(ppm)
-  p.Stream = make(Stream, 0)
-  return p
+func put (n string) {
+  if str.Empty (n) { return }
+  str.OffSpc (&n)
+  filename := n + suffix
+  s := scr.PPMEncode (0, 0, scr.Wd(), scr.Ht())
+  file := pseq.New (s)
+  file.Name (filename)
+  file.Clr()
+  file.Put (s)
+  file.Fin()
 }
 
-func (p *ppm) Set (w, h uint) {
-  p.w, p.h, p.max = 3 * int(w), int(h), 255
-  p.header = scr.P6Header (w, h)
-  p.lh = len(p.header)
-  p.ls = p.lh + p.w * p.h + 1
-  p.Stream = make(Stream, p.ls)
-  copy (p.Stream[:p.lh], Stream(p.header))
-  p.Stream[p.ls-1] = lf
-  p.PersistentSequence = pseq.New (p.Stream)
+func size_(n string) (uint, uint) {
+  if str.Empty (n) { return 0, 0 }
+  str.OffSpc (&n)
+  filename := n + suffix
+  l := pseq.Length (filename)
+  if l == 0 { return 0, 0 }
+  s := make(Stream, l)
+  file := pseq.New (s)
+  file.Name (filename)
+  s = file.Get().(Stream)
+  file.Fin()
+  return scr.PPMSize (s)
 }
 
-func (p *ppm) ColourF (c col.Colour) {
-  p.fg = c
+func get (n string, x, y uint) {
+  if str.Empty (n) { return }
+  str.OffSpc (&n)
+  filename := n + suffix
+  l := pseq.Length (filename)
+  if l == 0 { return }
+  s := make(Stream, l)
+  file := pseq.New (s)
+  file.Name (filename)
+  s = file.Get().(Stream)
+  scr.PPMDecode (s, x, y)
+  file.Fin()
 }
 
-func (p *ppm) Point (x, y int) {
-  if x < 0 || 3 * x >= p.w || y < 0 || y >= p.h { return }
-  i := p.lh + y * p.w + 3 * x
-  copy (p.Stream[i:i+3], p.fg.Encode())
-}
-
-func (p *ppm) Name (n string) {
-  p.name = n
-  p.PersistentSequence.Name (p.name + suffix)
-}
-
-func (p *ppm) Rename (n string) {
-  if n == p.name { return }
-  p.name = n
-  p.PersistentSequence.Rename (p.name + suffix)
-}
-
-func (p *ppm) Write() {
-  c, c0 := col.New(), col.New()
-  i := p.lh
-  for y := 0; y < p.h; y++ {
-    for x := 0; x < p.w / 3; x++ {
-      c.Decode (p.Stream[i:i+3])
-      if ! c.Eq (c0) {
-        scr.ColourF (c)
-        c0.Copy (c)
-      }
-      scr.Point (x, y)
-      i += 3
-    }
-  }
-}
-
-func (p *ppm) Get (n string) {
-  errh.Hint (errh.ToWait)
-  p.ls = int(pseq.Length (n + suffix))
-  s := make(Stream, p.ls)
-  p.PersistentSequence = pseq.New (s)
-  p.Name (n)
-  p.Stream = p.PersistentSequence.Get().(Stream)
-  w, h, m, i := scr.HeaderData (p.Stream)
-  p.w, p.h, p.max, p.lh = 3 * int(w), int(h), int(m), i + 1
-  errh.DelHint()
-}
-
-func (p *ppm) Put() {
-  p.PersistentSequence.Put (p.Stream)
-}
-
-func (p *ppm) Fin() {
-  p.PersistentSequence.Fin()
+func print_(n string) {
+  put (n)
+  e := exec.Command (prt.PrintCommand, "-o", "fit-to-page", n + suffix).Run()
+  if e != nil { println (e.Error()) }
 }

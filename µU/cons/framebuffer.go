@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 210106 - license see µU.go
 
 //#include <stdlib.h>
 //#include <fcntl.h>
@@ -10,8 +10,7 @@ package cons
 //#include <linux/vt.h>
 //#include <linux/fb.h>
 /*
-void * framebuffer (int *x, int *y, int *b, int *a)
-{
+void * framebuffer (int *x, int *y, int *b, int *a) {
   int fd;
   struct fb_var_screeninfo v;
   struct fb_fix_screeninfo f;
@@ -52,7 +51,6 @@ import (
   . "µU/mode"
   "µU/ker"
   "µU/time"
-  "µU/col"
 )
 const (
   esc1 = "\x1b["
@@ -96,7 +94,7 @@ func consoleFin() {
 var
   initialized bool
 
-func resMaxConsole() (uint, uint) {
+func maxResConsole() (uint, uint) {
   if framebufferOk() {
     return width, height
   }
@@ -108,7 +106,7 @@ func framebuffer() (x, y, b uint, fb Stream) {
   f := C.framebuffer (&xc, &yc, &bc, &ac)
   x, y, b = uint(xc), uint(yc), uint(bc)
   h := (*reflect.SliceHeader)((unsafe.Pointer(&fb)))
-  m := int(x * y * ((b + 4) / 8)) // possible bitsizes 4, 15 !
+  m := int(x * y * (b / 8))
   h.Cap, h.Len, h.Data = m, m, uintptr(f)
   return
 }
@@ -120,19 +118,20 @@ func framebufferOk() bool {
   initialized = true
   colbits := uint(0)
   width, height, colbits, fbmem = framebuffer()
+  if colbits < 24 { ker.Panic ("µU does not support less than 24 bits per pixel") }
   if fbmem == nil {
     return false
   }
   fullScreen = ModeOf (width, height)
-  if Wd(fullScreen) != width || Ht(fullScreen) != height { ker.Panic ("absolute Katastrophe, Katastrophe pur ...") }
-  col.SetDepth (colbits)
-  colourdepth = col.Depth()
+  if Wd(fullScreen) != width || Ht(fullScreen) != height { ker.Panic ("fullScreen bug") }
+  colourdepth = colbits / 8
   fbmemsize = width * height * colourdepth
   if uint(len (fbmem)) != fbmemsize {
-    ker.Panic ("len (fbmem) == " + strconv.Itoa(len(fbmem)) + " != fbmemsize == " + strconv.Itoa(int(fbmemsize)))
+    ker.Panic ("len (fbmem) == " + strconv.Itoa(len(fbmem)) +
+               " != fbmemsize == " + strconv.Itoa(int(fbmemsize)))
   }
-  fbcop = make (Stream, fbmemsize)
-  emptyBackground = make (Stream, fbmemsize) // TODO each X needs it's own emptyBackground ?
+  fbcop = make(Stream, fbmemsize)
+  emptyBackground = make(Stream, fbmemsize)
   ker.ConsoleInit()
   ker.SetAction (syscall.SIGUSR1, consoleOff)
   ker.SetAction (syscall.SIGUSR2, consoleOn)

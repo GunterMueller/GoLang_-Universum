@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 201230 - license see µU.go
+// (c) Christian Maurer   v. 210106 - license see µU.go
 
 import (
   "math"
@@ -492,20 +492,20 @@ func decode (a Any, bs Stream) Any {
   return a
 }
 
-func encode4 (a, b, c, d uint32) Stream {
-  s := make (Stream, 16)
-  copy (s[:4], encode (a))
-  copy (s[4:8], encode (b))
-  copy (s[8:12], encode (c))
-  copy (s[12:16], encode (d))
+func encode4 (a, b, c, d uint16) Stream {
+  s := make (Stream, 8)
+  copy (s[0:2], encode (a))
+  copy (s[2:4], encode (b))
+  copy (s[4:6], encode (c))
+  copy (s[6:8], encode (d))
   return s
 }
 
-func decode4 (s Stream) (uint32, uint32, uint32, uint32) {
-  a := decode (uint32(0), s[:4]).(uint32)
-  b := decode (uint32(0), s[4:8]).(uint32)
-  c := decode (uint32(0), s[8:12]).(uint32)
-  d := decode (uint32(0), s[12:16]).(uint32)
+func decode4 (s Stream) (uint16, uint16, uint16, uint16) {
+  a := decode (uint16(0), s[0:2]).(uint16)
+  b := decode (uint16(0), s[2:4]).(uint16)
+  c := decode (uint16(0), s[4:6]).(uint16)
+  d := decode (uint16(0), s[6:8]).(uint16)
   return a, b, c, d
 }
 

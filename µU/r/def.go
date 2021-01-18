@@ -1,6 +1,6 @@
 package r
 
-// (c) Christian Maurer   v. 201225 - license see µU.go
+// (c) Christian Maurer   v. 210103 - license see µU.go
 
 // >>> For all functions without specification ;-) the source is the spec.
 
@@ -16,8 +16,6 @@ const (
   Max = math.MaxFloat64
 )
 type
-  Func64 = func (float64) float64
-type
   Operation = int; const (
   NoOp = iota
   Add
@@ -32,7 +30,6 @@ type
   Undef = iota                   // undefined function
   Sqr; Sqrt                      // square, square root
   Exp; Exp10; Exp2               // exponentials
-//  Pow10
   Log; Lg; Ld                    // logarithms
   Sin; Cos; Tan; Cot             // arithmetic functions
   Arcsin; Arccos; Arctan; Arccot // and their inverses
@@ -43,6 +40,8 @@ type
   H; H1; H2
   NFunctions
 )
+type
+  Func64 = func (float64) float64
 
 // Returns, what the name says.
 func NaN() float64 { return math.NaN() }
@@ -97,7 +96,6 @@ func FuncStarted (s string) (Function, uint, bool) { return funcStarted(s) }
 func OpString (op Operation) string { return opString(op) }
 func OpText (op Operation) string { return opText(op) }
 func FuncString (f Function) string { return funcString(f) }
-func FuncFunc (f Function) Func64 { return funcFunc(f) }
 
 func OpVal (op Operation, x, y float64) float64 { return opVal(op,x,y) }
 func FuncVal (f Function, x float64) float64 { return funcVal(f,x) }
@@ -110,7 +108,7 @@ func FuncCodelen() uint { return funcCodelen() }
 func FuncEncode (f Function) obj.Stream { return funcEncode(f) }
 func FuncDecode (s obj.Stream) Function { return funcDecode(s) }
 
-// func Inverse (f Function) Function { return inverse(f) }
+func Inverse (f Function) Function { return inverse(f) }
 
 func Derivation (f Function) string { return derivation(f) }
 

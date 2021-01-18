@@ -1,6 +1,6 @@
 package mode
 
-// (c) Christian Maurer   v. 170812 - license see µU.go
+// (c) Christian Maurer   v. 210101 - license see µU.go
 
 import (
   "strconv"
@@ -9,8 +9,9 @@ import (
 var
   x, y [NModes]uint
 
-func init() { //        framebuffer colourdepth:  8 bit  16 bit 24 bit
-  var m Mode
+func init() {
+  var m Mode //         framebuffer colourdepth:  8 bit  16 bit 24 bit
+  m = None;    x[m], y[m] =    0,    0
   m = Mini;    x[m], y[m] =  192,  160 //  6:5
   m = HQVGA;   x[m], y[m] =  240,  160 //  4:3
   m = QVGA;    x[m], y[m] =  320,  240 //  4:3    0x334  0x335  0x336
@@ -55,10 +56,7 @@ func modeOf (w, h uint) Mode {
       return m
     }
   }
-  ker.Panic ("hardware reports undefined mode " + strconv.Itoa(int(w)) + " x " + strconv.Itoa(int(h)))
+  ker.Panic ("hardware reports undefined mode " + strconv.Itoa(int(w)) +
+             " x " + strconv.Itoa(int(h)))
   return NModes
-}
-
-func wdht (w, h uint) {
-  m := WH; x[m], y[m] = w, h
 }

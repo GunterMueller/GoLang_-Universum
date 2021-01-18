@@ -1,29 +1,27 @@
 package cons
 
-// (c) Christian Maurer   v. 201228 - license see µU.go
+// (c) Christian Maurer   v. 210106 - license see µU.go
 
-import
+import (
   . "µU/obj"
+  "µU/col"
+)
 
 func (X *console) Codelen (w, h uint) uint {
-  return 4 * uint(4) + w * h * colourdepth
+  return 2 * uint(4) + colourdepth * w * h
 }
 
-func (X *console) Encode (x, y, w, h uint) Stream {
-  if w == 0 || h == 0 || w > X.wd || h > X.ht {
-    return make(Stream, 0)
-  }
+func (X *console) Encode (x, y, w, h uint) []byte {
   s := make (Stream, X.Codelen (w, h))
-  i, k := 4 * uint(4), uint(0)
-  copy (s[:i], Encode4 (uint32(x), uint32(y), uint32(w), uint32(h)))
-  j :=  colourdepth * (width * y + x)
-  dj := colourdepth * width
-  dw := colourdepth * w
-  for n := y; n < y + h; n++ {
-    k = i - 16
-    copy (s[i:i+dw], fbcop[k:k+dw])
-    i += dw
-    j += dj
+  i := 2 * uint(4)
+  copy (s[:i], Encode4 (uint16(x), uint16(y), uint16(w), uint16(h)))
+  for l := X.y; l < X.y + int(h); l++ {
+    j := colourdepth * width * uint(l)
+    for c := X.x; c < X.x + int(w); c++ {
+      copy (s[i:i+3], fbmem[j:j+3])
+      i += 3
+      j += colourdepth
+    }
   }
   return s
 }
@@ -31,16 +29,15 @@ func (X *console) Encode (x, y, w, h uint) Stream {
 func (X *console) Decode (s Stream) {
   if s == nil { return }
   if ! visible { return }
-  j := 4 * uint(4)
-  x4, y4, w4, h4 := Decode4 (s[:j])
-  x, y, w, h := uint(x4), uint(y4), uint(w4), uint(h4)
-  i := colourdepth * (width * y + x)
-  di := colourdepth * width
-  dw := colourdepth * w
-  for n := uint(0); n < h; n++ {
-    copy (fbmem[i:i+dw], s[j:i+dw])
-    copy (fbcop[i:i+dw], s[j:i+dw])
-    i += di
-    j += dw
+  i := 2 * uint(4)
+  x0, y0, w, h := Decode4 (s[:i])
+  c := col.New()
+  for y := int(y0); y < int(y0 + h); y++ {
+    for x := int(x0); x < int(x0 + w); x++ {
+      c.Set (s[i], s[i+1], s[i+2])
+      X.cF, X.codeF = c, c.EncodeInv()
+      X.Point (x, y)
+      i += 3
+    }
   }
 }

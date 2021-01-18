@@ -21,7 +21,6 @@ func (X *screen) SetLinewidth (w Linewidth) {
 }
 
 func (X *screen) Point (x, y int) {
-//  X.phantom[x][y] = X.ColF()
   if underX {
     X.XWindow.Point (x, y)
   } else {

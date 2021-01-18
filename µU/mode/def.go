@@ -1,10 +1,10 @@
 package mode
 
-// (c) Christian Maurer   v. 170817 - license see µU.go
+// (c) Christian Maurer   v. 210101 - license see µU.go
 
 type
   Mode byte; const (
-  WH = Mode(iota) //   lines x colums for 8x16-font
+  None = Mode(iota) // lines x colums for 8x16-font
   Mini   //  192 x  160   10 x  24
   HQVGA  //  240 x  160   10 x  30
   QVGA   //  320 x  240   15 x  40
@@ -50,5 +50,3 @@ func Ht (m Mode) uint { return y[m] }
 func Res (m Mode) (uint, uint) { return x[m], y[m] }
 
 func ModeOf (w, h uint) Mode { return modeOf(w,h) }
-
-func WdHt (w, h uint) { wdht(w,h) }

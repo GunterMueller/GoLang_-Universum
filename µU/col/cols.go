@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 201027 - license see µU.go
+// (c) Christian Maurer   v. 210103 - license see µU.go
 
 func HeadF() Colour            { return LightWhite() }
 func HeadB() Colour            { return Blue() }
@@ -10,8 +10,6 @@ func ErrorF() Colour           { return FlashYellow() }
 func ErrorB() Colour           { return Red() }
 func MenuF() Colour            { return LightWhite() }
 func MenuB() Colour            { return Red() }
-func MUF() Colour              { return new3 ("MUF",               0,  16,  64) }
-func MUB() Colour              { return new3 ("MUB",             231, 238, 255) }
 
 func Black() Colour            { return new3 ("Black",             0,   0,   0) }
 func Brown() Colour            { return new3 ("Brown",            95,  53,  34) }

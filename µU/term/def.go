@@ -1,6 +1,8 @@
 package term
 
-// (c) Christian Maurer   v. 201218 - license see µU.go
+// (c) Christian Maurer   v. 201214 - license see µU.go
+//
+// >>> under development
 
 import (
   . "µU/obj"
@@ -11,7 +13,6 @@ type
 type
   Term interface {
 
-  Coder
   Editor
   col.Colourer
 

@@ -1,0 +1,4 @@
+func ok (m mode.Mode) bool {
+  w, h := maxRes()
+  return mode.Wd (m) <= w && mode.Ht(m) <= h
+}

@@ -1,14 +1,19 @@
 package col
 
-// (c) Christian Maurer   v. 201229 - license see µU.go
+// (c) Christian Maurer   v. 210106 - license see µU.go
 
 import
  . "µU/obj"
 
+const
+  NColours = 1 << 24
 type
   Colour interface {
 
   Object // empty colour is black
+
+// TODO Spec
+  EncodeInv() Stream
 
 // String returns the name of x, defined by the name given with New3.
   Stringer
@@ -25,10 +30,9 @@ type
 // Return the values of red/green/blue intensity of x.
   R() byte; G() byte; B() byte
 
+// x is the colour defined by the values of r, g and b.
+  Set (r, g, b byte)
   SetR (b byte); SetG (b byte); SetB (b byte)
-
-// Returns the stream consisting of x.R(), x.G() and x.B().
-  Cstream() Stream
 
 // TODO Spec
   Code() uint
@@ -58,18 +62,6 @@ func Rand() Colour { return random() }
 
 func StartCols() (Colour, Colour) { return startCols() }
 func StartColsA() (Colour, Colour) { return startColsA() }
-
-// Pre: b is one of 4, 8, 15, 16, 24 or 32.
-// depth() Colour { return = (b + 4) / 8.
-func SetDepth (b uint) { setDepth(b) }
-
-func Depth() uint { return depth } // in bytes - must not be altered after the call to SetDepth !
-
-// Returns the number of available colours, depending on depth.
-func NCols() uint { return nCols() }
-
-// func P6Encode (a, p Stream) { p6Encode(a,p) }
-// func P3Colour (a Stream) Colour { return p3Colour(a) }
 
 func AllColours() []Colour { return allColours() }
 

@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 201229 - license see µU.go
+// (c) Christian Maurer   v. 210103 - license see µU.go
 
 // #include <stdlib.h>
 // #include <X11/X.h>

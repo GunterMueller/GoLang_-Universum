@@ -69,12 +69,12 @@ func new_(a Any, me, i uint, n string, p uint16) NetChannel {
 }
 
 func (x *netChannel) Send (a Any) {
-  if x.Conn == nil { Panic ("no Conn") }
+  if x.Conn == nil { panic("no Conn") }
   if x.Any == nil {
     bs := Encode(a)
     bs = append (Encode(Codelen(a)), bs...)
     _, x.error = x.Conn.Write (bs)
-    if x.error != nil { Panic (x.error.Error()) }
+    if x.error != nil { println ("1. " + x.error.Error()) }
   } else {
     CheckTypeEq (x.Any, a)
     _, x.error = x.Conn.Write(Encode(a))
@@ -82,7 +82,7 @@ func (x *netChannel) Send (a Any) {
 }
 
 func (x *netChannel) Recv() Any {
-  if x.Conn == nil { Panic ("no Conn") }
+  if x.Conn == nil { panic("no Conn") }
   if x.Any == nil {
     _, x.error = x.Conn.Read(x.Stream[:C0])
     if x.error != nil {
@@ -91,7 +91,7 @@ func (x *netChannel) Recv() Any {
     x.uint = Decode (uint(0), x.Stream[:C0]).(uint)
     _, x.error = x.Conn.Read (x.Stream[C0:C0+x.uint])
     if x.error != nil {
-//      Panic (x.error.Error())
+      println ("5. " + x.error.Error())
       return Clone(x.Any)
     }
     return x.Stream[C0:C0+x.uint]

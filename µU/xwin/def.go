@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 201024 - license see µU.go
+// (c) Christian Maurer   v. 210104 - license see µU.go
 
 // >>> This package only serves the implementations of µU/mouse,
 //     µU/kbd and µU/cons; it must not be used anywhere else.

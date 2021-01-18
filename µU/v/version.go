@@ -9,23 +9,21 @@ import (
   "µU/day"
 )
 const ( // v.
-  yy = 20
-  mm = 12
-  dd = 31
+  y = 2021
+  m =    1
+  d =    6
 )
 var
   v day.Calendarday = day.New()
 
 func init() {
-  v.Set (dd, mm, 2000 + yy)
+  v.Set (d, m, y)
   v.SetFormat (day.Yymmdd)
 }
 
 func colours() (col.Colour, col.Colour, col.Colour) {
-  return col.LightWhite(), col.LightGreen(), col.BlackGreen()
   return col.LightWhite(), col.WhiteBlue(), col.DarkBlue()
-  return col.FlashYellow(), col.WhiteYellow(), col.DarkBlue()
-  return col.MUF(), col.New3 ("", 0, 16, 128), col.MUB()
+  return col.LightWhite(), col.LightGreen(), col.BlackGreen()
 }
 
 func want (y, m, d uint) {

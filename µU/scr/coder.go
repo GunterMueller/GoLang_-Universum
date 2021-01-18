@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 210104 - license see µU.go
 
 func (X *screen) Codelen (w, h uint) uint {
   if underX {

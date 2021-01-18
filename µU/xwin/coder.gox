@@ -1,0 +1,91 @@
+package xwin
+
+// (c) Christian Maurer   v. 210102 - license see µU.go
+
+// #include <stdio.h>
+// #include <X11/X.h>
+// #include <X11/Xlib.h>
+// #include <X11/Xutil.h>
+/*
+unsigned long xGetPixel (XImage *i, int x, int y) { return XGetPixel (i, x, y); }
+void xPutPixel (XImage *i, int x, int y, unsigned long p) { XPutPixel (i, x, y, p); }
+void xDestroyImage (XImage *i) { XDestroyImage (i); }
+*/
+import
+  "C"
+import (
+  "µU/obj"
+  "µU/col"
+)
+const (
+  M = C.ulong(1 << 32 - 1)
+  nul = C.int(0)
+//  uff = 3
+  uff = 4
+)
+
+func enc (x uint32) obj.Stream {
+  s := make(obj.Stream, 4)
+  for i := 0; i < 4; i++ {
+    s[i] = byte(x)
+    x >>= 8
+  }
+//  s[0], s[2] = s[2], s[0] // fuck - I do not understand, why this is necessary
+  return s
+}
+
+func (X *xwindow) Codelen (w, h uint) uint {
+//  return 2 * 4 + 3 * w * h
+  return 2 * 4 + 4 * w * h
+}
+
+func (X *xwindow) Encode (w, h uint) obj.Stream {
+  if w == 0 || h == 0 { panic ("xwin.Encode: w == 0 or h == 0") }
+  if w > uint(X.wd) { panic ("xwin.Encode: w > X.wd") }
+  if h > uint(X.ht) { panic ("xwin.Encode: h > X.ht") }
+  s := make (obj.Stream, X.Codelen (w, h))
+  n := 2 * 4
+  copy (s[:n], obj.Encode2 (uint32(w), uint32(h)))
+  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(0), C.int(0),
+                       C.uint(w), C.uint(h), M, C.XYPixmap)
+  var pixel C.ulong
+  c := col.New()
+  for y := 0; y < int(h); y++ {
+    for x := 0; x < int(w); x++ {
+      pixel = C.xGetPixel (ximg, C.int(x), C.int(y))
+      e := enc (uint32(pixel))
+      if e[3] != 0 { println (string(e[3])); panic ("Kackdreck") }
+      copy (s[n:n+4], obj.Encode (int32(pixel)))
+      copy (s[n:n+3], e[:3])
+      c.Decode (e[:3])
+      X.colour[x][y].Copy (c)
+      n += uff
+    }
+  }
+  C.xDestroyImage (ximg)
+println ("xwin/coder.go: (len(s) - 16)/1600 ==", (len(s) - 16)/1600)
+  return s
+}
+
+func (X *xwindow) Decode (s obj.Stream) {
+  if s == nil { return }
+  n := int32(2 * 4)
+  w, h := obj.Decode2 (s[:n])
+  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(0), C.int(0),
+                       C.uint(w), C.uint(h), M, C.XYPixmap)
+  var pixel C.ulong
+  for j := uint32(0); j < h; j++ {
+    for i := uint32(0); i < w; i++ {
+      e := obj.Stream {s[n+0], s[n+1], s[n+2], 0}
+      pixel = (C.ulong)(obj.Decode (uint32(0), e).(uint32))
+      C.xPutPixel (ximg, C.int(i), C.int(j), pixel)
+      n += uff
+    }
+  }
+  C.XPutImage (dpy, C.Drawable(X.win), X.gc, ximg, nul, nul, C.int(0), C.int(0),
+               C.uint(w), C.uint(h))
+  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.buffer), X.gc, C.int(0), C.int(0),
+               C.uint(w), C.uint(h), C.int(0), C.int(0))
+  C.xDestroyImage (ximg)
+  C.XFlush (dpy)
+}

@@ -9,7 +9,7 @@ package dgra
 //     and propagates it to its successor.
 //     So finally each vertex has the whole cycle and can easily compute the leader.
 
-// XXX funzt nicht, sondern hört nach zwei auf
+// >>> XXX This implementation is obviously not correct ! TODO
 
 import
   . "µU/obj"

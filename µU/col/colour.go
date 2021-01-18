@@ -1,11 +1,9 @@
 package col
 
-// (c) Christian Maurer   v. 191107 - license see µU.go
+// (c) Christian Maurer   v. 210106 - license see µU.go
 
 import (
   . "µU/obj"
-  "strconv"
-  "µU/ker"
   "µU/rand"
 )
 const (
@@ -13,6 +11,7 @@ const (
   m1 = m - 1
   light = byte(m1)
   codelen = 3
+  dp = uint(3)
 )
 type
   colour struct {
@@ -20,8 +19,6 @@ type
                 string
                 }
 var (
-  bitDepth uint
-  depth uint
   all = make([]uint, 0)
   name = make([]string, 0)
 )
@@ -73,14 +70,8 @@ func (c *colour) SetB (b byte) {
   c.b = b
 }
 
-func (c *colour) Cstream() Stream {
-  n := c.Code()
-  s := make(Stream, depth)
-  for i := uint(0); i < depth; i++ {
-    s[i] = byte(n)
-    n >>= 8
-  }
-  return s
+func (c *colour) Set (r, g, b byte) {
+  c.r, c.g, c.b = r, g, b
 }
 
 func (c *colour) IsBlack() bool {
@@ -162,6 +153,7 @@ func startColsA() (Colour, Colour) {
   return red, black
 }
 
+/*/
 func (c *colour) ansiEncode() uint { // 0..15 // doch vielleicht Mist
   const (black = 1 << iota / 2; red; green; blue; light)
   const m3 = m1 / 3
@@ -174,6 +166,7 @@ func (c *colour) ansiEncode() uint { // 0..15 // doch vielleicht Mist
   if r >= m3 && g >= m3 && b >= m3 { n += light }
   return n
 }
+/*/
 
 func (c *colour) Invert() {
   c.r, c.g, c.b = m1 - c.r, m1 - c.g, m1 - c.b
@@ -253,10 +246,11 @@ func (c *colour) Codelen() uint {
 }
 
 func (c *colour) Encode() Stream {
-  s := make(Stream, 3)
-  s[0], s[1], s[2] = c.r, c.g, c.b
-  return s
   return Stream {c.r, c.g, c.b}
+}
+
+func (c *colour) EncodeInv() Stream {
+  return Stream {c.b, c.g, c.r}
 }
 
 func (c *colour) Decode (s Stream) {
@@ -267,47 +261,10 @@ func (c *colour) Decode (s Stream) {
   }
 }
 
-func setDepth (bits uint) {
-  switch bits {
-  case 4, 8, 15, 16, 24, 32:
-    bitDepth = bits
-    depth = (bitDepth + 4) / 8
-  default:
-    ker.Panic ("strange colourdepth: " + strconv.Itoa(int(bits)) + " bits")
-  }
-}
-
-func nCols() uint{
-  switch bitDepth {
-  case 4:
-    return 16
-  case 8:
-    return m
-  case 15:
-    return 128 * m
-  case 16:
-    return m * m
-  case 24, 32:
-    return m * m * m
-  }
-  return 0
+func depth() uint {
+  return dp
 }
 
 func (c *colour) Code() uint {
-  switch bitDepth {
-  case 4:
-    return c.ansiEncode()
-  case 8:
-    return ((uint(c.r) >> 5) << 2 + uint(c.g) >> 5) << 3 + uint(c.b) >> 6 // direct colour
-  case 15:
-    return ((uint(c.r) >> 3) << 5 + uint(c.g) >> 3) << 5 + uint(c.b) >> 3
-  case 16:
-    return ((uint(c.r) >> 3) << 5 + uint(c.g) >> 2) << 6 + uint(c.b) >> 3
-  case 24:
-    return (uint(c.r) << 8 + uint(c.g)) << 8 + uint(c.b)
-  case 32:
-    return (uint(c.r) << 8 + uint(c.g)) << 8 + uint(c.b)
-//    return m * (m * (uint(c.alpha) << 8 + (uint(c.r) << 8 + uint(c.g)) << 8 + uint(c.b)
-  }
-  return 0
+  return (uint(c.r) << 8 + uint(c.g)) << 8 + uint(c.b)
 }

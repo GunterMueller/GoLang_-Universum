@@ -1,6 +1,6 @@
 package ker
 
-// (c) Christian Maurer   v. 201228 - license see µU.go
+// (c) Christian Maurer   v. 210105 - license see µU.go
 
 import (
   "os"
@@ -36,11 +36,9 @@ func InitTerminal() { initTerminal() }
 func SetAction (s os.Signal, a func()) { setAction(s,a) }
 func CatchSignals() { catchSignals() }
 
-/* console
-func ConsoleInit() {
-func Console1 (forward bool) {
-func Console (a uint8) {
-func ActualConsole() uint {
-func DeactivateConsole() {
-func ActivateConsole() {
-*/
+func ConsoleInit() { init_() }
+func SwitchConsole (forward bool) { switch_(forward) }
+func Console (a uint8) { console(a) }
+func ActualConsole() uint { return actual() }
+func DeactivateConsole() { deactivate() }
+func ActivateConsole() { activate() }

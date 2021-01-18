@@ -1,6 +1,6 @@
 package term
 
-// (c) Christian Maurer   v. 201223 - license see µU.go
+// (c) Christian Maurer   v. 201218 - license see µU.go
 
 import (
   "µU/ker"
@@ -57,7 +57,7 @@ type
               errors
  actual, fehl uint
        cF, cB col.Colour
-              }
+             }
 
 func init() {
   errtext[none]    = "ok"
@@ -152,18 +152,6 @@ func (x *term) Clr() {
   x.actual, x.fehl = 0, 0
 }
 
-func (x *term) Codelen() uint {
-  return uint(len(x.string))
-}
-
-func (x *term) Encode() obj.Stream {
-  return obj.Stream(x.string)
-}
-
-func (x *term) Decode (s obj.Stream) {
-  x.string = string(s)
-}
-
 func (x *term) String() string {
   return x.string
 }
@@ -242,18 +230,6 @@ func realTerm (x float64) Term {
   t.real = x
   t.string = r.String (t.real)
 	return t
-}
-
-func null() Term {
-  return realTerm (0)
-}
-
-func one() Term {
-  return realTerm (1)
-}
-
-func two() Term {
-  return realTerm (2)
 }
 
 func opTerm (op r.Operation, left, right Term) Term {
@@ -338,11 +314,9 @@ func (x *term) Val() float64 {
 }
 
 func (x *term) Val1 (a float64) float64 {
-/*/
   if len(x.variables) != 1 {
     return r.NaN()
   }
-/*/
   var val float64
   switch x.theType {
   case noType:
@@ -350,13 +324,13 @@ func (x *term) Val1 (a float64) float64 {
   case realType:
     val = x.real
   case opType:
-    val = r.OpVal (x.op, x.left.Val1 (a), x.right.Val1 (a))
+    val = r.OpVal (x.op, x.left.Val(), x.right.Val())
   case varType:
     val = a
   case funcType:
-    val = r.FuncVal (x.f, x.arg.Val1 (a))
+    val = r.FuncVal (x.f, x.arg.Val())
   case bracketType:
-    val = x.interior.Val1 (a)
+    val = x.interior.Val()
   }
   return val
 }
@@ -537,17 +511,25 @@ func (x *term) Eq (Y Term) bool {
   if x.theType != y.theType {
     return false
   }
-  return x.string == y.string
+  return x.string == y.string // &&
+//         x.float64 == y.float64
 }
 
-// >>> under development >>> code lines in comments are nonsense
+var zähler int
+
 func (t *term) Simplification() Term {
-// This function handles only trivial cases.
+//
+// >>> under development
+//
+// This function handles only some trivial cases.
+//
 // Missing is a systematic approach with a "normal form" roughly as follows:
-// produce only left descending *-chains with 1 as left leaf,
+// production only to left descending *-chains with 1 as left leaf,
 // then sorting of the elements in this chain (powers e.g. to the front),
 // simplifying by multiplying the powers in this chain
-// and ordering polynoms by descending powers.
+// (replacing quotients x / y by x * y^(-1) ?) to order polynoms by descending powers.
+// ==>  still a large amount of work TODO :-(
+//
   y := new_(t.string)
 // println ("Simplification called with t ==", t.string)
   if t.Empty() { return y }
@@ -558,206 +540,250 @@ func (t *term) Simplification() Term {
   case realType:
     return y
   case opType:
-    yl, yr := y.(*term).left, y.(*term).right
     switch y.(*term).op {
     case r.Add:
-      sl, sr := yl.Simplification(), yr.Simplification()
-      if yl.theType == realType {
-        if yl.Val() == 0 {                         // 0 + x
-          return sr                                // x
+      if y.(*term).left.theType == realType {
+        if y.(*term).left.Val() == 0 {                     // 0 + x = 0
+          return y.(*term).right
         }
-        if yr.theType == realType {                // a + b
-          return realTerm (yl.Val() + yr.Val())
+        if y.(*term).right.theType == realType {
+          return realTerm (y.(*term).left.Val() + y.(*term).right.Val())
+        } else {
+          return opTerm (r.Add, y.(*term).left, y.(*term).right)
         }
-        return opTerm (r.Add, realTerm(yl.Val()), sr) // a + x
       }
-      if yr.theType == realType && yr.Val() == 0 { // x + 0
-        return sl                                  // x
+      if y.(*term).right.theType == realType &&
+         y.(*term).right.Val() == 0 {                      // x + 0 = 0 
+        return y.(*term).left
       }
-      if yl.isProduct() {                          // (x * y) + z
-//      if yl.left.string == yr.string {           // (x * y) + x
-//        t0 := opTerm (r.Add, yl.right, realTerm (1))
-//        return opTerm (r.Mul, yl, t0)            // x * y + x = x * (y + 1)
-//      }
-//      if yl.right.string == yr.string {
-//        t0 := opTerm (r.Add, yl.left, realTerm (1))
-//        return opTerm (r.Mul, t0, t.left.right)  // x * y + y = (x + 1) * y
-//      }
-//      if yr.isProduct() {
-//        if t.left.left.Eq (t.right.left) {
-//          t0 := opTerm (r.Add, t.left.right, t.right.right)
-//          return opTerm (r.Mul, t.left.left, t0) // x * y + x * z = x * (y + z)
-//        }
-//        if t.left.right.string == t.right.right.string {
-//          t0 := opTerm (r.Add, t.left.left, t.right.left)
-//          return opTerm (r.Mul, t0, t.left.right)        // x * z + y * z = (x + y) * z
-//        }
-//        if t.left.string == t.right.left.string {
-//          t0 := opTerm (r.Add, t.right.right, realTerm (1))
-//          return opTerm (r.Mul, t.left, t0)              // x + x * y = x * (y + 1)
-//        }
-//        if t.left.string == t.right.right.string {
-//          t0 := opTerm (r.Add, t.left, realTerm (1))
-//          return opTerm (r.Mul, t0, t.right.left)        // x + y * x = (x + 1) * y
-//        }
-//      }
+/*/
+      if t.left.isProduct() 
+//      if t.left.theType == opType && t.left.op == r.Mul {
+        if t.left.left.string == t.right.string {
+          t0 := opTerm (r.Add, t.left.right, realTerm (1))
+          return opTerm (r.Mul, t.left, t0)                // x * y + x = x * (y + 1)
+        }
+        if t.left.right.string == t.right.string {
+          t0 := opTerm (r.Add, t.left.left, realTerm (1))
+          return opTerm (r.Mul, t0, t.left.right)          // x * y + y = (x + 1) * y
+        }
+//        if t.right.Type == opType && t.right.op == r.Mul {
+        if t.right.isProduct() {
+          if t.left.left.Eq (t.right.left) {
+            t0 := opTerm (r.Add, t.left.right, t.right.right)
+            return opTerm (r.Mul, t.left.left, t0)         // x * y + x * z = x * (y + z)
+          }
+          if t.left.right.string == t.right.right.string {
+            t0 := opTerm (r.Add, t.left.left, t.right.left)
+            return opTerm (r.Mul, t0, t.left.right)        // x * z + y * z = (x + y) * z
+          }
+          if t.left.string == t.right.left.string {
+            t0 := opTerm (r.Add, t.right.right, realTerm (1))
+            return opTerm (r.Mul, t.left, t0)              // x + x * y = x * (y + 1)
+          }
+          if t.left.string == t.right.right.string {
+            t0 := opTerm (r.Add, t.left, realTerm (1))
+            return opTerm (r.Mul, t0, t.right.left)        // x + y * x = (x + 1) * y
+          }
+        }
       }
+/*/
       return y
     case r.Sub:
-      if yr.theType == realType {
-        if yr.Val() == 0 {                         // x - 0
-          return yl                                // x
+      if y.(*term).right.theType == realType {
+        if y.(*term).right.Val() == 0 {                    // x - 0 = x
+          return y.(*term).left
         }
-        if yl.theType == realType {
-          return realTerm (r.OpVal (r.Sub, yl.Val(), yr.Val()))
+        if y.(*term).left.theType == realType {
+          return realTerm (r.OpVal (r.Sub, y.(*term).left.Val(), y.(*term).right.Val()))
         }
       }
-//    if t.left.isProduct() && t.right.isProduct() {
-//      if t.left.right.Eq (t.right.right) {
-//        t0 := opTerm (r.Sub, t.left.left, t.right.left)
-//        return opTerm (r.Mul, t0, t.left.right)          // x * z - y * z = (x - y) * z
-//      }
-//      if t.left.left.Eq (t.right.left) {
-//        t0 := opTerm (r.Sub, t.left.right, t.right.right)
-//        return opTerm (r.Mul, t.left.left, t0)           // x * y - x * z = x * (y - z)
-//      }
-//    }
+/*/
+      if t.left.isProduct() && t.right.isProduct() {
+        if t.left.right.Eq (t.right.right) {
+          t0 := opTerm (r.Sub, t.left.left, t.right.left)
+          return opTerm (r.Mul, t0, t.left.right)          // x * z - y * z = (x - y) * z
+        }
+        if t.left.left.Eq (t.right.left) {
+          t0 := opTerm (r.Sub, t.left.right, t.right.right)
+          return opTerm (r.Mul, t.left.left, t0)           // x * y - x * z = x * (y - z)
+        }
+      }
+/*/
 // x - x * y = (x - 1) * y
 // x * y - x = (x - 1) * y
       return y
     case r.Mul:
+// println ("r.Mul", y.(*term).string)
       if y.(*term).right.theType == realType {
-        if yl.theType == opType {
-          if yl.left.theType == realType {      // (a * x) * b
-            p := realTerm (yl.left.Val() * yr.Val())
-            return opTerm (r.Mul, p, yl.right)  // ab * x
+// println ("aa   ", y.(*term).left.String())
+        if y.(*term).left.theType == opType {
+          if y.(*term).left.left.theType == realType {             // (a * x) * b = ab * x
+            p := realTerm (y.(*term).left.left.Val() * y.(*term).right.Val())
+            return opTerm (r.Mul, p, y.(*term).left.right)
           }
         }
       }
-      if yr.theType == realType {
-        return opTerm (r.Mul, yr, yl)           // x * a = a * x
+      if y.(*term).right.theType == realType {
+// println ("bb   ", y.(*term).left.String())
+        return opTerm (r.Mul, y.(*term).right, y.(*term).left)     // x * a = a * x
       }
-      if yl.theType == realType {
-        switch yl.Val() {
-        case 0:                                 // 0 * x
-          return null()
-        case 1:                                 // 1 * x
-          return y.(*term).right                // x
+      if y.(*term).left.theType == realType {
+        switch y.(*term).left.Val() {
+        case 0:                                                    // 0 * x = 0
+// println ("cc   ", y.(*term).left.String())
+          return realTerm (0)
+        case 1:                                                    // 1 * x = x
+// println ("dd   ", y.(*term).left.String())
+          return y.(*term).right
         }
-        if yr.theType == realType {             // a * b
-          return realTerm (yl.Val() * yr.Val()) // ab
+        if y.(*term).right.theType == realType {                   // a * b = ab
+          return realTerm (y.(*term).left.Val() * y.(*term).right.Val())
         }
-        return opTerm (r.Mul, yl, yr)
+        return opTerm (r.Mul, y.(*term).left, y.(*term).right)
       }
-      if yr.theType == realType {
-        switch yr.Val() {
-        case 0:                                 // x * 0
-          return null()
-        case 1:                                 // x * 1
-          return yl                             // x
-        }
-      }
-      if yl.string == yr.string {               // x * x
-        return funcTerm (r.Sqr, yl)             // x^2
-      }
-      if yl.isProduct() {
-        if yl.left.string == yr.string {        // (x * y) * x
-          t2 := opTerm (r.Pow, yr, two())       // x^2
-          return opTerm (r.Mul, yl.right, t2)   // y * x^2
-        }
-        if yr.string == yl.right.string {       // (x * y) * y
-          t2 := opTerm (r.Pow, yr, two())       // y^2
-          return opTerm (r.Mul, yl.left, t2)    // x * y^2
+      if y.(*term).right.theType == realType {
+// println ("ee   ", y.(*term).left.String())
+        switch y.(*term).right.Val() {
+        case 0:                                                    // x * 0 = 0
+          return realTerm (0)
+        case 1:                                                    // x * 1 = x
+// println ("ff   ", y.(*term).left.String())
+          return y.(*term).left
         }
       }
-      if yr.isProduct() {                       // x * (y * z)
-        if yl.string == yr.left.string {        // x * (x * z)
-          t0 := opTerm (r.Pow, yl, two())       // x^2
-          return opTerm (r.Mul, t0, yr.right)   // x^2 * z
+      if y.(*term).left.string == y.(*term).right.string {         // x * x = x^2
+        return funcTerm (r.Sqr, y.(*term).left)
+      }
+/*/
+// println ("r.Mul left", y.(*term).left.String())                           // cos(x)*1/sin(x)
+   if y.(*term).left.left != nil {
+     println ("r.Mul left.right", y.(*term).left.right.String())             // sin(x)
+     println ("r.Mul left.left", y.(*term).left.left.String(),
+                                 r.OpText (y.(*term).left.left.op))          // cos(x)*1  Mul
+     if y.(*term).left.left.left != nil {
+       println ("r.Mul left.left.left", y.(*term).left.left.left.String())   // cos(x)
+     }
+     if y.(*term).left.left.right != nil {
+       println ("r.Mul left.left.right", y.(*term).left.left.right.String()) // 1
+     }
+   }
+/*/
+// println ("r.Mul right", y.(*term).right.String()) // cos(x)
+      if y.(*term).left.isProduct() {
+        if y.(*term).left.theType == opType {
+// println ("A op ==", r.OpText(y.(*term).left.op))    // Div
         }
-        if yl.string == yr.right.string {       // x * (z * x)
-          t0 := opTerm (r.Pow, yl, two())       // x^2
-          return opTerm (r.Mul, t0, yr.right)   // x^2 * z
+        if y.(*term).left.theType == opType && y.(*term).left.op == r.Mul {
+// println ("A t0 ==")
+          if y.(*term).left.left.string == y.(*term).right.string {  // (x * y) * x
+            t0 := opTerm (r.Pow, y.(*term).right, realTerm(2))       // x^2
+// println ("B t0 ==", t0.String())
+            return opTerm (r.Mul, y.(*term).left.right, t0)          // y * x^2
+          }
+          if y.(*term).right.string == y.(*term).left.right.string { // (x * y) * y
+            t0 := opTerm (r.Pow, y.(*term).right, realTerm (2))      // y^2
+// println ("C t0 ==", t0.String())
+            return opTerm (r.Mul, y.(*term).left.left, t0)           // x * y^2
+          }
         }
+        if y.(*term).left.isProduct() {
+// x * (x * y) = x^2 * y
+// x * (y * x) = x^2 * y
       }
       return y
-// (1 / x) * y = y / x
+    }
+// x * y + x == x * (y + 1)
+// x * y + y == (x + 1) * y
+//
 // x^y * x^z = x^(y+z)
 // x^y * x = x^(y+1)
 // x * x^y = x^(y+1)
+//
+// (1 / x) * y = y / x
 // x * (1 / y) = x / y
     case r.Div:
-      if yl.string == yr.string {
+      if y.(*term).left.string == y.(*term).right.string {
         return realTerm (1)
       }
-      if yl.theType == realType {
-        if yl.Val() == 0 {                      // 0 / x
-          return null()
+      if y.(*term).left.theType == realType {
+        if y.(*term).left.Val() == 0 {                       // 0 / x = 0
+          return realTerm (0)
         }
-        if yr.theType == realType {             // a / b = a/b
-          return realTerm (r.OpVal (r.Div, yl.Val(), yr.Val()))
-        }
-      }
-      if yr.theType == realType {
-        if yr.Val() == 1 {                      // x / 1
-          return yl                             // x
+        if y.(*term).right.theType == realType {             // a / b = a/b
+          return realTerm (r.OpVal (r.Div, t.left.Val(), t.right.Val()))
         }
       }
-      if yr.theType == realType {               // x / a
-        t0 := realTerm (1 / yr.Val())           // 1/a
-        return opTerm (r.Mul, t0, yl)           // 1/a * x
+      if y.(*term).right.theType == realType {
+        if y.(*term).right.Val() == 1 {                      // x / 1 = x
+          return y.(*term).left
+        }
+      }
+      if y.(*term).right.theType == realType {               // x / a
+        t0 := realTerm (1 / y.(*term).right.Val())           // 1/a
+        return opTerm (r.Mul, t0, y.(*term).left)            // 1/a * x
       }
       return y
     case r.Pow:
-      if yl.theType == realType {
-        a := yl.Val()
+      if y.(*term).left.theType == realType {
+        a := y.(*term).left.Val()
         switch a {
-        case 0:                                 // 0^x
-          return null()
-        case 1:                                 // 1^x
-          return one()
+        case 0:                                              // 0^x = 0
+          return realTerm (0)
+        case 1:                                              // 1^x = 1
+          return realTerm (1)
         }
       }
-      if yr.theType == realType {
-        switch yr.Val() {
-        case 0:                                 // x^0
-          return one()
-        case 1:                                 // x^1
-          return yl.Simplification()            // x
+      if y.(*term).right.theType == realType {
+        switch y.(*term).right.Val() {
+        case 0:                                              // x^0 = 1
+          return realTerm (0)
+        case 1:                                              // x^1 = x
+          return t.left.Simplification()
         default:
-          a := yr.Val()                         // x^a
+          a := y.(*term).right.Val()                         // x^a
           if r.Integer(a) {
             if a > 0 {
-              power := r.Power (yl.Val(), uint(a))
+              power := r.Power (y.(*term).left.Val(), uint(a))
               return realTerm (power)
             }
-            a = -a                               // a > 0
-            power := r.Power (yl.Val(), uint(a)) // x^(-a)
-            return realTerm (1/power)            // 1/x^a
+            a = -a                                           // a > 0
+            power := r.Power (y.(*term).left.Val(), uint(a)) // x^(-a) = 1/x^a for a > 0
+            return realTerm (1/power)
           }
           b := a * r.FuncVal (r.Log, y.(*term).left.Val())
-          return realTerm (r.FuncVal (r.Exp, b)) // exp(a * log(x))
+          return realTerm (r.FuncVal (r.Exp, b))             // exp(a * log(x))
         }
       }
-      if yr.isPower() {                          // y^z
-        yz := yr.Simplification()
-        return opTerm (r.Pow, yl, yz)            // x^(y^z)
+      if y.(*term).right.isPower() {
+// println ("y.right", y.(*term).right.String())
+        yz := y.(*term).right.Simplification()
+// println ("yz", yz.(*term).string)
+        return opTerm (r.Pow, y.(*term).left, yz)
       }
-      switch yl.op {
-      case r.Pow:                                // (x^y)^z
-        t1 := opTerm (r.Mul, yl.right, yr)       // y * z
-        return opTerm (r.Pow, yl.left, t1)       // x^(y * z)
-      case r.Mul:                                // (x*y)^z
-        t1 := opTerm (r.Pow, yl.left, yr)        // x^z
-        t2 := opTerm (r.Pow, yl.right, yr)       // y^z
-        return opTerm (r.Mul, t1, t2).Simplification() // x^z * y^z
+//                                                           // x^(y^z)
+      switch y.(*term).left.op {
+      case r.Pow:                                            // (x^y)^z
+        t0 := y.(*term).left.right                           // y
+        t1 := opTerm (r.Mul, t0, y.(*term).right)            // y * z
+        return opTerm (r.Pow, y.(*term).left.left, t1)       // x^(y * z)
+      case r.Mul:                                            // (x*y)^z
+        t0 := y.(*term).right
+        yl := y.(*term).left                                 // x
+        yl = yl.left                                         // nil
+if yl == nil { panic ("murx") }
+//  XXX
+// println ("yl ==", yl.string)
+        t1 := opTerm (r.Pow, yl, t0)                         // x^z
+        t2 := opTerm (r.Pow, y.(*term).left.right, t0)       // y^z
+        return opTerm (r.Mul, t1, t2).Simplification()       // x^z * y^z
       }
 // sqrt(x)^2 = x
 // sqrt(x^y) = x^(y/2)
       return y
     }
-  case funcType:                                 // f(x)
-    if y.(*term).arg.theType == realType {       // f(a)
+  case funcType:                                             // f(x)
+    if y.(*term).arg.theType == realType {                   // f(a)
       return realTerm (r.FuncVal (y.(*term).f, y.(*term).arg.Val()))
     }
     return y
@@ -770,22 +796,22 @@ func (t *term) Simplification() Term {
   x + a + b = x + a+b
   x + x^2 = x^2 + x
 
-  if right < left
-    left <-> right)
-       if isProduct (left) {
-         if right.Less (left.right) {
-  (x * z) * y == (x * y) * z, if y < z
-           left.right <-> right
-           left.Simplify()
-         if isMulDivTerm (right) {
-           if IsReal (right.left) {
-  x * (a . y) = a * (x . y)", 0)
-             left <-> right.left
-             right.Simplify()
-  x * (a . y)
-             return
-           }
-         }
+   if right < left
+     left <-> right)
+        if isProduct (left) {
+          if right.Less (left.right) {
+   (x * z) * y == (x * y) * z, if y < z
+            left.right <-> right
+            left.Simplify()
+          if isMulDivTerm (right) {
+            if IsReal (right.left) {
+   x * (a . y) = a * (x . y)", 0)
+              left <-> right.left
+              right.Simplify()
+   x * (a . y)
+              return
+            }
+          }
 
    normalize products: only produce *-chains descending to the left
 // x * (y * z) = (x * y) * z
@@ -796,6 +822,7 @@ func (t *term) Simplification() Term {
 // (z * x) * x^y = z * x^(y + 1)
 // (xz * t) * xy = x * (z + y) * t
 // (t * xy) * xz = t * x * (y + z)
+  
   
 // sqrt(x) * sqrt(y)) == sqrt(x * y)
   
@@ -883,20 +910,15 @@ func (x *term) Derivation (v string) Term {
     }
   case funcType: // f(g(x))' = f'(g(x)) * g'(x)
     t0 := derivationTerm[x.f]
-    if v != "x" {
-      t0 = t0.Insert ("x", varTerm (v)).(*term)
-    }
+    t0.Insert ("x", varTerm (v))
     if x.arg.theType == varType {
-      if x.arg.variable == v {
-        t1 := t0.Insert (v, x.arg)
-        return t1
-      }
-      return realTerm (0)
+      t0.Insert (v, x.arg)
+      return t0
     }
     f1 := t0.Insert (v, x.arg)                           // f'(g(x))
     if f1 == nil { panic ("Kacke") }
     g1 := x.arg.Derivation (v).Simplification()          // g'(x)
-    return opTerm (r.Mul, f1, bracketTerm (g1))
+    return opTerm (r.Mul, f1, g1)
   case bracketType:                                      // (f)' = f'
 // println (bracketTerm (x.interior.Derivation (v)).String())
     return bracketTerm (x.interior.Derivation (v))

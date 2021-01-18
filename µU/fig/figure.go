@@ -1,6 +1,6 @@
 package fig
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 210104 - license see µU.go
 
 import (
   . "µU/obj"
@@ -12,7 +12,7 @@ import (
   "µU/box"
   "µU/errh"
   "µU/sel"
-  "µU/img"
+  "µU/ppm"
   "µU/psp"
 )
 const (
@@ -347,7 +347,7 @@ func (f *figure2) Write() {
 //    } else {
 //      copy from Imageptr in Framebuffer
 //    }
-    img.Get (f.string, uint(f.x[0]), uint(f.y[0]))
+    ppm.Get (f.string, uint(f.x[0]), uint(f.y[0]))
   }
 }
 
@@ -690,7 +690,7 @@ func (f *figure2) editImage() {
   f.string = str.New (BB)
   bx.EditGr (&f.string, f.x[0], f.y[0])
   str.OffSpc (&f.string)
-  W, H := img.Size (f.string)
+  W, H := ppm.Size (f.string)
   w, h := int(W), int(H)
   if w <= xx && h <= yy {
     x0 := make ([]int, 2); x0[0] = f.x[0]; f.x = x0
@@ -707,10 +707,10 @@ func (f *figure2) editImage() {
     }
     errh.DelHint()
 //  besser:
-//    img.Get ...
+//    ppm.Get ...
 //    NEW (Imagespeicher)
-//    img.Get ( ... dort rein ...)
-//    img.Get (string, x[0], y[0])
+//    ppm.Get ( ... dort rein ...)
+//    ppm.Get (string, x[0], y[0])
   } else {
     errh.DelHint()
   }
@@ -750,7 +750,7 @@ func (f *figure2) Edit() {
       f.editText()
     case Image:
 //      ALLOCATE (Imageptr, Groesse())
-//      img.Get (string [...], Imageptr)
+//      ppm.Get (string [...], Imageptr)
       f.editImage()
     }
     if f.x == nil {

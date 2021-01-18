@@ -1,6 +1,6 @@
 package r
 
-// (c) Christian Maurer   v. 201225 - license see µU.go
+// (c) Christian Maurer   v. 201218 - license see µU.go
 
 import (
   "math"
@@ -47,9 +47,11 @@ func init() {
   inv[Sinh] =   Arsinh
   inv[Cosh] =   Arcosh
   inv[Tanh] =   Artanh
+  inv[Coth] =   Arcoth
   inv[Arsinh] = Sinh
   inv[Arcosh] = Cosh
   inv[Artanh] = Tanh
+  inv[Arcoth] = Coth
   inv[Arcoth] = Coth
 
   deriv[Sqrt] =   "0.5*sqrt(x)"
@@ -66,16 +68,16 @@ func init() {
   deriv[Cot] =    "-1/sin(x)^2"
   deriv[Arcsin] = "1/sqrt(1-x^2)"
   deriv[Arccos] = "-1/sqrt(1-x^2)"
-  deriv[Arctan] = "1/(x^2+1)"
-  deriv[Arccot] = "-1/(x^2+1)"
+  deriv[Arctan] = "1/(1+x^2)"
+  deriv[Arccot] = "-1/(1+x^2)"
   deriv[Sinh] =   "cosh(x)"
   deriv[Cosh] =   "sinh(x)"
-  deriv[Tanh] =   "1-tanh(x)^2"
-  deriv[Coth] =   "1-coth(x)^2"
+  deriv[Tanh] =   "1/cosh(x)^2"
+  deriv[Coth] =   "-1/sinh(x)^2"
   deriv[Arsinh] = "1/sqrt(x^2+1)"
   deriv[Arcosh] = "1/sqrt(x^2-1)"
-  deriv[Artanh] = "1/(1-x^2)" // |x| < 1
-  deriv[Arcoth] = "1/(1-x^2)" // |x| > 1
+  deriv[Artanh] = "1/(1-x^2)"
+  deriv[Arcoth] = "1/(1-x^2)"
   deriv[F] =      "f'(x)"
   deriv[F1] =     "f\"(x)"
   deriv[F2] =     "0" // XXX
@@ -117,93 +119,59 @@ func funcString (f Function) string {
   return name[f]
 }
 
-func _sqr (x float64) float64 {
-  return x * x
-}
-
-func _exp10 (x float64) float64 {
-  return math.Exp (x * math.Ln10)
-}
-
-func _cot (x float64) float64 {
-  return 1 / math.Tan(x)
-}
-
-func _arccot (x float64) float64 {
-  if x > 0 {
-    return math.Atan (1 / x)
-  }
-  return math.Atan (1 / x) + math.Pi
-}
-
-func _coth (x float64) float64 {
-  return math.Sinh(x) / math.Cosh(x)
-}
-
-func _arcoth (x float64) float64 {
-  return math.Log((x+1)/(x-1))/2
-}
-
-func _naN (x float64) float64 {
-  return math.NaN()
-}
-
-func funcFunc (f Function) Func64{
+func funcVal (f Function, x float64) float64 {
   switch f {
   case Sqr:
-    return _sqr
+    return x * x
   case Sqrt:
-    return math.Sqrt
+    return math.Sqrt (x)
   case Exp:
-    return math.Exp
+    return math.Exp (x)
   case Exp10:
-    return _exp10
+    return math.Exp (x * math.Ln10)
   case Exp2:
-    return math.Exp2
+    return math.Exp2 (x)
   case Log:
-    return math.Log
+    return math.Log (x)
   case Lg:
-    return math.Log10
+    return math.Log10 (x)
   case Ld:
-    return math.Log2
+    return math.Log2 (x)
   case Sin:
-    return math.Sin
+    return math.Sin (x)
   case Cos:
-    return math.Cos
+    return math.Cos (x)
   case Tan:
-    return math.Tan
+    return math.Tan (x)
   case Cot:
-    return _cot
+    return 1 / math.Tan (x)
   case Arcsin:
-    return math.Asin
+    return math.Asin (x)
   case Arccos:
-    return math.Acos
+    return math.Acos (x)
   case Arctan:
-    return math.Atan
+    return math.Atan (x)
   case Arccot:
-    return _arccot
+    return math.Atan (x)
   case Sinh:
-    return math.Sinh
+    return math.Sinh (x)
   case Cosh:
-    return math.Cosh
+    return math.Cosh (x) // (math.Exp(x) + math.Exp(-x)) / 2
   case Tanh:
-    return math.Tanh
+    return math.Tanh (x)
   case Coth:
-    return _coth
+    return math.Sinh(x) / math.Cosh(x)
+    return (math.Exp(x) + math.Exp(-x)) / (math.Exp(x) - math.Exp(-x))
   case Arsinh:
-    return math.Asinh
+    return math.Asinh (x)
   case Arcosh:
-    return math.Acosh
+    return math.Acos (x) // math.Log (x + math.Sqrt (x * x - 1))
   case Artanh:
-    return math.Atanh
+    return math.Atanh (x)
   case Arcoth:
-    return _arcoth
+    return math.Log ((x + 1) / (x - 1)) / 2
   }
-  return _naN
-}
-
-func funcVal (f Function, x float64) float64 {
-  return funcFunc (f) (x)
+  return NaN()
 }
 
 func inverse (f Function) Function {

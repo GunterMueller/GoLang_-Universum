@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210103 - license see µU.go
 
 import (
   . "µU/obj"
@@ -326,6 +326,17 @@ func waitFor (command Comm, depth uint) {
     if c == command && d == depth { break }
   }
   lastcommand, lastdepth = c0, d0
+}
+
+func quit() {
+  c0 := lastcommand
+  for {
+    switch c, _ := Command(); c {
+    case Enter, Esc, Back:
+      break
+    }
+  }
+  lastcommand = c0
 }
 
 func confirmed (w bool) bool {

@@ -1,6 +1,6 @@
 package phil
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210106 - license see µU.go
 
 import (
   "sync"
@@ -10,7 +10,7 @@ import (
   "µU/mode"
   "µU/scr"
   "µU/n"
-  "µU/img"
+  "µU/ppm"
 )
 const (
   min =  5 // minimal and
@@ -92,10 +92,10 @@ func _write (i uint) {
     scr.Colours (notUsedColour, thinkColour)
     writeFork (left (i))
     writeFork (i)
-    img.Get (image[i], uint(xt[i]) - 30, uint(yt[i]) - 40)
+    ppm.Get (image[i], uint(xt[i]) - 30, uint(yt[i]) - 40)
     return
   }
-  img.Get (image[max], uint(xt[i] - 30), uint(yt[i]) - 40)
+  ppm.Get (image[max], uint(xt[i] - 30), uint(yt[i]) - 40)
   scr.Colours (colour[i], thinkColour)
   scr.WriteGr (text[status[i]], xt[i] - 12 * 4, yt[i] - 8)
   writePlate (i, false)

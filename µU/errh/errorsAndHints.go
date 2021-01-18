@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 201229 - license see µU.go
+// (c) Christian Maurer   v. 210105 - license see µU.go
 
 import (
   "strconv"
@@ -22,8 +22,10 @@ var (
 // 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
   license = []string {
   " Das Mikrouniversum µU ist nur zum Einsatz in der Lehre konstruiert  und hat deshalb einen ",
-  " rein akademischen Charakter.  Es liefert u.a. eine Reihe von Beispielen für mein Lehrbuch ",
-  " \"Nichtsequentielle und Verteilte Programmierung mit Go\"  (Springer Vieweg 2018 und 2019). ",
+  " rein akademischen Charakter. Es liefert u. a. etliche Beispiele und Animationen für meine ",
+  " Lehrbücher  \"Nichtsequentielle Programmierung mit Go 1\"  (Springer Vieweg 2012),  \"Nicht- ",
+  " sequentielle und Verteilte Programmierung mit Go\" (Springer Vieweg 2018 und 2019) und die ",
+  " neue Ausgabe  \"Nonsequential and Distributed Programming with Go\" (Springer Nature 2021). ",
   " Für Zwecke der Lehre an Universitäten und in Schulen sind die Quellen des Mikrouniversums ",
   " uneingeschränkt verwendbar; jede Form weitergehender Nutzung ist jedoch strikt untersagt. ",
   "                                                                                           ",
@@ -40,13 +42,12 @@ var (
   "                                                                                           ",
   " Die Quelltexte von µU sind äußerst sorgfältig entwickelt und werden laufend überarbeitet. ",
   " ABER:  Es gibt keine fehlerfreie Software - dies gilt natürlich auch für _diese_ Quellen. ",
-  " Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, char. B. zum Abfackeln von Rechnern, ",
+  " Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, z. B. zum Abfackeln von Rechnern, ",
   " zur Entgleisung von Eisenbahnen, zum GAU in Atomkraftwerken  oder zum Absturz des Mondes. ",
   " Deshalb wird vor der Verwendung irgendwelcher Quellen von µU in Programmen zu ernsthaften ",
   " Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.) ",
   "                                                                                           ",
   " Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen. " }
-//  actualFontsize FontSizes
   first bool = true
 )
 
@@ -69,17 +70,6 @@ func init() {
   ToSwitch          = str.Lat1 ("blättern: Pfeiltasten    auswählen: Enter    umschalten: Tab    abbrechen: Esc")
   ToSelectWithPrint = str.Lat1 ("blättern: Pfeiltasten    auswählen: Enter    drucken: Druck     abbrechen: Esc")
   ToPrint           = str.Lat1 ("ausdrucken: Druck                                         fertig: andere Taste")
-}
-
-func wait() { // TODO -> kbd, other name
-  loop:
-  for {
-    _, c, _  := kbd.Read()
-    switch c {
-    case kbd.Enter, kbd.Esc, kbd.Back, kbd.Here, kbd.Drag:
-      break loop
-    }
-  }
 }
 
 func pre() {
@@ -387,7 +377,7 @@ func help (H []string) {
   for i := uint(0); i < h; i++ {
     hintbox.Write (H[i], l + 1 + i, c + 2)
   }
-  wait()
+  kbd.Quit()
   Restore (l, c, w + 4, h + 2)
   if mouseOn { MousePointer (true) }
   post()
@@ -414,7 +404,7 @@ func help1() {
   for i := uint(0); i <= 2; i++ { hintbox.Write (t, l + i, c) }
   hintbox.Wd (w)
   hintbox.Write (s, l + 1, c + 2)
-  wait()
+  kbd.Quit()
   Restore (l, c, w + 4, 3)
 //  if mouseOn { MousePointer (true) }
   post()

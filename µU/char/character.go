@@ -75,7 +75,9 @@ func devilsDung (s string) bool {
 }
 
 func toHellWithUTF8 (s *string) {
+//  t := *s
   n := len (*s)
+//  for m := 0; m < n; m++ { println (m, (*s)[m], string((*s)[m])) }
   if n == 0 { return }
   bs := []byte(*s)
   i, k := 0, 0
@@ -105,6 +107,13 @@ func toHellWithUTF8 (s *string) {
   if k < n {
     *s = string(bs[:k])
   }
+/*/
+  println (t, "->", *s)
+  for m := 0; m < n; m++ { println (m, t[m], string(t[m])) }
+  println("---")
+  for m := 0; m < k; m++ { println (m, (*s)[m], string((*s)[m])) }
+  println("---")
+/*/
 }
 
 func Equiv (a, b byte) bool {

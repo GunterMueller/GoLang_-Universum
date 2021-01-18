@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 201028 - license see µU.go
+// (c) Christian Maurer   v. 210103 - license see µU.go
 
 // >>> implements only a german keyboard !
 
@@ -135,6 +135,11 @@ func Wait (b bool) bool { return wait(b) }
 // until until the keyboard buffer contained command c with depth d.
 // This command is now removed from the keyboard buffer.
 func WaitFor (c Comm, d uint) { waitFor(c,d) }
+
+// The calling process was blocked, until until the keyboard buffer
+// contained one of the commands Enter, Esc or Back.
+// This command is now removed from the keyboard buffer.
+func Quit() { quit() }
 
 // Returns true, if the keyboard buffer contained one of the commands Enter or Here,
 // and false, if it contained one of the commands // Back or There,

@@ -1,6 +1,6 @@
 package cons
 
-// (c) Christian Maurer   v. 201102 - license see µU.go
+// (c) Christian Maurer   v. 210104 - license see µU.go
 
 // >>> This package only serves the implementations of µU/mouse,
 //     mu/kbd and mu/cons; it must not no be used elsewhere.
@@ -14,24 +14,6 @@ import (
   "µU/col"
   "µU/font"
 )
-
-func MaxMode() Mode { return maxMode() }
-func MaxRes() (uint, uint) { return maxRes() }
-func Ok (m Mode) bool { return ok(m) }
-func Lock() { lock() }
-func Unlock() { unlock() }
-
-////////////////////////////////////////////////////////////////////////
-
-func ActIndex() int { return actIndex() }
-
-func New (x, y uint, m Mode) Console { return newCons(x,y,m) }
-func NewWH (x, y, w, h uint) Console { return newConsWH(x,y,w,h) }
-
-func NewMax() Console { return newMax() }
-
-// func StartCols() (col.Colour, col.Colour) { return startCols() }
-// func StartColsA() (col.Colour, col.Colour) { return startColsA() }
 
 type
   Console interface {
@@ -195,3 +177,18 @@ type
   Copy (s string)
   Paste() string
 }
+
+func ColourDepth() uint { return colourdepth }
+
+func New (x, y uint, m Mode) Console { return new_(x,y,m) }
+func NewWH (x, y, w, h uint) Console { return newWH(x,y,w,h) }
+func NewMax() Console { return newMax() }
+
+func MaxMode() Mode { return maxMode() }
+func MaxRes() (uint, uint) { return maxRes() }
+func Ok (m Mode) bool { return ok(m) }
+func Lock() { lock() }
+func Unlock() { unlock() }
+
+// func StartCols() (col.Colour, col.Colour) { return startCols() }
+// func StartColsA() (col.Colour, col.Colour) { return startColsA() }

@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 201103 - license see µU.go
+// (c) Christian Maurer   v. 210105 - license see µU.go
 
 import (
   "os"
@@ -53,7 +53,7 @@ func catch() {
       } else if b < off && ctrl && (alt || altGr) {
         switch b {
         case left, right:
-          ker.Console1 (b == right)
+          ker.SwitchConsole (b == right)
         case f1, f2, f3, f4, f5, f6, f7, f8, f9, f10:
           ker.Console (b - f1 + 1)
         case f11, f12:

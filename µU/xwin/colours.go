@@ -1,6 +1,6 @@
 package xwin
 
-// (c) Christian Maurer   v. 201229 - license see µU.go
+// (c) Christian Maurer   v. 210103 - license see µU.go
 
 // #include <X11/X.h>
 // #include <X11/Xlib.h>
@@ -63,12 +63,7 @@ func (X *xwindow) ColB() col.Colour {
   return X.cB
 }
 
-var gotPixelColours = false
-
 func (X *xwindow) Colour (x, y uint) col.Colour {
-  if ! gotPixelColours {
-    X.GetPixelColours()
-    gotPixelColours = true
-  }
-  return X.colours[x][y]
+  return X.scrB
+//  return X.colour[x][y].Clone().(col.Colour)
 }
