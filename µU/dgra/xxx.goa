@@ -1,0 +1,72 @@
+package dgra
+
+// (c) Christian Maurer   v. 210108 - license see µU.go
+
+// >>> purely experimental
+
+import (
+  . "µU/obj"
+  "µU/kbd"
+  "µU/str"
+  "µU/box"
+)
+const
+  m = 40
+
+func (x *distributedGraph) XXX() {
+  no, yes := Stream{'0'}, Stream{'1'}
+  bx := box.New()
+  allowed := x.n
+  t0 := str.New (m)
+  s0 := make(Stream, 0)
+  x.connect (nil)
+  bx.Wd (m)
+  defer x.fin()
+  if x.me == x.root {
+    t := t0
+    bx.Write (t, 0, 0)
+    for i := uint(0); i < x.n; i++ {
+      x.ch[i].Send (Stream(t))
+    }
+    for i := uint(0); i < x.n; i++ {
+      go func (j uint) {
+        if len(x.ch[j].Recv().(Stream)) == 0 && allowed == x.n {
+          allowed = j
+          x.ch[j].Send (yes)
+        } else {
+          x.ch[j].Send (no)
+        }
+        t = string(x.ch[j].Recv().(Stream))
+        bx.Write (t, 0, 0)
+        for j := uint(0); j < x.n; j++ {
+          if j != i {
+            x.ch[j].Send (Stream(t))
+          }
+        }
+        allowed = x.n
+      }(i)
+    }
+  } else { // client
+    go func() {
+      s := x.ch[0].Recv().(Stream)
+      bx.Write (string(s), 0, 0)
+    }()
+    loop:
+    for {
+      switch c, _ := kbd.Command(); c {
+      case kbd.Esc:
+        break loop
+      case kbd.Enter:
+        x.ch[0].Send (s0)
+        s := x.ch[0].Recv().(Stream)
+        if s[0] == '0' { // no
+          ; // not allowed
+        } else { // '1'; i.e. yes
+          t := string(x.ch[0].Recv().(Stream))
+          bx.Edit (&t, 0, 0)
+          x.ch[0].Send (Stream(t))
+        }
+      }
+    }
+  }
+}

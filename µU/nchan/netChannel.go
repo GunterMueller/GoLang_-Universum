@@ -68,10 +68,15 @@ func new_(a Any, me, i uint, n string, p uint16) NetChannel {
   return x
 }
 
+var bluse int
+
 func (x *netChannel) Send (a Any) {
-  if x.Conn == nil { panic("no Conn") }
+println ("Send"); if a == nil { println ("nil") }
+  if x.Conn == nil { Panic ("no Conn") }
+bluse++; if bluse == 7 { Panic ("Send") }
   if x.Any == nil {
     bs := Encode(a)
+// println ("len(bs) ==", len(bs))
     bs = append (Encode(Codelen(a)), bs...)
     _, x.error = x.Conn.Write (bs)
     if x.error != nil { println ("1. " + x.error.Error()) }
@@ -82,13 +87,17 @@ func (x *netChannel) Send (a Any) {
 }
 
 func (x *netChannel) Recv() Any {
-  if x.Conn == nil { panic("no Conn") }
+  if x.Conn == nil { Panic ("no Conn") }
   if x.Any == nil {
-    _, x.error = x.Conn.Read(x.Stream[:C0])
+    _, x.error = x.Conn.Read (x.Stream[:C0])
     if x.error != nil {
+      println ("x.error != nil")
+    } else {
+println ("uff uff", Decode(uint(0), x.Stream[:C0]).(uint))
       return Clone(x.Any)
     }
     x.uint = Decode (uint(0), x.Stream[:C0]).(uint)
+println ("aff", x.uint)
     _, x.error = x.Conn.Read (x.Stream[C0:C0+x.uint])
     if x.error != nil {
       println ("5. " + x.error.Error())

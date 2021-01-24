@@ -23,7 +23,7 @@ func newFM (h string, p uint16, s bool) ReaderWriter {
           case writerIn:
             return nR == 0 && nW == 0
           }
-          return true // rOut, wOut
+          return true // readerOut, writerOut
         }
   fs := func (a Any, i uint) Any {
           switch i {

@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210113 - license see µU.go
 
 import (
   "µU/env"
@@ -159,7 +159,6 @@ func g4flat (i uint) DistributedGraph {
   return newg (false, l, c, e, 3, i)
 }
 
-
 func g4full (i uint) DistributedGraph {
 /*
 1             /--------  2
@@ -179,6 +178,28 @@ func g4full (i uint) DistributedGraph {
                   []uint { 2, 3 },
                   []uint { 3 },
                   []uint { } }
+  return newg (false, l, c, e, 1, i)
+}
+
+func g4star (i uint) DistributedGraph {
+/*
+1                        1
+2                     /
+3                   /
+4       2 ------ 0
+5                   \
+6                     \
+7                        3
+
+            1         2
+  012345678901234567890123456789
+*/
+  l := []int {  4,  1,  4,  7 }
+  c := []int { 15, 23,  6, 23 }
+  e := [][]uint { []uint { 1, 2, 3 },
+                  []uint { 0 },
+                  []uint { 0 },
+                  []uint { 0 } }
   return newg (false, l, c, e, 1, i)
 }
 
