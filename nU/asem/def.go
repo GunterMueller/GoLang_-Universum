@@ -1,6 +1,6 @@
 package asem
 
-// (c) Christian Maurer   v. 17112r54 - license see nU.go
+// (c) Christian Maurer   v. 171124 - license see nU.go
 
 type AddSemaphore interface {
 

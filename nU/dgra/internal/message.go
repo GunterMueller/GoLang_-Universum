@@ -1,6 +1,6 @@
 package internal
 
-// (c) Christian Maurer   v. 200119 - license see nU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 import . "nU/obj"
 
@@ -53,8 +53,8 @@ func (x *message) Codelen() uint {
   return 1 + 3 * c0 + 1
 }
 
-func (x *message) Encode() []byte {
-  bs := make([]byte, x.Codelen())
+func (x *message) Encode() Stream {
+  bs := make(Stream, x.Codelen())
   bs[0] = x.byte
   i, a := uint(1), c0
   copy(bs[i:i+a], Encode(x.uint))
@@ -67,7 +67,7 @@ func (x *message) Encode() []byte {
   return bs
 }
 
-func (x *message) Decode (bs []byte) {
+func (x *message) Decode (bs Stream) {
   x.byte = bs[0]
   i, a := uint(1), c0
   x.uint = Decode(uint(0), bs[i:i+a]).(uint)

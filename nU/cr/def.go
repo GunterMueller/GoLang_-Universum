@@ -1,47 +1,50 @@
 package cr
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 210123 - license see nU.go
 
-/* Objects, that synchronize the access to critical sections
-   (e.g. operating resources or shared data) for p process classes
-   P(0), P(1), ..., P(p-1) (p > 1), r resources R(0), R(1), ... R(r-1)
-   (r > 0) and p * r numbers m(c,n) (c < p, n < r), s.t. each resource
-   can be accessed by processes of different classes only under mutual
-   exclusion and the resource R(n) (n < r) can be accessed concurrently
-   only by at most m(c,n) processes of the class P(c) (c < p).
-   Examples:
-   a) Readers/Writers problem:
-      p = 2, P(0) = readers and P(1) = writers; r = 1 (R(0) = shared data),
+/* Objekte, die den Zugang zu kritischen Abschnitten synchronisieren
+   (d.h. Betriebsystem-Ressourcen oder gemeinesame Daten) für p Prozessklassen
+   P(0), P(1), ..., P(p-1) (p > 1), r Ressourcen R(0), R(1), ... R(r-1)
+   (r > 0) und p * r Zahlen m(k,n) (k < p, n < r) so, dass jede Ressource
+   unter gegenseitigem Ausschluss nur von Prozessen verschiedener Klassen
+   betreten werden kann und die Ressource R(n) (n < r) nur von höchstens
+   m(k,n) Prozessen der Klasse P(k) (k < p) nebenläufig betreten werden kann.
+   Beispiele:
+   a) Leser-Schreiber-Problem:
+      p = 2, P(0) = Leser and P(1) = Schreiber; r = 1 (R(0) = gemeinsame Daten),
       m(0,0) = MaxNat, m(1,0) = 1.
-   b) Left/Right problem:
-      p = 2, P(1) = lefties and P(2) = righties; r = 1 (R(0) = shared track),
-      m(0,0) = m(1,0) = MaxNat.
-   c) bounded Left/Right problem:
-      same as above with bounds m(0,0), m(1,0) < MaxNat.
-   d) Bowling problem: 
-      p = number of participating clubs (P(c) = players of club c);
-      r = number of available bowling alleys (R(a) = bowling alley a),
-      m(c,a) = maximal number of players of club c on alley a.
+   b) Links-Rechts-Problem:
+      p = 2, P(1) = Linksfahrende und P(2) = Rechtsfahrende; r = 1
+      (R(0) = gemeinsame Spur), m(0,0) = m(1,0) = MaxNat.
+   c) beschränkter Links-Rechts-Problem:
+      wie oben mit Schrankens m(0,0), m(1,0) < MaxNat.
+   d) Bowling Problem: 
+      p = Anzahl der teilnehmenden Vereine (P(k) = Spieler von Verein k);
+      r = Anzahl der verfügbaren Bowlingbahnen (R(a) = Bowlingbahn a),
+      m(c,a) = Maximalzahjl der Spieler des Vereins k auf der Bahn alley a.
 */
 type
   CriticalResource interface {
 
-// Pre: m[c][r] is defined for all c < number of classes
-//      and for all r < number of resources of x.
-// The resource r of x can be accessed by at most m[c][r] processes of the class c.
+// Vor.: m[i][r] ist für alle i < Anzahl der Klassen
+//       und für alle r < Anzahl der Ressourcen von x definiert.
+// Auf die Ressource r von x kann von höchstens m[i][r]
+// Prozessen der Klasse i zugegriffen werden.
   Limit (m [][]uint)
 
-// Pre: i < number of classes of x.
-//      The calling process has no access to a resource of x.
-// Returns the number of the resource, to which the calling process now has access.
-// The calling process may have been blocked, until that was possible.
+// Vor.: i < Anzahl der Klassen von x. Der aufrufende Prozess
+//       hat keinen Zugriff auf eine Ressource von x.
+// Liefert die Anzahl der Ressourcen, auf die
+// der aufrufende Prozess jetzt zugreifen kann.
+// Er war ggf. solange blockiert, bis das möglich war.
   Enter (i uint) uint
 
-// Pre: i < number of classes of x.
-//      The calling process has access to a resource of x.
-// It now does not have the access any more.
+// Vor.: i < Anzahl der Klassen von x. Der aufrufende Prozess
+//       hat Zugriff auf eine Ressource von x.
+// Er hat jetzt nicht mehr den Zugriff.
   Leave (i uint)
 }
 
-// Returns a new critical resource with c classes and r resources.
-func New (c, r uint) CriticalResource { return new_(c,r) }
+// Liefert eine neue kritische Ressource
+// mit k Klassen und r Ressourcen.
+func New (k, r uint) CriticalResource { return new_(k,r) }

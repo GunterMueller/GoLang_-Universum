@@ -1,28 +1,29 @@
 package macc
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 210123 - license see nU.go
 
-type MAccount interface { // A multitasking capable account.
-                       // The exported functions cannot be interrupted
-                       // by calls of these functions of other goroutines.
+type MAccount interface { // Ein multitasking-fähiges Konto.
+                          // Die exportierten Funktionen können von Aufrufen dieser Funktionen
+                          // durch andere Goroutinen nicht unterbrochen werden.
 
-// The balance of x is incremented by a.
-// Returns the new balance of x.
+// Das Guthaben von x ist um a erhöht.
+// Liefert das neue Guthaben von x.
   Deposit (a uint) uint
 
-// The balance of x is decremented by a.
-// Returns the new balance of x.
-// The calling process was blocked, until the balance of x was greater or Equal than a.
+// Das Guthaben von x ist um a erniedrigt.
+// Liefert das neue Guthaben von x.
+// Der aufrufende Prozess ist ggf. solange blockiert,
+// bis das Guthaben von x größergleich a ist.
   Draw (a uint) uint
 }
 
-// All constructors return new accounts with balance 0.
+// Alle Konstruktoren liefern neue Konten mit dem Guthaben 0.
 
-// Implementation with sync Cond's.
+// Implementierung mit sync Cond's.
 func New() MAccount { return new_() }
 
-// Implementation with a universal monitor.
+// Implementierung mit einem universellen Monitor.
 func NewM() MAccount { return newM() }
 
-// Implementation with a far monitor.
+// Implementierung mit einem fernen Monitor.
 func NewFM (h string, p uint16, s bool) MAccount { return newFM(h,p,s) }

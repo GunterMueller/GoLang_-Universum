@@ -1,6 +1,6 @@
 package buf
 
-// (c) Christian Maurer   v. 200908 - license see nU.go
+// (c) Christian Maurer   v. 171125 - license see nU.go
 
 import . "nU/obj"
 

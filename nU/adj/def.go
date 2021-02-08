@@ -1,68 +1,72 @@
 package adj
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 210123 - license see nU.go
 
 import . "nU/obj"
 
 type AdjacencyMatrix interface {
-// Sqare matrices with pairs (v, e) as entries,
-// where v is atomic or implements Object and
-// and e has a uint-type or implements Valuator.
-// The entry of a matrix x in row i and column k is called x(i,k).
-// Any such matrix defines a graph in the following way:
-// x(i,k) = (e, v) means
-// for i == k:
-//     v is a vertex in the graph (in this case e is the pattern edge of x.
-// for i != k:
-//     There is an edge outgoing from the i-th and incoming at the k-th vertex
-//     of the graph with value e, iff v is not equal to the pattern vertex of x.
-//     In this case v is the pattern vertex of x.
-// The patterns are those objects, that are given to a New as parameters;
-// they must not be used as vertices or edges resp.
+// Quadratische Matrizen mit Paaren (v, e) als Einträgen,
+// wobei v atomar ist oder Object implementiert und
+// e einen uint-Typ hat oder Valuator implementiert.
+// Der Eintrag einer Matrix x in Reihe i und Spalte k ist x(i,k).
+// Jede solche Matrix definiert auf folgende Weise einen Graohen:
+// x(i,k) = (e, v) bedeutet
+// für i == k:
+//     v ist eine Ecke in dem Graphen. In diesem Fall ist e die Musterkante von x.
+// für i != k:
+//     Es gibt eine Kante mit dem Wert e, die von der i-ten Ecke des Graphen ausgeht und
+//     bei seiner k-ten Ecke ankommt, wenn v nicht mit der Musterecke von x übereinstimmt.
+//     In diesem Fall ist v die Musterecke von x.
+// Die Muster sind diejenigen Objekte, die dem Konstruktor als Parameter übergeben werden;
+// sie dürfen nicht als Ecken oder Kanten benutzt werden.
 
   Object
 
-// Returns the number of rows/columns of x, defined by New.
+// Liefert die Anzahl der Zeilen/Spalten von x.
   Num() uint
 
-// Returns true, iff x and y have the same number of rows/columns
-// and equal vertex patterns and equal edge patterns.
+// Liefert genau dann true, wenn x und y die gleiche Zeilenzahl,
+// gleiche Musterecken und gleiche Musterkanten haben.
   Equiv (y AdjacencyMatrix) bool
 
-// Pre: e is of the type of the pattern edge of x.
-// If i or k >= x.Num(), nothing has happened.
-// Otherwise: x(i,k) is the pair (v, e) with v = pattern vertex of x,
-// i.e. in the corresponding graph there is an edge with the value of e
-// from its i-th vertex to its k-th vertex, iff e is not equal to the pattern edge of x.
+// Vor.: e hat den Typ der Musterecke von x.
+// Wenn i oder k >= x.Num(), ist nichts verändert.
+// Andernfalls gilt:
+// x(i,k) ist das Paar (v, e) mit v = Musterecke von x,
+// d.h., in dem ensprechenden Graph gibt es genau dann
+// eine Kante mit dem Wert von e von seiner i-ten Ecke
+// zu seiner k-ten Ecke, wenn x.Val (i,k) > 0 ist.
   Edge (i, k uint, e Any)
 
-// Returns the first element in the pair x(i,i), i.e. a vertex.
+// Liefert das erste Element des Paares x(i,i), also eine Ecke.
   Vertex (i uint) Any
 
-// Pre: i, k < x.Num().
-// Returns 0, iff for x(i,k) = (v, e) e is the pattern edge of x,
-// returns otherwise the value of e.
+// Vor.: i, k < x.Num().
+// Liefert 0, wenn in x(i,k) = (v, e) e die Musterkante
+// von x ist; liefert andernfalls den Wert von e.
   Val (i, k uint) uint
 
-// Pre: v has the type as the pattern vertex of x and
-//      e has the type of the pattern edge of x.
-// If i or k >= x.Num(), nothing has happened.
-// Otherwise: x(i,k) == (v, e).
+// Vor.: v hat den Typ der Musterecke von x und
+//       e hat den Typ der Musterkante von x.
+// Wenn i oder k >= x.Num(), ist nichts verändert.
+// Andernfalls ist jetzt x(i,k) == (v, e).
   Set (i, k uint, v, e Any)
 
-// Returns true, iff x(i,k) == x(k,i) for all i, k < x.Num(),
-// i.e. the corresponding graph is undirected.
+// Liefert genau dann true, wenn x(i,k) == x(k,i) für alle i, k < x.Num(),
+// d.h. der entsprechende Graph ist ungerichtet.
   Symmetric() bool
 
-// Pre: x and y are equivalent.
-// x contains all entries of x and additionally all entries of y
-// with a value > 0 (the values of entries of x are overwritten
-// by the values of corresponding entries in x. // XXX ? ? ?
+// Vor.: x und y sind äquivalent.
+// x enthält alle Einträge von x und dazu alle Einträge
+// von y, bei Kanten aber nur diejenigen mit einem Wert > 0.
+// Einträge von x, die an den gleichen Stellen in y vorkommen,
+// sind dabei von den Einträgen in x überschrieben.
   Add (y AdjacencyMatrix)
 
-// Returns true, iff each row of x contains at least one entry
-// with (v, e) with Val(e) > 0, i.e. iff in the corresponding
-// graph every node has at least one outgoing edge.
+// Liefert genau dann true, wenn jede Zeile von x
+// mindestens einen Eintrag (v, e) mit x.Val(e) > 0 enthält,
+// d.h., wenn jede Ecke im entsprechenden Graphen
+// mindestens eine ausgehende Kante hat.
   Full () bool
 
 // Vor.: Die Einträge von x sind vom Typ uint
@@ -71,10 +75,8 @@ type AdjacencyMatrix interface {
   Write()
 }
 
-// Pre: n > 0; e is of a uint-type or implements Valuator;
-//      v is atomic or implements Object.
-// v is the pattern vertex of x
-// Returns an n*n-matrix with the pattern vertex v
-// and the pattern edge e. All it's entries have the value
-// (v, e).
+// Vor.: n > 0. v ist atomar oder implementiert Object und
+//       e hat einen uint-Typ oder implementiert Valuator.
+// v ist die Musterecke und e die Musterkante von x.
+// Liefert eine n*n-Matrix nur mit Einträgen (v, e).
 func New (n uint, v, e Any) AdjacencyMatrix { return new_(n,v,e) }

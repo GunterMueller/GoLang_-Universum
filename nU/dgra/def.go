@@ -6,10 +6,10 @@ type DistributedGraph interface {
 
   gra.Graph
 
-// r is the root of x.
+// r ist die Wurzel von x.
   SetRoot (r uint)
 
-// Pre for all following methods: The hosts of x are set.
+// Voraussetzung für alle folgenden Methoden: Die Rechner von x sind definiert.
   Me() uint
   Root() uint
   Parent() uint
@@ -17,27 +17,27 @@ type DistributedGraph interface {
   Time() uint
   Time1() uint
 
-  SetHeartbeatAlgorithm (a HeartbeatAlg) // see heartbeatAlgorithms.go
+  SetHeartbeatAlgorithm (a HeartbeatAlg) // s. heartbeatAlgorithms.go
   HeartbeatAlgorithm() HeartbeatAlg
   Heartbeat()
 
-  SetTravAlgorithm (a TravAlg) // see travAlgorithms.go
+  SetTravAlgorithm (a TravAlg) // s. travAlgorithms.go
   TravAlgorithm() TravAlg
 
-  SetElectAlgorithm (a ElectAlg) // see electAlgorithms.go
+  SetElectAlgorithm (a ElectAlg) // s. electAlgorithms.go
   ElectAlgorithm() ElectAlg
   Leader() uint
 }
 
-// Pre: The values of the edges of g + nchan.Port0 are the ports
-//      for 1-1-connections between the vertices connected by them.
-// Returns a new distributed Graph with underlying Graph g.
+// Vor.: Die Werte der Kanten von g, um nchan.Port0 erhöht sind die Ports
+//       für 1-1-Verbindungen zwischen den Ecke, die sie verbinden.
+// Liefert einen neuen verteilten Graph mit zugrundeliegendem Graph g.
 func New (g gra.Graph) DistributedGraph { return new_(g) }
 
-// Examples of distributed Graphs
+// Beispiele verteilter Graphen:
 
-// G_ returns the star of the distributed Graph defined by g_
-// with the vertex with the identity i as center.
+// G_ liefert den Stern des verteilten Graphen, der durch g_ definiert ist,
+// wobei die Ecke mit der Identität i das Zentrum ist.
 func G8 (i uint) DistributedGraph { return g8(i) }
 func G8dirring (i uint) DistributedGraph { return g8dr(i) }
 func G12 (i uint) DistributedGraph { return g12(i) }

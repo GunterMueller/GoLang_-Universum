@@ -1,40 +1,43 @@
 package sem
 
-// (c) Christian Maurer   v. 170411 - license see nU.go
+// (c) Christian Maurer   v. 210123 - license see nU.go
 
-type Semaphore interface { // Protocols for critical sections.
+type Semaphore interface {
+// Ganzzahlige Werte als Zugangsprotokolle zu kritischen Abschnitten
+// zum nebenläufigen Zugriff mehrerer Prozesse auf gemeinsame Daten.
+// Die Methoden P und V sind durch Aufrufe von P oder V
+// von anderen Prozessen nicht unterbrechbar.
 
-// The calling process is inside the critical section among at most n-1 other processes.
-// where n is the number of allowed processes to enter.
-// It might have been delayed, until this was possible.
+// Der aufrufende Prozess ist neben höchstens n-1 weiteren Prozessen
+// im kritischen Abschnitt, wobei n der dem Konstruktor übergebene
+// Initialwert des Semaphors ist.
   P()
 
-// The calling process is outside the critical section.
+// Der aufrufende Prozess ist nicht mehr im kritischen Abschnitt.
   V()
-
-// P and V cannot be interrupted by calls of these functions of other processes.
 }
 
-// All constructors return a new Semaphore, that allows
-// exactly n processes to enter the critical section:
+// Alle Konstruktoren liefern ein neues Semaphor,
+// das höchstens n Prozesse nebenläufig in den kritischen
+// Abschnitt lässt. Kein Prozess ist im kritischen Abschnitt.
 
-// Naive incorrect solution
+// Falsche naive Lösung
 func NewNaive (n uint) Semaphore { return newNaive(n) }
 
-// Corrected naive solution
+// Korrigiert naive Lösung
 func NewCorrect (n uint) Semaphore { return newCorrect(n) }
 
-// Elegant solution with asynchronous message passing
+// Elegante Lösung mit asynchronem Botschaftenaustausch
 func New (n uint) Semaphore { return new_(n) }
 
-// Implementation of the Go authors
+// Implementierung der Go-Autoren
 func NewGo (n int) Semaphore { return newGo(n) }
 
-// Solution with the algorithm of Barz
+// Lösung mit dem Algorithmus von Barz
 func NewBarz (n uint) Semaphore { return newBarz(n) }
 
-// Solution with synchronous message passing
+// Lösung mit synchronem Botschaftenaustausch
 func NewChannel (n uint) Semaphore { return newCh(n) }
 
-// Solution with guarded select
+// Lösung mit bewachtem Warten
 func NewGSel (n uint) Semaphore { return newGS(n) }

@@ -1,11 +1,9 @@
 package main
 
-/* (c) Christian Maurer   v. 200908
-       christian.maurer-berlin.eu proprietary - all rights reserved
+/* (c) Christian Maurer   v. 210123
 
-  This package - the n(ano)Universe - contains the source texts from my textbooks
-  "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2018)
-  "Nonsequential and Distributed Programming with Go" (Springer Nature 2028).
+  Dieses Paket - das n(ano)Universum - enthält die Quelltexte aus meinem Lehrbuch
+  "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2018).
 
   THIS SOFTWARE  IS PROVIDED BY THE AUTHOR  "AS IS"  AND ANY EXPRESS OR IMPLIED WARRANTIES,
   INCLUDING,  BUT NOT LIMITED TO,  THE IMPLIED WARRANTIES  OF MERCHANTABILITY  AND  FITNESS
@@ -16,16 +14,14 @@ package main
   IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
   WAY OUT OF THE USE OF THIS SOFTWARE,  EVEN IF ADVISED  OF THE POSSIBILITY OF SUCH DAMAGE.
 
-  APART FROM THIS  THE TEXT IN GERMAN ABOVE AND BELOW  IS A MANDATORY PART  OF THE LICENSE.
+  Die Quelltexte von nU sind äußerst sorgfältig entwickelt und werden laufend überarbeitet.
+  ABER:  Es gibt keine fehlerfreie Software - dies gilt natürlich auch für _diese_ Quellen.
+  Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, z. B. zum Abfackeln von Rechnern,
+  zur Entgleisung von Eisenbahnen, zum GAU in Atomkraftwerken  oder zum Absturz des Mondes.
+  Deshalb wird vor der Verwendung irgendwelcher Quellen von µU in Programmen zu ernsthaften
+  Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.)
 
-  All source texts in this package nU are developed extremely carefully and tested.
-  HOWEVER:  There does not exist any software without errors - this is of course also true
-  for these sources.  Their use in programs could lead to DAMAGES, i.e. to burn computers,
-  derail trains, to worst case scenarios in nuclear power plants or the crash of the moon.
-  Therefore, you are warned of using sources of nU in programs for serious uses.
-
-  Hints to discovered discrepancies or errors are of course very gratefully accepted!   */
-
+  Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angemommen. */
 
 import ("nU/lock"; "nU/lock2"; "nU/lockn";
         "nU/mbuf"; "nU/mbbuf"; "nU/macc"; "nU/rw"; "nU/lr"; "nU/dgra")

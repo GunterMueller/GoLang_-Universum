@@ -1,5 +1,5 @@
-package main
-// mergesort with message passing
+package main // mergesort with message passing
+
 import "math/rand"
 
 const (

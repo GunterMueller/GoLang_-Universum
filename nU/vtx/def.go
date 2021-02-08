@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 210123 - license see nU.go
 
 import . "nU/obj"
 
@@ -9,10 +9,10 @@ type Vertex interface {
   Object // leer, wenn Wert = 0.
   Valuator
 
-// x has the the center (x, y).
+// x hat die Position (x, y).
   Set (x, y uint)
 
-// Returns the coordinates of x.
+// Liefert die Position von x.
   Pos() (uint, uint)
 
 // x ist an seiner Position in Weiß ausgegeben.

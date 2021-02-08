@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 190402 - license see nU.go
+// (c) Christian Maurer   v. 210123 - license see µU.go
 
 import (. "nU/obj"; "nU/col"; "nU/scr")
 
@@ -59,8 +59,8 @@ func (x *vertex) Codelen() uint {
   return 3 * c0
 }
 
-func (x *vertex) Encode() []byte {
-  bs := make ([]byte, x.Codelen())
+func (x *vertex) Encode() Stream {
+  bs := make (Stream, x.Codelen())
   i, a  := uint(0), c0
   copy (bs[i:i+a], Encode(x.uint))
   i += a
@@ -70,7 +70,7 @@ func (x *vertex) Encode() []byte {
   return bs
 }
 
-func (x *vertex) Decode (bs []byte) {
+func (x *vertex) Decode (bs Stream) {
   i, a  := uint(0), c0
   x.uint = Decode (uint(0), bs[i:i+a]).(uint)
   i += a
@@ -95,14 +95,14 @@ func (x *vertex) Write() {
 func (x *vertex) Write1 (a bool) {
   f := col.White()
   if a { f = col.Red() }
-  scr.ColourF (f) ///////////////////////
-  scr.WriteNat (x.uint, x.x, x.y) ///////
+  scr.ColourF (f)
+  scr.WriteNat (x.uint, x.x, x.y)
 }
 
 func w (v Any, a bool) {
   f := col.White()
   if a { f = col.Red() }
-  scr.ColourF (f) ///////////////////////
+  scr.ColourF (f)
   v.(*vertex).Write1(a)
 }
 
@@ -111,6 +111,6 @@ func w2 (v0, v1 Any, a bool) {
   x1, y1 := v1.(*vertex).Pos()
   f := col.White()
   if a { f = col.Red() }
-  scr.ColourF (f) ///////////////////////
-  scr.Line (x0, y0, x1, y1) /////////////
+  scr.ColourF (f)
+  scr.Line (x0, y0, x1, y1)
 }

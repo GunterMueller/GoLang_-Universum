@@ -1,18 +1,19 @@
 package perm
 
-// (c) Christian Maurer   v. 161216 - license see nU.go
+// (c) Christian Maurer   v. 210123 - license see nU.go
 
 type
-  Permutation interface { // Permutations of the first n natural numbers.
+  Permutation interface { // Permutationen der ersten n natürlichen Zahlen.
 
-// x is a randomly permuted.
+// x ist zufällig permutiert.
   Permute ()
 
-// Returns 0, if k >= size of x,
-// returns otherwise the k-th number of x.
+// Liefert 0, wenn k >= Größe von x,
+// andernfalls die k-te Zahl von x.
   F (k uint) uint
 }
 
-// Pre: n > 1.
-// x has size n, i.e. it is a random permutation of the natural numbers < n.
+// Vor.: n > 1.
+// x hat die Größe n, d.h.,
+// es ist eine Zufallspermutation der natürlichen Zahlen < n.
 func New (n uint) Permutation { return new_(n) }

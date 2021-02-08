@@ -1,6 +1,7 @@
 package scr
 
 // (c) Christian Maurer   v. 180812 - license see nU.go
+// (c) Christian Maurer   v. 201014 - license see µU.go
 
 // #include <stdlib.h>
 // #include <string.h>
@@ -76,7 +77,7 @@ func (x *screen) Cls() {
 
 func (x *screen) set (f col.Colour, b bool) {
   t := "4"; if b { t = "3" }
-  s := []byte(" [" + t + "8;2;" + strconv.Itoa(int(f.R())) + ";" +
+  s := Stream(" [" + t + "8;2;" + strconv.Itoa(int(f.R())) + ";" +
                                   strconv.Itoa(int(f.G())) + ";" +
                                   strconv.Itoa(int(f.B())) + "m")
   s[0] = 27

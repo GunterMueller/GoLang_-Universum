@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171227 - license see nU.go
+// (c) Christian Maurer   v. 200626 - license see nU.go
 
 import (. "nU/obj"; "nU/adj")
 
@@ -101,6 +101,10 @@ type Graph interface {
   Locate (f bool)
 
 // Liefert 0, wenn x leer ist; liefert andernfalls
+// die Anzahl der in die lokalen Ecke von x eingehenden Kanten.
+  NumNeighboursIn() uint
+
+// Liefert 0, wenn x leer ist; liefert andernfalls
 // die Anzahl der von der lokalen Ecke von x ausgehenden Kanten.
   NumNeighboursOut() uint
 
@@ -108,10 +112,15 @@ type Graph interface {
 // aller ein- und ausgehenden Kanten der lokalen Ecke von x.
   NumNeighbours() uint
 
-// Liefert false, wenn x leer ist i >= NumNeighbourOut() ist;
+// Liefert false, wenn x leer oder i >= NumNeighbours() ist;
 // liefert andernfalls genau dann true, wenn die Kante zum
 // i-ten Nachbarn der lokalen Ecke eine ausgehende Kante ist.
   Outgoing (i uint) bool
+
+// Liefert false, wenn x leer oder i >= NumNeighbours() ist;
+// liefert andernfalls genau dann true, wenn die Kante zum
+// i-ten Nachbarn der lokalen Ecke eine eingehende Kante ist.
+  Incoming (i uint) bool
 
 // Liefert nil, wenn x leer ist oder i >= NumNeighbours()
 // gilt; liefert andernfalls eine Kopie des i-ten Nachbarn
