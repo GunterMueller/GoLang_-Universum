@@ -21,29 +21,29 @@ func new_(a Any) Index {
 
 func (x *index) imp (Y Any) *index {
   y, ok := Y.(*index)
-  if ! ok { TypeNotEqPanic(x, Y) }
+  if ! ok { TypeNotEqPanic (x, Y) }
   return y
 }
 
 func (x *index) Set (a Any, n uint) {
-  x.Any, x.uint32 = Clone(a), uint32(n)
+  x.Any, x.uint32 = Clone (a), uint32(n)
 }
 
 func (x *index) Get () Any {
-  return Clone(x.Any)
+  return Clone (x.Any)
 }
 
 func (x *index) Empty() bool {
-  return Eq(x.Any, x.empty)
+  return Eq (x.Any, x.empty)
 }
 
 func (x *index) Clr() {
-  x.Any, x.uint32 = Clone(x.empty), 0
+  x.Any, x.uint32 = Clone (x.empty), 0
 }
 
 func (x *index) Copy (Y Any) {
   y := x.imp(Y)
-  x.empty = Clone(y.empty)
+  x.empty = Clone (y.empty)
   x.Set(y.Any, uint(y.uint32))
 }
 
@@ -54,11 +54,12 @@ func (x *index) Clone() Any {
 }
 
 func (x *index) Eq (Y Any) bool {
-  return Eq(x.Any, x.imp(Y).Any)
+  y := x.imp(Y)
+  return Eq (x.Any, y.Any) && x.uint32 == y.uint32
 }
 
 func (x *index) Less (Y Any) bool {
-  return Less(x.Any, x.imp(Y).Any)
+  return Less (x.Any, x.imp(Y).Any)
 }
 
 func (x *index) Pos() uint {

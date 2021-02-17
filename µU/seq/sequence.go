@@ -1,6 +1,6 @@
 package seq
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 210213 - license see µU.go
 
 import (
   . "µU/ker"
@@ -465,7 +465,7 @@ func (x *sequence) Trav (op Op) {
   }
 }
 
-func (x *sequence) Filter (Y Iterator, p Pred) {
+func (x *sequence) Filter (Y Collector, p Pred) {
   y := x.imp (Y)
   if y == x { return }
   y.Clr()
@@ -478,24 +478,24 @@ func (x *sequence) Filter (Y Iterator, p Pred) {
   y.pos = x.num
 }
 
-func (x *sequence) Split (Y Iterator) {
-  y := x.imp (Y)
-  if y == x { return }
-  y.Clr()
-  if x.actual == x.anchor { return }
-  y.anchor.next, y.anchor.prev = x.actual, x.anchor.prev
-  x.anchor.prev.next = y.anchor
-  x.anchor.prev = x.actual.prev
-  x.actual.prev.next = x.anchor
-  x.actual.prev = y.anchor
-  x.actual = x.anchor
-  y.actual = y.anchor.next
-  y.num = x.num - x.pos
-  x.num = x.pos
-  x.pos = x.num
-}
+//func (x *sequence) Split (Y Collector) {
+//  y := x.imp (Y)
+//  if y == x { return }
+//  y.Clr()
+//  if x.actual == x.anchor { return }
+//  y.anchor.next, y.anchor.prev = x.actual, x.anchor.prev
+//  x.anchor.prev.next = y.anchor
+//  x.anchor.prev = x.actual.prev
+//  x.actual.prev.next = x.anchor
+//  x.actual.prev = y.anchor
+//  x.actual = x.anchor
+//  y.actual = y.anchor.next
+//  y.num = x.num - x.pos
+//  x.num = x.pos
+//  x.pos = x.num
+//}
 
-func (x *sequence) Cut (Y Iterator, p Pred) {
+func (x *sequence) Cut (Y Collector, p Pred) {
   y := x.imp (Y)
   if y == x { return }
   y.Clr()
@@ -589,7 +589,7 @@ func (x *sequence) join (y *sequence) {
   y.num, y.pos = 0, 0
 }
 
-func (x *sequence) Join (Y Iterator) {
+func (x *sequence) Join (Y Collector) {
   y := x.imp (Y)
   if x.ordered {
     x.join (y)

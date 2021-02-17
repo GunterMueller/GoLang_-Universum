@@ -1,14 +1,13 @@
 package piset
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 210213 - license see µU.go
 
 import
   . "µU/obj"
 type
   PersistentIndexedSet interface { // persistent ordered sets of elements,
                                    // that have an index, by which they are ordered.
-  Clearer
-  Sorter // hence implements Clearer, Equaler, Comparer, Collector and Iterator
+  Collector
   Persistor
 }
 

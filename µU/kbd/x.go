@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 200517 - license see µU.go
+// (c) Christian Maurer   v. 210106 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -54,7 +54,7 @@ loop:
     e, ok = <-xpipe
     ch <- 0
     if ! ok { panic ("x.inputX: ! ok") }
-    if e.S == 64 { panic("x.inputX: shriek !") }
+    if e.S == 64 { continue } // d(o,o)f-key
     shift := isSet (shiftBit, e.S)
     shiftLock := isSet (shiftLockBit, e.S)
     if shiftLock { shift = false } // weg isser
@@ -65,10 +65,8 @@ loop:
     mouseM := isSet (mouseBitM, e.S)
     mouseR := isSet (mouseBitR, e.S)
     if shift || ctrl {
-//      *D++
       *D = 1
     } else if alt {
-//      *D += 2
       *D = 2
     }
     switch e.T {
@@ -76,7 +74,6 @@ loop:
       *B = 0
       *C = Expose
       *D = 0
-//      println ("na siehste es geht doch")
       break loop
     case C.KeyPress:
       if e.C < 9 {

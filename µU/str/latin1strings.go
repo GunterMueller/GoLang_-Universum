@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 201220 - license see µU.go
+// (c) Christian Maurer   v. 210212 - license see µU.go
 
 import
   "µU/char"
@@ -339,6 +339,11 @@ func norm (s *string, n uint) {
 
 func offSpc (s *string) {
   offBytes (s, ' ')
+}
+
+func offSpc1 (s *string) {
+  n := properLen (*s)
+  *s = (*s)[:n]
 }
 
 func offBytes (s *string, b byte) {

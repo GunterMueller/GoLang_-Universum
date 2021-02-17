@@ -1,11 +1,11 @@
 package obj
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 210212 - license see µU.go
 
 type
   Seeker interface {
 
-  Iterator
+  Collector
 
 // Returns Num(), iff Offc(); returns otherwise
 // the position of the actual object of x (starting at 0).

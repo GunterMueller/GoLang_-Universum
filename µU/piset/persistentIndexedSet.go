@@ -1,10 +1,11 @@
 package piset
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 210214 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/ker"
+  "µU/errh"
   "µU/str"
   "µU/pseq"
   "µU/buf"
@@ -59,7 +60,11 @@ func (x *persistentIndexedSet) build() {
       x.Buffer.Ins (i)
     } else {
       x.Index.Set (x.Func (x.Object), i)
-      x.Set.Ins (x.Index)
+      index := Clone (x.Index).(internal.Index)
+      if index.Pos() != i { errh.Error2 ("i ==", i, "   Pos ==", index.Pos()) }
+//      if ! x.Set.Ex (index) {
+        x.Set.Ins (index)
+//      }
     }
     i++
   })
@@ -90,12 +95,6 @@ func (x *persistentIndexedSet) Clr() {
 
 func (x *persistentIndexedSet) Num() uint {
   return x.Set.Num()
-}
-
-func (x *persistentIndexedSet) NumPred (p Pred) uint {
-  n := uint(0)
-  x.Trav (PredOp2Op(p, func (a Any) { n++ }))
-  return n
 }
 
 func (x *persistentIndexedSet) Ex (a Any) bool {
@@ -171,164 +170,27 @@ func (x *persistentIndexedSet) Del() Any {
   return x.Object.Clone()
 }
 
-func (x *persistentIndexedSet) Sort() {
-  if x == nil { return }
-  if x.Set == nil { return }
-  x.Set.Sort()
-  x.Jump (false)
-}
-
-func (x *persistentIndexedSet) Ordered() bool {
-  ordered := true
-  if x.Set.Empty() { return ordered }
-  first := true
-  var former Object
-  x.Set.Trav (func (a Any) {
-    x.PersistentSequence.Seek (a.(internal.Index).Pos())
-    x.Object = x.PersistentSequence.Get().(Object)
-    if first {
-      first = false
-    } else {
-      if ! Leq (former, x.Object) {
-        ordered = false
-      }
-    }
-    former = x.Object
-  })
-  return ordered
-}
-
 func (x *persistentIndexedSet) ExGeq (a Any) bool {
   x.Index.Set (x.Func (a), 0)
   return x.Set.ExGeq (x.Index)
 }
 
-func (x *persistentIndexedSet) All (p Pred) bool {
-  if x.Set.Empty() { return true }
-  defer x.Jump (false)
-  x.Set.Jump (false)
-  for i := uint(0); i < x.Set.Num(); i++ {
-    x.Index = x.Set.Get().(internal.Index)
-    x.PersistentSequence.Seek (x.Index.Pos())
-    if ! p (x.PersistentSequence.Get().(Object)) {
-      return false
-    }
-    x.Set.Step (true)
-  }
-  return true
-}
-
-func (x *persistentIndexedSet) ExPred (p Pred, f bool) bool {
-  x.Set.Jump (! f)
-  for i := uint(0); i < x.Set.Num(); i++ {
-    x.Index = x.Set.Get().(internal.Index)
-    x.PersistentSequence.Seek (x.Index.Pos())
-    if p (x.PersistentSequence.Get().(Object)) {
-      return true
-    }
-    x.Set.Step (f)
-  }
-  return false
-}
-
-func (x *persistentIndexedSet) StepPred (p Pred, f bool) bool {
-  if x.Set.Eoc (f) { return false }
-  x.Set.Step (f)
-  for {
-    x.Index = x.Set.Get().(internal.Index)
-    x.PersistentSequence.Seek (x.Index.Pos())
-    if p (x.PersistentSequence.Get().(Object)) {
-      return true
-    }
-    if x.Set.Eoc (f) { break }
-    x.Set.Step (f)
-  }
-  return false
+func (x *persistentIndexedSet) put (a Any) {
+  x.PersistentSequence.Put (a)
+  x.PersistentSequence.Step (true)
 }
 
 func (x *persistentIndexedSet) Trav (op Op) {
   if x.Set.Empty() { return }
-  first := true
-  var former Object
+  x.PersistentSequence.Jump (false)
   x.Set.Trav (func (a Any) {
-    x.PersistentSequence.Seek (a.(internal.Index).Pos())
-    x.Object = x.PersistentSequence.Get().(Object)
-    old := x.Object.Clone().(Object)
-    op (x.Object)
-    if ! x.Object.Eq (old) { x.PersistentSequence.Put (x.Object) }
-    if first {
-      first = false
-    } else {
-      if ! Leq (former, x.Object) { ker.Panic ("Pre of Trav not met: op is not monotone") }
-    }
-    former = x.Object.Clone().(Object)
+    op (a)
+    x.PersistentSequence.Put (a)
+    x.PersistentSequence.Step (true)
   })
-  x.Jump (false)
 }
 
-func (x *persistentIndexedSet) Filter (Y Iterator, p Pred) {
-  if x.Set.Empty() { return }
-  y := x.imp (Y)
-  y.Clr()
-  x.Set.Trav (func (a Any) {
-    x.PersistentSequence.Seek (a.(internal.Index).Pos())
-    x.Object = x.PersistentSequence.Get().(Object)
-    if ! x.Object.Empty() && p (x.Object) {
-      y.Ins (x.Object)
-    }
-  })
-  y.Jump (false)
-}
-
-func (x *persistentIndexedSet) Cut (Y Iterator, p Pred) {
-  if x.Set.Empty() { return }
-  y := x.imp (Y)
-  y.Clr()
-  x.Set.Trav (func (a Any) {
-    x.PersistentSequence.Seek (a.(internal.Index).Pos())
-    x.Object = x.PersistentSequence.Get().(Object)
-    if p (x.Object) {
-      y.Ins (x.Object)
-      x.Object.Clr()
-      x.PersistentSequence.Put (x.Object)
-    }
-  })
-  x.build()
-  y.Jump (false)
-}
-
-func (x *persistentIndexedSet) ClrPred (p Pred) {
-  if x.Set.Empty() { return }
-  x.Set.Trav (func (a Any) {
-    x.PersistentSequence.Seek (a.(internal.Index).Pos())
-    x.Object = x.PersistentSequence.Get().(Object)
-    if p (x.Object) {
-      object := x.Object.Clone().(Object)
-      object.Clr()
-      x.PersistentSequence.Put (object)
-    }
-  })
-  x.build()
-}
-
-func (x *persistentIndexedSet) Split (Y Iterator) {
-  y := x.imp(Y)
-  y.Clr()
-  for {
-    i := x.Set.Get().(internal.Index).Pos()
-    x.PersistentSequence.Seek(i)
-    x.Object = x.PersistentSequence.Get().(Object)
-    y.Ins (x.Object)
-    x.Object.Clr()
-    x.PersistentSequence.Put (x.Object)
-    if x.Set.Eoc(true) { break }
-    x.Set.Step(true)
-  }
-  x.build()
-  y.Jump(false)
-}
-
-func (x *persistentIndexedSet) Join (Y Iterator) {
+func (x *persistentIndexedSet) Join (Y Collector) {
   y := x.imp (Y)
   if y.Set.Empty() { return }
   y.Set.Trav (func (a Any) {
@@ -341,3 +203,14 @@ func (x *persistentIndexedSet) Join (Y Iterator) {
   x.Jump (false)
   y.Clr()
 }
+
+func (x *persistentIndexedSet) Ordered() bool {
+  return x.Set.Ordered()
+}
+
+func (x *persistentIndexedSet) Sort() {
+  x.Set.Sort()
+  x.PersistentSequence.Clr()
+  x.Set.Trav (x.put)
+}
+

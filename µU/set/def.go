@@ -1,19 +1,15 @@
 package set
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 210212 - license see µU.go
 
 import
   . "µU/obj"
 type
   Set interface { // ordered sets of elements, that are atomic or implement Object.
 
-  Sorter
-// Split is not yet implemented!
+  Collector
 
-// Undocumented.
-// (My work is so secret, that even I don't know what I'm doing.)
-  Write (x0, x1, y, dy uint, f func (Any) string)
-  Write1 (f func (Any) string)
+  ExGeq (a Any) bool
 }
 
 // Pre: a is atomic or of a type implementing Object.

@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 201214 - license see µU.go
+// (c) Christian Maurer   v. 210212 - license see µU.go
 
 //     latin-1-strings (without any UTF-8-stuff)
 
@@ -149,6 +149,9 @@ func Move (s *string, left bool) { move(s,left) }
 
 // As far as existent, all spaces are removed from s.
 func OffSpc (s *string) { offSpc(s) }
+
+// As far as existent, all trailing spaces are removed from s.
+func OffSpc1 (s *string) { offSpc1(s) }
 
 // If p < len(s), a space is inserted in at position p
 // (if the last byte of s was not a space, it is lost).

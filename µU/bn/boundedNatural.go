@@ -1,6 +1,6 @@
 package bn
 
-// (c) Christian Maurer   v. 201204 - license see µU.go
+// (c) Christian Maurer   v. 210214 - license see µU.go
 
 import (
   "µU/ker"
@@ -111,14 +111,10 @@ func (x *natural) Defined (s string) bool {
 }
 
 func st (n uint) string {
-  if n == 0 {
-    return "0"
+  if n < 10 {
+    return string(n + '0')
   }
-  s := ""
-  for s = ""; n > 0; n /= 10 {
-    s = st (n % 10 + '0') + s
-  }
-  return s
+  return st (n / 10) + st (n % 10)
 }
 
 func (x *natural) String() string {
