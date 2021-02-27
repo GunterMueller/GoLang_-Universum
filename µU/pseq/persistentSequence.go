@@ -1,6 +1,6 @@
 package pseq
 
-// (c) Christian Maurer   v. 210212 - license see µU.go
+// (c) Christian Maurer   v. 210221 - license see µU.go
 
 import (
   "reflect"
@@ -8,7 +8,7 @@ import (
   . "µU/ker"
   . "µU/obj"
   "µU/str"
-//  "µU/errh"
+  "µU/errh"
   "µU/pseq/internal"
 )
 
@@ -54,8 +54,10 @@ func new_(a Any) PersistentSequence {
   case Equaler, Coder:
     ; // ok
   default:
-    if ! Atomic(a) && ! Streamic(a) {
-      panic("not Atomic or Streamic or Equaler and Coder, but" + reflect.TypeOf(a).String())
+    if Atomic (a) || Streamic (a) {
+      // ok
+    } else {
+      Panic ("neither Atomic nor Streamic, but " + reflect.TypeOf(a).String())
     }
   }
   x := new(persistentSequence)
@@ -70,7 +72,7 @@ func new_(a Any) PersistentSequence {
 }
 
 func (x *persistentSequence) check (a Any) {
-  CheckTypeEq (x.emptyObject, a)
+//  CheckTypeEq (x.emptyObject, a)
 }
 
 func (x *persistentSequence) imp (a Any) *persistentSequence {
@@ -158,6 +160,7 @@ func (x *persistentSequence) Num() uint {
   return uint(x.num)
 }
 
+/*/
 func (x *persistentSequence) NumPred (p Pred) uint {
   n := uint(0)
   if x.num == 0 { return 0 }
@@ -170,6 +173,7 @@ func (x *persistentSequence) NumPred (p Pred) uint {
   }
   return n
 }
+/*/
 
 func (x *persistentSequence) Ex (a Any) bool {
   x.check (a)
@@ -302,7 +306,6 @@ func (x *persistentSequence) Del() Any {
   for i := null; i < x.num; i++ {
     x.read (x.buf)
     if i == x.pos {
-//      a = Decode (x.Any, x.buf)
       a = Decode (Clone (x.Any), x.buf)
     } else {
       y.write (x.buf)
@@ -320,56 +323,10 @@ func (x *persistentSequence) Del() Any {
   x.pos = p
   x.num = x.file.Length() / x.size // x.num--
   if x.num + 1 != n {
-// errh.Error2 ("what to devil", uint(x.num + 1), "is here loose", uint(n))
+    errh.Error2 ("what to devil", uint(x.num + 1), "is here loose", uint(n))
   }
   if x.num != uint64(x.Num()) { Panic ("pseq.Del: num bug") }
   return a
-}
-
-func (x *persistentSequence) ExPred (p Pred, f bool) bool {
-  if x.file.Empty() { return false }
-  n := x.file.Length() / x.size
-  if n == 0 { return false }
-  i := null
-  if f {
-    i = 0
-  } else {
-    i = n - 1
-  }
-  x.file.Seek (i * x.size)
-  for {
-    x.read (x.buf)
-//    if p (Decode (x.emptyObject, x.buf)) {
-    if p (Decode (Clone (x.emptyObject), x.buf)) {
-      x.pos = i
-      return true
-    }
-    if f {
-      if i == n - 1 {
-        break
-      } else {
-        i++
-      }
-    } else if i == 0 {
-      break
-    } else {
-      i--
-    }
-  }
-  return false
-}
-
-func (x *persistentSequence) All (p Pred) bool {
-  if x.num == 0 { return true }
-  x.file.Seek (0)
-  for i := null; i < x.num; i++ {
-    x.read (x.buf)
-//    if ! p (Decode (x.emptyObject, x.buf)) {
-    if ! p (Decode (Clone (x.emptyObject), x.buf)) {
-      return false
-    }
-  }
-  return true
 }
 
 func (x *persistentSequence) Ordered() bool {
@@ -450,6 +407,7 @@ func (x *persistentSequence) Trav (op Op) {
   x.file.Fin()
 }
 
+/*/
 func (x *persistentSequence) Filter (Y Collector, p Pred) {
   y := x.imp (Y)
   if y == nil { return }
@@ -498,40 +456,7 @@ func (x *persistentSequence) Cut (Y Collector, p Pred) {
   if x.num != uint64(x.Num()) { Panic ("pseq.Cut: x.num bug") }
   if y.num != uint64(y.Num()) { Panic ("pseq.Cut: y.num bug") }
 }
-
-//func (x *persistentSequence) Split (Y Collector) {
-//  y := x.imp (Y)
-//  if y == nil { return }
-//  if x.num == 0 { return }
-//  y.Clr()
-//  ps := new_(x.emptyObject).(*persistentSequence)
-//  ps.Name (x.tmpName)
-//  ps.Clr()
-//  x.file.Seek (0)
-//  if x.pos == 0 {
-////    errh.ReportError ("pseq: Split not yet completely implemented") // >>>> alles nach S1
-//  } else {
-//    for i := null; i < x.pos; i++ {
-//      x.read (x.buf)
-//      ps.write (x.buf)
-//    }
-//    if x.pos < x.num {
-//      for i := one; i <= x.num - x.pos; i++ {
-//        x.read (x.buf)
-//        y.write (x.buf)
-//      }
-//    }
-//    y.pos = 0
-//  }
-//  x.file.Clr()
-//  ps.file.Rename (x.name)
-//  ps.Fin()
-//  x.file.Name (x.name)
-//  x.pos = x.num - x.pos - 1
-//  x.num = x.file.Length() / x.size
-//  y.num = y.file.Length() / y.size
-//  y.file.Fin()
-//}
+/*/
 
 func (x *persistentSequence) concatenate (Y PersistentSequence) {
   y := x.imp (Y)

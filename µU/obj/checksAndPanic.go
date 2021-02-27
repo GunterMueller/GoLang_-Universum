@@ -1,18 +1,20 @@
 package obj
 
-// (c) Christian Maurer   v. 171104 - license see µU.go
+// (c) Christian Maurer   v. 210225 - license see µU.go
 
 import (
   "reflect"
-//  "runtime"
-//  "math"
   "strconv"
   "µU/ker"
 )
 
 func TypeEq (a, b Any) bool {
   x, y := reflect.TypeOf(a), reflect.TypeOf(b)
-  if x != y { TypeNotEqPanic (a, b) }
+/*
+  if x != y {
+    TypeNotEqPanic (a, b)
+  }
+*/
   return x == y
 }
 
@@ -21,9 +23,18 @@ func CheckTypeEq (a, b Any) {
   if a == nil && b != nil || b == nil && a != nil {
     TypeNotEqPanic (a, b)
   }
+/*/
+  TypeEq (a, b)
+/*/
   x, y := reflect.TypeOf(a), reflect.TypeOf(b)
   if x != y {
     TypeNotEqPanic (a, b)
+  }
+}
+
+func CheckEqualerAndComparer (a Any) {
+  if ! isEqualer(a) && isComparer(a) {
+    PanicNotEqualerAndNotComparer(a)
   }
 }
 
@@ -76,6 +87,10 @@ func WrongUintParameterPanic (s string, a Any, n uint) {
 
 func PanicNotAtomicOrEqualer (a Any) {
   ker.Panic ("the type " + text(a) + " is neither Atomic nor implements Equaler")
+}
+
+func PanicNotEqualerAndNotComparer (a Any) {
+  ker.Panic ("the type " + text(a) + " does not implement Equaler and Comparer")
 }
 
 func PanicNotAtomicOrObject (a Any) {

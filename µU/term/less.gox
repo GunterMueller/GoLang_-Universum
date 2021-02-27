@@ -1,42 +1,35 @@
-package termtree
+package term
 
-type
-  tree struct {
-              Type
-    variables []string
-              float64
-           op r.Operation
-  left, right *tree
-            f r.Function
-          arg *tree
-     variable string
-              }
+// just an attempt - probably nonsense
 
-func (t *tree) Less (U Any) bool {
+import
+  "µU/r"
+
+func (t *term) Less (U Term) bool {
   u := t.imp(U)
   if t.Empty() || u.Empty() { return false }
-  if t.IsRealTree() {
-    return ! u.IsRealTree()
-  } else if t.IsRealTree() {
+  if t.typ == realType {
+    return u.typ != realType
+  } else if u.typ == realType {
     return false
   }
-  if t.IsVarTree() {
-    if u.IsVarTree() {
-      return false // XXX return t.Variables.Less (u.Variables)
+  if t.typ == varType {
+    if u.typ == varType {
+      return t.variable < u.variable
     } else {
-//    if u.isPower( {
-//      if u.left.isVariable() {
+//    if u.typ == opType && u.op == r.Pow {
+//      if u.left.typ == varType {
 //        return t.Less (u.left)
 //      }
 //    }
     }
   }
-  if t.Type == opType && t.op == r.Pow {
+  if t.typ == opType && t.op == r.Pow {
     if t.left.Less (u) {
       return true
     }
   }
-  if t.Type == opType && t.op == r.Pow {
+  if u.typ == opType && u.op == r.Pow {
     if t.Less (u.left) {
       return true
     }

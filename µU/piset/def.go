@@ -1,6 +1,6 @@
 package piset
 
-// (c) Christian Maurer   v. 210213 - license see µU.go
+// (c) Christian Maurer   v. 210225 - license see µU.go
 
 import
   . "µU/obj"
@@ -11,7 +11,8 @@ type
   Persistor
 }
 
-// Pre: f is the function that returns the index for the objects in x.
+// Pre: f is the function that returns the index for the objects in x;
+//      the index must implement Equaler and Comparer.
 //      (If f returns for every object that object itself,
 //      the package just handles persistent ordered sets.)
 // Returns a new empty persistent indexed set for objects of the type of o.

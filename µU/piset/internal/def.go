@@ -1,17 +1,14 @@
 package internal
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 210221 - license see µU.go
 
-import (
+import
   . "µU/obj"
-  "µU/col"
-)
 type
   Index interface { // TODO detailed explanations
 
-  Object
-  col.Colourer
-//  Editor
+  Equaler
+  Comparer
 
 // x has a Clone of a as indexobject and position n.
   Set (a Any, n uint)

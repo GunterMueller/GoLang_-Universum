@@ -1,6 +1,6 @@
 package set
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer  v. 140407 - license see µU.go
 
 import (
   "µU/obj"
@@ -8,10 +8,10 @@ import (
   "µU/str"
 )
 
-func (x *tree) write (x0, x1, y, dy uint, f func (obj.Any) string) {
+func (x *node) write (x0, x1, y, dy uint, f func (obj.Any) string) {
   if x == nil { return }
-  xm:= (x0 + x1) / 2
-  y1:= int(y + scr.Ht1() / 2) - 1
+  xm := (x0 + x1) / 2
+  y1 := int(y + scr.Ht1() / 2) - 1
   if x.left != nil {
     scr.Line (int(xm), y1, int(x0 + xm) / 2, y1 + int (dy))
   }
@@ -27,10 +27,10 @@ func (x *set) Write (x0, x1, y, dy uint, f func (obj.Any) string) {
   x.anchor.write (x0, x1, y, dy, f)
 }
 
-func (x *tree) write1 (d uint, f func (obj.Any) string) {
+func (x *node) write1 (d uint, f func (obj.Any) string) {
   if x == nil { return }
   x.right.write1 (d + 1, f)
-  println (str.New (6 * d) + f (x.Any))
+  println (str.New(6 * d) + f (x.Any))
   x.left.write1 (d + 1, f)
 }
 

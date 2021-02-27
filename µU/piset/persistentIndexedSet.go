@@ -1,6 +1,6 @@
 package piset
 
-// (c) Christian Maurer   v. 210214 - license see µU.go
+// (c) Christian Maurer   v. 210221 - license see µU.go
 
 import (
   . "µU/obj"
@@ -12,8 +12,6 @@ import (
   "µU/set"
   "µU/piset/internal"
 )
-const
-  suffix = "seq"
 type
   persistentIndexedSet struct {
                               Object
@@ -62,14 +60,14 @@ func (x *persistentIndexedSet) build() {
       x.Index.Set (x.Func (x.Object), i)
       index := Clone (x.Index).(internal.Index)
       if index.Pos() != i { errh.Error2 ("i ==", i, "   Pos ==", index.Pos()) }
-//      if ! x.Set.Ex (index) {
-        x.Set.Ins (index)
-//      }
+      x.Set.Ins (index)
     }
     i++
   })
   x.Jump (false)
 }
+
+const suffix = "seq"
 
 func (x *persistentIndexedSet) Name (s string) {
   if str.Empty (s) { return }
@@ -104,7 +102,7 @@ func (x *persistentIndexedSet) Ex (a Any) bool {
 }
 
 func (x *persistentIndexedSet) Ins (a Any) {
-  if ! IsObject (a) { ker.Panic("geht nich") }
+  if ! IsObject (a) { ker.Panic("piset.Ins: geht nich") }
   if x.Ex (a) || a.(Object).Empty() { return }
   var p uint
   if x.Buffer.Empty() {
@@ -145,6 +143,7 @@ func (x *persistentIndexedSet) Put (a Any) {
   if x.Set.Empty() {
     return
   }
+  if ! IsObject (a) { ker.Panic("piset.Put: geht nich") }
   x.Set.Put (x.Index)
   x.PersistentSequence.Put (a)
 }
@@ -173,11 +172,6 @@ func (x *persistentIndexedSet) Del() Any {
 func (x *persistentIndexedSet) ExGeq (a Any) bool {
   x.Index.Set (x.Func (a), 0)
   return x.Set.ExGeq (x.Index)
-}
-
-func (x *persistentIndexedSet) put (a Any) {
-  x.PersistentSequence.Put (a)
-  x.PersistentSequence.Step (true)
 }
 
 func (x *persistentIndexedSet) Trav (op Op) {
@@ -210,7 +204,5 @@ func (x *persistentIndexedSet) Ordered() bool {
 
 func (x *persistentIndexedSet) Sort() {
   x.Set.Sort()
-  x.PersistentSequence.Clr()
-  x.Set.Trav (x.put)
 }
 

@@ -1,6 +1,6 @@
 package pseq
 
-// (c) Christian Maurer   v. 210213 - license see µU.go
+// (c) Christian Maurer   v. 210221 - license see µU.go
 
 import
   . "µU/obj"

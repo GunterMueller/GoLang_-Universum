@@ -15,6 +15,7 @@ func isEqualer (a Any) bool {
 
 func eq (a, b Any) bool {
   if a == nil { return b == nil }
+  if b == nil { return a == nil }
   if ! TypeEq (a, b) {
     return false
   }
