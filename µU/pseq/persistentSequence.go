@@ -1,6 +1,6 @@
 package pseq
 
-// (c) Christian Maurer   v. 210221 - license see µU.go
+// (c) Christian Maurer   v. 210228 - license see µU.go
 
 import (
   "reflect"
@@ -388,7 +388,7 @@ func (x *persistentSequence) ExGeq (a Any) bool {
 func (x *persistentSequence) Trav (op Op) {
   if x.num != uint64(x.Num()) { Panic ("pseq.Trav: num bug") }
   b := x.file.Length() == 0
-  if b { if x.num != 0 || ! x.Empty() { println ("pseq.Trav: oops") } }
+  if b { if x.num != 0 || ! x.Empty() { Panic ("pseq.Trav: oops") } }
   x.file.Seek (0)
   for i := null; i < x.num; i++ {
     x.read (x.buf)

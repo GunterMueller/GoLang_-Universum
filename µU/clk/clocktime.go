@@ -1,6 +1,6 @@
 package clk
 
-// (c) Christian Maurer   v. 201226 - license see µU.go
+// (c) Christian Maurer   v. 210228 - license see µU.go
 
 import (
   . "µU/ker"
@@ -86,12 +86,7 @@ func (x *clocktime) Clone() Any {
 }
 
 func (x *clocktime) internalCode() uint {
-  c := (ms * x.hour + x.minute) * ms + x.second
-  if c > sd {
-    println("jaul", c) // ; Panic("jaul")
-    c = sd - 1
-  }
-  return c
+  return (ms * x.hour + x.minute) * ms + x.second
 }
 
 func (x *clocktime) Eq (Y Any) bool {

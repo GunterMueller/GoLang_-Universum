@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 201103 - license see µU.go
+// (c) Christian Maurer   v. 210228 - license see µU.go
 
 import (
   "math"
@@ -139,14 +139,12 @@ func horRectangle (x, y, z, x1, y1 float64, up bool) {
 func vertRectangle (x []float64) {
   if len(x) != 6 { fail() }
   if x[2] == x[5] { fail1() }
-//print ("(((", x[0], x[1], x[2], x[3], x[4], x[5])
   begin (Quads)
   vertex (x[0], x[1], x[2])
   vertex (x[3], x[4], x[2])
   vertex (x[3], x[4], x[5])
   vertex (x[0], x[1], x[5])
   end()
-// println (" )))")
 }
 
 func parallelogram (x []float64) {

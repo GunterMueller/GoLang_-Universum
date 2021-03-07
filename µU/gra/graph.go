@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 200714 - license see µU.go
+// (c) Christian Maurer   v. 210228 - license see µU.go
 //
 // >>>  References:
 // >>>  CLR  = Cormen, Leiserson, Rivest        (1990)
@@ -950,7 +950,6 @@ func (x *graph) Add (Ys ...Graph) {
         e2 := x.connection (x.local, x.colocal)
         if e1 == nil && e2 == nil {
           x.edgeMarked (e.Any, e.bool)
-// println("edg", e.Any.(edg.Edge).(Valuator).Val())
         } else if e1 != nil && ! e1.bool { // x.colacal already connected with x.local
           e1.bool = e.bool
         } else if e2 != nil && ! e2.bool {

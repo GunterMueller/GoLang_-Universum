@@ -18,10 +18,9 @@ import (
 //  "fmt"
   "math"
 //  "time"
-//  "µU/ker"
+  "µU/ker"
   "µU/gl"
   "µU/glu"
-//  "µU/col"
   "µU/spc"
 )
 const (
@@ -81,13 +80,13 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
       glu.Perspective (60, X.proportion, 0.1, 10000.)
       C.gluLookAt (d(ex), d(ey), d(ez), d(fx), d(fy), d(fz), d(nx), d(ny), d(nz))
       draw()
-      if e := gl.Error(); e != "" { println ("openGL error: " + e) }
+      if e := gl.Error(); e != "" { ker.Panic ("openGL error: " + e) }
       C.glXSwapBuffers (dpy, C.GLXDrawable(X.win))
       C.glFinish()
 //      gl.MatrixMode (gl.Modelview) // obviously superfluous
-//      print("origin    "); fmt.Println (ex, ey, ez)
-//      print("focus  "); fmt.Println (fx, fy, fz)
-//      print("normal "); fmt.Println (nx, ny, nz)
+//      fmt.Println ("origin   ", ex, ey, ez)
+//      fmt.Println ("fogus   ", fx, fy, fz)
+//      fmt.Println ("normal   ", nx, ny, nz)
     }
     redraw = true
     C.XNextEvent (dpy, &xev)
@@ -95,7 +94,6 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
     switch et {
     case C.KeyPress:
       c, t := C.kCode (&xev), C.kState (&xev)
-// println (c, t)
       switch c {
       case Esc:
         return

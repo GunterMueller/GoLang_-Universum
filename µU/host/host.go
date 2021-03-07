@@ -1,6 +1,6 @@
 package host
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 210228 - license see µU.go
 
 import (
   "os"; "net"
@@ -196,7 +196,7 @@ func (x *host) Defined (s string) bool {
     addr, err := net.LookupHost(s) // schau'mer moi, ob's oana is
     if err == nil { // mir hoam's, is oana
       s = addr[0] // ist die IP-Nummer
-      if s == providerIP { return false } // chock out Scheißprovider
+      if s == providerIP { return false } // chock out above provider
       if s == nullIP.String() { // s == "0.0.0.0"
         x.Clr()
         return true

@@ -1,9 +1,10 @@
 package nchan
 
-// (c) Christian Maurer   v. 201204 - license see µU.go
+// (c) Christian Maurer   v. 210228 - license see µU.go
 
 import (
   "net"
+  "µU/ker"
   "µU/time"
   . "µU/obj"
   "µU/host"
@@ -24,11 +25,11 @@ func (x *netChannel) serve (c net.Conn) {
 // that had called newn, has sent his reply
       a := <-x.out
       _, x.error = c.Write(append(Encode(Codelen(a)), Encode(a)...))
-      if x.error != nil { println(x.error.Error()) }
+      if x.error != nil { ker.Panic (x.error.Error()) }
     } else {
       x.in <- Decode (Clone (x.Any), x.Stream[:r])
       _, x.error = c.Write (Encode(<-x.out))
-      if x.error != nil { println(x.error.Error()) } // provisorial
+      if x.error != nil { ker.Panic (x.error.Error()) } // provisorial
     }
   }
   c.Close()

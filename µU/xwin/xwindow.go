@@ -100,22 +100,9 @@ Window mappingWin (XEvent *e) { return (*e).xmapping.window; }
 Atom mT (XEvent *e) { return (*e).xclient.message_type; }
 
 XKeyEvent keyEvent (XEvent *e) { return (*e).xkey; }
-
-int lookupString (XEvent e) {
-  XKeyEvent kev = e.xkey;
-  char buffer[10];
-  KeySym key;
-  XComposeStatus cs;
-  int g;
-  g = XLookupString (&kev, buffer, 20, &key, &cs);
-//  printf("key %d %  %s\n", key, buffer, &cs.compose_ptr);
-  printf("key %d %s %s\n", key, buffer, ";");
-  return g;
-}
 */
 import
   "C"
-//  char *buffer;
 import (
   "unsafe"
   "strconv"

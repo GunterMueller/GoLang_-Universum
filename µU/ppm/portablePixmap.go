@@ -1,9 +1,10 @@
 package ppm
 
-// (c) Christian Maurer   v. 210107 - license see µU.go
+// (c) Christian Maurer   v. 210228 - license see µU.go
 
 import (
   "os/exec"
+  "µU/ker"
   . "µU/obj"
   "µU/str"
   "µU/scr"
@@ -56,5 +57,5 @@ func get (n string, x, y uint) {
 func print_(n string) {
   put (n)
   e := exec.Command (prt.PrintCommand, "-o", "fit-to-page", n + suffix).Run()
-  if e != nil { println (e.Error()) }
+  if e != nil { ker.Panic (e.Error()) }
 }

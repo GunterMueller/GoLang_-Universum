@@ -1,14 +1,21 @@
 package obj
 
-// (c) Christian Maurer   v. 210214 - license see µU.go
+// (c) Christian Maurer   v. 210305 - license see µU.go
 
 // Collections of elements of type object or of variables of
-// an atomic type (bool, [u]int.., float.., string, ...).
+// an atomic type (bool, [u]int.., float.., string, ...)
+// in a sequential order.
 // Every collection has either exactly one actual element
 // or its actual element is undefined.
 //
+// An order relation is a reflexive, transitive and antisymmetric
+// relations r, i.e., for all a, b, c in a collection r(a,a),
+// r(a,b) and r(b,c) imply r(a,c), r(a,b) and r(b,a) imply Eq(a,b).
+// Furthermore, we consider only linear relations,
+// i.e., for all a, b in a collection either r(a,b) or r(b,a).
+//
 // In all specifications x denotes the calling collection.
-
+//
 // Constructors have to return a new collection for elements of the type of a,
 // that does not contain any elements; so its actual object is undefined.
 
@@ -30,16 +37,11 @@ type
 //   If the actual element of x was undefined, a copy of a
 //   is appended in x (i.e. it is now the last element in x),
 //   otherwise x is inserted directly before the actual element.
-// Otherwise, i.e. if x is ordered (where the order relation r
-// is reflexive, transitive and antisymmetric "<=") or strict
-// (transitive and antisymmetric "<")
-//   x is inserted behind the last element b in x, for which
-//   r(b,a) == true, i.e. that under r "is smaller" than a.
-//   If an element b with Eq (b, a) was already contained in x,
-//   then, if r is a strict order, nothing has changed;
-//   otherwise, i.e. if r is an order,
-//   then a copy of a is contained once more in x.
-//   So x is now still ordered w.r.t. r.
+// Otherwise, i.e., if x is ordered,
+//   If an element b with Eq(b,a) was already contained in x,
+//   nothing has changed.
+//   Otherwise a copy of a is inserted behind the last element b
+//   in x with r(b,a); so x is now still ordered w.r.t. r.
 // In both cases all other elements and their order in x
 // and the actual element in x are not influenced.
   Ins (a Any)
@@ -129,14 +131,6 @@ Join (y Collector)
 
 // x is ordered.
   Sort()
-
-// If x is empty or x is ordered, nothing has changed.
-// Otherwise x contains exactly the same elements as before
-// in their former order, with the following exception:
-// for f == true the former last element in x is now the first
-// one and for f == false the former first element in x is now
-// the last one. The actual element of x is the same as before.
-//  Rotate () // ? TODO
 }
 
 func IsCollector (a Any) bool {

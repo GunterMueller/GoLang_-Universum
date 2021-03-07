@@ -209,14 +209,9 @@ func (x *set) Ordered() bool {
 }
 
 func (x *set) Sort() {
+  if x.Num() <= 1 { return }
   y := new_(x.Any).(*set)
   x.Trav (func (a Any) { y.Ins (a) } )
   x.anchor, x.num = y.anchor, y.num
-  y.anchor = nil
-//  x.actual = y.actual
-//  x.Jump (false)
-  x.actual = x.anchor
-  for x.actual.left != nil {
-    x.actual = x.actual.left
-  }
+  x.Jump (false)
 }
