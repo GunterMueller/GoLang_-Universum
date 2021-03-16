@@ -1,6 +1,6 @@
 package mode
 
-// (c) Christian Maurer   v. 210101 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 type
   Mode byte; const (
@@ -36,17 +36,22 @@ type
   QSXGAp // 2800 x 2100  131 x 350
   QUXGA  // 3200 x 2400  150 x 400
   UHD    // 3840 x 2160  135 x 440
-  HXGA   // 4096 x 3072
-  WHXGA  // 5120 x 3200
-  HSXGA  // 5120 x 4096
-  HUXGA  // 6400 x 4800
-  FUHD   // 7680 x 4320
+  HXGA   // 4096 x 3072  192 x 512
+  WHXGA  // 5120 x 3200  200 x 640
+  HSXGA  // 5120 x 4096  256 x 640
+  HUXGA  // 6400 x 4800  300 x 800
+  FUHD   // 7680 x 4320  270 x 960
   NModes )
 
+// Returns the pixelwidth of m.
 func Wd (m Mode) uint { return x[m] }
 
+// Returns the pixelheight of m.
 func Ht (m Mode) uint { return y[m] }
 
+// Returns the pixelwidth and -height of m.
 func Res (m Mode) (uint, uint) { return x[m], y[m] }
 
+// Returns the mode with (w, h) pixels for (width, height),
+// if such exists; panics otherwise.
 func ModeOf (w, h uint) Mode { return modeOf(w,h) }

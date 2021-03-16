@@ -60,6 +60,6 @@ func (x *personAddress) Index() Func {
   }
 }
 
-func (x *personAddress) RotOrder() {
-  x.Component(0).(Orderer).RotOrder()
+func (x *personAddress) Rotate() {
+  x.Component(0).(Rotator).Rotate()
 }

@@ -1,11 +1,11 @@
 package ppm
 
-// (c) Christian Maurer   v. 210228 - license see µU.go
+// (c) Christian Maurer   v. 210314 - license see µU.go
 
 import (
   "os/exec"
   "µU/ker"
-  . "µU/obj"
+  "µU/obj"
   "µU/str"
   "µU/scr"
   "µU/prt"
@@ -32,10 +32,10 @@ func size_(n string) (uint, uint) {
   filename := n + suffix
   l := pseq.Length (filename)
   if l == 0 { return 0, 0 }
-  s := make(Stream, l)
+  s := make(obj.Stream, l)
   file := pseq.New (s)
   file.Name (filename)
-  s = file.Get().(Stream)
+  s = file.Get().(obj.Stream)
   file.Fin()
   return scr.PPMSize (s)
 }
@@ -46,10 +46,10 @@ func get (n string, x, y uint) {
   filename := n + suffix
   l := pseq.Length (filename)
   if l == 0 { return }
-  s := make(Stream, l)
+  s := make(obj.Stream, l)
   file := pseq.New (s)
   file.Name (filename)
-  s = file.Get().(Stream)
+  s = file.Get().(obj.Stream)
   scr.PPMDecode (s, x, y)
   file.Fin()
 }

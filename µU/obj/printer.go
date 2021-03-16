@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 210308 - license see µU.go
 
 import
   . "µU/font"
@@ -10,7 +10,8 @@ type
 // f is the actual font.
   SetFont (f Font)
 
-// 
+// Pre: x consists only of strings.
+// x is printed starting in linc l, column c.
   Print (l, c uint)
 }
 

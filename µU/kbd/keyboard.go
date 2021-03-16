@@ -1,12 +1,13 @@
 package kbd
 
-// (c) Christian Maurer   v. 210103 - license see µU.go
+// (c) Christian Maurer   v. 210314 - license see µU.go
 
 import (
   . "µU/obj"
-  "µU/xwin"
   "µU/char"
-  "µU/mouse"
+  "µU/env"
+  "µU/scr"
+  "µU/scr/mouse"
 //  "µU/navi"
 )
 const (
@@ -194,9 +195,9 @@ func init() {
 //  kK[lower]  = Lower
 //  kK[louder] = Louder
   lastbyte, lastcommand, lastdepth = 0, None, 0
-  underX = xwin.UnderX()
+  underX = env.UnderX()
   if underX {
-    xpipe = make (chan xwin.Event)
+    xpipe = make (chan scr.Event)
     go catchX()
   } else {
     initConsole()

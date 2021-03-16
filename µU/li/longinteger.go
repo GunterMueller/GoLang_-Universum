@@ -1,6 +1,6 @@
 package li
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210309 - license see µU.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 
@@ -116,9 +116,8 @@ func (x *longInteger) Decode (b Stream) {
   x.n.SetBytes (b)
 }
 
-func (x *longInteger) SetVal (n uint) bool {
+func (x *longInteger) SetVal (n uint) {
   x.n.SetInt64(int64(n))
-  return true
 }
 
 func (x *longInteger) SetInt (n int) {

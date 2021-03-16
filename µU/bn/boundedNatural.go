@@ -1,12 +1,11 @@
 package bn
 
-// (c) Christian Maurer   v. 210214 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   "µU/ker"
   . "µU/obj"
   "µU/col"
-  "µU/scr"
   "µU/str"
   "µU/box"
   "µU/errh"
@@ -32,7 +31,7 @@ func new_(n uint) Natural {
   x := new(natural)
   x.uint = invalid
   x.wd = n
-  x.f, x.b = scr.StartCols()
+  x.f, x.b = col.StartCols()
   return x
 }
 
@@ -173,15 +172,9 @@ func (x *natural) Val() uint {
   return uint(x.uint)
 }
 
-func (x *natural) SetVal (n uint) bool {
-  if n < invalid {
-    x.uint = n
-    return true
-  }
-  x.uint = invalid
-  return false
+func (x *natural) SetVal (n uint) {
+  x.uint = n
 }
-
 
 func (x *natural) Dual() string {
   const M = 64

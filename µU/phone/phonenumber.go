@@ -1,12 +1,11 @@
 package phone
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/str"
   "µU/col"
-  "µU/scr"
   "µU/box"
   "µU/errh"
   "µU/n"
@@ -29,7 +28,7 @@ var (
 
 func new_() PhoneNumber {
   x := new(phonenumber)
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   return x
 }
 

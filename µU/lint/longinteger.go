@@ -1,6 +1,6 @@
 package lint
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 
@@ -41,14 +41,14 @@ func init() {
 func newInt (n int) LongInteger {
   x := new(longInteger)
   x.n = NewInt (int64(n))
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   return x
 }
 
 func new64 (n int64) LongInteger {
   x := new(longInteger)
   x.n = NewInt(n)
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   return x
 }
 
@@ -116,9 +116,8 @@ func (x *longInteger) Decode (b Stream) {
   x.n.SetBytes (b)
 }
 
-func (x *longInteger) SetVal (n uint) bool {
+func (x *longInteger) SetVal (n uint) {
   x.n.SetInt64(int64(n))
-  return true
 }
 
 func (x *longInteger) SetInt (n int) {

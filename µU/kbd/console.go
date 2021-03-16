@@ -6,7 +6,7 @@ import (
   "os"
   "µU/ker"
   "µU/terminal"
-  "µU/mouse"
+  "µU/scr/mouse"
 //  "µU/navi"
 )
 var (

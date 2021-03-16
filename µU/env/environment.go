@@ -1,11 +1,26 @@
 package env
 
-// (c) Christian Maurer   v. 180813 - license see µU.go
+// (c) Christian Maurer   v. 210314 - license see µU.go
 
 import (
   "os"
   "strconv"
 )
+var
+  under_X bool
+
+func init() {
+  under_X = Val ("DISPLAY") != ""
+}
+
+func underX() bool {
+  return under_X
+}
+
+func far() bool {
+  display := Val ("DISPLAY")
+  return display[0] == 'l' // 'l'ocalhost
+}
 
 func set (Variable string, content *string) {
   for i := 0; i < len (Variable); i++ {

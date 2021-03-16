@@ -1,6 +1,6 @@
 package atom
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210308 - license see µU.go
 
 import (
   "reflect"
@@ -146,6 +146,6 @@ func (x *atom) Decode (bs Stream) {
   x.Object.Decode (bs)
 }
 
-func (x *atom) RotOrder() {
-  x.Object.(Orderer).RotOrder()
+func (x *atom) Rotate() {
+  x.Object.(Rotator).Rotate()
 }

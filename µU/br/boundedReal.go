@@ -1,12 +1,11 @@
 package br
 
-// (c) Christian Maurer   v. 201213 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/str"
   "µU/col"
-  "µU/scr"
   "µU/font"
   "µU/pbox"
 //  "µU/n"
@@ -32,7 +31,7 @@ func new_(d uint) Real {
   if d > m { d = m }
   x.pre, x.wd = d, 1 + d + 1 + 2
   x.invalid = exp(d)
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   return x
 }
 

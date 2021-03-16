@@ -1,6 +1,6 @@
 package edg
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   . "µU/obj"
@@ -34,8 +34,8 @@ func new_(d bool, a Any) Edge {
   x.Any = Clone(a)
   x.wd = n.Wd(Val(a))
   x.label = true
-  x.cf, x.cb = scr.StartCols()
-  x.fa, x.ba = scr.StartColsA()
+  x.cf, x.cb = col.StartCols()
+  x.fa, x.ba = col.StartColsA()
   return x
 }
 
@@ -104,9 +104,8 @@ func (x *edge) Val() uint {
   return Val(x.Any)
 }
 
-func (x *edge) SetVal (n uint) bool {
+func (x *edge) SetVal (n uint) {
   SetVal (&x.Any, n)
-  return true
 }
 
 func (x *edge) Colours (f, b col.Colour) {

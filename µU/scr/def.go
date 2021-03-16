@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 210107 - license see µU.go
+// (c) Christian Maurer   v. 210314 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -18,18 +18,27 @@ package scr
 
 import (
   "µU/obj"
-  . "µU/shape"
-  . "µU/linewd"
-  "µU/mode"
-  "µU/xwin"
-  "µU/ptr"
   "µU/col"
+  "µU/env"
+  "µU/mode"
+  "µU/scr/shape"
+  "µU/linewd"
+  "µU/scr/ptr"
+//  "µU/scr/xwin"
   "µU/font"
 )
+type
+  Event struct {
+             T,     // type
+             C,     // xkey.keycode, xbutton.button, xmotion.is_hint
+             S uint // state
+        }
+var
+  Eventpipe chan Event = make (chan Event) // only for XWindow
 const (
-  Look = xwin.Look
-  Walk = xwin.Walk
-  Fly  = xwin.Fly
+  Look = iota
+  Walk
+  Fly
 )
 type
   Screen interface {
@@ -139,12 +148,12 @@ type
 // Pre: l < NLines, c < NColumns.
 // The cursor has the position (line, coloumn) == (l, c)
 // and the shape s. (0, 0) is the top left top corner.
-  Warp (l, c uint, s Shape)
+  Warp (l, c uint, s shape.Shape)
 
 // Pre: x <= NColumsGr - Columnwidth, y <= Ht - Lineheight.
 // The cursor has the graphics position (column, line) = (x, y)
 // and the shape s. (0, 0) is the top left top corner.
-  WarpGr (x, y uint, s Shape)
+  WarpGr (x, y uint, s shape.Shape)
 
 // text ////////////////////////////////////////////////////////////////
 
@@ -203,10 +212,10 @@ type
 // The actual linewidth at the beginning is Thin.
 
 // Returns the actual linewidth.
-  ActLinewidth() Linewidth
+  ActLinewidth() linewd.Linewidth
 
 // The actual linewidth is w.
-  SetLinewidth (w Linewidth)
+  SetLinewidth (w linewd.Linewidth)
 
 // Pre: See above.
 // A pixel in the actual foregroundcolour is set at position (x, y)
@@ -295,8 +304,8 @@ type
   OnRectangle (x, y, x1, y1, a, b int, d uint) bool
 
 // Returns true, iff the point at (a, b) is not outside the rectangle
-// between (x, y) and (x1, y1) up to tolerance of t pixels.
-  InRectangle (x, y, x1, y1, a, b int, t uint) bool
+// between (x, y) and (x1, y1) up to tolerance of d pixels.
+  InRectangle (x, y, x1, y1, a, b int, d uint) bool
 
 // Pre: See above. For n:= len(x) == len(y): n > 2 and
 //      PolygonFull:
@@ -324,6 +333,11 @@ type
   CircleFull (x, y int, r uint)
   CircleFullInv (x, y int, r uint)
 
+// Returns true, iff the point at (x, y) has a distance of at most d pixels
+// from the border of the circle around (a, b) with radius r.
+  OnCircle (x, y int, r uint, a, b int, d uint) bool
+//  InCircle (x, y int, r uint, a, b int) bool // TODO
+
 // Pre: See above. r <= x, x + r < Wd, r <= y, y + r < Ht,
 //      a and b given in degrees.
 // Around (x, y) an arc with radius r is drawn / inverted
@@ -334,11 +348,6 @@ type
   ArcInv (x, y int, r uint, a, b float64)
   ArcFull (x, y int, r uint, a, b float64)
   ArcFullInv (x, y int, r uint, a, b float64)
-
-// Returns true, iff the point at (x, y) has a distance of at most d pixels
-// from the border of the circle around (a, b) with radius r.
-  OnCircle (x, y int, r uint, a, b int, d uint) bool
-//  InCircle (x, y int, r uint, a, b int) bool // TODO
 
 // Pre: See above. a <= x, x + a < Wd, b <= y, y + b < Ht. 
 // Around (x, y) an ellipse with horizontal / vertical semiaxis a / b
@@ -476,30 +485,48 @@ type
 
 // Returns a new screen with the size of the physical screen.
 // The keyboard is switched to raw mode.
-func New (x, y uint, m mode.Mode) Screen { return new_(x,y,m) }
+func New (x, y uint, m mode.Mode) Screen {
+  if env.UnderX() {
+    return NewW (x,y,m)
+  }
+  return NewC (x,y,m)
+}
 
 // Returns a new screen of the size given by the mode m.
 // The keyboard is switched to raw mode.
-func NewMax() Screen { return newMax() }
+func NewMax() Screen {
+  if env.UnderX() {
+    return NewMaxW()
+  }
+  return NewMaxC()
+}
 
 // Pre: The size of the screen given by x, y, w, h
 //      fits into the available physical screen.
 // Returns a new screen with upper left corner (x, y),
 // width w and height h. The keyboard is switched to raw mode.
-func NewWH (x, y, w, h uint) Screen { return newWH(x,y,w,h) }
+func NewWH (x, y, w, h uint) Screen {
+  if env.UnderX() {
+    return NewWHW (x, y, w, h)
+  }
+  return NewWHC (x, y, w, h)
+}
 
 // Returns the (X, Y)-resolution of the screen in pixels.
-func MaxRes() (uint, uint) { return maxRes() }
+func MaxRes() (uint, uint) {
+  if env.UnderX() {
+    return MaxResW()
+  }
+  return MaxResC()
+}
 
 // Returns true, iff mode.Res(m) <= MaxRes().
-func Ok (m mode.Mode) bool { return ok(m) }
-
-// Returns true, if the calling process runs under X.
-func UnderX() bool { return underX }
-
-// Returns the colours at the start of the system.
-func StartCols() (col.Colour, col.Colour) { return startCols() }
-func StartColsA() (col.Colour, col.Colour) { return startColsA() }
+func Ok (m mode.Mode) bool {
+  if env.UnderX() {
+    return OkW (m)
+  }
+  return OkC (m)
+}
 
 // Lock / Unlock guarantee the mutual exclusion when writing on the screen
 // (e.g. to avoid, that a process after having set its colours
@@ -511,4 +538,20 @@ func Unlock() { unlock() }
 // Pre: s is the stream of a PPM-Header generated by a call to PPMEncoder.
 // Returns width and height of the corresponding rectangle and
 // the length of that stream encoded in the PPM-Header (see above).
-func P6HeaderData (s obj.Stream) (uint, uint, uint, int) { return ppmHeaderData(s) }
+func P6HeaderData (s obj.Stream) (uint, uint, uint, int) {
+  return ppmHeaderData(s)
+/*/
+  if env.UnderX() {
+    return 
+  } else {
+    return 
+  }
+/*/
+}
+
+func Act() Screen {
+  if env.UnderX() {
+    return actualW
+  }
+  return actualC
+}

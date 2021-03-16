@@ -1,7 +1,7 @@
 package box
 
 import (
-  . "µU/shape"
+  . "µU/scr/shape"
   "µU/str"
   "µU/kbd"
   "µU/scr"

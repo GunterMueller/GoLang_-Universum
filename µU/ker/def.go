@@ -1,6 +1,6 @@
 package ker
 
-// (c) Christian Maurer   v. 210105 - license see µU.go
+// (c) Christian Maurer   v. 210314 - license see µU.go
 
 import (
   "os"

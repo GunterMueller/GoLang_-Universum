@@ -1,13 +1,12 @@
 package euro
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   "math"
   . "µU/obj"
   "µU/str"
   "µU/col"
-  "µU/scr"
   "µU/box"
   "µU/errh"
   "µU/n"
@@ -41,7 +40,7 @@ func init() {
 func new_() Euro {
   x := new(euro)
   x.Clr()
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   return x
 }
 
@@ -94,9 +93,13 @@ func (x *euro) Val() uint {
   return x.cent
 }
 
-func (x *euro) SetVal (c uint) bool {
-  x.cent = c
-  return x.cent < undefined
+func (x *euro) SetVal (c uint) {
+  if c < undefined {
+    x.cent = c
+  } else {
+println ("Scheißkacke Furzkacke")
+    x.Clr()
+  }
 }
 
 func (x *euro) Val2() (uint, uint) {

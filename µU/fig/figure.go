@@ -1,6 +1,6 @@
 package fig
 
-// (c) Christian Maurer   v. 210104 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   . "µU/obj"
@@ -49,7 +49,7 @@ func new_() Figure2 {
   f.Clr()
 //  f.Type = Points
   f.Type = Segments
-  f.colour, _ = scr.StartCols()
+  f.colour, _ = col.StartCols()
   return f
 }
 

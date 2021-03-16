@@ -1,19 +1,22 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 210309 - license see µU.go
 
 type
   RealValuator interface {
 
+// Pre: IsRealValuator(x).
 // Returns the real value of x.
   RealVal() float64
 
-//// Returns true, iff x is defined with x.Val() == r.
-  RealSet (r float64) bool
+// Pre: IsRealValuator(x).
+// x.Val() == r.
+  RealSet (r float64)
 }
 
-// Returns true, iff a implements RealValuator.
+// Returns true, iff a has a number type.
 func IsRealValuator (a Any) bool { return isRealValuator(a) }
 
-// TODO Spec
+// Pre: IsRealValuator(x).
+// Returns the real value of a.
 func RealVal (a Any) float64 { return realVal(a) }

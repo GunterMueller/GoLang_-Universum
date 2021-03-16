@@ -1,9 +1,10 @@
 package scale
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210314 - license see µU.go
 
 import (
   "math"
+  "µU/env"
   "µU/kbd"
   "µU/scr"
 )
@@ -40,7 +41,7 @@ func setRange (x, y, w float64) {
 func scale (x, y float64) (int, int) {
   rx, ry := int(math.Trunc (mX * (x - x0)) + 0.5), int(math.Trunc (mY * (y - y0)) + 0.5)
   ry = int(scr.Ht()) - ry
-  if scr.UnderX() {
+  if env.UnderX() {
     if minInt <= rx && rx < maxInt && minInt <= ry && ry < maxInt {
       return rx, ry
     }

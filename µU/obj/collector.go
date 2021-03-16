@@ -124,7 +124,7 @@ type
 //   otherwise, i.e. if r is an order, in their multiplicity.
 //   x is ordered w.r.t. r and y is empty.
 //   The actual elements of x and y are undefined.
-Join (y Collector)
+  Join (y Collector)
 
 // Returns true, iff x is ordered.
   Ordered() bool

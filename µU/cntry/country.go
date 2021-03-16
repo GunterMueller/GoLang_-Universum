@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   . "µU/obj"
@@ -86,7 +86,7 @@ func new_() Country {
   x := new(country)
   x.Clr()
   x.Format = Long
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   return x
 }
 

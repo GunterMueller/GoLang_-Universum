@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 210308 - license see µU.go
 
 import (
   . "µU/obj"
@@ -496,6 +496,6 @@ func (x *person) Decode (bs Stream) {
   x.Enumerator = x.field[4].(enum.Enumerator)
 }
 
-func (x *person) RotOrder() {
+func (x *person) Rotate() {
   actualOrder = 1 - actualOrder
 }

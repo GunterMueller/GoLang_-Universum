@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 210106 - license see µU.go
+// (c) Christian Maurer   v. 210314 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -9,22 +9,22 @@ import
 import (
   "os"
   "µU/time"
-  "µU/xwin"
+  "µU/scr"
 )
 var (
   underX bool
-  xpipe chan xwin.Event
+  xpipe chan scr.Event
   ch chan int = make (chan int, 1)
 )
 
-// Pre: xwin.x.initialized == true
+// Pre: scr.x.initialized == true
 func catchX () {
-  for xwin.Eventpipe == nil {
+  for scr.Eventpipe == nil {
     time.Msleep (10)
   }
 //  ch <- 0
 //  println ("keyboard.catchX: Eventpipe != nil")
-  for p := range xwin.Eventpipe {
+  for p := range scr.Eventpipe {
     xpipe <- p
     <-ch
   }
@@ -46,14 +46,14 @@ func inputX (B *byte, C *Comm, D *uint) {
     mouseBitM    =  9
     mouseBitR    = 10
   )
-  var e xwin.Event
+  var e scr.Event
   ok := false
 loop:
   for {
     *B, *C, *D = 0, None, 0
     e, ok = <-xpipe
     ch <- 0
-    if ! ok { panic ("x.inputX: ! ok") }
+    if ! ok { panic ("kbd/x.go inputX: ! ok") }
     if e.S == 64 { continue } // d(o,o)f-key
     shift := isSet (shiftBit, e.S)
     shiftLock := isSet (shiftLockBit, e.S)
@@ -226,7 +226,7 @@ loop:
       case 5:
         *C = ScrollDown
       default:
-        println ("xwin.ButtonPress: button ", e.C ,"/ state ", e.S) // XXX
+        println ("scr.ButtonPress: button ", e.C ,"/ state ", e.S) // XXX
       }
       if *C > 0 {
         break loop
@@ -259,7 +259,7 @@ loop:
       case 5:
         *C = ScrollDown
       default:
-        println ("xwin.ButtonRelease: button ", e.C ,"/ state ", e.S) // XXX
+        println ("scr.ButtonRelease: button ", e.C ,"/ state ", e.S) // XXX
       }
       if *C > 0 {
         break loop

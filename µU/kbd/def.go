@@ -4,21 +4,21 @@ package kbd
 
 // >>> implements only a german keyboard !
 
-/* We distinguish between three groups of keys to operate and control a system with keyboard and mouse:
-
+/* We distinguish between three groups of keys to operate and control a system
+   with keyboard and mouse:
    - character-keys (with echo in form of an alphanumerical character on the screen)
      to enter strings (texts, numbers etc.),
    - command-keys
      to induce defined reactions of the system,
    - mouse-actions
      to navigate on the screen.
-
    In order to abstract from concrete keyboards or mouses,
-   the following commands are provided for the last two groups:
-*/
+   the following commands are provided for the last two groups: */
+
 type
   Comm byte; const (
-  None = Comm(iota)       // to distinguish between character- and command-keys, see specification of "Read"
+  None = Comm(iota)       // to distinguish between character- and command-keys,
+                          // see specification of "Read"
   Esc                     // to leave the system (or a part of it)
   Enter                   // to confirm or reject or correct at the end of an input
   Back                    // to move in the system forward or backward
@@ -119,10 +119,10 @@ func LastByte() byte { return lastByte() }
 // In the first case, d is the depth of the command, otherwise d = 0.
 func LastCommand() (Comm, uint) { return lastCommand() }
 
-// Not yet documented.
+// TODO Spec
 func DepositCommand (c Comm) { depositCommand(c) }
 
-// Not yet documented.
+// TODO Spec
 func DepositByte (b byte) { depositByte(b) }
 
 // The calling process was blocked, until until the keyboard buffer contained

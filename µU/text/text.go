@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   "µU/rand"
@@ -8,7 +8,6 @@ import (
   "µU/char"
   "µU/str"
   "µU/col"
-  "µU/scr"
   "µU/box"
   "µU/font"
   "µU/pbox"
@@ -33,7 +32,7 @@ func new_(n uint) Text {
   x := new (text)
   x.uint = n
   x.string = str.New (n)
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   x.Font = font.Roman
   x.Size = font.Normal
   return x

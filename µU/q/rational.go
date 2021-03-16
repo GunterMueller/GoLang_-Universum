@@ -1,13 +1,12 @@
 package q
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   "math"
   . "µU/obj"
   "µU/str"
   "µU/col"
-  "µU/scr"
   "µU/box"
   "µU/font"
   "µU/pbox"
@@ -35,7 +34,7 @@ func init() {
 
 func new_() Rational {
   x := new(rational)
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   if x.cF.IsWhite() && x.cB.IsBlack() { x.cF = col.LightWhite() } // Firlefanz
   x.geq0 = true
   return x

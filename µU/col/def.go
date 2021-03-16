@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 210106 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import
  . "µU/obj"
@@ -34,7 +34,7 @@ type
   Set (r, g, b byte)
   SetR (b byte); SetG (b byte); SetB (b byte)
 
-// TODO Spec
+// Liefert x.R() + 256 * x.G() + x.B().
   Code() uint
 
 // Returns true, if c is, what the name of the func says.
@@ -46,7 +46,7 @@ type
   Float32() (float32, float32, float32)
   Float64() (float64, float64, float64)
 
-// c is changed in a manner suggested by the name of the func.
+// c is changed in a manner suggested by the name of the method.
   Invert()
   Contrast()
 }
@@ -60,6 +60,8 @@ func New3 (n string, r, g, b byte) Colour { return new3(n,r,g,b) }
 // Returns a random colour.
 func Rand() Colour { return random() }
 
+// Returns the fore- and backgroundcolours at the start of the system
+// for unmarked and marked objects.
 func StartCols() (Colour, Colour) { return startCols() }
 func StartColsA() (Colour, Colour) { return startColsA() }
 

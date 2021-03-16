@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 210106 - license see µU.go
+// (c) Christian Maurer   v. 210312 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,7 +11,7 @@ const (
   m1 = m - 1
   light = byte(m1)
   codelen = 3
-  dp = uint(3)
+//  dp = uint(4) // XXX
 )
 type
   colour struct {
@@ -261,9 +261,11 @@ func (c *colour) Decode (s Stream) {
   }
 }
 
+/*/
 func depth() uint {
   return dp
 }
+/*/
 
 func (c *colour) Code() uint {
   return (uint(c.r) << 8 + uint(c.g)) << 8 + uint(c.b)

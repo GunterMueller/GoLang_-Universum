@@ -1,147 +1,155 @@
 package scr
 
-// (c) Christian Maurer   v. 210104 - license see µU.go
+// (c) Christian Maurer   v. 210314 - license see µU.go
 
 import (
   . "µU/obj"
+  "µU/env"
   "µU/mode"
-  . "µU/shape"
-  . "µU/linewd"
-  "µU/ptr"
+  "µU/scr/shape"
+  "µU/linewd"
+  "µU/scr/ptr"
   "µU/font"
   "µU/col"
 )
 
-func Fin() { actual.Fin() }
-func Flush() { actual.Flush() }
-func Name (s string) { actual.Name(s) }
+func sc() Screen {
+  if env.UnderX() {
+    return actualW
+  }
+  return actualC
+}
 
-func ActMode() mode.Mode { return actual.ActMode() }
-func X() uint { return actual.X() }
-func Y() uint { return actual.Y() }
-func Wd() uint { return actual.Wd() }
-func Ht() uint { return actual.Ht() }
-func Wd1() uint { return actual.Wd1() }
-func Ht1() uint { return actual.Ht1() }
-func NLines() uint { return actual.NLines() }
-func NColumns() uint { return actual.NColumns() }
-func Proportion() float64 { return actual.Proportion() }
+func Fin() { sc().Fin() }
+func Flush() { sc().Flush() }
+func Name (s string) { sc().Name(s) }
 
-func ScrColours (f, b col.Colour) { actual.ScrColours(f,b) }
-func ScrColourF (f col.Colour) { actual.ScrColourF(f) }
-func ScrColourB (b col.Colour) { actual.ScrColourB(b) }
-func ScrCols() (col.Colour, col.Colour) { return actual.ScrCols() }
-func ScrColF() col.Colour { return actual.ScrColF() }
-func ScrColB() col.Colour { return actual.ScrColB() }
-func Colours (f, b col.Colour) { actual.Colours(f,b) }
-func ColourF (f col.Colour) { actual.ColourF(f) }
-func ColourB (b col.Colour) { actual.ColourB(b) }
-func Cols() (col.Colour, col.Colour) { return actual.Cols() }
-func ColF() col.Colour { return actual.ColF() }
-func ColB() col.Colour { return actual.ColB() }
-func Colour (x, y uint) col.Colour { return actual.Colour(x,y) }
+func ActMode() mode.Mode { return sc().ActMode() }
+func X() uint { return sc().X() }
+func Y() uint { return sc().Y() }
+func Wd() uint { return sc().Wd() }
+func Ht() uint { return sc().Ht() }
+func Wd1() uint { return sc().Wd1() }
+func Ht1() uint { return sc().Ht1() }
+func NLines() uint { return sc().NLines() }
+func NColumns() uint { return sc().NColumns() }
+func Proportion() float64 { return sc().Proportion() }
 
-func Clr (l, c, w, h uint) { actual.Clr(l,c,w,h) }
-func ClrGr (x, y, x1, y1 int) { actual.ClrGr(x,y,x1,y1) }
-func Cls() { actual.Cls() }
-func Buf (on bool) { actual.Buf(on) }
-func Buffered() bool { return actual.Buffered() }
-func Save (l, c, w, h uint) { actual.Save(l,c,w,h) }
-func SaveGr (x, y, x1, y1 int) { actual.SaveGr(x,y,x1,y1) }
-func Save1() { actual.Save1() }
-func Restore (l, c, w, h uint) { actual.Restore(l,c,w,h) }
-func RestoreGr (x, y, x1, y1 int) { actual.RestoreGr(x,y,x1,y1) }
-func Restore1() { actual.Restore1() }
+func ScrColours (f, b col.Colour) { sc().ScrColours(f,b) }
+func ScrColourF (f col.Colour) { sc().ScrColourF(f) }
+func ScrColourB (b col.Colour) { sc().ScrColourB(b) }
+func ScrCols() (col.Colour, col.Colour) { return sc().ScrCols() }
+func ScrColF() col.Colour { return sc().ScrColF() }
+func ScrColB() col.Colour { return sc().ScrColB() }
+func Colours (f, b col.Colour) { sc().Colours(f,b) }
+func ColourF (f col.Colour) { sc().ColourF(f) }
+func ColourB (b col.Colour) { sc().ColourB(b) }
+func Cols() (col.Colour, col.Colour) { return sc().Cols() }
+func ColF() col.Colour { return sc().ColF() }
+func ColB() col.Colour { return sc().ColB() }
+func Colour (x, y uint) col.Colour { return sc().Colour(x,y) }
 
-func Warp (l, c uint, s Shape) { actual.Warp(l,c,s) }
-func WarpGr (x, y uint, s Shape) { actual.WarpGr(x,y,s) }
+func Clr (l, c, w, h uint) { sc().Clr(l,c,w,h) }
+func ClrGr (x, y, x1, y1 int) { sc().ClrGr(x,y,x1,y1) }
+func Cls() { sc().Cls() }
+func Buf (on bool) { sc().Buf(on) }
+func Buffered() bool { return sc().Buffered() }
+func Save (l, c, w, h uint) { sc().Save(l,c,w,h) }
+func SaveGr (x, y, x1, y1 int) { sc().SaveGr(x,y,x1,y1) }
+func Save1() { sc().Save1() }
+func Restore (l, c, w, h uint) { sc().Restore(l,c,w,h) }
+func RestoreGr (x, y, x1, y1 int) { sc().RestoreGr(x,y,x1,y1) }
+func Restore1() { sc().Restore1() }
 
-func Write1 (b byte, l, c uint) { actual.Write1(b,l,c) }
-func Write (s string, l, c uint ) { actual.Write(s,l,c) }
-func Write1Gr (b byte, x, y int) { actual.Write1Gr(b,x,y) }
-func WriteGr (s string, x, y int) { actual.WriteGr(s,x,y) }
-func WriteNat (n, l, c uint) { actual.WriteNat(n,l,c) }
-func WriteNatGr (n uint, x, y int) { actual.WriteNatGr(n,x,y) }
-func Write1InvGr (b byte, x, y int) { actual.Write1InvGr(b,x,y) }
-func WriteInvGr (s string, x, y int) { actual.WriteInvGr(s,x,y) }
-func Transparent() bool { return actual.Transparent() }
-func Transparence (t bool) { actual.Transparence(t) }
+func Warp (l, c uint, s shape.Shape) { sc().Warp(l,c,s) }
+func WarpGr (x, y uint, s shape.Shape) { sc().WarpGr(x,y,s) }
 
-func ActFontsize() font.Size { return actual.ActFontsize() }
-func SetFontsize (f font.Size) { actual.SetFontsize(f) }
+func Write1 (b byte, l, c uint) { sc().Write1(b,l,c) }
+func Write (s string, l, c uint ) { sc().Write(s,l,c) }
+func Write1Gr (b byte, x, y int) { sc().Write1Gr(b,x,y) }
+func WriteGr (s string, x, y int) { sc().WriteGr(s,x,y) }
+func WriteNat (n, l, c uint) { sc().WriteNat(n,l,c) }
+func WriteNatGr (n uint, x, y int) { sc().WriteNatGr(n,x,y) }
+func Write1InvGr (b byte, x, y int) { sc().Write1InvGr(b,x,y) }
+func WriteInvGr (s string, x, y int) { sc().WriteInvGr(s,x,y) }
+func Transparent() bool { return sc().Transparent() }
+func Transparence (t bool) { sc().Transparence(t) }
 
-func ActLinewidth() Linewidth { return actual.ActLinewidth() }
-func SetLinewidth (w Linewidth) { actual.SetLinewidth(w) }
-func Point (x, y int) { actual.Point(x,y) }
-func PointInv (x, y int) { actual.PointInv(x,y) }
-func Points (xs, ys []int) { actual.Points (xs,ys) }
-func PointsInv (xs, ys []int) { actual.PointsInv(xs,ys) }
-func OnPoint (x, y, a, b int, d uint) bool { return actual.OnPoint(x,y,a,b,d) }
-func Line (x, y, x1, y1 int) { actual.Line(x,y,x1,y1) }
-func LineInv (x, y, x1, y1 int) { actual.LineInv(x,y,x1,y1) }
-func OnLine (x, y, x1, y1, a, b int, t uint) bool { return actual.OnLine(x,y,x1,y1,a,b,t) }
-func Lines (xs, ys, xs1, ys1 []int) { actual.Lines(xs,ys,xs1,ys1) }
-func LinesInv (xs, ys, xs1, ys1 []int) { actual.LinesInv(xs,ys,xs1,ys1) }
-func OnLines (xs, ys, xs1, ys1 []int, a, b int, t uint) bool { return actual.OnLines(xs,ys,xs1,ys1,a,b,t) }
-func Segments (xs, ys []int) { actual.Segments(xs,ys) }
-func SegmentsInv (xs, ys []int) { actual.SegmentsInv(xs,ys) }
-func OnSegments (xs, ys []int, a, b int, t uint) bool { return actual.OnSegments(xs,ys,a,b,t) }
-func InfLine (x, y, x1, y1 int) { actual.InfLine (x,y,x1,y1) }
-func InfLineInv (x, y, x1, y1 int) { actual.InfLineInv (x,y,x1,y1) }
-func OnInfLine (x, y, x1, y1, a, b int, t uint) bool { return actual.OnInfLine(x,y,x1,y1,a,b,t) }
-func Triangle (x, y, x1, y1, x2, y2 int) { actual.Triangle(x,y,x1,y1,x2,y2) }
-func TriangleInv (x, y, x1, y1, x2, y2 int) { actual.TriangleInv(x,y,x1,y1,x2,y2) }
-func TriangleFull (x, y, x1, y1, x2, y2 int) { actual.TriangleFull(x,y,x1,y1,x2,y2) }
-func TriangleFullInv (x, y, x1, y1, x2, y2 int) { actual.TriangleFullInv(x,y,x1,y1,x2,y2) }
-func Rectangle (x, y, x1, y1 int) { actual.Rectangle(x,y,x1,y1) }
-func RectangleInv (x, y, x1, y1 int) { actual.RectangleInv(x,y,x1,y1) }
-func RectangleFull (x, y, x1, y1 int) { actual.RectangleFull(x,y,x1,y1) }
-func RectangleFullInv (x, y, x1, y1 int) { actual.RectangleFullInv(x,y,x1,y1) }
-func OnRectangle (x, y, x1, y1, a, b int, t uint) bool { return actual.OnRectangle(x,y,x1,y1,a,b,t) }
-func InRectangle (x, y, x1, y1, a, b int, t uint) bool { return actual.InRectangle(x,y,x1,y1,a,b,t) }
-func Polygon (xs, ys []int) { actual.Polygon(xs,ys) }
-func PolygonInv (xs, ys []int) { actual.PolygonInv(xs,ys) }
-func PolygonFull (xs, ys []int) { actual.PolygonFull(xs,ys) }
-func PolygonFullInv (xs, ys []int) { actual.PolygonFullInv(xs,ys) }
-func OnPolygon (xs, ys []int, a, b int, t uint) bool { return actual.OnPolygon(xs,ys,a,b,t) }
-func Circle (x, y int, r uint) { actual.Circle(x,y,r) }
-func CircleInv (x, y int, r uint) { actual.CircleInv(x,y,r) }
-func CircleFull (x, y int, r uint) { actual.CircleFull(x,y,r) }
-func CircleFullInv (x, y int, r uint) { actual.CircleFullInv(x,y,r) }
-func OnCircle (x, y int, r uint, a, b int, t uint) bool { return actual.OnCircle(x,y,r,a,b,t) }
-// func InCircle (x, y int, r uint, a, b int) bool { return actual.InCircle(x,y,r,a,b) } // TODO
-func Arc (x, y int, r uint, a, b float64) { actual.Arc(x,y,r,a,b) }
-func ArcInv (x, y int, r uint, a, b float64) { actual.ArcInv(x,y,r,a,b) }
-func ArcFull (x, y int, r uint, a, b float64) { actual.ArcFull(x,y,r,a,b) }
-func ArcFullInv (x, y int, r uint, a, b float64) { actual.ArcFullInv(x,y,r,a,b) }
-func Ellipse (x, y int, a, b uint) { actual.Ellipse(x,y,a,b) }
-func EllipseInv (x, y int, a, b uint) { actual.EllipseInv(x,y,a,b) }
-func EllipseFull (x, y int, a, b uint) { actual.EllipseFull(x,y,a,b) }
-func EllipseFullInv (x, y int, a, b uint) { actual.EllipseFullInv(x,y,a,b) }
-func OnEllipse (x, y int, a, b uint, A, B int, t uint) bool { return actual.OnEllipse(x,y,a,b,A,B,t) }
-// func InEllipse (x, y int, a, b uint, A, B int) bool { return actual.InEllipse(x,y,a,b,A,B) } // TODO
-func Curve (xs, ys []int) { actual.Curve(xs,ys) }
-func CurveInv (xs, ys []int) { actual.CurveInv(xs,ys) }
-func OnCurve (xs, ys []int, a, b int, t uint) bool { return actual.OnCurve(xs,ys,a,b,t) }
+func ActFontsize() font.Size { return sc().ActFontsize() }
+func SetFontsize (f font.Size) { sc().SetFontsize(f) }
 
-func MouseEx() bool { return actual.MouseEx() }
-func SetPointer (p ptr.Pointer) { actual.SetPointer(p) }
-func MousePos() (uint, uint) { return actual.MousePos() }
-func MousePosGr() (int, int) { return actual.MousePosGr() }
-func WarpMouse (l, c uint) { actual.WarpMouse(l,c) }
-func WarpMouseGr (x, y int) { actual.WarpMouseGr(x,y) }
-func MousePointer (b bool) { actual.MousePointer(b) }
-func MousePointerOn() bool { return actual.MousePointerOn() }
-func UnderMouse (l, c, w, h uint) bool { return actual.UnderMouse(l,c,w,h) }
-func UnderMouseGr (x, y, x1, y1 int, d uint) bool { return actual.UnderMouseGr(x,y,x1,y1,d) }
-func UnderMouse1 (x, y int, d uint) bool { return actual.UnderMouse1(x,y,d) }
+func ActLinewidth() linewd.Linewidth { return sc().ActLinewidth() }
+func SetLinewidth (w linewd.Linewidth) { sc().SetLinewidth(w) }
+func Point (x, y int) { sc().Point(x,y) }
+func PointInv (x, y int) { sc().PointInv(x,y) }
+func Points (xs, ys []int) { sc().Points (xs,ys) }
+func PointsInv (xs, ys []int) { sc().PointsInv(xs,ys) }
+func OnPoint (x, y, a, b int, d uint) bool { return sc().OnPoint(x,y,a,b,d) }
+func Line (x, y, x1, y1 int) { sc().Line(x,y,x1,y1) }
+func LineInv (x, y, x1, y1 int) { sc().LineInv(x,y,x1,y1) }
+func OnLine (x, y, x1, y1, a, b int, t uint) bool { return sc().OnLine(x,y,x1,y1,a,b,t) }
+func Lines (xs, ys, xs1, ys1 []int) { sc().Lines(xs,ys,xs1,ys1) }
+func LinesInv (xs, ys, xs1, ys1 []int) { sc().LinesInv(xs,ys,xs1,ys1) }
+func OnLines (xs, ys, xs1, ys1 []int, a, b int, t uint) bool { return sc().OnLines(xs,ys,xs1,ys1,a,b,t) }
+func Segments (xs, ys []int) { sc().Segments(xs,ys) }
+func SegmentsInv (xs, ys []int) { sc().SegmentsInv(xs,ys) }
+func OnSegments (xs, ys []int, a, b int, t uint) bool { return sc().OnSegments(xs,ys,a,b,t) }
+func InfLine (x, y, x1, y1 int) { sc().InfLine (x,y,x1,y1) }
+func InfLineInv (x, y, x1, y1 int) { sc().InfLineInv (x,y,x1,y1) }
+func OnInfLine (x, y, x1, y1, a, b int, t uint) bool { return sc().OnInfLine(x,y,x1,y1,a,b,t) }
+func Triangle (x, y, x1, y1, x2, y2 int) { sc().Triangle(x,y,x1,y1,x2,y2) }
+func TriangleInv (x, y, x1, y1, x2, y2 int) { sc().TriangleInv(x,y,x1,y1,x2,y2) }
+func TriangleFull (x, y, x1, y1, x2, y2 int) { sc().TriangleFull(x,y,x1,y1,x2,y2) }
+func TriangleFullInv (x, y, x1, y1, x2, y2 int) { sc().TriangleFullInv(x,y,x1,y1,x2,y2) }
+func Rectangle (x, y, x1, y1 int) { sc().Rectangle(x,y,x1,y1) }
+func RectangleInv (x, y, x1, y1 int) { sc().RectangleInv(x,y,x1,y1) }
+func RectangleFull (x, y, x1, y1 int) { sc().RectangleFull(x,y,x1,y1) }
+func RectangleFullInv (x, y, x1, y1 int) { sc().RectangleFullInv(x,y,x1,y1) }
+func OnRectangle (x, y, x1, y1, a, b int, t uint) bool { return sc().OnRectangle(x,y,x1,y1,a,b,t) }
+func InRectangle (x, y, x1, y1, a, b int, t uint) bool { return sc().InRectangle(x,y,x1,y1,a,b,t) }
+func Polygon (xs, ys []int) { sc().Polygon(xs,ys) }
+func PolygonInv (xs, ys []int) { sc().PolygonInv(xs,ys) }
+func PolygonFull (xs, ys []int) { sc().PolygonFull(xs,ys) }
+func PolygonFullInv (xs, ys []int) { sc().PolygonFullInv(xs,ys) }
+func OnPolygon (xs, ys []int, a, b int, t uint) bool { return sc().OnPolygon(xs,ys,a,b,t) }
+func Circle (x, y int, r uint) { sc().Circle(x,y,r) }
+func CircleInv (x, y int, r uint) { sc().CircleInv(x,y,r) }
+func CircleFull (x, y int, r uint) { sc().CircleFull(x,y,r) }
+func CircleFullInv (x, y int, r uint) { sc().CircleFullInv(x,y,r) }
+func OnCircle (x, y int, r uint, a, b int, t uint) bool { return sc().OnCircle(x,y,r,a,b,t) }
+// func InCircle (x, y int, r uint, a, b int) bool { return sc().InCircle(x,y,r,a,b) } // TODO
+func Arc (x, y int, r uint, a, b float64) { sc().Arc(x,y,r,a,b) }
+func ArcInv (x, y int, r uint, a, b float64) { sc().ArcInv(x,y,r,a,b) }
+func ArcFull (x, y int, r uint, a, b float64) { sc().ArcFull(x,y,r,a,b) }
+func ArcFullInv (x, y int, r uint, a, b float64) { sc().ArcFullInv(x,y,r,a,b) }
+func Ellipse (x, y int, a, b uint) { sc().Ellipse(x,y,a,b) }
+func EllipseInv (x, y int, a, b uint) { sc().EllipseInv(x,y,a,b) }
+func EllipseFull (x, y int, a, b uint) { sc().EllipseFull(x,y,a,b) }
+func EllipseFullInv (x, y int, a, b uint) { sc().EllipseFullInv(x,y,a,b) }
+func OnEllipse (x, y int, a, b uint, A, B int, t uint) bool { return sc().OnEllipse(x,y,a,b,A,B,t) }
+// func InEllipse (x, y int, a, b uint, A, B int) bool { return sc().InEllipse(x,y,a,b,A,B) } // TODO
+func Curve (xs, ys []int) { sc().Curve(xs,ys) }
+func CurveInv (xs, ys []int) { sc().CurveInv(xs,ys) }
+func OnCurve (xs, ys []int, a, b int, t uint) bool { return sc().OnCurve(xs,ys,a,b,t) }
 
-func Codelen (w, h uint) uint { return actual.Codelen(w,h) }
-func Encode (x, y, w, h uint) Stream { return actual.Encode(x,y,w,h) }
-func Decode (bs Stream) { actual.Decode(bs) }
+func MouseEx() bool { return sc().MouseEx() }
+func SetPointer (p ptr.Pointer) { sc().SetPointer(p) }
+func MousePos() (uint, uint) { return sc().MousePos() }
+func MousePosGr() (int, int) { return sc().MousePosGr() }
+func WarpMouse (l, c uint) { sc().WarpMouse(l,c) }
+func WarpMouseGr (x, y int) { sc().WarpMouseGr(x,y) }
+func MousePointer (b bool) { sc().MousePointer(b) }
+func MousePointerOn() bool { return sc().MousePointerOn() }
+func UnderMouse (l, c, w, h uint) bool { return sc().UnderMouse(l,c,w,h) }
+func UnderMouseGr (x, y, x1, y1 int, d uint) bool { return sc().UnderMouseGr(x,y,x1,y1,d) }
+func UnderMouse1 (x, y int, d uint) bool { return sc().UnderMouse1(x,y,d) }
 
-func PPMHeader (w, h uint) string { return actual.PPMHeader(w,h) }
-func PPMCodelen (w, h uint) uint { return actual.PPMCodelen(w,h) }
-func PPMEncode (x, y, w, h uint) Stream { return actual.PPMEncode(x,y,w,h) }
-func PPMDecode (s Stream, x, y uint) { actual.PPMDecode(s,x,y) }
-func PPMSize (s Stream) (uint, uint) { return actual.PPMSize(s) }
+func Codelen (w, h uint) uint { return sc().Codelen(w,h) }
+func Encode (x, y, w, h uint) Stream { return sc().Encode(x,y,w,h) }
+func Decode (bs Stream) { sc().Decode(bs) }
+
+func PPMHeader (w, h uint) string { return sc().PPMHeader(w,h) }
+func PPMCodelen (w, h uint) uint { return sc().PPMCodelen(w,h) }
+func PPMEncode (x, y, w, h uint) Stream { return sc().PPMEncode(x,y,w,h) }
+func PPMDecode (s Stream, x, y uint) { sc().PPMDecode(s,x,y) }
+func PPMSize (s Stream) (uint, uint) { return sc().PPMSize(s) }

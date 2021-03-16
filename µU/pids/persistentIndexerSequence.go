@@ -1,6 +1,6 @@
 package pids
 
-// Christian Maurer   v. 201017 - license see µU.go
+// Christian Maurer   v. 210308 - license see µU.go
 
 import (
   "µU/ker"
@@ -106,7 +106,7 @@ func (x *persistentIndexerSequence) Operate (l, c uint) {
         x.all.Del()
       }
     case kbd.Act:
-      x.Any.(Orderer).RotOrder()
+      x.Any.(Rotator).Rotate()
       x.all.Sort()
     case kbd.Help:
       errh.Help (help)

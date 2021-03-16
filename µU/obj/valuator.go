@@ -1,23 +1,26 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 210309 - license see µU.go
 
 type
   Valuator interface {
 
-// Returns the value of x.
+// Returns the value of x, if IsValuator (x).
+// Returns otherwise 1.
   Val() uint
 
-// Returns true, iff x can be given a value. In that case x.Val() == n.
-// Returns otherwise false.
-  SetVal (n uint) bool
+// Pre: IsValuator (x).
+// x.Val() == n (% 1 << a, if x has the type uint<a>).
+  SetVal (n uint)
 }
 
-// Returns true, iff a implements Valuator.
+// Returns true, iff a implements Valuator or has an uint-type.
 func IsValuator (a Any) bool { return isValuator(a) }
 
-// TODO Spec
+// Pre: IsValuator (a).
+// Returns the value of a.
 func Val (a Any) uint { return val(a) }
 
-// TODO Spec
+// Pre: IsValuator (x).
+// x.Val() == n (% 1 << a, if x has the type uint<a>).
 func SetVal (x *Any, n uint) { setVal(x,n) }

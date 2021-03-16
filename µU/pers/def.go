@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 201010 - license see µU.go
+// (c) Christian Maurer   v. 210308 - license see µU.go
 
 import (
   . "µU/obj"
@@ -29,7 +29,7 @@ type
   Formatter
   Stringer
   Printer
-  Orderer
+  Rotator
 
 // Returns true, if x and y coincide in surname, first name and birthday.
   Equiv (y Person) bool
@@ -43,7 +43,7 @@ type
 // Returns the age of x (in years) at the time of the call.
   Age() uint
 
-  RotOrder()
+  Rotate()
 }
 
 func New() Person { return new_() }

@@ -1,10 +1,11 @@
-
 package obj
 
-// (c) Christian Maurer   v. 210212 - license see µU.go
+// (c) Christian Maurer   v. 210312 - license see µU.go
 
 type
   Predicator interface {
+
+  Collector
 
 // Returns the number of those elements in x, for which p returns true.
   NumPred (p Pred) uint

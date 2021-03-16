@@ -1,11 +1,10 @@
 package langs
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
-  "µU/scr"
   "µU/box"
   "µU/errh"
   "µU/font"
@@ -53,7 +52,7 @@ func new_() LanguageSequence {
     x.lang[n] = enum.New (enum.Subject)
     x.from[n], x.to[n] = bn.New (2), bn.New (2)
   }
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   return x
 }
 

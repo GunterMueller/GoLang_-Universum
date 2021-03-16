@@ -1,6 +1,6 @@
 package clk
 
-// (c) Christian Maurer   v. 210228 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   . "µU/ker"
@@ -50,7 +50,7 @@ func init() {
 func new_() Clocktime {
   x := new(clocktime)
   x.hour = hd
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   x.Format = Hh_mm
   return x
 }

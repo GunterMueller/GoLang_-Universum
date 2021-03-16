@@ -29,11 +29,11 @@ package main
   Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.) */
 
 import (
-  "µU/env"; "µU/ker"; "µU/time"; . "µU/obj"; "µU/sort"; "µU/cdrom"; "µU/kbd"; "µU/col"; "µU/scr"
-  "µU/vect"; "µU/gl"; "µU/errh"; "µU/scale"; "µU/pbar"; "µU/files"; "µU/z"; "µU/lint"; "µU/q"
-  "µU/r"; "µU/stk"; "µU/buf"; "µU/bbuf"; "µU/bpqu"; "µU/menue"; "µU/date"; "µU/fuday"; "µU/ppm"
-  "µU/fig"; "µU/piset"; "µU/persaddr"; "µU/pids"; "µU/mol"; "µU/schol"; "µU/gram"; "µU/audio"
-  "µU/book"; "µU/v"; "µU/car"; "µU/schan"; "µU/achan"; "µU/lock"; "µU/asem"; "µU/barr"; "µU/rw"
+  "µU/env"; "µU/ker"; "µU/time"; "µU/cdrom"; "µU/kbd"; "µU/col"; "µU/scr"; "µU/vect"; "µU/gl"
+  "µU/errh"; "µU/scale"; "µU/pbar"; "µU/files"; "µU/z"; "µU/lint"; "µU/q"; "µU/r"; "µU/stk"
+  "µU/buf"; "µU/bbuf"; "µU/bpqu"; "µU/menue"; "µU/date"; "µU/fuday"; "µU/ppm"; "µU/fig"
+  "µU/piset"; "µU/persaddr"; "µU/pids"; "µU/mol"; "µU/schol"; "µU/gram"; "µU/audio"; "µU/book"
+  "µU/v"; "µU/car"; "µU/schan"; "µU/achan"; "µU/lock"; "µU/asem"; "µU/barr"; "µU/rw"
   "µU/lr"; "µU/lock2"; "µU/lockn"; "µU/phil"; "µU/smok"; "µU/barb"; "µU/mstk"; "µU/mbuf";
   "µU/mbbuf"; "µU/macc"; "µU/nchan"; "µU/naddr"; "µU/dlock"; "µU/dgra"; "µU/rpc"; "µU/vnset"
 )
@@ -132,7 +132,7 @@ func drive (cl, cf, cb col.Colour, d chan bool) {
 func input() { for { _, _ = kbd.Command() } }
 
 func main() { // get all packages compiled and show the license
-  if scr.UnderX() {
+  if env.UnderX() {
     xm, ym := scr.MaxRes()
     ht = int(ym) - 56
     scr.NewWH (0, 0, xm, uint(ht))
@@ -146,7 +146,6 @@ func main() { // get all packages compiled and show the license
   nx1, ny1 = int(scr.Wd1()), int(scr.Ht1())
   wdtext = 91 * nx1 // 91 == width of license text lines + 2
   files.Cd (env.Gosrc() + "/" + ker.Mu)
-  sort.Sort(make([]Any, 0))
   vect.New()
   gl.Touch()
   if cdrom.MaxVol == 0 {}

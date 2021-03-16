@@ -1,12 +1,11 @@
 package adj
 
-// (c) Christian Maurer   v. 171112 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   "µU/ker"
   . "µU/obj"
   "µU/col"
-  "µU/scr"
 )
 type (
   pair struct {
@@ -36,6 +35,6 @@ func new_(n uint, v, e Any) AdjacencyMatrix {
       x.entry[i][k] = pair { x.v, x.e }
     }
   }
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   return x
 }

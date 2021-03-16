@@ -3,7 +3,7 @@ package obj
 // (c) Christian Maurer   v. 201004 - license see µU.go
 
 type
-  Editor interface { // Objects, that can be printed to a particular
+  Editor interface { // Objects, that can be written to a particular
                      // position of a screen and that can be changed
                      // by interaction with a user (e.g. by pressing
                      // keys on a keyboard or a mouse).

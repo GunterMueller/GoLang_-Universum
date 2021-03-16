@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 201226 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   . "µU/ker"
@@ -81,8 +81,8 @@ var (
 )
 
 func init() {
-  WeekdayF, WeekdayB = scr.StartCols()
-  HolidayF, HolidayB = scr.StartColsA()
+  WeekdayF, WeekdayB = col.StartCols()
+  HolidayF, HolidayB = col.StartColsA()
   YearnumberF, YearnumberB = col.LightWhite(), col.Magenta()
   WeekdayNameF, WeekdayNameB = col.Magenta(), WeekdayB
   MonthF, MonthB = YearnumberF, YearnumberB
@@ -102,7 +102,7 @@ func new_() Calendarday {
   x := new (calendarday)
   x.day, x.month, x.year = maxday, maxmonth, emptyYear
   x.Format = Dd_mm_yy
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   x.Font = font.Roman
   return x
 }
@@ -1023,12 +1023,10 @@ func (x *calendarday) Val() uint {
   return uint(x.internalCode())
 }
 
-func (x *calendarday) SetVal (n uint) bool {
+func (x *calendarday) SetVal (n uint) {
   if n < 1<<16 {
     x.decode(uint16(n))
-    return true
   }
-  return false
 }
 
 func (X *calendarday) WriteGr (x, y int) {

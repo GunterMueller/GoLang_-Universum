@@ -1,0 +1,143 @@
+package ppm
+
+// (c) Christian Maurer   v. 210314 - license see µU.go
+
+import (
+  "os/exec"
+  "µU/ker"
+  "µU/obj"
+  "µU/env"
+  "µU/char"
+  "µU/str"
+  "µU/scr"
+  "µU/prt"
+  "µU/pseq"
+)
+const
+  suffix = ".ppm"
+var (
+  ppmheader string
+  lh uint
+)
+
+func string_(n uint) string {
+  if n == 0 { return "0" }
+  var s string
+  for s = ""; n > 0; n /= 10 {
+    s = string(n % 10 + '0') + s
+  }
+  return s
+}
+
+func number (s obj.Stream) (uint, int) {
+  n := uint(0)
+  i := 0
+  for char.IsDigit (s[i]) { i++ }
+  for j := 0; j < i; j++ {
+    n = 10 * n + uint(s[j] - '0')
+  }
+  return n, i
+}
+
+func PPMHeader (w, h uint) string {
+  s := "P6 " + string_(w) + " " + string_(h) + " 255" + string(byte(10))
+  ppmheader = s
+  lh = uint(len(s))
+  return s
+}
+
+func PPMCodelen (w, h uint) uint {
+  PPMHeader (w, h)
+  return X.lh + 3 * w * h
+}
+
+func PPMSize (s obj.Stream) (uint, uint) {
+  w, h, _, _ := ppmHeaderData (s)
+  return w, h
+}
+
+func PMEncode (x0, y0, w, h uint) obj.Stream {
+  s := X.Encode (x0, y0, w, h)
+  return append (obj.Stream(X.PPMHeader (w, h)), s[2*4:]...)
+}
+
+func ppmHeaderData (s obj.Stream) (uint, uint, uint, int) {
+  p := string(s[:2]); if p != "P6" { panic ("wrong ppm-header: " + p) }
+  i := 3
+  w, dw := number (s[i:])
+  i += dw + 1
+  h, dh := number (s[i:])
+  i += dh + 1
+  m, dm := number (s[i:])
+  i += dm
+  return w, h, m, i + 1
+}
+
+func PPMDecode (s obj.Stream, x0, y0 uint) {
+  w, h, _, j := ppmHeaderData (s)
+  if w == 0 || h == 0 || w > X.Wd() || h > X.Ht() { return }
+  i := 4 * uint(2)
+  l := i + 3 * w * h
+  e := make(obj.Stream, l)
+  copy (e[:i], obj.Encode4 (uint16(x0), uint16(y0), uint16(w), uint16(h)))
+  if env.UnderX() {
+    c := col.New()
+    for y := uint(0); y < h; y++ {
+      for x := uint(0); x < w; x++ {
+        c.Decode (s[j:j+3])
+        copy (e[i:i+3], obj.Encode (c.Code()))
+        i += 3
+        j += 3
+      }
+    }
+  } else { // console
+    copy (e[i:], s[j:])
+  }
+  X.Decode (e)
+}
+
+func put (n string) {
+  if str.Empty (n) { return }
+  str.OffSpc (&n)
+  filename := n + suffix
+  s := scr.PPMEncode (0, 0, scr.Wd(), scr.Ht())
+  file := pseq.New (s)
+  file.Name (filename)
+  file.Clr()
+  file.Put (s)
+  file.Fin()
+}
+
+func size_(n string) (uint, uint) {
+  if str.Empty (n) { return 0, 0 }
+  str.OffSpc (&n)
+  filename := n + suffix
+  l := pseq.Length (filename)
+  if l == 0 { return 0, 0 }
+  s := make(obj.Stream, l)
+  file := pseq.New (s)
+  file.Name (filename)
+  s = file.Get().(obj.Stream)
+  file.Fin()
+  return scr.PPMSize (s)
+}
+
+func get (n string, x, y uint) {
+  if str.Empty (n) { return }
+  str.OffSpc (&n)
+  filename := n + suffix
+  l := pseq.Length (filename)
+  if l == 0 { return }
+  s := make(obj.Stream, l)
+  file := pseq.New (s)
+  file.Name (filename)
+  s = file.Get().(obj.Stream)
+  scr.PPMDecode (s, x, y)
+  file.Fin()
+}
+
+func print_(n string) {
+  put (n)
+  e := exec.Command (prt.PrintCommand, "-o", "fit-to-page", n + suffix).Run()
+  if e != nil { ker.Panic (e.Error()) }
+}

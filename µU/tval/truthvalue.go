@@ -1,12 +1,11 @@
 package tval
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/str"
   "µU/col"
-  "µU/scr"
   "µU/box"
   "µU/errh"
   "µU/font"
@@ -41,7 +40,7 @@ func new_() TruthValue {
   x.value = indetermined
   x.representation = [nValues]string { "?", "n", "y" }
   x.uint = 1
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   return x
 }
 

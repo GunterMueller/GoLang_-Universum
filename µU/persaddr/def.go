@@ -1,6 +1,6 @@
 package persaddr
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 210308 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,7 +11,7 @@ type
 
   col.Colourer
   Indexer
-  Orderer
+  Rotator
 }
 
 // Returns a new empty pair of Person and Address.

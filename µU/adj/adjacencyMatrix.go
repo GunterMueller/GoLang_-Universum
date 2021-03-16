@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 171112 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   "µU/ker"

@@ -1,6 +1,6 @@
 package gram
 
-// (c) Christian Maurer   v. 210104 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   . "µU/obj"
@@ -52,9 +52,9 @@ func new_(d bool, v, e Any) GraphModel {
     e = edg.New(d, uint(1))
   }
   x.edge = edg.New (d, e)
-  x.f, x.b = scr.StartCols()
+  x.f, x.b = col.StartCols()
   x.Colours (x.f, x.b)
-  x.fa, x.ba = scr.StartColsA()
+  x.fa, x.ba = col.StartColsA()
   x.ColoursA (x.fa, x.ba)
   x.Graph = gra.New (d, x.vertex, x.edge)
   x.Graph.SetWrite (vtx.W, edg.W)

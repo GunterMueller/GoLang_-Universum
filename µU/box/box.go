@@ -1,11 +1,11 @@
 package box
 
-// (c) Christian Maurer   v. 201204 - license see µU.go
+// (c) Christian Maurer   v. 210312 - license see µU.go
 
 import (
   "µU/char"
   "µU/ker"
-  . "µU/shape"
+  "µU/scr/shape"
   "µU/str"
   "µU/kbd"
   "µU/col"
@@ -34,7 +34,7 @@ var
 func new_() Box {
   x := new (box)
   x.width = 0 // scr.NColumns() // does not work, if no scr.New was called before
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   x.Comm = kbd.None
   return x
 }
@@ -267,7 +267,7 @@ func (b *box) possible (s *string, x, y uint) bool {
 
 func (b *box) editText (imGraphikmodus bool, s *string, x, y uint) {
   var c byte
-  var cursorshape Shape
+  var cursorshape shape.Shape
   b.graphical = imGraphikmodus
 // if b.usesMouse { scr.SwitchMouseCursor (true) }
   str.Norm (s, b.width)
@@ -285,9 +285,9 @@ func (b *box) editText (imGraphikmodus bool, s *string, x, y uint) {
   cf, cb := scr.Cols() // Warp may destroy the colours
   for {
     if b.overwritable {
-      cursorshape = Block
+      cursorshape = shape.Block
     } else {
-      cursorshape = Understroke
+      cursorshape = shape.Understroke
     }
     if b.graphical {
       scr.WarpGr (x + scr.Wd1() * b.index, y, cursorshape)
@@ -302,9 +302,9 @@ func (b *box) editText (imGraphikmodus bool, s *string, x, y uint) {
     }
     edited = c != 0
     if b.graphical {
-      scr.WarpGr (x + scr.Wd1() * b.index, y, Off)
+      scr.WarpGr (x + scr.Wd1() * b.index, y, shape.Off)
     } else {
-      scr.Warp (y / scr.Ht1(), x / scr.Wd1() + b.index, Off)
+      scr.Warp (y / scr.Ht1(), x / scr.Wd1() + b.index, shape.Off)
     }
     if b.Comm == kbd.None {
       if b.index == b.width {

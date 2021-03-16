@@ -1,6 +1,6 @@
 package schol
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 210308 - license see µU.go
 
 // >>> TODO: simplify it into a Molecule
 
@@ -458,5 +458,5 @@ func (x *scholar) Index() Func {
 }
 
 func (x *scholar) rotOrder() {
-  x.Person.RotOrder()
+  x.Person.Rotate()
 }

@@ -1,6 +1,6 @@
 package internal
 
-// (c) Christian Maurer   v. 201005 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   "µU/ker"
@@ -8,7 +8,6 @@ import (
   "µU/str"
   "µU/kbd"
   "µU/col"
-  "µU/scr"
   "µU/box"
   "µU/errh"
   "µU/sel"
@@ -45,7 +44,7 @@ func new_(t uint8, s [NFormats][]string) Base {
     x.wd[f] = m[f]
   }
 //  x.wd = m
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   x.Format = Short
   return x
 }

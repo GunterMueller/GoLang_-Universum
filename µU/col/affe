@@ -1,1 +1,1 @@
-  return Stream {c.r, c.g, c.b}
+  return (uint(c.r) << 8 + uint(c.g)) << 8 + uint(c.b)

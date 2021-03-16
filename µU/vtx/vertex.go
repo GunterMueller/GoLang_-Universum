@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 201204 - license see µU.go
+// (c) Christian Maurer   v. 210309 - license see µU.go
 
 import (
 //  "µU/ker"
@@ -29,8 +29,8 @@ func new_(e EditorGr, w, h uint) Vertex {
     x.valuable = false
   }
   x.width, x.height = w, h
-  x.f, x.b = scr.StartCols()
-  x.fa, x.ba = scr.StartColsA()
+  x.f, x.b = col.StartCols()
+  x.fa, x.ba = col.StartColsA()
   return x
 }
 
@@ -236,9 +236,8 @@ func (x *vertex) Val() uint {
   return 0
 }
 
-func (x *vertex) SetVal (n uint) bool {
+func (x *vertex) SetVal (n uint) {
   if x.valuable {
-    return x.EditorGr.(Valuator).SetVal (n)
+    x.EditorGr.(Valuator).SetVal (n)
   }
-  return false
 }

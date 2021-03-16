@@ -1,6 +1,6 @@
 package host
 
-// (c) Christian Maurer   v. 210228 - license see µU.go
+// (c) Christian Maurer   v. 210311 - license see µU.go
 
 import (
   "os"; "net"
@@ -8,7 +8,6 @@ import (
   . "µU/obj"
   "µU/str"
   "µU/col"
-  "µU/scr"
   "µU/box"
   "µU/errh"
 )
@@ -40,7 +39,7 @@ func new_() Host {
   x := new(host)
   x.Clr()
   x.Format = Hostname
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   return x
 }
 
