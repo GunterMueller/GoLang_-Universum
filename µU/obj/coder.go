@@ -8,7 +8,7 @@ type
   Coder interface {
 
 // Returns the number of bytes, that are needed
-// to serialize x uniquely revertibly.
+// to serialise x uniquely revertibly.
   Codelen() uint
 
 // x.Eq (x.Decode (x.Encode())

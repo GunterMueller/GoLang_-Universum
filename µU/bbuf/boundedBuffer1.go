@@ -1,6 +1,6 @@
 package bbuf
 
-// (c) Christian Maurer   v. 200908 - license see µU.go
+// (c) Christian Maurer   v. 210314 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,7 +9,7 @@ import (
 
 type
   boundedBuffer1 struct {
-                        Any "Musterobjekt"
+                        Any "pattern object"
                         cap uint
                         buf.Buffer
 }

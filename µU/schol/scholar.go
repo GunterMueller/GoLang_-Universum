@@ -451,9 +451,17 @@ func (x *scholar) Decode (bs Stream) {
 
 func (x *scholar) Index() Func {
   return func (a Any) Any {
-    x, ok := a.(*scholar)
-    if ! ok { TypeNotEqPanic (x, a) }
-    return x.Person
+    s, ok := a.(*scholar)
+    if ! ok { TypeNotEqPanic (s, a) }
+    return s.Person
+  }
+}
+
+func index() Func {
+  return func (a Any) Any {
+    s, ok := a.(*scholar)
+    if ! ok { TypeNotEqPanic (s, a) }
+    return s.Person
   }
 }
 

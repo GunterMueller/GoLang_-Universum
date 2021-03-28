@@ -66,12 +66,14 @@ type
                  mode.Mode
             x, y int
           wd, ht uint
-nLines, nColumns uint
+          nLines,
+        nColumns uint
          archive obj.Stream
           shadow []obj.Stream
             buff bool
         wd1, ht1 uint
-cF, cB, cFA, cBA col.Colour
+          cF, cB,
+        cFA, cBA col.Colour
     codeF, codeB obj.Stream
       scrF, scrB col.Colour
           lineWd linewd.Linewidth
@@ -91,7 +93,7 @@ cF, cB, cFA, cBA col.Colour
         incident bool
    xx_, yy_, tt_ int // for incidence tests
        ppmheader string
-              lh uint
+              lh uint // length of ppmheader
                  }
 var (
   actMutex sync.Mutex
@@ -137,8 +139,6 @@ func (x *console) Proportion() float64 {
   return float64(x.wd) / float64(x.ht)
 }
 
-//################################################################################
-
 func (X *console) ok() bool {
   return uint(X.x) + X.wd <= width && uint(X.y) + X.ht <= height
 }
@@ -153,8 +153,6 @@ func (X *console) OffFocus() bool {
 
 func (X *console) Win2buf() {
 }
-
-// modes ///////////////////////////////////////////////////////////////
 
 // colours /////////////////////////////////////////////////////////////
 
@@ -9127,7 +9125,7 @@ func (X *console) OnPolygon (xs, ys []int, a, b int, t uint) bool {
 }
 
 func (X *console) circ (x, y int, r uint, filled bool, f pointFunc) {
-// Algorithmus von Bresenham (Fellner: Computer Grafik, 5.5)
+// Algorithm of Bresenham (Fellner: Computer Grafik, 5.5)
   if ! visible { return }
   if x >= int(X.wd) || y >= int(X.ht) || r >= X.wd {
     return

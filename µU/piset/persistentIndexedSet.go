@@ -1,6 +1,6 @@
 package piset
 
-// (c) Christian Maurer   v. 210228 - license see µU.go
+// (c) Christian Maurer   v. 210323 - license see µU.go
 
 import (
   . "µU/obj"
@@ -8,23 +8,17 @@ import (
   "µU/pseq"
   "µU/buf"
   "µU/set"
-  "µU/piset/internal"
+  "µU/piset/pair"
 )
 type
   persistentIndexedSet struct {
-                              Object
+                              Object "pattern object"
                               Any "index of Object"
                               pseq.PersistentSequence "file"
                               Func "index function"
-                              set.Set "tree"
-                              buf.Buffer "position pool"
+                              set.Set "pairs of index and position in the file"
+                              buf.Buffer "free positions in the file"
                               }
-const
-  suffix = "seq"
-
-func pair (a Any, n uint) internal.Pair {
-  return internal.New (a, n)
-}
 
 func new_(o Object, f Func) PersistentIndexedSet {
   x := new (persistentIndexedSet)
@@ -32,7 +26,7 @@ func new_(o Object, f Func) PersistentIndexedSet {
   x.Any = f (o)
   x.PersistentSequence = pseq.New (x.Object)
   x.Func = f
-  x.Set = set.New (pair (x.Any, 0))
+  x.Set = set.New (pair.New (x.Any, 0))
   x.Buffer = buf.New (uint(0))
   return x
 }
@@ -57,7 +51,9 @@ func (x *persistentIndexedSet) Offc() bool {
   return x.Empty()
 }
 
-func (x *persistentIndexedSet) build() {
+func (x *persistentIndexedSet) Name (s string) {
+  if str.Empty (s) { return }
+  x.PersistentSequence.Name (s + ".seq")
   x.Set.Clr()
   x.Buffer = buf.New (uint(0))
   if x.PersistentSequence.Empty() { return }
@@ -67,22 +63,16 @@ func (x *persistentIndexedSet) build() {
     if x.Object.Empty() {
       x.Buffer.Ins (i)
     } else {
-      any := x.Func (x.Object)
-      x.Set.Ins (pair (any, i))
+//      x.Set.Ins (pair.New (x.Func (x.Object), i))
+      x.Set.Ins (pair.New (x.Func (x.Object), i))
     }
   }
   x.Jump (false)
 }
 
-func (x *persistentIndexedSet) Name (s string) {
-  if str.Empty (s) { return }
-  x.PersistentSequence.Name (s + "." + suffix)
-  x.build()
-}
-
 func (x *persistentIndexedSet) Rename (s string) {
   if str.Empty (s) { return }
-  x.PersistentSequence.Rename (s + "." + suffix)
+  x.PersistentSequence.Rename (s + ".seq")
 }
 
 func (x *persistentIndexedSet) Empty() bool {
@@ -101,7 +91,7 @@ func (x *persistentIndexedSet) Num() uint {
 }
 
 func (x *persistentIndexedSet) Ex (a Any) bool {
-  return x.Set.Ex (pair (x.Func (a), 0))
+  return x.Set.Ex (pair.New (x.Func (a), 0))
 }
 
 func (x *persistentIndexedSet) Ins (a Any) {
@@ -115,7 +105,7 @@ func (x *persistentIndexedSet) Ins (a Any) {
   }
   x.PersistentSequence.Seek (n)
   x.PersistentSequence.Put (a)
-  x.Set.Ins (pair (x.Func (a), n))
+  x.Set.Ins (pair.New (x.Func (a), n))
   x.PersistentSequence.Seek (n)
 }
 
@@ -136,7 +126,7 @@ func (x *persistentIndexedSet) Get() Any {
     x.Object.Clr()
     return x.Object
   }
-  p := x.Set.Get().(internal.Pair)
+  p := x.Set.Get().(pair.Pair)
   n := p.Pos()
   x.PersistentSequence.Seek (n)
   return x.PersistentSequence.Get().(Object)
@@ -147,8 +137,8 @@ func (x *persistentIndexedSet) Put (a Any) {
     return
   }
   x.check (a)
-  n := x.Set.Get().(internal.Pair).Pos()
-  x.Set.Put (pair (x.Func (a), n))
+  n := x.Set.Get().(pair.Pair).Pos()
+  x.Set.Put (pair.New (x.Func (a), n))
   x.PersistentSequence.Put (a)
 }
 
@@ -157,7 +147,7 @@ func (x *persistentIndexedSet) Del() Any {
     x.Object.Clr()
     return x.Object
   }
-  n := x.Set.Get().(internal.Pair).Pos()
+  n := x.Set.Get().(pair.Pair).Pos()
   x.PersistentSequence.Seek (n)
   x.Object = x.PersistentSequence.Get().(Object)
   object := x.Object.Clone().(Object)
@@ -165,14 +155,14 @@ func (x *persistentIndexedSet) Del() Any {
   x.PersistentSequence.Put (object)
   x.Buffer.Ins (n)
   if ! x.Set.Empty() {
-    n := x.Set.Get().(internal.Pair).Pos()
+    n := x.Set.Get().(pair.Pair).Pos()
     x.PersistentSequence.Seek (n)
   }
   return x.Object.Clone()
 }
 
 func (x *persistentIndexedSet) ExGeq (a Any) bool {
-  return x.Set.ExGeq (pair (x.Func (a), 0))
+  return x.Set.ExGeq (pair.New (x.Func (a), 0))
 }
 
 func (x *persistentIndexedSet) Trav (op Op) {

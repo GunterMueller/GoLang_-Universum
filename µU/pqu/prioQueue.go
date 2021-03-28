@@ -1,64 +1,67 @@
 package pqu
 
-// (c) Christian Maurer   v. 171104 - license see µU.go
+// (c) Christian Maurer   v. 210320 - license see µU.go
 
-import (
+import
   . "µU/obj"
-  "µU/pqu/internal"
-)
 type
   prioQueue struct {
-                   Any "to maintain the type of objects in the queue"
-                   internal.Heap "classical structure"
-                   uint "number of objects in the queue"
+              heap []Any // heap[0] = pattern object
                    }
 
 func new_(a Any) PrioQueue {
+  if a == nil { return nil }
   CheckAtomicOrObject (a)
-//  if a == nil { return nil }
   x := new(prioQueue)
-  x.Any = Clone(a)
-  x.Heap = internal.New()
+  x.heap = make([]Any, 1)
+  x.heap[0] = Clone(a)
   return x
 }
 
 func (x *prioQueue) Empty() bool {
-  return x.uint == 0
+  return len(x.heap) == 1
 }
 
 func (x *prioQueue) Num() uint {
-  return x.uint
+  return uint(len(x.heap)) - 1
+}
+
+func (x *prioQueue) sift (i uint) {
+  m, n, k := i, 2 * i, 2 * i + 1
+  if n <= x.Num() && Less (x.heap[i], x.heap[n]) {
+    m = n
+  }
+  if k <= x.Num() && Less (x.heap[m], x.heap[k]) {
+    m = k
+  }
+  if m != i {
+    x.heap[i], x.heap[m] = x.heap[m], x.heap[i]
+    x.sift (m)
+  }
 }
 
 func (x *prioQueue) Ins (a Any) {
-  CheckTypeEq (a, x.Any)
-  x.uint++
-  x.Heap = x.Heap.Ins (a, x.uint).(internal.Heap)
-  x.Heap.Lift (x.uint)
+  CheckTypeEq (a, x.heap[0])
+  x.heap = append (x.heap, Clone(a))
+  n := uint(len(x.heap))
+  i := n - 1
+  for i > 1 && Less (x.heap[i/2], a) {
+    x.heap[i] = x.heap[i/2]
+    i /= 2
+  }
+  x.heap[i] = Clone(a)
 }
 
 func (x *prioQueue) Get() Any {
-  if x.uint == 0 {
-    return nil
-  }
-  return x.Heap.Get()
-}
-
-func (x *prioQueue) Del() Any {
-  if x.uint == 0 {
-    return x.Any
-  }
-  if x.uint == 1 {
-    a := x.Heap.Get()
-    x.Heap = internal.New()
-    x.uint = 0
+  if x.Empty() { return nil }
+  a := x.heap[1] // 22
+  if x.Num() == 1 {
+    x.heap = x.heap[:1]
     return a
   }
-  y, a := x.Heap.Del (x.uint)
-  x.Heap = y.(internal.Heap)
-  x.uint--
-  if x.uint > 0 {
-    x.Heap.Sift (x.uint)
-  }
+  x.heap[1] = x.heap[x.Num()]
+  n := uint(len(x.heap))
+  x.heap = x.heap[:n-1]
+  x.sift (1)
   return a
 }

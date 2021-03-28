@@ -18,6 +18,7 @@ type
 
   Formatter
   Indexer
+  Object
   Printer
 
   String() string

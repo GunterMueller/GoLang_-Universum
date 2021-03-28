@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 210312 - license see µU.go
+// (c) Christian Maurer   v. 210314 - license see µU.go
 
 type
   Predicator interface {
@@ -26,8 +26,7 @@ type
 // is the same as before.
   StepPred (p Pred, f bool) bool
 
-// Pre: y is a collector of elements of the same type as x
-//      (especially contains elements of the same type as a).
+// Pre: y is a collector of elements of the same type as those in x.
 // y consists exactly of those elements in x before
 // (in their order in x), for which p returns true.
 // The actual element of x is undefined; x is unchanged.

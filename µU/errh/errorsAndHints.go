@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 210105 - license see µU.go
+// (c) Christian Maurer   v. 210321 - license see µU.go
 
 import (
   "strconv"
@@ -194,16 +194,8 @@ func errorF (s string, f float64) {
   do (s + " " + strconv.FormatFloat (f, 'e', 10, 64), false)
 }
 
-func proceed0 (s string) {
-  do (s, true)
-}
-
 func error0 (s string) {
   do (s, false)
-}
-
-func proceed (s string, k uint) {
-  do (s + " " + n.String (k), true)
 }
 
 func error (s string, k uint) {
@@ -229,10 +221,6 @@ func conc4 (s string, k uint, s1 string, k1 uint, s2 string, k2 uint, s3 string,
   s2 += " " + n.String(k2)
   s3 += " " + n.String(k3)
   return s + " " + s1 + " " + s2 + " " + s3
-}
-
-func proceed2 (s string, n uint, s1 string, n1 uint) {
-  do (conc2(s, n, s1, n1), true)
 }
 
 func error2 (s string, n uint, s1 string, n1 uint) {
@@ -377,7 +365,7 @@ func help (H []string) {
   for i := uint(0); i < h; i++ {
     hintbox.Write (H[i], l + 1 + i, c + 2)
   }
-  kbd.Quit()
+  kbd.Wait (false)
   Restore (l, c, w + 4, h + 2)
   if mouseOn { MousePointer (true) }
   post()
@@ -387,17 +375,7 @@ func help1() {
   pre()
   s := "kurze Bedienungshinweise: F1-Taste"
   w := uint(len (s))
-//  mouseOn := MousePointerOn()
-  var l, c uint
-  if false { // mouseOn {
-    l, c = MousePos()
-    if l >= NLines() - 2 { l = NLines() - 3 }
-    if c > NColumns() - w { c = NColumns() - w }
-    MousePointer (false)
-  } else {
-    l = (NLines() - 3) / 2
-    c = (NColumns() - w - 4) / 2
-  }
+  l, c := (NLines() - 3) / 2, (NColumns() - w - 4) / 2
   hintbox.Wd (w + 4)
   t := str.New (w + 4)
   Save (l, c, w + 4, 3)
@@ -406,6 +384,5 @@ func help1() {
   hintbox.Write (s, l + 1, c + 2)
   kbd.Quit()
   Restore (l, c, w + 4, 3)
-//  if mouseOn { MousePointer (true) }
   post()
 }

@@ -26,7 +26,7 @@ type
   Sift (n uint)
 
 // Returns nil, iff x == nil, otherwise a copy of the top of x.
-  Get () Any
+  Get() Any
 }
 
 func New() Heap { return new_() }

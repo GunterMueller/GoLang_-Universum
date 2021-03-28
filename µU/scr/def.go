@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 210314 - license see µU.go
+// (c) Christian Maurer   v. 210315 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -173,8 +173,8 @@ type
 // Pre: x + Columnwidth < Wd resp.
 //      x + Columnwidth * Länge (s) < Wd,
 //      y + Lineheight < Ht.
-// b resp. s is written to the screen within the rectangle
-// with the top left corner (x, y).
+// b and s resp., is written to the screen within the rectangle
+// with the top left corner (x, y) in the actual colours.
   Write1Gr (b byte, x, y int)
   WriteGr (s string, x, y int)
 
@@ -183,7 +183,8 @@ type
   WriteNat (n, l, c uint)
   WriteNatGr (n uint, x, y int)
 
-// TODO Spec
+// Pre: see above.
+// As above, but with fore- and backgroundcolour reversed.
   Write1InvGr (b byte, x, y int)
   WriteInvGr (s string, x, y int)
 
@@ -191,6 +192,7 @@ type
   Transparent() bool
 
 // Transparence is switched on, iff t == true.
+// If it is on, the backgroundcolour is that of the screen.
   Transparence (t bool)
 
 // font ////////////////////////////////////////////////////////////////
@@ -223,6 +225,8 @@ type
   Point (x, y int)
   PointInv (x, y int)
 
+// Returns true, iff the point at (x, y) has a distance
+// of at most d pixels from the point (a, b).
   OnPoint (x, y, a, b int, d uint) bool
 
 // Pre: See above.
@@ -257,7 +261,8 @@ type
   LinesInv (x, y, x1, y1 []int)
 
 // Pre: See above.
-// TODO Spec
+// Returns true, iff the point at (x, y) has a distance of at most d pixels
+// from each of the line segments between (x[i], y[i]) and (x1[i], y1[i]).
   OnLines (x, y, x1, y1 []int, a, b int, d uint) bool
 
 // Pre: See above.
@@ -276,8 +281,8 @@ type
   InfLine (x, y, x1, y1 int)
   InfLineInv (x, y, x1, y1 int)
 
-// Returns true, iff the point at (a, b) has a distance of at most d pixels
-// from the line through (x, y) and (x1, y1).
+// Returns true, iff the point at (a, b) has a distance of
+// at most d pixels from the line through (x, y) and (x1, y1).
   OnInfLine (x, y, x1, y1, a, b int, d uint) bool
 
 // Pre: See above.
@@ -380,7 +385,7 @@ type
 // Returns true, iff a mouse is installed.
   MouseEx() bool
 
-// Spec TODO
+// The mousepointer is represented by p.
   SetPointer (p ptr.Pointer)
 
 // Returns the position of the mouse cursor.
@@ -428,12 +433,12 @@ type
 // serialisation ///////////////////////////////////////////////////////
 
 // Pre: 0 < w <= Wd, 0 < h <= Ht.
-// Returns the number of bytes, that are needed to serialize the pixels
+// Returns the number of bytes, that are needed to serialise the pixels
 // of the rectangle between (0, 0) and (w, h) uniquely invertibly.
   Codelen (w, h uint) uint
 
 // Pre: 0 < w, x + w < Wd, 0 < h, y + h < Ht.
-// Returns the byte sequence, that serializes the pixels
+// Returns the byte sequence, that serialises the pixels
 // in the rectangle between (x, y) and (x + w, y + h).
   Encode (x, y, w, h uint) obj.Stream
 
@@ -442,7 +447,7 @@ type
 // the rest of the screen is not changed.
   Decode (s obj.Stream)
 
-// ppm-serialization ///////////////////////////////////////////////////
+// ppm-serialisation ///////////////////////////////////////////////////
 
 // Returns a string of the form "P6 w h 255" with numbers w and m,
 // with only one space between the strings and a line feed at the end.

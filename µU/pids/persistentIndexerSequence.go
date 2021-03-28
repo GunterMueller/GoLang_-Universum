@@ -1,6 +1,6 @@
 package pids
 
-// Christian Maurer   v. 210308 - license see µU.go
+// Christian Maurer   v. 210322 - license see µU.go
 
 import (
   "µU/ker"
@@ -15,7 +15,7 @@ import (
 )
 type
   persistentIndexerSequence struct {
-                                   Any
+                                   Any "pattern object"
                               name string
                               f, b col.Colour
                                all piset.PersistentIndexedSet

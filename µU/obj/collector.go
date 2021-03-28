@@ -16,8 +16,7 @@ package obj
 //
 // In all specifications x denotes the calling collection.
 //
-// Constructors have to return a new collection for elements of the type of a,
-// that does not contain any elements; so its actual object is undefined.
+// Constructors return a new empty collection with undefined actual object.
 
 type
   Collector interface {

@@ -70,11 +70,13 @@ loop:
       *D = 2
     }
     switch e.T {
+/*/
     case C.Expose:
       *B = 0
       *C = Expose
       *D = 0
       break loop
+/*/
     case C.KeyPress:
       if e.C < 9 {
         println ("oops, got keycode ", e.C, " < 9") // XXX ?

@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 200517 - license see µU.go
+// (c) Christian Maurer   v. 210315 - license see µU.go
 
 var
   text = [NComms]string {
@@ -10,7 +10,7 @@ var
     "Pos1    ", "End     ", "Tab     ",
     "Del     ", "Ins     ",
     "Help    ", "Search  ", "Act     ",
-    "Cfg     ", "Mark    ", "Demark  ",
+    "Cfg     ", "Mark    ", "Unmark  ",
     "Cut     ", "Copy    ", "Paste   ",
     "Red     ", "Green   ", "Blue    ",
     "Print   ", "Roll    ", "Pause   ",
@@ -19,4 +19,4 @@ var
     "Here    ", "This    ", "That    ",
     "Drag    ", "Drop    ", "Move    ",
     "To      ", "There   ", "Hither  ",
-    "ScrollUp", "ScrollDn", "Nav     " }
+    "ScrollUp", "ScrollDn"} // , "Nav     " }

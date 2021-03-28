@@ -1,0 +1,171 @@
+package pqu
+
+// (c) Christian Maurer   v. 210319 - license see µU.go
+
+import
+  . "µU/obj"
+import
+  "µU/errh"
+type
+  prioQueue struct {
+              heap []Any // heap[0] = pattern object
+                   }
+
+func new_(a Any) PrioQueue {
+  CheckAtomicOrObject (a)
+  if a == nil { return nil }
+  x := new(prioQueue)
+  x.heap = make([]Any, 1)
+  x.heap[0] = Clone(a)
+  return x
+}
+
+func (x *prioQueue) Empty() bool {
+  return len(x.heap) == 1
+}
+
+func (x *prioQueue) Num() uint {
+  return uint(len(x.heap)) - 1
+}
+
+func min (a, b Any) Any {
+  if Less (a, b) {
+    return a
+  }
+  return b
+}
+
+/*/
+func (x *prioQueue) heapify() {
+  if len(x.heap) <= 2 { return }
+  for n := len(x.heap) / 2; n > 0; n /= 2 { // n == 2
+    min := n // * 2 // 2 * 2
+println ("len ==", len(x.heap), "   n == ", n, "   min ==", min)
+// println ("len(heap) ==", len(x.heap), "   min ==", min)
+    if len(x.heap) > min + 1 { // len > 5 ?
+      if Less (x.heap[min+1], x.heap[min]) {
+        min++
+println ("++min ==", min)
+// println ("min nach ++", min)
+      }
+    }
+println ("heap[min] ==", x.heap[min].(int), "< heap[n/2] ==", x.heap[n/2].(int), "?") // 6  7
+    if Less (x.heap[min], x.heap[n/2]) { // 
+println (x.heap[min].(int), "<", x.heap[n/2].(int))
+      x.heap[min], x.heap[n/2] = x.heap[n/2], x.heap[min]
+println (x.heap[min].(int), "<->", x.heap[n/2].(int))
+    }
+    println()
+  }
+}
+/*/
+
+func (x *prioQueue) heapify (i uint) {
+  l, r := 2 * i, 2 * i + 1
+  var max uint
+  if l <= uint(len(x.heap)) && Less (x.heap[i], x.heap[l]) {
+    max = l
+  } else {
+    max = i
+  }
+  if r <= uint(len(x.heap)) && Less (x.heap[max], x.heap[r]) {
+    max = r
+  }
+  if max != i {
+    x.heap[i], x.heap[max] = x.heap[max], x.heap[i]
+    x.heapify (max)
+  }
+/*/
+  if len(x.heap) <= 2 { return }
+  for n := len(x.heap) - 1; n > 1; n /= 2 { // n == 2
+    min := n
+println ("len ==", len(x.heap), "   n == ", n, "   min ==", min)
+// println ("len(heap) ==", len(x.heap), "   min ==", min)
+    if len(x.heap) > min + 1 { // len > 5 ?
+      if Less (x.heap[min+1], x.heap[min]) {
+        min++
+println ("++min ==", min)
+// println ("min nach ++", min)
+      }
+    }
+println ("heap[min] ==", x.heap[min].(int), "< heap[n/2] ==", x.heap[n/2].(int), "?") // 6  7
+    if Less (x.heap[min], x.heap[n/2]) { // 
+println (x.heap[min].(int), "<", x.heap[n/2].(int))
+      x.heap[min], x.heap[n/2] = x.heap[n/2], x.heap[min]
+println (x.heap[min].(int), "<->", x.heap[n/2].(int))
+    }
+    println()
+  }
+/*/
+}
+
+func (x *prioQueue) Ins (a Any) {
+errh.Error ("Ins", uint(a.(int)))
+  CheckTypeEq (a, x.heap[0])
+  i := uint(len(x.heap)) - 1
+  for i > 1 && Less (x.heap[i], a) {
+    x.heap[i] = x.heap[i/2]
+    i /= 2
+  }
+  x.heap[i] = Clone(a)
+/*/
+  n := len(x.heap) - 1
+  x.heap = append (x.heap, Clone(a))
+  x.heap[n+1] = Clone(a)
+  switch n {
+  case 0:
+    ;
+  case 1:
+    if Less (x.heap[1], x.heap[2]) {
+      x.heap[1], x.heap[2] = x.heap[2], x.heap[1]
+    }
+  case 2:
+    i := uint(1)
+    l, r := 2 * i, 2 * i + 1
+    var max uint
+    if l <= uint(len(x.heap)) && Less (x.heap[2], x.heap[3]) {
+//    if l <= n + 1             && Less (x.heap[i], x.heap[2]) {
+      max = r
+    } else {
+      max = l
+    }
+//    if max != i {
+    if Less (x.heap[i], x.heap[max]) {
+      x.heap[i], x.heap[max] = x.heap[max], x.heap[i]
+//      x.heapify (max)
+    }
+  default: // n >= 3
+    x.heap[n+1] = Clone(a)
+    x.heapify (1)
+  }
+/*/
+}
+
+func (x *prioQueue) Get() Any {
+  n := len(x.heap)
+  if n == 1 { return nil }
+  max := x.heap[1]
+  x.heap[1] = x.heap[n-1]
+  a := x.heap[0]
+  x.heap = x.heap[1:]
+  x.heap[0] = a
+  x.heapify (1)
+  return max
+/*/
+  a := x.heap[1]
+  if n == 2 {
+    x.heap = x.heap[:1]
+    return a
+  }
+println ("Länge erst", len(x.heap))
+  x.heap[1] = x.heap[n-1]
+println ("uff", x.heap[1].(int))
+  p := x.heap[0]
+  x.heap = x.heap[1:]
+  x.heap[0] = p
+println ("now top ==", x.heap[1].(int), "  len ==", len(x.heap))
+  x.heapify (2)
+println ("gurx", x.heap[1].(int))
+  return a
+/*/
+}

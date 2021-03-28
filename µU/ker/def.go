@@ -1,6 +1,6 @@
 package ker
 
-// (c) Christian Maurer   v. 210314 - license see µU.go
+// (c) Christian Maurer   v. 210324 - license see µU.go
 
 import (
   "os"
@@ -28,10 +28,6 @@ func ToDo() { panic_("TODO") }
 func StopErr (t string, n uint, e error) { stopErr(t,n,e) }
 func Halt (s int) { halt(s) }
 func InstallTerm (h func()) { installTerm(h) }
-
-func ReadTerminal (b *byte) { readTerminal(b) }
-func TerminalFin() { terminalFin() }
-func InitTerminal() { initTerminal() }
 
 func SetAction (s os.Signal, a func()) { setAction(s,a) }
 func CatchSignals() { catchSignals() }

@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 210314 - license see µU.go
+// (c) Christian Maurer   v. 210315 - license see µU.go
 
 import (
   . "µU/obj"
@@ -155,7 +155,7 @@ func init() {
   kK[f3]     = Act
   kK[f4]     = Cfg
   kK[f5]     = Mark
-  kK[f6]     = Demark
+  kK[f6]     = Unmark
   kK[f7]     = Cut
   kK[f8]     = Copy
   kK[f9]     = Paste

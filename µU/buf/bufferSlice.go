@@ -6,7 +6,7 @@ import
   . "µU/obj"
 type
   buffer struct {
-                Any "pattern object of the buffer"
+                Any "pattern object"
               s []Any
                 }
 

@@ -44,12 +44,12 @@ func (x *boundedPrioQueue) Full() bool {
 // for all i:= 1, ..., (x.num - 1) / 2, j == 2 * i and j == 2 * i + 1
 func (x *boundedPrioQueue) lift() {
   mutex.Lock()
-  i:= x.num
+  i := x.num
   for {
     if i == 1 {
       break
     }
-    j:= i / 2 // index above i
+    j := i / 2 // index above i
     if Less (x.heap [j], x.heap [i]) {
       break // i < x.num, above i heap invariant is ok
     } else {
@@ -71,13 +71,13 @@ func (x *boundedPrioQueue) Ins (a Any) {
 // sift heap[1] as far as necessary to restore the heap invariant
 func (x *boundedPrioQueue) sift() {
   mutex.Lock()
-  i:= uint(1)
+  i := uint(1)
   for {
     if i > x.num / 2 {
       break // nothing more under i
     }
-    j:= 2 * i // left under i
-    if j < x.num && ! Less (x.heap [j], x.heap [j + 1]) {
+    j := 2 * i // left under i
+    if j < x.num && ! Less (x.heap[j], x.heap[j + 1]) {
       j++ // right under i
     }
     if Less (x.heap [i], x.heap [j]) {
@@ -92,14 +92,14 @@ func (x *boundedPrioQueue) sift() {
 
 func (x *boundedPrioQueue) Get() Any {
   if x.num == 0 { return nil }
-  return x.heap [1]
+  return x.heap[1]
 }
 
 func (x *boundedPrioQueue) Del() Any {
   if x.num == 0 { return nil }
-  a:= x.heap [1]
-  x.heap [1] = x.heap[x.num]
+  a := x.heap[1]
+  x.heap[1] = x.heap[x.num]
   x.num--
-  go x.sift ()
+  go x.sift()
   return Clone (a)
 }

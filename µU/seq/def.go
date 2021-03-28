@@ -1,6 +1,6 @@
 package seq
 
-// (c) Christian Maurer   v. 210305 - license see µU.go
+// (c) Christian Maurer   v. 210321 - license see µU.go
 
 import
   . "µU/obj"
@@ -8,12 +8,13 @@ type
   Sequence interface {
 
   Object
-  Seeker
+  Seeker // hence Collector
   Predicator
 
 // Pre: x is not ordered.
 // The order of the elements in x is reversed.
   Reverse()
+
 // Pre: x is not ordered.
 // If x contains at most one element, nothing has happened.
 // Otherwise, for b == true, the former last element of x is now the first,
@@ -25,5 +26,5 @@ type
 // Pre: a is atomic or of a type implementing Object.
 // If x contains at most one element, nothing has happened.
 // Returns otherwise a new empty sequence with pattern object a,
-// i.e. for objects of the type of a.
+// i.e., for objects of the type of a.
 func New (a Any) Sequence { return new_(a) }

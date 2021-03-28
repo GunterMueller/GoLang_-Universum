@@ -1,14 +1,15 @@
 package seq
 
-// (c) Christian Maurer   v. 210213 - license see µU.go
+// (c) Christian Maurer   v. 210321 - license see µU.go
 
 import (
+  "sync"
   . "µU/ker"
   . "µU/obj"
 )
 type (
   cell struct {
-              Any
+              Any "content of the cell"
          next,
          prev *cell
        }
@@ -20,6 +21,7 @@ type (
           ordered bool
                   }
 )
+var mutex sync.Mutex
 
 func (x *sequence) check (a Any) {
   CheckTypeEq (x.anchor.Any, a)
@@ -50,26 +52,16 @@ func (x *sequence) Empty() bool {
   return x.anchor.next == x.anchor
 }
 
-func (x *sequence) remove() {
-  a := x.actual.next
-  x.actual.prev.next = a
-  a.prev = x.actual.prev
-  x.actual.prev, x.actual.next = nil, nil
-  x.actual = a
-}
-
 func (x *sequence) Clr() {
-  x.actual = x.anchor.next
-  for x.actual != x.anchor {
-    x.remove()
-  }
+  x.anchor.next, x.anchor.prev = x.anchor, x.anchor
+  x.actual = x.anchor
   x.num, x.pos = 0, 0
 }
 
 func (x *sequence) e (y *sequence, r Rel) bool {
   if x.num != y.num { return false }
-  for l, l1 := x.anchor.next, y.anchor.next; l != x.anchor; l, l1 = l.next, l1.next {
-    if ! r (l.Any, l1.Any) {
+  for c, d := x.anchor.next, y.anchor.next; c != x.anchor; c, d = c.next, c.next {
+    if ! r (c.Any, d.Any) {
       return false
     }
   }
@@ -80,12 +72,20 @@ func (x *sequence) Eq (Y Any) bool {
   return x.e (x.imp (Y), Eq)
 }
 
+func (x *sequence) insert (a Any) {
+  n := new (cell)
+  n.Any = Clone (a)
+  n.next, n.prev = x.actual, x.actual.prev
+  x.actual.prev.next = n
+  x.actual.prev = n
+}
+
 func (x *sequence) Copy (Y Any) {
   y := x.imp (Y)
   x.Clr()
   x.anchor.Any = Clone(y.anchor.Any)
-  for l := y.anchor.next; l != y.anchor; l = l.next {
-    x.ins (l.Any)
+  for c := y.anchor.next; c != y.anchor; c = c.next {
+    x.insert (c.Any)
   }
   x.num, x.pos = y.num, y.num
 }
@@ -99,28 +99,28 @@ func (x *sequence) Clone() Any {
 func (x *sequence) Less (Y Any) bool {
   y := x.imp (Y)
   if x.num >= y.num { return false }
-  l := x.anchor.next
-  l1 := y.anchor.next
-  for l != x.anchor {
+  c := x.anchor.next
+  d := y.anchor.next
+  for c != x.anchor {
     for {
-      if l1 == y.anchor {
+      if d == y.anchor {
         return false
       }
-      if Eq (l.Any, l1.Any) {
-        l1 = l1.next
+      if Eq (c.Any, d.Any) {
+        d = d.next
         break
       }
-      l1 = l1.next
+      d = d.next
     }
-    l = l.next
+    c = c.next
   }
   return true
 }
 
 func (x *sequence) Codelen() uint {
   n := uint(4) // Codelen (uint32(0))
-  for l := x.anchor.next; l != x.anchor; l = l.next {
-    n += 4 + Codelen (l.Any)
+  for c := x.anchor.next; c != x.anchor; c = c.next {
+    n += 4 + Codelen (c.Any)
   }
   return n
 }
@@ -148,18 +148,10 @@ func (x *sequence) Decode (bs []byte) {
   for j := uint32(0); j < uint32(x.num); j++ {
     n := Decode (uint32(0), bs[i:i+a]).(uint32)
     i += a
-    x.ins (Decode (Clone (x.anchor.Any), bs[i:i+n]))
+    x.insert (Decode (Clone (x.anchor.Any), bs[i:i+n]))
     i += n
   }
   return
-}
-
-func (x *sequence) ins (a Any) {
-  c := new (cell)
-  c.Any = Clone (a)
-  c.next, c.prev = x.actual, x.actual.prev
-  x.actual.prev.next = c
-  x.actual.prev = c
 }
 
 func (x *sequence) Num() uint {
@@ -168,8 +160,8 @@ func (x *sequence) Num() uint {
 
 func (x *sequence) NumPred (p Pred) uint {
   n := uint(0);
-  for l := x.anchor.next; l != x.anchor; l = l.next {
-    if p (l.Any) {
+  for c := x.anchor.next; c != x.anchor; c = c.next {
+    if p (c.Any) {
       n++
     }
   }
@@ -179,9 +171,9 @@ func (x *sequence) NumPred (p Pred) uint {
 func (x *sequence) Ex (a Any) bool {
   x.check (a)
   p := uint(0)
-  for l := x.anchor.next; l != x.anchor; l = l.next {
-    if Eq (l.Any, a) {
-      x.actual = l
+  for c := x.anchor.next; c != x.anchor; c = c.next {
+    if Eq (c.Any, a) {
+      x.actual = c
       x.pos = p
       return true
     }
@@ -273,19 +265,13 @@ func (x *sequence) Get() Any {
 func (x *sequence) Put (a Any) {
   x.check (a)
   if x.actual == x.anchor {
-    x.ins (a)
+    x.insert (a)
     x.actual = x.actual.prev
     x.pos = x.num
     x.num++
   } else {
     x.actual.Any = Clone (a)
   }
-}
-
-func (x *sequence) insert (a Any) {
-  x.ins (a)
-  x.num++
-  x.pos++
 }
 
 func (x *sequence) Ins (a Any) {
@@ -307,55 +293,46 @@ func (x *sequence) Ins (a Any) {
     }
   }
   x.insert (a)
-}
-
-func (x *sequence) InsRel (a Any, r Rel) {
-  x.check (a)
-  x.actual, x.pos = x.anchor.next, 0
-  for x.actual != x.anchor {
-    if r (x.actual.Any, a) {
-      x.actual = x.actual.next
-      x.pos++
-    } else {
-      break
-    }
-  }
-  x.insert (a)
+  x.num++
+  x.pos++
 }
 
 func (x *sequence) Del() Any {
   if x.actual == x.anchor {
     return nil
   }
-  defer x.remove()
+  c := x.actual.next
+  x.actual.prev.next = c
+  c.prev = x.actual.prev
+  x.actual = c
   x.num--
   return Clone (x.actual.Any)
 }
 
 func (x *sequence) ExPred (p Pred, forward bool) bool {
-//  s, i := x.actual, x.pos
+//  c, i := x.actual, x.pos
   if x.num == 0 {
     return false
   }
-  s, i := x.anchor.next, uint(0)
+  c, i := x.anchor.next, uint(0)
   if ! forward {
-    s, i = x.anchor.prev, x.num - 1
+    c, i = x.anchor.prev, x.num - 1
   }
-  for s != x.anchor {
-    if p (s.Any) {
-      x.actual, x.pos = s, i
+  for c != x.anchor {
+    if p (c.Any) {
+      x.actual, x.pos = c, i
       return true
     }
     if forward {
-      s = s.next
+      c = c.next
       i++
     } else {
-      s = s.prev
+      c = c.prev
       i--
     }
 /*
-    if p (s.Any) {
-      x.actual, x.pos = s, i
+    if p (c.Any) {
+      x.actual, x.pos = c, i
       return true
     }
 */
@@ -364,18 +341,18 @@ func (x *sequence) ExPred (p Pred, forward bool) bool {
 }
 
 func (x *sequence) StepPred (p Pred, forward bool) bool {
-  s, i := x.actual, x.pos
+  c, i := x.actual, x.pos
   for {
     if forward {
-      s = s.next
+      c = c.next
       i++
     } else {
-      s = s.prev
+      c = c.prev
       i--
     }
-    if s == x.anchor { break }
-    if p (s.Any) {
-      x.actual = s
+    if c == x.anchor { break }
+    if p (c.Any) {
+      x.actual = c
       x.pos = i
       return true
     }
@@ -384,8 +361,8 @@ func (x *sequence) StepPred (p Pred, forward bool) bool {
 }
 
 func (x *sequence) All (p Pred) bool {
-  for l := x.anchor.next; l != x.anchor; l = l.next {
-    if ! p (l.Any) {
+  for c := x.anchor.next; c != x.anchor; c = c.next {
+    if ! p (c.Any) {
       return false
     }
   }
@@ -393,11 +370,11 @@ func (x *sequence) All (p Pred) bool {
 }
 
 func (x *sequence) Ordered() bool {
-  l := x.anchor.next
-  if l == x.anchor { return true }
-  for l.next != x.anchor {
-    if Less (l.Any, l.next.Any) {
-      l = l.next
+  c := x.anchor.next
+  if c == x.anchor { return true }
+  for c.next != x.anchor {
+    if Less (c.Any, c.next.Any) {
+      c = c.next
     } else {
       x.ordered = false
       return false
@@ -407,40 +384,42 @@ func (x *sequence) Ordered() bool {
   return true
 }
 
-func (x *sequence) Sort() {
-  x.ordered = true
-  if x.Ordered() { return }
-  l := x.anchor.next
-  if l == x.anchor { return }
-  if l.next == x.anchor { return }
-  x.anchor.next = l.next
-  l.next.prev = x.anchor
+func (x *sequence) Sort() { // quicksort
+  if x.num <= 1 { return }
+  c := x.anchor.next
+  if c == x.anchor { return }
+  if c.next == x.anchor { return }
+  x.anchor.next = c.next
+  c.next.prev = x.anchor
   x.num--
-  var y *sequence
-  y = new_(x.anchor.Any).(*sequence)
-  l1 := x.anchor.next
-  var l2 *cell
-  for l1 != x.anchor {
-    l2 = l1.next
-    if Less (l.Any, l1.Any) {
-      l1.prev.next = l1.next
-      l1.next.prev = l1.prev
-      l1.next, l1.prev = y.anchor, y.anchor.prev
-      l1.prev.next = l1
-      y.anchor.prev = l1
+  y := new_(x.anchor.Any).(*sequence)
+  d := x.anchor.next
+  var e *cell
+  for d != x.anchor {
+    e = d.next
+    if Less (c.Any, d.Any) {
+      d.prev.next = d.next
+      d.next.prev = d.prev
+      d.next, d.prev = y.anchor, y.anchor.prev
+      d.prev.next = d
+      y.anchor.prev = d
       x.num--
       y.num++
     }
-    l1 = l2
+    d = e
   }
   x.Sort()
   y.Sort()
-  l.next = y.anchor.next
-  y.anchor.next = l
-  l.prev = y.anchor
-  l.next.prev = l
+  c.next = y.anchor.next
+  y.anchor.next = c
+  c.prev = y.anchor
+  c.next.prev = c
   y.num++
-  x.concatenate (y)
+  x.anchor.prev.next = y.anchor.next
+  y.anchor.next.prev = x.anchor.prev
+  y.anchor.prev.next = x.anchor
+  x.anchor.prev = y.anchor.prev
+  x.num += y.num
   x.actual = x.anchor
   x.pos = x.num
 }
@@ -449,9 +428,9 @@ func (x *sequence) ExGeq (a Any) bool {
   if ! x.ordered { Panic ("x is not ordered") }
   x.check (a)
   p := uint(0)
-  for l := x.anchor.next; l != x.anchor; l, p = l.next, p + 1 {
-    if Less (a, l.Any) {
-      x.actual = l
+  for c := x.anchor.next; c != x.anchor; c, p = c.next, p + 1 {
+    if Less (a, c.Any) {
+      x.actual = c
       x.pos = p
       return true
     }
@@ -460,8 +439,8 @@ func (x *sequence) ExGeq (a Any) bool {
 }
 
 func (x *sequence) Trav (op Op) {
-  for l := x.anchor.next; l != x.anchor; l = l.next {
-    op (l.Any)
+  for c := x.anchor.next; c != x.anchor; c = c.next {
+    op (c.Any)
   }
 }
 
@@ -469,50 +448,33 @@ func (x *sequence) Filter (Y Collector, p Pred) {
   y := x.imp (Y)
   if y == x { return }
   y.Clr()
-  for l := x.anchor.next; l != x.anchor; l = l.next {
-    if p (l.Any) {
-      y.ins (l.Any)
+  for c := x.anchor.next; c != x.anchor; c = c.next {
+    if p (c.Any) {
+      y.insert (c.Any)
       y.num++
     }
   }
   y.pos = x.num
 }
 
-//func (x *sequence) Split (Y Collector) {
-//  y := x.imp (Y)
-//  if y == x { return }
-//  y.Clr()
-//  if x.actual == x.anchor { return }
-//  y.anchor.next, y.anchor.prev = x.actual, x.anchor.prev
-//  x.anchor.prev.next = y.anchor
-//  x.anchor.prev = x.actual.prev
-//  x.actual.prev.next = x.anchor
-//  x.actual.prev = y.anchor
-//  x.actual = x.anchor
-//  y.actual = y.anchor.next
-//  y.num = x.num - x.pos
-//  x.num = x.pos
-//  x.pos = x.num
-//}
-
 func (x *sequence) Cut (Y Collector, p Pred) {
   y := x.imp (Y)
   if y == x { return }
   y.Clr()
-  l := x.anchor.next
-  var l1 *cell
-  for l != x.anchor {
-    l1 = l.next
-    if p (l.Any) {
-      l.prev.next = l.next
-      l.next.prev = l.prev
-      l.next, l.prev = y.anchor, y.anchor.prev
-      l.prev.next = l
-      y.anchor.prev = l
+  c := x.anchor.next
+  var d *cell
+  for c != x.anchor {
+    d = c.next
+    if p (c.Any) {
+      c.prev.next = c.next
+      c.next.prev = c.prev
+      c.next, c.prev = y.anchor, y.anchor.prev
+      c.prev.next = c
+      y.anchor.prev = c
       x.num--
       y.num++
     }
-    l = l1
+    c = d
   }
   x.actual = x.anchor
   x.pos = x.num
@@ -521,16 +483,16 @@ func (x *sequence) Cut (Y Collector, p Pred) {
 }
 
 func (x *sequence) ClrPred (p Pred) {
-  l := x.anchor.next
-  for l != x.anchor {
-    a := l
-    l := l.next
+  c := x.anchor.next
+  for c != x.anchor {
+    a := c
+    c := c.next
     if p (a.Any) {
       a.prev.next = a.next
       a.next.prev = a.prev
       a.prev, a.next = nil, nil
       if x.actual == a {
-        x.actual = l
+        x.actual = c
         x.pos++
       }
       x.num--
@@ -558,26 +520,26 @@ func (x *sequence) join (y *sequence) {
     x.pos = x.num
     return
   }
-  l := x.anchor.next
+  c := x.anchor.next
   y.actual = y.anchor.next
   for {
     if y.actual == y.anchor { break }
-    if l == x.anchor { break }
-    if Less (y.actual.Any, l.Any) {
+    if c == x.anchor { break }
+    if Less (y.actual.Any, c.Any) {
       y.anchor.next = y.actual.next
-      y.actual.prev = l.prev
-      l.prev.next = y.actual
-      l.prev = y.actual
-      y.actual.next = l
+      y.actual.prev = c.prev
+      c.prev.next = y.actual
+      c.prev = y.actual
+      y.actual.next = c
       y.actual = y.anchor.next
     } else {
-      l = l.next
+      c = c.next
     }
   }
   if y.actual != y.anchor {
-    l = l.prev // == x.anchor.prev
-    l.next = y.actual
-    y.actual.prev = l
+    c = c.prev // == x.anchor.prev
+    c.next = y.actual
+    y.actual.prev = c
     x.anchor.prev = y.anchor.prev
     y.anchor.prev.next = x.anchor
   }
@@ -600,13 +562,13 @@ func (x *sequence) Join (Y Collector) {
 
 func (x *sequence) Reverse() {
   if x.ordered { return }
-  l := x.anchor
-  l1 := l.next
-  for l1 != x.anchor {
-    l1 = l.next
-    l.next = l.prev
-    l.prev = l1
-    l = l1
+  c := x.anchor
+  d := c.next
+  for d != x.anchor {
+    d = c.next
+    c.next = c.prev
+    c.prev = d
+    c = d
   }
 }
 
@@ -616,19 +578,19 @@ func (x *sequence) Rotate (forward bool) {
     return
   }
   if forward {
-    l := x.anchor.prev
-    l.prev.next = x.anchor
-    x.anchor.prev = l.prev
-    l.prev = x.anchor
-    l.next = x.anchor.next
-    x.anchor.next = l
-    l.next.prev = l
+    c := x.anchor.prev
+    c.prev.next = x.anchor
+    x.anchor.prev = c.prev
+    c.prev = x.anchor
+    c.next = x.anchor.next
+    x.anchor.next = c
+    c.next.prev = c
   } else {
-    l := x.anchor.next
-    l.next.prev = x.anchor
-    x.anchor.next = l.next
-    l.next, l.prev = x.anchor, x.anchor.prev
-    x.anchor.prev = l
-    l.prev.next = l
+    c := x.anchor.next
+    c.next.prev = x.anchor
+    x.anchor.next = c.next
+    c.next, c.prev = x.anchor, x.anchor.prev
+    x.anchor.prev = c
+    c.prev.next = c
   }
 }

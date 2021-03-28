@@ -1,12 +1,12 @@
 package internal
 
-// (c) Christian Maurer   v. 150316 - license see µU.go
+// (c) Christian Maurer   v. 210316 - license see µU.go
 
 import
   . "µU/obj"
 type
   heap struct {
-              Any
+              Any "pattern object"
   left, right *heap
               }
 

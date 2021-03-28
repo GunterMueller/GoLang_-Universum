@@ -1,11 +1,11 @@
 package kbd
 
-// (c) Christian Maurer   v. 210105 - license see µU.go
+// (c) Christian Maurer   v. 210324 - license see µU.go
 
 import (
   "os"
   "µU/ker"
-  "µU/terminal"
+  "µU/kbd/internal"
   "µU/scr/mouse"
 //  "µU/navi"
 )
@@ -20,7 +20,7 @@ func catch() {
   shift, ctrl, alt, altGr = false, false, false, false
   defer ker.Fin() // hilft nich
   for {
-    b := terminal.Read()
+    b := internal.Read()
     switch b {
     // case 0:
       // ker.Oops() // Fn-key combination !
@@ -172,8 +172,8 @@ loop:
 }
 
 func initConsole() {
-  terminal.New()
-  ker.InstallTerm (func() { terminal.Fin() } )
+  internal.New()
+  ker.InstallTerm (func() { internal.Fin() } )
   keypipe = make (chan byte, 256)
   if mouse.Ex() {
     mousepipe = mouse.Channel()

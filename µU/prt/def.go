@@ -1,14 +1,14 @@
 package prt
 
-// (c) Christian Maurer   v. 200902 - license see µU.go
+// (c) Christian Maurer   v. 210315 - license see µU.go
 
 // >>> Pre: TeX is installed.
 
 import
   "µU/font"
 var
-//  PrintCommand string = "lp -o fit-to-page -d pomona"
-  PrintCommand string = "lp"
+//  PrintCommand = "lp -o fit-to-page -d pomona"
+  PrintCommand = "lp"
 
 // The actual font is f.
 func SetFont (f font.Font) { setFont(f) }
@@ -28,10 +28,10 @@ func NLines() uint { return nL[actualSize] }
 // Returns the number of columns per line.
 func NColumns() uint { return nC[actualSize] }
 
-// Spec: So secret that even I don't know it.
+// Spec: See TeX.
 func Voffset (mm uint) { voffset(mm) }
 
-// Spec: So secret that even I don't know it.
+// Spec: See TeX.
 func Footline (s string) { footline(s) }
 
 // Pre: l < maxL; c + 1 < maxC.
@@ -42,6 +42,5 @@ func Print1 (b byte, l, c uint) { print1(b, l, c) }
 // s is in line l from column c in the actual font and fontsize in the printer buffer.
 func Print (s string, l, c uint) { print(s, l, c) }
 
-// Pre: TeX is installed.
 // All lines of the printer buffer are printed; the printer buffer is not empty.
 func GoPrint() { goPrint() }

@@ -1,6 +1,6 @@
 package pqu
 
-// (c) Christian Maurer   v. 171104 - license see µU.go
+// (c) Christian Maurer   v. 210320 - license see µU.go
 
 import (
   . "µU/obj"
@@ -10,9 +10,9 @@ type
   PrioQueue interface {
 
   buf.Buffer
-// where Objects are inserted due to their priority, given by their Order.
-// Lower Objects have higher priority.
+// Objects are inserted due to their priority, given
+// by their order: larger objects have higher priority.
 }
 
-// Pre: a is atomic or of a type implementing Object (a != nil).
-func New(a Any) PrioQueue { return new_(a) }
+// Pre: a is atomic or of a type implementing Object.
+func New (a Any) PrioQueue { return new_(a) }

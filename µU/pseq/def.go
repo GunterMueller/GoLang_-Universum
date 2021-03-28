@@ -1,13 +1,13 @@
 package pseq
 
-// (c) Christian Maurer   v. 210221 - license see µU.go
+// (c) Christian Maurer   v. 210322 - license see µU.go
 
 import
   . "µU/obj"
 type
   PersistentSequence interface {
 
-  Seeker
+  Seeker // hence Collector
   Persistor
 }
 

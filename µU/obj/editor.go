@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 201004 - license see µU.go
+// (c) Christian Maurer   v. 210315 - license see µU.go
 
 type
   Editor interface { // Objects, that can be written to a particular
@@ -8,16 +8,14 @@ type
                      // by interaction with a user (e.g. by pressing
                      // keys on a keyboard or a mouse).
                      //
-                     // A position on a screen is given by logical or
-                     // pixeloriented coordinates, i.e. by pairs of
+                     // A position on a screen is given by line- or
+                     // pixeloriented coordinates, i.e., by pairs of
                      // unsigned integers (l, c) or integers (x, y),
                      // where l = line and c = column on the screen,
                      // x = pixel in horizontal and y = pixel in
                      // vertical direction. In both cases (0, 0)
                      // denotes the top left corner of the screen.
-                     //
-                     // So particularly any Editor is an Object
-                     // (details see µU/obj/object.go).
+  Object
 
 // Pre: l, c have to be "small enough", i.e.
 //      l + height of x < scr.NLines, c + width of x < scr.NColums.

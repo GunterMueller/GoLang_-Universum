@@ -1,6 +1,6 @@
 package box
 
-// (c) Christian Maurer   v. 210312 - license see µU.go
+// (c) Christian Maurer   v. 210315 - license see µU.go
 
 import (
   "µU/char"
@@ -15,25 +15,24 @@ const
   space = byte(' ')
 type
   box struct {
-             string
+             string "content of the box"
        width,
        start uint
       cF, cB col.Colour
 overwritable,
    graphical,
  transparent,
-   numerical,
-   usesMouse bool
+   numerical bool
        index uint
              kbd.Comm
        depth uint
              }
 var
-  edited bool = true
+  edited bool
 
 func new_() Box {
   x := new (box)
-  x.width = 0 // scr.NColumns() // does not work, if no scr.New was called before
+  x.width = 0
   x.cF, x.cB = col.StartCols()
   x.Comm = kbd.None
   return x
@@ -49,10 +48,6 @@ func (x *box) SetNumerical() {
 
 func (x *box) Transparence (t bool) {
   x.transparent = t
-}
-
-func (x *box) UseMouse() {
-  x.usesMouse = true
 }
 
 func (x *box) ScrColours() {
@@ -83,14 +78,12 @@ func (x *box) Write (s string, l, c uint) {
   nl, nc := scr.NLines(), scr.NColumns()
   if l >= nl { ker.Panic2 ("box.Write: l ==", l, ">= NLines ==", nl) }
   if c >= nc { ker.Panic2 ("box.Write: c ==", c, ">= NColumns ==", nc) }
-//  Wd (&s, s)
   char.ToHellWithUTF8 (&s)
   n, b := uint(len (s)), x.width
   if c + b > nc { x.width = nc - c }
   if x.width == 0 { x.width = n }
   if x.width > n { x.width = n }
   if x.width < n { str.Norm (&s, x.width) }
-//  str.Norm (&s, x.width)
   if x.numerical { str.Move (&s, false) }
   scr.Lock()
   scr.Colours (x.cF, x.cB)
@@ -133,7 +126,10 @@ func (x *box) Clr (l, c uint) {
 }
 
 func (x *box) Start (c uint) {
-  x.start = c
+  x.start = 0
+  if x.start > 0 && x.start < x.width {
+    x.start = c
+  }
 }
 
 func (b *box) write (s string, x, y uint) {
@@ -158,7 +154,8 @@ func (b *box) done (s *string, x, y uint) bool {
   case kbd.Enter, kbd.Esc:
     return true
   case kbd.Back:
-    switch b.depth { case 0:
+    switch b.depth {
+    case 0:
       if b.index > 0 {
         b.index--
         str.Rem (s, b.index, 1)
@@ -239,7 +236,7 @@ func (b *box) done (s *string, x, y uint) bool {
     } else {
       return true
     }
-  case kbd.Help, kbd.Search, kbd.Act, kbd.Cfg, kbd.Mark, kbd.Demark,
+  case kbd.Help, kbd.Search, kbd.Act, kbd.Cfg, kbd.Mark, kbd.Unmark,
        kbd.Cut, kbd.Copy, kbd.Paste, kbd.Red, kbd.Green, kbd.Blue:
     return true
   case kbd.Print:
@@ -269,7 +266,6 @@ func (b *box) editText (imGraphikmodus bool, s *string, x, y uint) {
   var c byte
   var cursorshape shape.Shape
   b.graphical = imGraphikmodus
-// if b.usesMouse { scr.SwitchMouseCursor (true) }
   str.Norm (s, b.width)
   b.overwritable = ! str.Empty (*s)
   b.index = 0
@@ -296,7 +292,7 @@ func (b *box) editText (imGraphikmodus bool, s *string, x, y uint) {
     }
     for {
       c, b.Comm, b.depth = kbd.Read()
-      if b.Comm < kbd.Nav { // kbd.Go {
+      if b.Comm < kbd.NComms { // kbd.Go {
         break
       }
     }
@@ -330,11 +326,10 @@ func (b *box) editText (imGraphikmodus bool, s *string, x, y uint) {
     }
   }
   scr.Colours (cf, cb)
-// if B.usesMouse { scr.SwitchMouseCursor (false) }
 }
 
-// Precondition: n > 0, len (S) >= n - 1.
-// Returns true, if S contains a character != ' ' in a position < n.
+// Pre: n > 0, len(s) >= n - 1.
+// Returns true, if s contains a character != ' ' in a position < n.
 func leftNotEmpty (s string, n uint) bool {
   if n == 0 || len (s) + 1 < int(n) { return false }
   for i := 0; i < int(n) - 1; i++ {
@@ -349,18 +344,14 @@ func (b *box) Edit (s *string, l, c uint) {
   n, w := uint(len (*s)), b.width
   if c + w > scr.NColumns() { b.width = scr.NColumns() - c }
   if b.width == 0 { b.width = n }
-//  if b.width > n { b.width = n }
   if b.width < n { str.Norm (s, b.width) }
   b.graphical = false
-//  scr.WarpMouse (l, c)
   if b.numerical {
-////// ^^^^^^^^^
     b.editNumber (false, s, scr.Wd1() * c, scr.Ht1() * l)
   } else {
     b.editText (false, s, scr.Wd1() * c, scr.Ht1() * l)
   }
   b.width = w
-//  scr.MousePointer (false)
 }
 
 func (b *box) EditGr (s *string, x, y int) {
@@ -372,10 +363,8 @@ func (b *box) EditGr (s *string, x, y int) {
   }
   if b.width == 0 { b.width = n }
   if b.width < n { str.Norm (s, b.width) }
-//  if b.width > n { b.width = n }
   b.graphical = true
   if b.numerical {
-////// ^^^^^^^^^
     b.editNumber (true, s, uint(x), uint(y))
   } else {
     b.editText (true, s, uint(x), uint(y))

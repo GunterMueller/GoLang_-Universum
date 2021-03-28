@@ -1,5 +1,7 @@
 package box
 
+// (c) Christian Maurer   v. 210315 - license see µU.go
+
 import (
   . "µU/scr/shape"
   "µU/str"
@@ -16,7 +18,7 @@ const (
 
 func (b *box) doneNumerical (s *string, x, y uint) bool {
   return true
-/*/
+/*/ TODO
   switch b.Comm {
   case kbd.Enter, kbd.Esc:
     return true
@@ -93,7 +95,7 @@ func (b *box) doneNumerical (s *string, x, y uint) bool {
 //    } else {
 //      return true
 //    }
-  case kbd.Help, kbd.Search, kbd.Act, kbd.Cfg, kbd.Mark, kbd.Demark,
+  case kbd.Help, kbd.Search, kbd.Act, kbd.Cfg, kbd.Mark, kbd.Unmark,
        kbd.Cut, kbd.Copy, kbd.Paste, kbd.Red, kbd.Green, kbd.Blue:
     return true
   }
@@ -103,7 +105,7 @@ func (b *box) doneNumerical (s *string, x, y uint) bool {
 
 func (b *box) possibleNumerical (s *string, x, y uint) bool {
   return true
-/*/
+/*/ TODO
   if b.index < b.width {
     panic ("uff") // return false
     if b.overwritable { return true }
@@ -219,7 +221,7 @@ func (b *box) editNumber (imGraphikmodus bool, s *string, x, y uint) {
       case kbd.Down, kbd.Up:
         // XXX as in case Enter ?
       case kbd.Help, kbd.Search, kbd.Act, kbd.Cfg,
-           kbd.Mark, kbd.Demark, kbd.Cut,
+           kbd.Mark, kbd.Unmark, kbd.Cut,
            kbd.Copy, kbd.Paste:
         // XXX as in case Enter ?
       case kbd.Red, kbd.Green, kbd.Blue:
@@ -266,3 +268,4 @@ func (b *box) editNumber1 (imGraphikmodus bool, s *string, x, y uint) {
   }
 }
 */
+

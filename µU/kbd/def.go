@@ -1,16 +1,14 @@
 package kbd
 
-// (c) Christian Maurer   v. 210103 - license see µU.go
-
-// >>> implements only a german keyboard !
+// (c) Christian Maurer   v. 210315 - license see µU.go
 
 /* We distinguish between three groups of keys to operate and control a system
    with keyboard and mouse:
    - character-keys (with echo in form of an alphanumerical character on the screen)
-     to enter strings (texts, numbers etc.),
+     to enter texts and numbers,
    - command-keys
-     to induce defined reactions of the system,
-   - mouse-actions
+     to induce particular reactions of the system and
+   - mouse-buttons and -movements
      to navigate on the screen.
    In order to abstract from concrete keyboards or mouses,
    the following commands are provided for the last two groups: */
@@ -19,28 +17,27 @@ type
   Comm byte; const (
   None = Comm(iota)       // to distinguish between character- and command-keys,
                           // see specification of "Read"
-  Esc                     // to leave the system (or a part of it)
-  Enter                   // to confirm or reject or correct at the end of an input
-  Back                    // to move in the system forward or backward
-  Left; Right; Up; Down   // to move the cursor on the screen
-  PgLeft; PgRight; PgUp; PgDown // to move the cursor on the screen
-  Pos1; End               // to move in the system in the corresponding direction
+  Esc                     // to leave the system (or a part of it) or to reject
+  Enter                   // to confirm or to leave an input
+  Back                    // to move backwards in the system
+  Left; Right; Up; Down   // to move the cursor on the screen and
+  PgLeft; PgRight; PgUp; PgDown // to move in the system, e.g. in a screen mask,
+  Pos1; End               // in the corresponding direction
   Tab                     // for special purposes
   Del; Ins                // to remove or insert objects
   Help; Search            // to induce context dependent reactions of the system
   Act; Cfg;               // and for special purposes
-  Mark; Demark            // to (de-)mark objects
-  Cut; Copy; Paste        // "waste paper basket"-operations
+  Mark; Unmark            // to mark and unmark objects
+  Cut; Copy; Paste        // cut buffer operations
   Red; Green; Blue        // to handle colours
   Print; Roll; Pause      // for special purposes
   OnOff; Lower; Louder    // loudspeaker
-  Go                      // to go to particular positions on the screen,
+  Go                      // to move the mouse
   Here; This; That        // to click on objects and
-  Drag; Drop; Move        // to move them around on the screen with a mouse
+  Drag; Drop; Move        // to move them around with a mouse
   To; There; Hither       // and to drag and drop them
-  ScrollUp; ScrollDown    //
-  Nav                     // to navigate in space with a 3d-mouse
-  Expose                  // only for openGL3G
+  ScrollUp; ScrollDown    // for the mouse wheel
+//  Nav                     // to navigate in space with a 3d-mouse
   NComms                  // number of commands
 )
 
@@ -55,24 +52,24 @@ type
    Commands of depth 0 are implemented by keys (without metakeys)
    or mouse-actions with system independent semantics:
    - Enter:                   input-key "Enter"/"Return"
-   - Esc:                     "stop-"key "Esc"
+   - Esc:                     stop-/break-key "Esc"
    - Back:                    backspace-key "<-"
    - Left, Right, Up, Down:   corresponding arrow-keys
-   - Pos1, End:               corresponding keys
+   - PgUp, PgDown, Pos1, End: corresponding keys
    - Tab:                     Tabkey "|<- ->|"
    - Del, Ins:                corresponding keys
    - Help, Search:            F1-, F2-key
    - Act, Cfg:                F3-, F4-key
-   - Mark, Demark:            F5-, F6-key
-   - Cut, Copy, Paste:        F7-, F8/F9-key
+   - Mark, Unmark:            F5-, F6-key
+   - Cut, Copy, Paste:        F7-, F8-, F9-key
    - Red, Green, Blue:        F10-, F11-, F12-key
    - Print, Roll, Pause:      corresponding keys
-   - OnOff, Lower, Louder:    corresponding keys on IBM-keyboards
+   - OnOff, Lower, Louder:    corresponding keys on laptops
    - Go:                      mouse moved with no button pressed
    - Here, This, That:        left, right, middle button pressed
    - Drag, Drop, Move:        mouse moved with corresponding button pressed
    - To, There, Hither:       corresponding button released
-   - Navigate:                3d-mouse used
+//   - Navigate:                3d-mouse used
 
    commands of depth > 0 by combination with metakeys:
    - depth 1:                 Shift- or Strg-key,
@@ -119,10 +116,10 @@ func LastByte() byte { return lastByte() }
 // In the first case, d is the depth of the command, otherwise d = 0.
 func LastCommand() (Comm, uint) { return lastCommand() }
 
-// TODO Spec
+// c is stored as last read command.
 func DepositCommand (c Comm) { depositCommand(c) }
 
-// TODO Spec
+// b is stored as last read byte.
 func DepositByte (b byte) { depositByte(b) }
 
 // The calling process was blocked, until until the keyboard buffer contained

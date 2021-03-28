@@ -16,7 +16,7 @@ type
 // of being empty, hence they have the type
   Clearer // see clearer.go
 
-// and can be serialized into connected byte sequences,
+// and can be serialised into connected byte sequences,
 // e.g. to be written to a storage device or transmitted
 // over communication channels, so they have the type
   Coder // see coder.go
