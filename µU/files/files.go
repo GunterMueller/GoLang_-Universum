@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 201326 - license see µU.go
+// (c) Christian Maurer   v. 201329 - license see µU.go
 
 import (
   "os"
@@ -138,6 +138,15 @@ func cd (path string) {
   }
   if os.Chdir (path) != nil { ker.Panic ("files cd error; path == " + path) }
   actualize (path)
+}
+
+func cdp() {
+  home, v := env.Home(), ker.Separator + ker.Dot + env.Call()
+  p := home + v
+  if ! isPath (p) {
+    ins (home, v)
+  }
+  cd (p)
 }
 
 func cd0() {

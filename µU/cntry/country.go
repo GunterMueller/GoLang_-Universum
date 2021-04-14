@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 210405 - license see µU.go
 
 import (
   . "µU/obj"
@@ -207,48 +207,48 @@ func (x *country) SetFormat (f Format) {
   }
 }
 
-func (x *country) Write (Z, S uint) {
+func (x *country) Write (l, c uint) {
   bx.Colours (x.cF, x.cB)
   switch x.Format {
   case Tld:
-    bx.Write (x.attribut.tld, Z, S)
+    bx.Write (x.attribut.tld, l, c)
   case Long:
-    bx.Clr (Z, S)
-    bx.Write (x.attribut.name, Z, S)
+    bx.Clr (l, c)
+    bx.Write (x.attribut.name, l, c)
   case Tel:
     n.Colours (x.cF, x.cB)
-    n.Write (uint(x.attribut.prefix), Z, S + 3)
+    n.Write (uint(x.attribut.prefix), l, c)
   case Car:
-    bx.Write (x.attribut.kfz, Z, S)
+    bx.Write (x.attribut.kfz, l, c)
   case Ioc:
-    bx.Write (x.attribut.ioc, Z, S)
+    bx.Write (x.attribut.ioc, l, c)
   case Fifa:
-    bx.Write (x.attribut.fifa, Z, S)
+    bx.Write (x.attribut.fifa, l, c)
   }
 }
 
-func (x *country) Edit (Z, S uint) {
+func (x *country) Edit (l, c uint) {
   bx.Colours (x.cF, x.cB)
-  var l uint
+  var k uint
   for {
     switch x.Format {
     case Tld:
-      l = 2
-      bx.Edit (&x.attribut.tld, Z, S)
+      k = 2
+      bx.Edit (&x.attribut.tld, l, c)
     case Long:
-      l = length
-      bx.Edit (&x.attribut.name, Z, S)
+      k = length
+      bx.Edit (&x.attribut.name, l, c)
     default:
       return
     }
     if C, _ := kbd.LastCommand(); C == kbd.Search {
       n := uint(x.id)
-      sel.Select (func (P, Z, S uint, V, H col.Colour) {
+      sel.Select (func (P, l, c uint, V, H col.Colour) {
                     x.attribut = list[id(P)]
                     x.Colours (V, H)
-                    x.Write (Z, S)
+                    x.Write (l, c)
                   },
-                  uint(nNations), scr.NLines(), l, &n, Z, S, x.cB, x.cF)
+                  uint(nNations), scr.NLines(), k, &n, l, c, x.cB, x.cF)
       if id(n) == nNations {
         n = uint(x.id) // Nation unverändert
       } else {
@@ -274,7 +274,7 @@ func (x *country) Edit (Z, S uint) {
       }
     }
   }
-  x.Write (Z, S)
+  x.Write (l, c)
 }
 
 func (x *country) SetFont (f font.Font) {

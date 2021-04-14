@@ -1,0 +1,76 @@
+func (m *molecule) Create (l, c uint) {
+  m.Write (l, c)
+  a := atom.New(nil)
+  maskset := masks.New()
+  l0, c0 := l, c
+  nl, nc := scr.NLines(), scr.NColumns()
+  loop:
+  for {
+    scr.WriteNat (l, nl - 1, 0)
+    scr.WriteNat (c, nl - 1, 4)
+    scr.Warp (l, c, shape.Block)
+    l0, c0 = l, c
+    switch k, _ := kbd.Command(); k {
+    case kbd.Esc:
+      break loop
+    case kbd.Enter:
+      errh.Hint ("Maske einfügen")
+      ma := str.New (nc - 1)
+      bx.Wd (nc - 1)
+      bx.Edit (&ma, l, c)
+      errh.DelHint()
+      str.OffSpc1 (&ma)
+      if ma != "" {
+        maskset.Ins (ma, l, c)
+/*/
+        c += uint(len(ma)) + 1
+        scr.Warp (l0, c0, shape.Off)
+        c0 = c
+        scr.Warp (l0, c0, shape.Block)
+/*/
+      }
+    case kbd.Left:
+      if c > 0 { c-- }
+    case kbd.Right:
+       if c + 1 < nc { c++ }
+    case kbd.Up:
+      if l > 0 { l-- }
+    case kbd.Down:
+      if l + 1 < nc { l++ }
+    case kbd.Ins:
+      if a.Selected (l, c) {
+        h, w := a.Size()
+        if c + w <= nc && l + h <= nl {
+// TODO check collisions
+          a.Write (l, c)
+          rs = append (rs, rectangle {c, l, c + w, l + h})
+          x, y, x1, y1 := int(c), int(l), int(c + w), int(l + h)
+          scr.ColourF (col.Red())
+          scr.RectangleFull (8 * x, 16 * y, 8 * x1, 16 * y1)
+          m.Ins (a.Clone().(atom.Atom), l, c)
+        } else {
+          errh.Error ("does not fit", c + w)
+        }
+      }
+    case kbd.Del:
+      if i, ok := maskset.Ex (l, c); ok {
+        h, w := maskset.Size (i)
+        x, y, x1, y1 := int(c), int(l), int(c + w), int(l + h)
+        scr.RectangleFull (8 * x, 16 * y, 8 * x1, 16 * y1)
+        maskset.Del (i)
+      }
+      if i, ok := m.Ex (l, c); ok {
+        h, w := m.Size (i)
+        x, y, x1, y1 := int(c), int(l), int(c + w), int(l + h)
+        scr.RectangleFull (8 * x, 16 * y, 8 * x1, 16 * y1)
+        m.Del (i)
+      }
+    case kbd.Help:
+      errh.Help (help)
+// TODO move ma
+// TODO move a
+    }
+    scr.Warp (l0, c0, shape.Off)
+  }
+  m.SetMasks (maskset)
+}

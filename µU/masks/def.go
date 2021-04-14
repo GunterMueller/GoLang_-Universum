@@ -1,18 +1,18 @@
 package masks
 
-// (c) Christian Maurer   v. 161216 - license see µU.go
+// (c) Christian Maurer   v. 210408 - license see µU.go
 
 import
   . "µU/obj"
 type
-  MaskSequence interface {
+  MaskSet interface {
 
   Object
   Write (l, c uint)
   Printer
-  Line (n uint)
+  Num() uint
   Ins (m string, l, c uint)
 }
 
-// Returns a new empty mask sequence.
-func New() MaskSequence { return new_() }
+// Returns a new empty mask set.
+func New() MaskSet { return new_() }

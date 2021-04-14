@@ -1,6 +1,6 @@
 package mol
 
-// (c) Christian Maurer   v. 201004 - license see µU.go
+// (c) Christian Maurer   v. 210413 - license see µU.go
 
 import (
   . "µU/obj"
@@ -17,15 +17,12 @@ type
   Printer
 
   Ins (a atom.Atom, l, c uint)
+  Selected (l, c uint) bool
   Del (n uint)
-  Num () uint
+  Num() uint
   Component (n uint) Any
-  SetMask (m masks.MaskSequence)
-
-// Equiv (Y Any) bool
-// Sort ()
+  SetMasks (m masks.MaskSet)
 }
 
-// Returns a new empty molecule with n atoms.
-// TODO more information
-func New (n uint) Molecule { return new_(n) }
+// Returns a new empty molecule.
+func New() Molecule { return new_() }

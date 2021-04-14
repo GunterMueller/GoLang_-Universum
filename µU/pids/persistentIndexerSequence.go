@@ -42,7 +42,7 @@ func new_(a Any, n string) PersistentIndexerSequence {
   x.name = n
   x.f, x.b = scr.ScrCols()
   x.all = piset.New (a.(Object), a.(Indexer).Index())
-  files.Cd0()
+  files.Cdp()
   x.all.Name (n)
   return x
 }
@@ -63,7 +63,8 @@ func (x *persistentIndexerSequence) Operate (l, c uint) {
         errh.Error0 ("ist leer")
       } else {
         x.all.Ins (a)
-        return
+        break
+        // return
       }
     }
   }

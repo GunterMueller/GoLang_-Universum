@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 210212 - license see µU.go
+// (c) Christian Maurer   v. 210404 - license see µU.go
 
 import
   "µU/char"
@@ -552,7 +552,9 @@ func splitByte (s string, b byte) ([]string, uint) {
   for {
     p, c := pos (s, b)
     if ! c {
-      ss = append (ss, s)
+      if s != "" {
+        ss = append (ss, s)
+      }
       break
     }
     ss = append (ss, s[:p])

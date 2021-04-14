@@ -63,7 +63,6 @@ func (x *persistentIndexedSet) Name (s string) {
     if x.Object.Empty() {
       x.Buffer.Ins (i)
     } else {
-//      x.Set.Ins (pair.New (x.Func (x.Object), i))
       x.Set.Ins (pair.New (x.Func (x.Object), i))
     }
   }

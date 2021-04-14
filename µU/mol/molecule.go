@@ -1,12 +1,11 @@
 package mol
 
-// (c) Christian Maurer   v. 210228 - license see µU.go
+// (c) Christian Maurer   v. 210413 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/kbd"
   "µU/col"
-//  "µU/errh"
   "µU/font"
   "µU/atom"
   "µU/masks"
@@ -16,12 +15,13 @@ type
                   uint8 "number of atoms"
              comp []atom.Atom
              l, c []uint
-                  masks.MaskSequence
+                  masks.MaskSet
                   }
 
-func new_(n uint) Molecule {
+func new_() Molecule {
   x := new(molecule)
-  x.uint8 = uint8(n)
+  x.comp = make([]atom.Atom, 0)
+  x.l, x.c = make([]uint, 0), make([]uint, 0)
   return x
 }
 
@@ -45,13 +45,23 @@ func (x *molecule) Num() uint {
 }
 
 func (x *molecule) Component (n uint) Any {
-  if n >= uint(x.uint8) { WrongUintParameterPanic ("Component", x, n) }
+  if n >= uint(x.uint8) { return nil }
   return x.comp[n]
 }
 
 func (x *molecule) Ins (a atom.Atom, l, c uint) {
   x.comp = append (x.comp, a.Clone().(atom.Atom))
   x.l, x.c = append (x.l, l), append (x.c, c)
+  x.uint8++
+}
+
+func (x *molecule) Selected (l, c uint) bool {
+  a := atom.New (nil)
+  if a.Selected (l, c) {
+    x.Ins (a, l, c)
+    return true
+  }
+  return false
 }
 
 func (x *molecule) Del (n uint) {
@@ -61,11 +71,10 @@ func (x *molecule) Del (n uint) {
     x.l[i], x.c[i] = x.l[i + 1], x.c[i + 1]
   }
   x.uint8--
-  x.comp[x.uint8] = nil
 }
 
-func (x *molecule) SetMask (m masks.MaskSequence) {
-  x.MaskSequence = m
+func (x *molecule) SetMasks (m masks.MaskSet) {
+  x.MaskSet = m
 }
 
 func (x *molecule) Empty() bool {
@@ -101,12 +110,12 @@ func (x *molecule) Copy (Y Any) {
     x.comp[i].Copy (y.comp[i])
     x.l[i], x.c[i] = y.l[i], y.c[i]
   }
-// x.MaskSequence.Copy (y.MaskSequence) // wegen Typverlust in piset.New geht das nicht TODO why not ?
-  x.MaskSequence = y.MaskSequence
+// x.MaskSet.Copy (y.MaskSet) // because of type loss in piset.New this does not work
+  x.MaskSet = y.MaskSet
 }
 
 func (x *molecule) Clone() Any {
-  y := new_(uint(x.uint8))
+  y := new_()
   y.Copy (x)
   return y
 }
@@ -119,7 +128,8 @@ func (x *molecule) less (y *molecule, n uint) bool {
 }
 
 func (x *molecule) Less (Y Any) bool {
-  return x.less (x.imp (Y), 0)
+  n := uint(0) // TODO
+  return x.less (x.imp (Y), n)
 }
 
 func (x *molecule) Colours (f, b col.Colour) {
@@ -129,8 +139,8 @@ func (x *molecule) Colours (f, b col.Colour) {
 }
 
 func (x *molecule) Write (l, c uint) {
-  if x.MaskSequence != nil {
-    x.MaskSequence.Write (l, c)
+  if x.MaskSet != nil {
+    x.MaskSet.Write (l, c)
   }
   for i := uint8(0); i < x.uint8; i++ {
     if x.l[i] < 512 {
@@ -195,7 +205,7 @@ func (x *molecule) SetFont (f font.Font) {
 }
 
 func (x *molecule) Print (l, c uint) {
-//  x.MaskSequences.Print (l, c)
+  x.MaskSet.Print (l, c)
   for i := uint8(0); i < x.uint8; i++ {
     x.comp[i].Print (x.l[i], x.c[i])
   }
@@ -205,30 +215,44 @@ func (x *molecule) Codelen() uint {
   c := uint(1)
   for k := uint8(0); k < x.uint8; k++ {
     c += x.comp[k].Codelen()
+    c += 2
   }
+  c += x.MaskSet.Codelen()
   return c
 }
 
 func (x *molecule) Encode() Stream {
-  bs := make (Stream, x.Codelen())
+  s := make (Stream, x.Codelen())
   i, a := uint(0), uint(1)
-  bs[0] = x.uint8
+  s[0] = x.uint8
   i += a
   for k := uint8(0); k < x.uint8; k++ {
     a = x.comp[k].Codelen()
-    copy (bs[i:i+a], x.comp[k].Encode())
+    copy (s[i:i+a], x.comp[k].Encode())
     i += a
+    copy (s[i:i+1], Encode(uint8(x.l[k])))
+    i++
+    copy (s[i:i+1], Encode(uint8(x.c[k])))
+    i++
   }
-  return bs
+  a = x.MaskSet.Codelen()
+  copy (s[i:i+a], x.MaskSet.Encode())
+  return s
 }
 
-func (x *molecule) Decode (bs Stream) {
+func (x *molecule) Decode (s Stream) {
   i, a := uint(0), uint(1)
-  x.uint8 = bs[0]
+  x.uint8 = s[0]
   i += a
   for k := uint8(0); k < x.uint8; k++ {
     a = x.comp[k].Codelen()
-    x.comp[k].Decode (bs[i:i+a])
+    x.comp[k].Decode (s[i:i+a])
     i += a
+    x.l[k] = uint(Decode (uint8(0), s[i:i+1]).(uint8))
+    i++
+    x.c[k] = uint(Decode (uint8(0), s[i:i+1]).(uint8))
+    i++
   }
+  a = x.MaskSet.Codelen()
+  x.MaskSet.Decode (s[i:i+a])
 }

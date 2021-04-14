@@ -1,6 +1,6 @@
 package book
 
-// (c) Christian Maurer   v. 201005 - license see µU.go
+// (c) Christian Maurer   v. 210409 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,10 +9,12 @@ import (
 type
   Book interface {
 
-//  Indexer
   Object
   Editor
+  Stringer
   col.Colourer
+  Indexer
+  Rotator
 }
 
 func New() Book { return new_() }

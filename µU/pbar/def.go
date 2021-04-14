@@ -28,9 +28,9 @@ type
 // corresponds to the fill degree of B (with horizontal fill direction
 // the left, otherwise the bottom part of the rectangle)
 // in its foregroundcolour, the rest in its backgroundcolour.
-  Write ()
+  Write()
 
-// Undocumented (rts).
+// TODO Spec
   Edit (i *uint)
 }
 

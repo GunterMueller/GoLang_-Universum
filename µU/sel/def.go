@@ -23,9 +23,11 @@ type // TODO description of semantics !
 // (then i < n is now the number, that corresponds to the selected text)
 // or she has cancelled the selection (then now i == n).
 // The bar menue now has disappeared from the screen and its place on the screen is restored.
-func Select (wc WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colour) { select_(wc,n,h,w,i,l,c,f,b) }
+func Select (wc WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colour) {
+  select_(wc, n, h, w, i, l, c, f, b)
+}
 
-// Pre: 1 < n <= HIGH (T) + 1; l < scr.NLines - 2; w >= 1, c + w <= scr.NColumns; i < n.
+// Pre: 1 < n <= len (T) + 1; l < scr.NLines - 2; w >= 1, c + w <= scr.NColumns; i < n.
 // The calling process was blocked, until user has selected a value i <= n with keyboard or mouse.
 // Until then a bar menue of height min(N, scr.NY1 - l - 1) and width w
 // was written to the screen, starting at line l, column c,
@@ -35,13 +37,17 @@ func Select (wc WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colour) {
 // (then i < n is now the number, that corresponds to the selected text)
 // or she has cancelled the selection (then now i == n).
 // The bar menue now has disappeared from the screen and its place on the screen is restored.
-func Select1 (t []string, n, w uint, i *uint, l, c uint, f, b col.Colour) { select1(t,n,w,i,l,c,f,b) }
+func Select1 (t []string, n, w uint, i *uint, l, c uint, f, b col.Colour) {
+  select1 (t, n, w, i, l, c, f, b)
+}
 
 // >>>  experimental version.
 // Pre: m is part of a mask; s is a non empty file-suffix;
 //      w > 0 (width); l < scr.NLines, c + i < scr.NColumns.
 // Returns name + "." + string selected by user.
-func Names (m, s string, i uint, l, c uint, f, b col.Colour) (string, string) { return names(m,s,i,l,c,f,b) }
+func Names (m, s string, i uint, l, c uint, f, b col.Colour) (string, string) {
+  return names(m,s,i,l,c,f,b)
+}
 
 // Returns an interactively selected Colour.
 func Colour16() col.Colour { return colour16() }

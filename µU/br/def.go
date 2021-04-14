@@ -1,6 +1,6 @@
 package br
 
-// (c) Christian Maurer   v. 201206 - license see µU.go
+// (c) Christian Maurer   v. 210409 - license see µU.go
 
 import (
   . "µU/obj"
@@ -14,6 +14,9 @@ type
   Editor
   Stringer
   Printer
+
+// Returns the width of x given by New.
+  Width() uint
 
   Float64() float64
   SetFloat64 (r float64) bool

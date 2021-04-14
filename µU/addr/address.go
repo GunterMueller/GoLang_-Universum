@@ -1,11 +1,12 @@
 package addr
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 210410 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/kbd"
   "µU/col"
+  "µU/str"
   "µU/box"
   "µU/font"
   "µU/pbox"
@@ -34,7 +35,7 @@ var (
   bx = box.New()
   pbx = pbox.New()
   cF, cB = col.LightCyan(), col.Black()
-  mask masks.MaskSequence = masks.New()
+  mask masks.MaskSet = masks.New()
   cst, cpc, cci, cph, cce, cem, cco uint
 )
 
@@ -264,6 +265,49 @@ func (x *address) Decode (b Stream) {
   i += a
   a = x.Country.Codelen()
   x.Country = Decode (x.Country, b[i:i+a]).(cntry.Country)
+}
+
+func (x *address) String() string {
+  s := x.street.String()
+  str.OffSpc1 (&s)
+  s += ", "
+  s += x.Natural.String()
+  s += " "
+  t := x.city.String()
+  str.OffSpc1 (&t)
+  s += t
+  s += ", Tel. "
+  t = x.phonenumber.String()
+  str.OffSpc1 (&t)
+  s += t
+  s += ", "
+  t = x.phonenumber.String()
+  str.OffSpc1 (&t)
+  s += t
+  s += ", "
+  t = x.email.String()
+  str.OffSpc1 (&t)
+  s += t
+  s += ", "
+  c := Clone (x.Country).(cntry.Country)
+  c.SetFormat (cntry.Car)
+  s += c.String()
+  return s
+}
+
+func (x *address) Defined (s string) bool {
+  t, n := str.SplitByte (s, ',')
+  if n != 6 { return false }
+//  s == "Keithstr. 16, 10787 Berlin, 21478429, 01785534563, maurer@maurer, D"
+  x.street.Defined (t[0])
+  if ! x.Natural.Defined (t[1][:5]) { return false }
+  x.city.Defined (t[1][6:])
+  if ! x.phonenumber.Defined (t[2]) { return false }
+  if ! x.phonenumber.Defined (t[3]) { return false }
+  x.email.Defined (t[4])
+  x.Country.SetFormat (cntry.Car)
+  if ! x.Country.Defined (t[5]) { return false }
+  return true
 }
 
 func init() {

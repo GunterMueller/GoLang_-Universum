@@ -1,6 +1,6 @@
 package set
 
-// (c) Christian Maurer  v. 210321 - license see µU.go
+// (c) Christian Maurer  v. 210408 - license see µU.go
 
 import
   . "µU/obj"
@@ -62,6 +62,9 @@ func next (x pointer, a Any) pointer {
   }
   if Eq (a, x.Any) {
     if x.right == nil {
+      if tmp == nil {
+        return x
+      }
       if Less (a, tmp.Any) {
         return tmp
       }
@@ -89,6 +92,9 @@ func prev (x pointer, a Any) pointer {
   }
   if Eq (a, x.Any) {
     if x.left == nil {
+      if tmp == nil {
+        return x
+      }
       if Less (tmp.Any, a) {
         return tmp
       }

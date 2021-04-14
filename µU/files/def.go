@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 201024 - license see µU.go
+// (c) Christian Maurer   v. 210329 - license see µU.go
 
 import
   . "µU/obj"
@@ -71,6 +71,9 @@ func IsFile (f string) bool { return isFile(f) }
 // If p starts with "/", p is the actual path,
 // otherwise p is appended to the former actual path.
 func Cd (p string) { cd(p) }
+
+// Spec: The source is the doc.
+func Cdp() { cdp() }
 
 // Spec: The source is the doc.
 func Cd0() { cd0() }

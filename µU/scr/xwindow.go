@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 210314 - license see µU.go
+// (c) Christian Maurer   v. 210409 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -1668,6 +1668,7 @@ func NewWHW (x, y, w, h uint) Screen {
     startSendEvents <- 0
   }
   C.XMapWindow (dpy, X.win)
+  X.Name (env.Arg(0))
 /*/
   var ev C.XEvent
   C.XNextEvent (dpy, &ev)

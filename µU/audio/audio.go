@@ -1,13 +1,13 @@
 package audio
 
-// (c) Christian Maurer   v. 201010 - license see µU.go
+// (c) Christian Maurer   v. 210409 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
   "µU/enum"
   "µU/text"
-//  "µU/masks"
+  "µU/masks"
   "µU/atom"
   "µU/mol"
 )
@@ -26,8 +26,10 @@ type
   audio struct {
                mol.Molecule
                }
-var
+var (
   actOrd order
+  cF, cB = col.LightWhite(), col.Black()
+)
 
 func (x *audio) imp (Y Any) mol.Molecule {
   y, ok:= Y.(*audio)
@@ -37,49 +39,40 @@ func (x *audio) imp (Y Any) mol.Molecule {
 
 func new_() Audio {
   x := new (audio)
-  x.Molecule = mol.New (9)
+  x.Molecule = mol.New()
   a := atom.New (enum.New (enum.AudioC)) // Gebiet
   a.Colours (col.Yellow(), col.Black())
-  x.Ins (a, 0,  0)
-//  x.Ins (a, 0, 12)
+  x.Ins (a, 0, 12)
 
   a = atom.New (text.New (len0)) // Komponist/Gruppe
   a.Colours (col.LightRed(), col.Black())
-  x.Ins (a, 0, 15)
-//  x.Ins (a, 0, 46)
-
-  a = atom.New (text.New (len0)) // Dirigent/Solist
-  a.Colours (col.LightBlue(), col.Black())
-  x.Ins (a, 0, 49)
-//  x.Ins (a, 1, 46)
+  x.Ins (a, 0, 46)
 
   a = atom.New (enum.New (enum.AudioMedium)) // Medium
   a.Colours (col.LightBlue(), col.Black())
-  x.Ins (a, 1,  8)
-//  x.Ins (a, 1, 12)
+  x.Ins (a, 1, 12)
+
+  a = atom.New (text.New (len0)) // Dirigent/Solist
+  a.Colours (col.LightBlue(), col.Black())
+  x.Ins (a, 1, 46)
 
   a = atom.New (text.New (len1)) // Werk
   a.Colours (col.Cyan(), col.Black())
-  x.Ins (a, 1, 15)
-//  x.Ins (a, 2, 15)
+  x.Ins (a, 2, 12)
 /*/       1         2         3         4         5         6         7
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
-___________    ______________________________    ______________________________
-        ___    ________________________________________________________________
 
     Gebiet: ___________     Komponist/Gruppe: ______________________________
     Medium: ___              Dirigent/Solist: ______________________________
       Werk: ________________________________________________________________
 /*/
-/*/
   m := masks.New()
-  m.Ins ("Gebiet:",          0,  4)
-  m.Ins ("Komponist:",       0, 35)
-  m.Ins ("Medium:",          1,  4)
-  m.Ins ("Dirigent/Solist:", 1, 29)
-  m.Ins ("Werk:",            2,  6)
-  x.SetMask (m)
-/*/
+  m.Ins ("Gebiet:",           0,  4)
+  m.Ins ("Komponist/Gruppe:", 0, 28)
+  m.Ins ("Medium:",           1,  4)
+  m.Ins ("Dirigent/Solist:",  1, 29)
+  m.Ins ("Werk:",             2,  6)
+  x.SetMasks (m)
   return x
 }
 

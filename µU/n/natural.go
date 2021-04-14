@@ -1,6 +1,6 @@
 package n
 
-// (c) Christian Maurer   v. 201226 - license see µU.go
+// (c) Christian Maurer   v. 210405 - license see µU.go
 
 import (
   "µU/ker"
@@ -9,9 +9,8 @@ import (
 //  "µU/scr"
   "µU/box"
 )
-const (
-  max = 10 // maximal number of digits of uint
-)
+const
+  max = 18 // maximal number of digits of uint
 var (
   bx = box.New()
   width uint
@@ -122,8 +121,8 @@ func write (n uint, l, c uint) {
   if width > w { w = width }
   if w > c + 1 { return }
   bx.Wd (w)
-//  scr.SwitchFontsize (scr.Normal)
-  bx.Write (StringFmt (n, w, false), l, c + 1 - w)
+  bx.Write (str.New(w), l, c)
+  bx.Write (string_(n), l, c)
 }
 
 func setWd (w uint) {
@@ -140,16 +139,15 @@ func edit (n *uint, l, c uint) {
   w := wd (*n)
   if width > w { w = width }
   bx.Wd (w)
-  s := String (*n)
+  s := string_(*n)
   for {
-    bx.Edit (&s, l, c + 1 - w)
+    bx.Edit (&s, l, c)
     if defined (n, s) {
       break
     } else {
-//      errh.Report2Error ("keine Zahl", 0) // impossible, dependency cycle
 //      scr.Write (" keine Zahl ", scr.NLines() - 1, 0) // provisorial
     }
   }
 //  scr.Write ("            ", scr.NLines() - 1, 0) // provisorial
-//  bx.Write (String (*n), l, c + 1 - w)
+//  bx.Write (string_(*n), l, c)
 }

@@ -1,6 +1,6 @@
 package atom
 
-// (c) Christian Maurer   v. 201005 - license see µU.go
+// (c) Christian Maurer   v. 210410 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,18 +9,17 @@ import (
 const (
   Enumerator = uint(iota)
   TruthValue
-  Character
   Text
-  Texts
   Natural
   Real
   Clocktime
   Calendarday
   Euro
-  Country
   Person
   PhoneNumber
   Address
+  Country
+//  PersonAddress
   Ntypes
 )
 type
@@ -31,14 +30,22 @@ type
   col.Colourer
   Editor
   Printer
+  Stringer
+
+  Size() (uint, uint)
 
 // Returns true, iff x and Y have the same type.
   Equiv (Y Any) bool
 
-// Returns the Atomtype of x.
-//  Type () Atomtype
+// Returns the type of x (<= Ntypes).
+  Type() uint
+
+// Returns the object given in the call of New.
+  Obj() Object
+
+  Selected (l, c uint) bool
 }
 
 // Returns a new Atom of the type of o, where o is an object
 // of one of the types corresponding to the above constants.
-func New(o Object) Atom { return new_(o) }
+func New (o Object) Atom { return new_(o) }

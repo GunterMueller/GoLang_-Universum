@@ -46,3 +46,7 @@ func (x *pair) Less (Y Any) bool {
 func (x *pair) Pos() uint {
   return x.uint
 }
+
+func (x *pair) Index() Any {
+  return x.Any
+}

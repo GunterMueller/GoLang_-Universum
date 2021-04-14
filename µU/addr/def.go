@@ -1,6 +1,6 @@
 package addr
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 210409 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,6 +11,7 @@ type
 
   Object
   col.Colourer
+  Stringer
   Editor
   Printer
 

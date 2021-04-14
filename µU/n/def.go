@@ -1,6 +1,6 @@
 package n
 
-// (c) Christian Maurer   v. 201226 - license see µU.go
+// (c) Christian Maurer   v. 210405 - license see µU.go
 
 import
   "µU/col"
@@ -27,17 +27,15 @@ func StringFmt (n, w uint, z bool) string { return stringFmt(n,w,z) }
 // that is done in the colours (foreground, background) = (f, b).
 func Colours (f, b col.Colour) { colours(f,b) }
 
-// Pre: l < scr.NLines(); Len(n) - 1 <= c < scr.NColumns().
-// n is written to the screen, ending at (line, column) = (l, c),
-// i.e. c is the position of the last digit of n.
+// Pre: l < scr.NLines(); c + Len(n) < scr.NColumns().
+// n is written to the screen starting at (line, column) = (l, c).
 func Write (n, l, c uint) { write(n,l,c) }
 
 // TODO Spec
 func SetWd (w uint) { setWd(w) }
 
-// Pre: l < scr.NLines(); Len(n) - 1 <= c < scr.NColumns().
-// n is the natural number with at most c + 1 digits,
-// that was edited by the user, ending at (line, column) = (l, c).
+// Pre: s. Write.
+// n is the natural number that was edited at (line, column) = (l, c).
 func Edit (n *uint, l, c uint) { edit(n,l,c) }
 
 // Returns the sum of the digits of n.

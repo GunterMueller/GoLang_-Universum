@@ -1,6 +1,6 @@
 package persaddr
 
-// (c) Christian Maurer   v. 201010 - license see µU.go
+// (c) Christian Maurer   v. 210408 - license see µU.go
 
 import (
   . "µU/obj"
@@ -17,7 +17,7 @@ type
 
 func new_() PersonAddress {
   x := new (personAddress)
-  x.Molecule = mol.New (2)
+  x.Molecule = mol.New()
   a := atom.New (pers.New())
   a.SetFormat (pers.LongTB)
   a.Colours (col.Yellow(), col.Black())

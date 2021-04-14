@@ -140,22 +140,11 @@ func (x *book) String() string {
 }
 
 func (x *book) Defined (s string) bool {
-  if ! (x.Component(0)).(Stringer).Defined (s[0:12]) {
-    return false
-  }
-  if ! (x.Component(1)).(Stringer).Defined (s[13:43]) {
-    return false
-  }
-  if ! (x.Component(2)).(Stringer).Defined (s[44:74]) {
-    return false
-  }
-  if ! (x.Component(3)).(Stringer).Defined (s[75:77]) {
-    return false
-  }
-  if ! (x.Component(4)).(Stringer).Defined (s[78:141]) {
-    return false
-  }
-  x.Write (8, 0)
+  if ! (x.Component(0)).(Stringer).Defined (s[0:12]) { return false }
+  (x.Component(1)).(Stringer).Defined (s[13:43])
+  (x.Component(2)).(Stringer).Defined (s[44:74])
+  if ! (x.Component(3)).(Stringer).Defined (s[75:77]) { return false }
+  (x.Component(4)).(Stringer).Defined (s[78:141])
   return true
 }
 

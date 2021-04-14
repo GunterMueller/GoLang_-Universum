@@ -36,8 +36,8 @@ type
   Enumerator interface { // A set of at most 256 enumerated elements,
                          // represented by strings of len <= 64.
                          // The 0-th element is "empty", represented by spaces.
-  Formatter
   Object
+  Formatter
   col.Colourer
   Editor
   Stringer

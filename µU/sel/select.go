@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 190526 - license see µU.go
+// (c) Christian Maurer   v. 210408 - license see µU.go
 
 import (
   "µU/ker"
@@ -25,7 +25,7 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
   if w == 0 { w = scr.NColumns() }
   if w > scr.NColumns() { w = scr.NColumns() }
   if c + w > scr.NColumns() { c = scr.NColumns() - w }
- // so, dass letzte Zeile frei bleibt
+// so, that last line remains free
   if l + h >= scr.NLines() {
     h = scr.NLines() - l - 1
   }
@@ -41,7 +41,8 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
   i0, n0 := uint(0), uint(0)
   if *i == 0 { n0 = 1 } // else { n0 = 0 }
   neu := true
-  loop: for {
+  loop:
+  for {
     if *i < i0 {
       i0 = *i
       neu = true
@@ -74,7 +75,7 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
     case kbd.Left, kbd.Up:
       if d == 0 {
         if *i > 0 {
-          *i --
+          *i--
         }
       } else {
         if *i >= 10 {
@@ -84,7 +85,7 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
     case kbd.Right, kbd.Down:
       if d == 0 {
         if *i + 1 < n {
-          *i ++
+          *i++
         }
       } else {
         if *i + 10 < n {
@@ -108,12 +109,12 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
       } else {
         *i = i0 + uint(yM) / scr.Ht1() - l
       }
-/*
+/*/
     case kbd.Help:
-      errh.Hint (errh.zumAuswaehlen)
+      errh.Hint (errh.ToSelect)
       kbd.Wait (true)
       errh.DelHint()
-*/
+/*/
     }
   }
   scr.Restore (l, c, w, h)
@@ -123,10 +124,14 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
   }
 }
 
-func select1 (Line []string, h, w uint, i *uint, l, c uint, f, b col.Colour) {
-//  if len(line) + 1 < h { h = len(line) + 1 }
+func select1 (s []string, h, w uint, n *uint, l, c uint, f, b col.Colour) {
+  ls := uint(len(s))
+//  if ls + 1 < h { h = ls + 1 }
   bx.Wd (w)
-  Select (func (k, l, c uint, f, b col.Colour) { bx.Colours (f, b); bx.Write (Line[k], l, c) }, h, h, w, i, l, c, f, b)
+  Select (func (k, l, c uint, f, b col.Colour) {
+            if k < ls { bx.Colours (f, b); bx.Write (s[k], l, c) }
+          },
+          h, h, w, n, l, c, f, b)
 }
 
 var

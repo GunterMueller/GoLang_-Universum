@@ -1,6 +1,6 @@
 package br
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 210409 - license see µU.go
 
 import (
   . "µU/obj"
@@ -157,6 +157,10 @@ func (x *breal) SetFont (f font.Font) {
 func (x *breal) Print (l, c uint) {
   pbx.SetFont (x.Font)
   pbx.Print (x.String(), l, c)
+}
+
+func (x *breal) Width() uint {
+  return x.wd
 }
 
 func (x *breal) Float64() float64 {

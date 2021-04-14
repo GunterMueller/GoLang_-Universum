@@ -43,7 +43,6 @@ func new_(t uint8, s [NFormats][]string) Base {
     for i, _ := range (s[f]) { str.Norm (&s[f][i], m[f]) } // TODO gefährlich
     x.wd[f] = m[f]
   }
-//  x.wd = m
   x.cF, x.cB = col.StartCols()
   x.Format = Short
   return x

@@ -31,9 +31,9 @@ package main
 import (
   "µU/env"; "µU/ker"; "µU/time"; "µU/cdrom"; "µU/kbd"; "µU/col"; "µU/scr"; "µU/vect"; "µU/gl"
   "µU/errh"; "µU/scale"; "µU/pbar"; "µU/files"; "µU/z"; "µU/lint"; "µU/q"; "µU/r"; "µU/stk"
-  "µU/buf"; "µU/bbuf"; "µU/bpqu"; "µU/menue"; "µU/date"; "µU/fuday"; "µU/ppm"; "µU/fig"
+  "µU/buf"; "µU/bbuf"; "µU/bpqu"; "µU/menue"; "µU/date"; "µU/fuday"; "µU/ppm"; "µU/fig2"
   "µU/piset"; "µU/persaddr"; "µU/pids"; "µU/mol"; "µU/schol"; "µU/gram"; "µU/audio"; "µU/book"
-  "µU/v"; "µU/car"; "µU/schan"; "µU/achan"; "µU/lock"; "µU/asem"; "µU/barr"; "µU/rw"
+  "µU/reg"; "µU/v"; "µU/car"; "µU/schan"; "µU/achan"; "µU/lock"; "µU/asem"; "µU/barr"; "µU/rw"
   "µU/lr"; "µU/lock2"; "µU/lockn"; "µU/phil"; "µU/smok"; "µU/barb"; "µU/mstk"; "µU/mbuf";
   "µU/mbbuf"; "µU/macc"; "µU/nchan"; "µU/naddr"; "µU/dlock"; "µU/dgra"; "µU/rpc"; "µU/vnset"
 )
@@ -155,7 +155,7 @@ func main() { // get all packages compiled and show the license
   stk.New(0); buf.New(0); bbuf.New(nil, 0); bpqu.New(0, 1)
   menue.Touch()
   date.New(); fuday.New()
-  fig.Touch()
+  fig2.Touch()
   piset.Touch()
   gram.Touch()
   persaddr.New()
@@ -163,6 +163,7 @@ func main() { // get all packages compiled and show the license
   mol.Touch()
   schol.New()
   audio.New(); book.New()
+  reg.Touch()
   schan.New(0)
   achan.New(0)
   lock.NewMutex()

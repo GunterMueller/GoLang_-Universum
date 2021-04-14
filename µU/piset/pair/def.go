@@ -11,6 +11,7 @@ type
   Comparer
 
   Pos() uint
+  Index() Any
 }
 
 func New (a Any, n uint) Pair { return new_(a,n) }

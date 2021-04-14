@@ -1,25 +1,25 @@
 package enum
 
-// (c) Christian Maurer   v. 201007 - license see µU.go
+// (c) Christian Maurer   v. 210409 - license see µU.go
 
 var (
-  lbookC = []string {"           ",
-                     "Prosa      ",
-                     "Klassik    ",
-                     "Roman      ",
-                     "Histo-Roman",
-                     "Rom-Roman  ",
-                     "Ital. Roman",
-                     "Krimi      ",
-                     "Rom-Krimi  ",
-                     "Ital. Krimi",
-                     "Kunst      ",
-                     "Ägypten    ",
-                     "Etrurien   ",
-                     "Sachbuch   ",
-                     "Theater    ",
-                     "Kinderbuch ",
-                     "Märchen    ",
+  lbookC = []string {"            ",
+                     "Prosa       ",
+                     "Klassik     ",
+                     "Roman       ",
+                     "Histo-Roman ",
+                     "Rom-Roman   ",
+                     "ItalienRoman",
+                     "Krimi       ",
+                     "Rom-Krimi   ",
+                     "ItalienKrimi",
+                     "Kunst       ",
+                     "Ägypten     ",
+                     "Etrurien    ",
+                     "Sachbuch    ",
+                     "Theater     ",
+                     "Kinderbuch  ",
+                     "Märchen     ",
                     }
   sbookC = []string {"  ",
                      "pr",
