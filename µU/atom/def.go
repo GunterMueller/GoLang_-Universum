@@ -1,6 +1,6 @@
 package atom
 
-// (c) Christian Maurer   v. 210410 - license see µU.go
+// (c) Christian Maurer   v. 210415 - license see µU.go
 
 import (
   . "µU/obj"
@@ -19,33 +19,22 @@ const (
   PhoneNumber
   Address
   Country
-//  PersonAddress
   Ntypes
 )
 type
   Atom interface {
 
-  Formatter
   Object
+  Formatter
   col.Colourer
   Editor
   Printer
   Stringer
 
-  Size() (uint, uint)
-
-// Returns true, iff x and Y have the same type.
-  Equiv (Y Any) bool
-
-// Returns the type of x (<= Ntypes).
-  Type() uint
-
-// Returns the object given in the call of New.
-  Obj() Object
-
-  Selected (l, c uint) bool
+// Returns true, iff x and y have the same type.
+  Equiv (y Any) bool
 }
 
 // Returns a new Atom of the type of o, where o is an object
-// of one of the types corresponding to the above constants.
+// of a type corresponding to one of the above constants.
 func New (o Object) Atom { return new_(o) }

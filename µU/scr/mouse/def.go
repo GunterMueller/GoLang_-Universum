@@ -3,7 +3,7 @@ package mouse
 // (c) Christian Maurer   v. 210311 - license see µU.go
 
 // >>> This package only serves the implementations of µU/kbd 
-//     and µU/scr; it must not be used elsewhere.
+//     and µU/cons; it must not be used elsewhere.
 
 type
   Command byte

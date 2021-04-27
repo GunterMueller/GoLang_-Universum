@@ -1,6 +1,6 @@
 package mol
 
-// (c) Christian Maurer   v. 210413 - license see µU.go
+// (c) Christian Maurer   v. 210414 - license see µU.go
 
 import (
   . "µU/obj"
@@ -40,10 +40,6 @@ func (x *molecule) imp (Y Any) *molecule {
   return y
 }
 
-func (x *molecule) Num() uint {
-  return uint(x.uint8)
-}
-
 func (x *molecule) Component (n uint) Any {
   if n >= uint(x.uint8) { return nil }
   return x.comp[n]
@@ -53,24 +49,6 @@ func (x *molecule) Ins (a atom.Atom, l, c uint) {
   x.comp = append (x.comp, a.Clone().(atom.Atom))
   x.l, x.c = append (x.l, l), append (x.c, c)
   x.uint8++
-}
-
-func (x *molecule) Selected (l, c uint) bool {
-  a := atom.New (nil)
-  if a.Selected (l, c) {
-    x.Ins (a, l, c)
-    return true
-  }
-  return false
-}
-
-func (x *molecule) Del (n uint) {
-  if n >= uint(x.uint8) { return }
-  for i := uint8(n); i + 1 < x.uint8; i++ {
-    x.comp[i] = x.comp[i + 1]
-    x.l[i], x.c[i] = x.l[i + 1], x.c[i + 1]
-  }
-  x.uint8--
 }
 
 func (x *molecule) SetMasks (m masks.MaskSet) {
@@ -217,7 +195,9 @@ func (x *molecule) Codelen() uint {
     c += x.comp[k].Codelen()
     c += 2
   }
-  c += x.MaskSet.Codelen()
+  if x.MaskSet != nil {
+    c += x.MaskSet.Codelen()
+  }
   return c
 }
 
@@ -235,8 +215,10 @@ func (x *molecule) Encode() Stream {
     copy (s[i:i+1], Encode(uint8(x.c[k])))
     i++
   }
-  a = x.MaskSet.Codelen()
-  copy (s[i:i+a], x.MaskSet.Encode())
+  if x.MaskSet != nil {
+    a = x.MaskSet.Codelen()
+    copy (s[i:i+a], x.MaskSet.Encode())
+  }
   return s
 }
 
@@ -253,6 +235,8 @@ func (x *molecule) Decode (s Stream) {
     x.c[k] = uint(Decode (uint8(0), s[i:i+1]).(uint8))
     i++
   }
-  a = x.MaskSet.Codelen()
-  x.MaskSet.Decode (s[i:i+a])
+  if x.MaskSet != nil {
+    a = x.MaskSet.Codelen()
+    x.MaskSet.Decode (s[i:i+a])
+  }
 }

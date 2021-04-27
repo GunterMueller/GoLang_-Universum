@@ -1,6 +1,6 @@
 package addr
 
-// (c) Christian Maurer   v. 210409 - license see µU.go
+// (c) Christian Maurer   v. 210414 - license see µU.go
 
 import (
   . "µU/obj"
@@ -15,7 +15,9 @@ type
   Editor
   Printer
 
-  Equiv (Y Any) bool
+// Pre: y is of type Address.
+// Returns true, iff y has the same postcode as x.
+  Equiv (y Any) bool
 }
 
 // Returns a new empty address.

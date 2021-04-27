@@ -1,6 +1,6 @@
 package book
 
-// (c) Christian Maurer   v. 210409 - license see µU.go
+// (c) Christian Maurer   v. 210415 - license see µU.go
 
 import (
   . "µU/obj"
@@ -41,7 +41,7 @@ func new_() Book {
   x := new (book)
   x.Molecule = mol.New()
 
-  a := atom.New (enum.New (enum.BookC)) // Gebiet
+  a := atom.New (enum.New (enum.Book)) // Gebiet
   a.Colours (col.LightWhite(), col.Blue())
   a.SetFormat (enum.Long)
   x.Ins (a, 1, 1)
@@ -51,7 +51,7 @@ func new_() Book {
   x.Ins (a, 1, 16)
 
   a = atom.New (text.New (lenAuthor)) // Koautor
-  a.Colours (col.LightWhite(), col.DarkRed())
+  a.Colours (col.LightWhite(), col.Red())
   x.Ins (a, 1, 49)
 
   a = atom.New (bn.New (3)) // Nr
@@ -61,6 +61,10 @@ func new_() Book {
   a = atom.New (text.New (lenTitle)) // Titel
   a.Colours (col.LightWhite(), col.DarkGreen())
   x.Ins (a, 4, 16)
+
+  a = atom.New (text.New (lenAuthor)) // Fundort
+  a.Colours (col.LightWhite(), col.DarkGray())
+  x.Ins (a, 7, 49)
 /*/
           1         2         3         4         5         6         7
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
@@ -69,6 +73,9 @@ func new_() Book {
 
           Nr.   Titel
           ___   _______________________________________________________________
+
+                                                 Fundort
+                                                 ______________________________
 /*/
   m := masks.New()
   m.Ins ("Gebiet",      0,  1)
@@ -76,6 +83,7 @@ func new_() Book {
   m.Ins ("Koautor/in",  0, 49)
   m.Ins ("Nr.",         3, 10)
   m.Ins ("Titel",       3, 16)
+  m.Ins ("Fundort",     6, 49)
   x.SetMasks (m)
   return x
 }
@@ -136,6 +144,8 @@ func (x *book) String() string {
   s += (x.Component(3)).(Stringer).String()
   s += " "
   s += (x.Component(4)).(Stringer).String()
+  s += " "
+  s += (x.Component(5)).(Stringer).String()
   return s
 }
 
@@ -155,17 +165,17 @@ func (x *book) Defined (s string) bool {
   if ! (x.Component(4)).(Stringer).Defined (s[78:141]) {
     return false
   }
+  if ! (x.Component(5)).(Stringer).Defined (s[142:172]) {
+    return false
+  }
   x.Write (8, 0)
   return true
 }
 
 func (x *book) Index() Func {
-  return func (a Any) Any {
-    return a
-  }
+  return Id
 }
 
 func (x *book) Rotate() {
   actOrd = (actOrd + 1) % nOrders
 }
-

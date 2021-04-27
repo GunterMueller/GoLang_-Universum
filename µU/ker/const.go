@@ -1,13 +1,8 @@
 package ker
 
-// (c) Christian Maurer   v. 201009 - license see µU.go
+// (c) Christian Maurer   v. 210419 - license see µU.go
 
 const (
-  Dot = "."
-  Separator = "/"
-  Mu = "µU"
-  DotMu = Dot + Mu
-
   PointsPerInch = 72
   MillimetersPerInch = 25.4
   PointsPerMillimeter = float64(PointsPerInch) / MillimetersPerInch

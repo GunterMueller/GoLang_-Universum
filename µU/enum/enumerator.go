@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 201010 - license see µU.go
+// (c) Christian Maurer   v. 210415 - license see µU.go
 
 import (
   . "µU/obj"
@@ -18,8 +18,8 @@ var
 func init() {
   N = make([]uint8, NTypes)
   N[Title] = uint8(len(l[Title]))
-  N[AudioC] = uint8(len(l[AudioC]))
-  N[BookC] = uint8(len(l[BookC]))
+  N[Audio] = uint8(len(l[Audio]))
+  N[Book] = uint8(len(l[Book]))
   N[AudioMedium] = uint8(len(l[AudioMedium]))
   N[Religion] = uint8(len(l[Religion]))
   N[Subject] = uint8(len(l[Subject]))

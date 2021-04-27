@@ -11,7 +11,7 @@ import (
 const ( // v.
   y = 2021
   m =    4
-  d =   13
+  d =   20
 )
 var
   v day.Calendarday = day.New()
@@ -31,7 +31,7 @@ func want (y, m, d uint) {
   wanted.SetFormat (day.Yymmdd)
   if wanted.Set (d, m, 2000 + y) {
     if v.Less (wanted) {
-      errh.Error0("Your " + ker.Mu + " " + v.String() + " is outdated. You need " + wanted.String() + ".")
+      errh.Error0("Your µU " + v.String() + " is outdated. You need " + wanted.String() + ".")
       ker.Halt(-1)
     }
   } else {

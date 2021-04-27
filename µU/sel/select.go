@@ -12,7 +12,7 @@ import (
   "µU/scr"
   "µU/box"
   "µU/errh"
-  "µU/files"
+  . "µU/files"
 )
 var
   bx, mbx = box.New(), box.New()
@@ -144,7 +144,8 @@ func hasSuffix (a Any) bool {
 }
 
 func aus (n, l, c uint, f, b col.Colour) {
-  N := files.NamePred (hasSuffix, n)
+//  N := files.NamePred (hasSuffix, n)
+  N := NamePred (hasSuffix, n)
   if p, ok := str.Sub (ptSuffix, N); ok {
     N = str.Part (N, 0, p)
   }
@@ -180,7 +181,8 @@ func names (mask, suffix string, n uint, l, c uint, f, b col.Colour) (string, st
     name = str.Part (name, 0, p)
   }
   filename := name + ptSuffix
-  a := files.NumPred (hasSuffix)
+//  a := files.NumPred (hasSuffix)
+  a := NumPred (hasSuffix)
   if a > 0 {
     switch C, _ := kbd.LastCommand(); C {
     case kbd.Esc:
@@ -193,7 +195,8 @@ func names (mask, suffix string, n uint, l, c uint, f, b col.Colour) (string, st
       if i == a {
         return "", "" // str.New (n), ""
       } else {
-        filename = str.Lat1 (files.NamePred (hasSuffix, i))
+//        filename = str.Lat1 (files.NamePred (hasSuffix, i))
+        filename = str.Lat1 (NamePred (hasSuffix, i))
       }
     }
   }

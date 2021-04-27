@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 201329 - license see µU.go
+// (c) Christian Maurer   v. 210419 - license see µU.go
 
 import (
   "os"
@@ -11,17 +11,17 @@ import (
   "µU/str"
   "µU/env"
   "µU/n"
-  "µU/files/internal"
+  "µU/files/pair"
 )
 const (
   RWX = 7 * 8 * 8
   worldRX = RWX + 7 * 8 + 7 // = rwxrwxrwx, which is changed to rwxr-xr-x
                             // by & with ~umask for the default umask = 022
-  tmp = ker.Separator + "tmp"
+  tmp = "/tmp"
 )
 var (
-  pa = internal.New()
-  seq = make([]internal.Pair, 0)
+  pa = pair.New()
+  seq = make([]pair.Pair, 0)
   actDir string
   actPath = actualPath()
 )
@@ -92,8 +92,8 @@ func actualize (path string) {
   } else {
     actPath = path
   }
-  seq = make([]internal.Pair, 0)
-  f, e := os.Open (ker.Dot)
+  seq = make([]pair.Pair, 0)
+  f, e := os.Open (".")
   defer f.Close()
   if e != nil { ker.Shit() }
   fileinfos, ef := f.Readdir (-1)
@@ -118,8 +118,8 @@ func actualize (path string) {
     default:
       t = Unknown
     }
-    if true { // t != Dir || n != ker.Dot && n != "..") {
-      pp := internal.New()
+    if true { // t != Dir || n != "." && n != "..") {
+      pp := pair.New()
       pp.Set (f.Name(), byte(t))
       seq = append (seq, pp)
     }
@@ -141,7 +141,7 @@ func cd (path string) {
 }
 
 func cdp() {
-  home, v := env.Home(), ker.Separator + ker.Dot + env.Call()
+  home, v := env.Home(), "/." + env.Call()
   p := home + v
   if ! isPath (p) {
     ins (home, v)
@@ -149,8 +149,12 @@ func cdp() {
   cd (p)
 }
 
+func cds() {
+  cd (env.Gosrc() + "/" + env.Call())
+}
+
 func cd0() {
-  home, v := env.Home(), ker.Separator + ker.DotMu + ker.Separator + env.Call()
+  home, v := env.Home(), ".µU/" + env.Call()
   p := home + v
   if ! isPath (p) {
     ins (home, v)
@@ -167,7 +171,7 @@ func Temp (filename *string) {
   if n + 11 > maxN {
     name = str.Part (name, 0, maxN - 11)
   }
-  *filename = path + ker.Dot + tmp + ker.DotMu + ker.Dot + name
+  *filename = path + "." + tmp + ".µU" + "." + name
 }
 /*/
 
@@ -176,11 +180,11 @@ func sub (d string) {
 }
 
 func ins (path, d string) bool {
-  return os.Mkdir (path + ker.Separator + d, worldRX) != nil
+  return os.Mkdir (path + "/" + d, worldRX) != nil
 }
 
 func del (path, s string) bool {
-  return os.Remove (path + ker.Separator + s) != nil
+  return os.Remove (path + "/" + s) != nil
 }
 
 func move (f, d string) {
@@ -232,22 +236,22 @@ func typ (n string) Type {
 }
 
 func TmpDir() string {
-  d := ker.Mu + "-" + env.User()
+  d := "µU" + "-" + env.User()
   ins (tmp, d)
-  return tmp + ker.Separator + d + ker.Separator
+  return tmp + "/" + d + "/"
 }
 
 func Tmp() string {
-  return TmpDir() + n.StringFmt (uint(os.Getpid()), 5, true) + ker.Dot
+  return TmpDir() + n.StringFmt (uint(os.Getpid()), 5, true) + "."
 }
 
 var (
-  seqPred []internal.Pair
+  seqPred []pair.Pair
   np uint
 )
 
 func numPred (p Pred) uint {
-  seqPred = make([]internal.Pair, 0)
+  seqPred = make([]pair.Pair, 0)
   for _, pa := range seq {
     if p (pa) {
       seqPred = append (seqPred, pa)

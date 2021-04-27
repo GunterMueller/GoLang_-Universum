@@ -1,6 +1,6 @@
 package audio
 
-// (c) Christian Maurer   v. 210409 - license see µU.go
+// (c) Christian Maurer   v. 210415 - license see µU.go
 
 import (
   . "µU/obj"
@@ -40,7 +40,7 @@ func (x *audio) imp (Y Any) mol.Molecule {
 func new_() Audio {
   x := new (audio)
   x.Molecule = mol.New()
-  a := atom.New (enum.New (enum.AudioC)) // Gebiet
+  a := atom.New (enum.New (enum.Audio)) // Gebiet
   a.Colours (col.Yellow(), col.Black())
   x.Ins (a, 0, 12)
 

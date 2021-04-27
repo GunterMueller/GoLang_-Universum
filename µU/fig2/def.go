@@ -76,7 +76,7 @@ type
 // otherwise, x now has the position interactively chosen by the user.
   Edit()
 
-// TODO Spec
+// x is printed (see package µU/psp).
   Print (psp.PostscriptPage)
 }
 

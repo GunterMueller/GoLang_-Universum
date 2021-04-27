@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 210329 - license see µU.go
+// (c) Christian Maurer   v. 210419 - license see µU.go
 
 import
   . "µU/obj"
@@ -74,6 +74,9 @@ func Cd (p string) { cd(p) }
 
 // Spec: The source is the doc.
 func Cdp() { cdp() }
+
+// Spec: The source is the doc.
+func Cds() { cds() }
 
 // Spec: The source is the doc.
 func Cd0() { cd0() }

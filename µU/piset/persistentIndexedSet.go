@@ -1,10 +1,13 @@
 package piset
 
-// (c) Christian Maurer   v. 210323 - license see µU.go
+// (c) Christian Maurer   v. 210418 - license see µU.go
 
 import (
+  "µU/ker"
   . "µU/obj"
   "µU/str"
+  "µU/kbd"
+  "µU/errh"
   "µU/pseq"
   "µU/buf"
   "µU/set"
@@ -19,13 +22,26 @@ type
                               set.Set "pairs of index and position in the file"
                               buf.Buffer "free positions in the file"
                               }
+var
+  help = []string {" vor-/rückwärts: Pfeiltaste auf-/abwärts",
+                   "zum Anfang/Ende: Pos1/End               ",
+                   " Eintrag ändern: Enter                  ",
+                   "       einfügen: Einfg                  ",
+                   "      entfernen: Entf                   ",
+                   "       umordnen: F3                     ",
+                   "   Programmende: Esc                    " }
 
-func new_(o Object, f Func) PersistentIndexedSet {
+func init() {
+  for i, h := range (help) { help[i] = str.Lat1 (h) }
+}
+
+func new_(o Indexer) PersistentIndexedSet {
+  if ! IsIndexer (o) { ker.Oops() }
   x := new (persistentIndexedSet)
   x.Object = o.Clone().(Object)
-  x.Any = f (o)
+  x.Func = o.Index()
+  x.Any = x.Func (o)
   x.PersistentSequence = pseq.New (x.Object)
-  x.Func = f
   x.Set = set.New (pair.New (x.Any, 0))
   x.Buffer = buf.New (uint(0))
   return x
@@ -196,3 +212,67 @@ func (x *persistentIndexedSet) Sort() {
   x.Set.Sort()
 }
 
+func (x *persistentIndexedSet) Operate (l, c uint) {
+  hint := "Kommandotaste drücken       Hilfe: F1       Programm beenden: Esc"
+  x.Jump (false)
+  if x.Empty() {
+    o := x.Object.(Indexer)
+    o.Clr()
+    for {
+      o.(Editor).Edit (l, c)
+      if ! o.Empty() {
+        x.Ins (o)
+        break
+      }
+    }
+  }
+  loop:
+  for {
+    o := x.Get().(Indexer)
+    o0 := Clone(o).(Indexer)
+    o.(Editor).Write (l, c)
+    errh.Hint (hint)
+    switch k, _ := kbd.Command(); k {
+    case kbd.Enter:
+      o.(Editor).Edit (l, c)
+      if o.Empty() {
+        x.Del()
+      } else {
+        if ! Eq (o, o0) {
+          x.Put (o)
+        }
+      }
+    case kbd.Esc:
+      break loop
+    case kbd.Up, kbd.Left:
+      x.Step (false)
+    case kbd.Down, kbd.Right:
+      x.Step (true)
+    case kbd.Pos1:
+      x.Jump (false)
+    case kbd.End:
+      x.Jump (true)
+    case kbd.Ins:
+      errh.DelHint()
+      o.Clr()
+      o.(Editor).Edit (l, c)
+      if ! o.Empty() {
+        x.Ins (o)
+      }
+      errh.Hint (hint)
+    case kbd.Del:
+      if errh.Confirmed() {
+        x.Del()
+      }
+    case kbd.Act:
+      x.Object.(Rotator).Rotate()
+      x.Sort()
+    case kbd.Help:
+      errh.Help (help)
+      errh.Hint (hint)
+    case kbd.Search:
+      o.(Editor).Edit (l, c)
+    }
+    errh.DelHint()
+  }
+}

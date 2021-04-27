@@ -1,6 +1,6 @@
 package mol
 
-// (c) Christian Maurer   v. 210413 - license see µU.go
+// (c) Christian Maurer   v. 210414 - license see µU.go
 
 import (
   . "µU/obj"
@@ -16,11 +16,13 @@ type
   Editor
   Printer
 
+// a is inserted into x.
   Ins (a atom.Atom, l, c uint)
-  Selected (l, c uint) bool
-  Del (n uint)
-  Num() uint
+
+// Returns the n-th atom of x.
   Component (n uint) Any
+
+// m is the set of masks of x.
   SetMasks (m masks.MaskSet)
 }
 

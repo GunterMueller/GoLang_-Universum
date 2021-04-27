@@ -1,11 +1,10 @@
 package mouse
 
-// (c) Christian Maurer   v. 210314 - license see µU.go
+// (c) Christian Maurer   v. 210418 - license see µU.go
 
 import (
   "os"
   "µU/ker"
-  "µU/env"
 )
 const (
   go_ = iota         // mousemove without any button pressed
@@ -31,19 +30,15 @@ var (
 )
 
 func init() {
-  if env.UnderX() {
-    mousepipe = (chan Command)(nil)
+  var e error
+  if file, e = os.Open ("/dev/input/mice"); e == nil {
+    Def (0, 0, 1600, 1200) // TODO
+    lastCommand = go_
+    oldButt = none
+    mousepipe = make (chan Command)
+    go catch()
   } else {
-    var e error
-    if file, e = os.Open ("/dev/input/mice"); e == nil {
-      Def (0, 0, 1000, 1000) // TODO
-      lastCommand = go_
-      oldButt = none
-      mousepipe = make (chan Command)
-      go catch()
-    } else {
-      ker.Panic ("/dev/input/mice nicht lesbar !")
-    }
+    ker.Panic ("/dev/input/mice nicht lesbar !")
   }
 }
 

@@ -45,7 +45,7 @@ func Select1 (t []string, n, w uint, i *uint, l, c uint, f, b col.Colour) {
 // Pre: m is part of a mask; s is a non empty file-suffix;
 //      w > 0 (width); l < scr.NLines, c + i < scr.NColumns.
 // Returns name + "." + string selected by user.
-func Names (m, s string, i uint, l, c uint, f, b col.Colour) (string, string) {
+func Name (m, s string, i uint, l, c uint, f, b col.Colour) (string, string) {
   return names(m,s,i,l,c,f,b)
 }
 

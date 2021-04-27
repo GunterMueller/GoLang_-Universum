@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 201007 - license see µU.go
+// (c) Christian Maurer   v. 210415 - license see µU.go
 
 import (
   . "µU/obj"
@@ -14,8 +14,8 @@ const ( // Format
 type
   Type = uint8; const ( // details s. corresponding files
   Title = Type(iota)
-  AudioC
-  BookC
+  Audio
+  Book
   Writer
   Composer
   AudioMedium

@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 210409 - license see µU.go
+// (c) Christian Maurer   v. 210418 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -210,6 +210,7 @@ var (
                   "PropertyNotify", "SelectionClear", "SelectionRequest", "SelectionNotify",
                   "ColormapNotify", "ClientMessage", "MappingNotify", "GenericEvent", "LASTEvent"}
   startSendEvents = make(chan int)
+  xMouse, yMouse int
 )
 
 func init() {
@@ -1103,10 +1104,12 @@ func (X *xwindow) SetPointer (p ptr.Pointer) {
 }
 
 func (X *xwindow) MousePos() (uint, uint) {
+  X.xM, X.yM = xMouse, yMouse
   return uint(X.yM) / uint(X.ht1), uint(X.xM) / uint(X.wd1)
 }
 
 func (X *xwindow) MousePosGr() (int, int) {
+  X.xM, X.yM = xMouse, yMouse
   return X.xM, X.yM
 }
 
@@ -1826,6 +1829,7 @@ func sendEvents() {
         W = imp (w) // w == W.win
         event.C, event.S = uint(0), uint(C.motionState (&xev))
         W.xM, W.yM = int(C.motionX (&xev)), int(C.motionY (&xev))
+xMouse, yMouse = W.xM, W.yM
       case C.EnterNotify, C.LeaveNotify:
         w = C.enterLeaveWin (&xev)
         W = imp (w) // w == W.win
