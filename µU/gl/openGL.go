@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 201025 - license see µU.go
+// (c) Christian Maurer   v. 210504 - license see µU.go
 
 // #cgo LDFLAGS: -lGL -lGLU
 // #include <GL/gl.h>
@@ -43,7 +43,7 @@ func colour (c col.Colour) {
   C.glColor3f (C.GLfloat(r), C.GLfloat(g), C.GLfloat(b))
 }
 
-func clearColor (c col.Colour) {
+func clearColour (c col.Colour) {
   r, g, b := c.Float64()
   C.glClearColor (l(r), l(g), l(b), l(0));
 }

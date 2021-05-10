@@ -1,18 +1,14 @@
 package book
 
-// (c) Christian Maurer   v. 210409 - license see µU.go
+// (c) Christian Maurer   v. 210509 - license see µU.go
 
-import (
+import
   . "µU/obj"
-  "µU/col"
-)
 type
   Book interface {
 
-  Object
-  Editor
   Stringer
-  col.Colourer
+  TeXer
   Indexer
   Rotator
 }

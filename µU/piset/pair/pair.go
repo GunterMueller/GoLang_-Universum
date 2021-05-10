@@ -1,6 +1,6 @@
 package pair
 
-// (c) Christian Maurer   v. 210323 - license see µU.go
+// (c) Christian Maurer   v. 210509 - license see µU.go
 
 import
   . "µU/obj"
@@ -49,4 +49,8 @@ func (x *pair) Pos() uint {
 
 func (x *pair) Index() Any {
   return x.Any
+}
+
+func (x *pair) TeX() string {
+  return x.Any.(TeXer).TeX()
 }

@@ -1,12 +1,12 @@
 package kbd
 
-// (c) Christian Maurer   v. 210324 - license see µU.go
+// (c) Christian Maurer   v. 210505 - license see µU.go
 
 import (
   "os"
   "µU/ker"
   "µU/kbd/internal"
-  "µU/scr/mouse"
+  "µU/mouse"
 //  "µU/navi"
 )
 var (

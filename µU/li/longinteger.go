@@ -1,6 +1,6 @@
 package li
 
-// (c) Christian Maurer   v. 210309 - license see µU.go
+// (c) Christian Maurer   v. 210508 - license see µU.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 
@@ -41,14 +41,14 @@ func init() {
 func newInt (n int) LongInteger {
   x := new(longInteger)
   x.n = NewInt (int64(n))
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   return x
 }
 
 func new64 (n int64) LongInteger {
   x := new(longInteger)
   x.n = NewInt(n)
-  x.cF, x.cB = scr.StartCols()
+  x.cF, x.cB = col.StartCols()
   return x
 }
 

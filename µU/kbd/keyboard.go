@@ -1,13 +1,13 @@
 package kbd
 
-// (c) Christian Maurer   v. 210315 - license see µU.go
+// (c) Christian Maurer   v. 210505 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/char"
   "µU/env"
+  "µU/mouse"
   "µU/scr"
-  "µU/scr/mouse"
 //  "µU/navi"
 )
 const (

@@ -315,14 +315,14 @@ func init() {
   cst, cpc, cci, cph, cce, cem, cco = 10, 45, 57, 10, 34, 10, 57
 //           1         2         3         4         5         6         7
 // 01234567890123456789012345678901234567890123456789012345678901234567890123456789
-// Str./Nr.: ____________________________  PLZ: _____  Ort: ______________________
+//  Str./Nr: ____________________________  PLZ: _____  Ort: ______________________
 //     Tel.: ________________  Funk: ________________
 //   E-Mail: ________________________________________ Land: ______________________
-  maskSet.Ins ("Str./Nr.:", 0,  0)
-  maskSet.Ins ("PLZ:",      0, 40)
-  maskSet.Ins ("Ort:",      0, 52)
-  maskSet.Ins ("Tel.:",     1,  4)
-  maskSet.Ins ("Funk:",     1, 28)
-  maskSet.Ins ("E-Mail:",   2,  2)
-  maskSet.Ins ("Land:",     2, 51)
+  maskSet.Ins ("Str./Nr:", 0,  1)
+  maskSet.Ins ("PLZ:",     0, 40)
+  maskSet.Ins ("Ort:",     0, 52)
+  maskSet.Ins ("Tel.:",    1,  4)
+  maskSet.Ins ("Funk:",    1, 28)
+  maskSet.Ins ("E-Mail:",  2,  2)
+  maskSet.Ins ("Land:",    2, 51)
 }

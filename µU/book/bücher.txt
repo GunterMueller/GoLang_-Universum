@@ -1,0 +1,272 @@
+Rom-Roman   Harris, Robert                /                               01 Imperium                                                                                      0
+Rom-Roman   Harris, Robert                /                               02 Titan                                                                                         0
+Rom-Roman   Harris, Robert                /                               03 Dictator                                                                                      0
+Rom-Roman   Massie, Robert                /                               04 Ich, Augustus                                                                                 0
+Rom-Roman   Massie, Alan                  /                               05 Ich, Tiberius                                                                                 0
+Rom-Roman   Massie, Alan                  /                               06 Caesar. Brutus erzählt                                                                        0
+Rom-Roman   Massie, Alan                  /                               07 Ich, König David                                                                              0
+Rom-Roman   Massie, Alan                  /                               08 Ich, Marc Anton                                                                               0
+Rom-Roman   McCullough, Coleen            /                               01 Die Macht und die Liebe                                                                       0
+Rom-Roman   McCullough, Coleen            /                               02 Eine Krone aus Gras                                                                           0
+Rom-Roman   McCullough, Coleen            /                               03 Günstlinge der Götter -- Die Weggefährten                                                     0
+Rom-Roman   McCullough, Coleen            /                               04 Günstlinge der Götter -- Die Todfeinde                                                        0
+Rom-Roman   McCullough, Coleen            /                               05 Caesars Frauen -- Der Aufbruch                                                                0
+Rom-Roman   McCullough, Coleen            /                               06 Caesars Frauen -- Die Morgengabe                                                              0
+Rom-Roman   McCullough, Coleen            /                               07 Rubikon                                                                                       0
+Rom-Roman   McCullough, Coleen            /                               08 Das Erbe Caesars                                                                              0
+Rom-Roman   McCullough, Coleen            /                               09 Antonius und Kleopatra                                                                        0
+Rom-Roman   Scarrow, Simon                /                               01 Arena                                                                                         0
+Rom-Roman   Scarrow, Simon                /                               02 Im Zeichen des Adlers                                                                         0
+Rom-Roman   Scarrow, Simon                /                               03 Im Auftrag des Adlers                                                                         0
+Rom-Roman   Scarrow, Simon                /                               04 Der Zorn des Adlers                                                                           0
+Rom-Roman   Scarrow, Simon                /                               05 Die Brüder des Adlers                                                                         0
+Rom-Roman   Scarrow, Simon                /                               06 Die Beute des Adlers                                                                          0
+Rom-Roman   Scarrow, Simon                /                               07 Die Prophezeiung des Adlers                                                                   0
+Rom-Roman   Scarrow, Simon                /                               08 Centurio                                                                                      0
+Rom-Roman   Scarrow, Simon                /                               09 ladiator                                                                                      0
+Rom-Roman   Scarrow, Simon                /                               10 Die Garde                                                                                     0
+Rom-Roman   Scarrow, Simon                /                               11 Invictus                                                                                      0
+Rom-Roman   Scarrow, Simon                /                               12 Imperator                                                                                     0
+ItalienRomanEco, Umberto                  /                               01 Der Name der Rose                                                                             0
+ItalienRomanEco, Umberto                  /                               02 Das Foucaultsche Pendel                                                                       0
+ItalienRomanEco, Umberto                  /                               03 Insel des vorigen Tages                                                                       0
+ItalienRomanEco, Umberto                  /                               04 Baudolino                                                                                     0
+ItalienRomanEco, Umberto                  /                               05 Über Spiegel und andere Phänomene                                                             0
+ItalienRomanEco, Umberto                  /                               06 Platon im Striptease-Lokal                                                                    0
+ItalienRomanFruttero                      /Lucentini                      01 Die Sonntagsfrau                                                                              0
+ItalienRomanFruttero                      /Lucentini                      02 Der Palio der toten Reiter                                                                    0
+ItalienRomanFruttero                      /Lucentini                      03 Der Liebhaber ohne festen Wohnsitz                                                            0
+ItalienRomanFruttero                      /Lucentini                      04 Das Geheimnis der Pineta                                                                      0
+Rom-Krimi   Davis, Lindsey                /                               01 Silberschweine                                                                                0
+Rom-Krimi   Davis, Lindsey                /                               02 Bronzeschatten                                                                                0
+Rom-Krimi   Davis, Lindsey                /                               03 Kupfervenus                                                                                   0
+Rom-Krimi   Davis, Lindsey                /                               04 Eisenhand                                                                                     0
+Rom-Krimi   Davis, Lindsey                /                               05 Poseidons Gold                                                                                0
+Rom-Krimi   Davis, Lindsey                /                               06 Letzter Akt in Palmyra                                                                        0
+Rom-Krimi   Davis, Lindsey                /                               07 Die Gnadenfrist                                                                               0
+Rom-Krimi   Davis, Lindsey                /                               08 Zwielicht in Cordoba                                                                          0
+Rom-Krimi   Davis, Lindsey                /                               09 Drei Hände im Brunnen                                                                         0
+Rom-Krimi   Davis, Lindsey                /                               10 Den Löwen zum Fraß                                                                            0
+Rom-Krimi   Davis, Lindsey                /                               11 Eine Jungfrau zuviel                                                                          0
+Rom-Krimi   Davis, Lindsey                /                               12 Tod eines Mäzens                                                                              0
+Rom-Krimi   Davis, Lindsey                /                               13 Eine Leiche im Badehaus                                                                       0
+Rom-Krimi   Davis, Lindsey                /                               14 Mord in Londinium                                                                             0
+Rom-Krimi   Davis, Lindsey                /                               15 Tod eines Senators                                                                            0
+Rom-Krimi   Davis, Lindsey                /                               16 Das Geheimnis des Skriptors                                                                   0
+Rom-Krimi   Davis, Lindsey                /                               17 Delphi sehen und sterben                                                                      0
+Rom-Krimi   Davis, Lindsey                /                               18 Mord im Atrium                                                                                0
+Rom-Krimi   Montanari, Danila Comastri    /                               03 Der Fluch des Orakels                                                                         0
+Rom-Krimi   Montanari, Danila Comastri    /                               04 Tod eines Gladiators                                                                          0
+Rom-Krimi   Montanari, Danila Comastri    /                               13 Tod in Olympia                                                                                0
+Rom-Krimi   Roberts, John Maddox          /                               01 SPQR                                                                                          0
+Rom-Krimi   Roberts, John Maddox          /                               02 Die Catilina-Verschwörung                                                                     0
+Rom-Krimi   Roberts, John Maddox          /                               03 Der Frevel des Clodius                                                                        0
+Rom-Krimi   Roberts, John Maddox          /                               04 Der Musentempel                                                                               0
+Rom-Krimi   Roberts, John Maddox          /                               05 Tödliche Saturnalien                                                                          0
+Rom-Krimi   Roberts, John Maddox          /                               06 Tod eines Centurio                                                                            0
+Rom-Krimi   Roberts, John Maddox          /                               07 Der Fluch des Volkstribuns                                                                    0
+Rom-Krimi   Roberts, John Maddox          /                               08 Die Rache der Flußgötter                                                                      0
+Rom-Krimi   Roberts, John Maddox          /                               09 Die Schiffe der Cleopatra                                                                     0
+Rom-Krimi   Roberts, John Maddox          /                               10 Im Namen Caesars                                                                              0
+Rom-Krimi   Roberts, John Maddox          /                               11 Mord am Vesuv                                                                                 0
+Rom-Krimi   Roberts, John Maddox          /                               12 Das Orakel des Todes                                                                          0
+Rom-Krimi   Roberts, John Maddox          /                               13 Die Feinde des Imperators                                                                     0
+Rom-Krimi   Saylor, Steven                /                               01 The Seven Wonders                                                                             0
+Rom-Krimi   Saylor, Steven                /                               02 Das Lächeln des Cicero                                                                        0
+Rom-Krimi   Saylor, Steven                /                               03 Die Pforten des Hades                                                                         0
+Rom-Krimi   Saylor, Steven                /                               04 Das Rätsel des Catilina                                                                       0
+Rom-Krimi   Saylor, Steven                /                               05 Römischer Lorbeer                                                                             0
+Rom-Krimi   Saylor, Steven                /                               06 Mord auf der Via Appia                                                                        0
+Rom-Krimi   Saylor, Steven                /                               07 Kein Zurück vom Rubikon                                                                       0
+Rom-Krimi   Saylor, Steven                /                               08 Last seen in Massilia                                                                         0
+Rom-Krimi   Saylor, Steven                /                               09 A Mist of Prophecies                                                                          0
+Rom-Krimi   Saylor, Steven                /                               10 he Judgment of Caesar                                                                         0
+Rom-Krimi   Saylor, Steven                /                               11 The Triumph of Caesar                                                                         0
+Rom-Krimi   Stöver, Hans Dieter           /                               01 Spartacus. Sklave und Rebell                                                                  0
+Rom-Krimi   Stöver, Hans Dieter           /                               02 Mord auf der Via Appia / Die Frau des Senators                                                0
+Rom-Krimi   Stöver, Hans Dieter           /                               03 Ich klage an / Skandal um Nausikaa                                                            0
+Rom-Krimi   Stöver, Hans Dieter           /                               04 Alexander und die Gladiatoren / Attentat in Pompeii                                           0
+Rom-Krimi   Stöver, Hans Dieter           /                               05 Der Verrat des Ambiorix / Rebellion im Circus Maximus                                         0
+Rom-Krimi   Stöver, Hans Dieter           /                               06 Tod auf dem Forum / Tödliche Dosis                                                            0
+Rom-Krimi   Wishart, David                /                               01 Ovids Schatten                                                                                0
+Rom-Krimi   Wishart, David                /                               02 Der Tod des Germanicus                                                                        0
+ItalienKrimiCamilleri, Andrea             /                               01 Die Form des Wassers                                                                          0
+ItalienKrimiCamilleri, Andrea             /                               02 Der Hund aus Terracotta                                                                       0
+ItalienKrimiCamilleri, Andrea             /                               03 Der Dieb der süßen Dinge                                                                      0
+ItalienKrimiCamilleri, Andrea             /                               04 Die Stimme der Violine                                                                        0
+ItalienKrimiCamilleri, Andrea             /                               05 Das Spiel des Patriarchen                                                                     0
+ItalienKrimiCamilleri, Andrea             /                               06 Der Kavalier der späten Stunde                                                                0
+ItalienKrimiCamilleri, Andrea             /                               07 Das kalte Lächeln des Meeres                                                                  0
+ItalienKrimiCamilleri, Andrea             /                               08 Die Passion des stillen Rächers                                                               0
+ItalienKrimiCamilleri, Andrea             /                               09 Die dunkle Wahrheit des Mondes                                                                0
+ItalienKrimiCamilleri, Andrea             /                               10 ie schwarze Seele des Sommers                                                                 0
+ItalienKrimiCamilleri, Andrea             /                               11 Die Flügel der Sphinx                                                                         0
+ItalienKrimiCamilleri, Andrea             /                               12 Die Spur des Fuchses                                                                          0
+ItalienKrimiCamilleri, Andrea             /                               13 Das Ritual der Rache                                                                          0
+ItalienKrimiCamilleri, Andrea             /                               14 Die Tage des Zweifels                                                                         0
+ItalienKrimiCamilleri, Andrea             /                               15 Der Tanz der Möwe                                                                             0
+ItalienKrimiCamilleri, Andrea             /                               16 Das Spiel des Poeten                                                                          0
+ItalienKrimiCamilleri, Andrea             /                               17 Das Lächeln der Signorina                                                                     0
+ItalienKrimiCamilleri, Andrea             /                               18 Das Labyrinth der Spiegel                                                                     0
+ItalienKrimiCamilleri, Andrea             /                               19 Die Spur des Lichts                                                                           0
+ItalienKrimiCamilleri, Andrea             /                               20 Eine Stimme in der Nacht                                                                      0
+ItalienKrimiCamilleri, Andrea             /                               21 Abschlussband                                                                                 0
+ItalienKrimiCamilleri, Andrea             /                               22 Das Paradies der kleinen Sünder                                                               0
+ItalienKrimiCamilleri, Andrea             /                               23 Die Nacht des einsamen Träumers                                                               0
+ItalienKrimiCamilleri, Andrea             /                               24 Die Rache des schönen Geschlechts                                                             0
+ItalienKrimiCamilleri, Andrea             /                               25 Der falsche Liebreiz der Vergeltung                                                           0
+ItalienKrimiCamilleri, Andrea             /Lucarelli, Carlo               26 Das süße Antlitz des Todes                                                                    0
+ItalienKrimiCamilleri, Andrea             /                               00 Das launische Eiland                                                                          0
+ItalienKrimiCamilleri, Andrea             /                               00 Die sizilianische Oper                                                                        0
+ItalienKrimiCamilleri, Andrea             /                               00 Der zweite Kuss des Judas                                                                     0
+ItalienKrimiCamilleri, Andrea             /                               00 König Zosimo                                                                                  0
+ItalienKrimiCamilleri, Andrea             /                               00 Der verliebte Teufel                                                                          0
+ItalienKrimiCamilleri, Andrea             /                               00 Die Farbe der Sonne                                                                           0
+ItalienKrimiCamilleri, Andrea             /                               00 M wie Mafia                                                                                   0
+ItalienKrimiCamilleri, Andrea             /                               00 Das graue Kleid                                                                               0
+ItalienKrimiCamilleri, Andrea             /                               00 Der geraubte Himmel                                                                           0
+ItalienKrimiCarofiglio, Gianrico          /                               01 Reise in die Nacht                                                                            0
+ItalienKrimiCarofiglio, Gianrico          /                               02 In freiem Fall                                                                                0
+ItalienKrimiCarofiglio, Gianrico          /                               03 Das Gesetz der Ehre                                                                           0
+ItalienKrimiCarofiglio, Gianrico          /                               04 In ihrer dunkelsten Stunde                                                                    0
+ItalienKrimiCarofiglio, Gianrico          /                               00 Die Vergangenheit ist ein gefährliches Land                                                   0
+ItalienKrimiCarofiglio, Gianrico          /                               00 Die Illusion der Weisheit                                                                     0
+ItalienKrimiCarofiglio, Gianrico          /                               00 In der Brandung                                                                               0
+ItalienKrimiCarofiglio, Gianrico          /                               00 Am Abgrund aller Dinge                                                                        0
+ItalienKrimiDe Cataldo, Giancarlo         /                               01 Romanzo Criminale                                                                             0
+ItalienKrimiDe Cataldo, Giancarlo         /                               02 Suburra                                                                                       0
+ItalienKrimiDe Cataldo, Giancarlo         /                               00 Zeit der Wut                                                                                  0
+ItalienKrimiDe Cataldo, Giancarlo         /                               00 Denn Dein ist das Böse                                                                        0
+ItalienKrimiDe Cataldo, Giancarlo         /                               00 Ich weiß um deine dunkle Seele                                                                0
+ItalienKrimiDibdin, Michael               /                               01 Entführung auf italienisch                                                                    0
+ItalienKrimiDibdin, Michael               /                               02 Vendetta                                                                                      0
+ItalienKrimiDibdin, Michael               /                               03 Himmelfahrt                                                                                   0
+ItalienKrimiDibdin, Michael               /                               04 Tödliche Lagune                                                                               0
+ItalienKrimiDibdin, Michael               /                               05 Cosi fan tutti                                                                                0
+ItalienKrimiDibdin, Michael               /                               06 Schwarzer Trüffel                                                                             0
+ItalienKrimiDibdin, Michael               /                               07 Sizilianisches Finale                                                                         0
+ItalienKrimiDibdin, Michael               /                               08 Roter Marmor                                                                                  0
+ItalienKrimiDibdin, Michael               /                               09 Im Zeichen der Medusa                                                                         0
+ItalienKrimiDibdin, Michael               /                               00 Tod auf der Piazza                                                                            0
+ItalienKrimiFaletti, Giorgio              /                               00 Ich töte                                                                                      0
+ItalienKrimiFaletti, Giorgio              /                               00 Im Augenblick des Todes                                                                       0
+ItalienKrimiFaletti, Giorgio              /                               00 Im Namen des Mörders                                                                          0
+ItalienKrimiFaletti, Giorgio              /                               00 Falsches Spiel                                                                                0
+ItalienKrimiFaletti, Giorgio              /                               00 Die kleine Feder                                                                              0
+ItalienKrimiFilasto, Nino                 /                               01 Alptraum mit Signora                                                                          0
+ItalienKrimiFilasto, Nino                 /                               02 Der Irrtum des Dottore Gambessi                                                               0
+ItalienKrimiFilasto, Nino                 /                               03 Die Nacht der schwarzen Rosen                                                                 0
+ItalienKrimiFilasto, Nino                 /                               04 Fresko in Schwarz                                                                             0
+ItalienKrimiFilasto, Nino                 /                               05 Pfeffer für Brunelleschi                                                                      0
+ItalienKrimiGiuttari, Michele             /                               01 Die Signatur                                                                                  0
+ItalienKrimiGiuttari, Michele             /                               02 Die Loge der Unschuldigen                                                                     0
+ItalienKrimiGiuttari, Michele             /                               03 Rachefeuer                                                                                    0
+ItalienKrimiGiuttari, Michele             /                               04 Blutsverwandt                                                                                 0
+ItalienKrimiGiuttari, Michele             /                               05 Schwarze Rosen                                                                                0
+ItalienKrimiGiuttari, Michele             /                               00 Das Monster von Florenz -- Anatomie einer Ermittlung                                          0
+ItalienKrimiGrimaldi, Laura               /                               00 Tod einer Anwältin                                                                            0
+ItalienKrimiGrimaldi, Laura               /                               00 Das Monster von Florenz                                                                       0
+ItalienKrimiIsari, Andrea (Richter)       /                               01 Römische Affären                                                                              0
+ItalienKrimiIsari, Andrea (Richter)       /                               02 Letzter Tanz am Tiber                                                                         0
+ItalienKrimiIsari, Andrea (Richter)       /                               03 Römische Rache                                                                                0
+ItalienKrimiIsari, Andrea (Richter)       /                               04 Römische Liebe                                                                                0
+ItalienKrimiLama                          /                               00 Die toten Mädchen von Cilento                                                                 0
+ItalienKrimiDonna Leon                    /                               01 Venezianisches Finale                                                                         0
+ItalienKrimiDonna Leon                    /                               02 Endstation Venedig                                                                            0
+ItalienKrimiDonna Leon                    /                               03 Venezianische Scharade                                                                        0
+ItalienKrimiDonna Leon                    /                               04 Vendetta                                                                                      0
+ItalienKrimiDonna Leon                    /                               05 Acqua Alta                                                                                    0
+ItalienKrimiDonna Leon                    /                               06 Sanft entschlafen                                                                             0
+ItalienKrimiDonna Leon                    /                               07 Nobilta                                                                                       0
+ItalienKrimiDonna Leon                    /                               08 In Sachen Signora Brunetti                                                                    0
+ItalienKrimiDonna Leon                    /                               09 Feine Freunde                                                                                 0
+ItalienKrimiDonna Leon                    /                               10 Das Gesetz der Lagune                                                                         0
+ItalienKrimiDonna Leon                    /                               11 Die dunkle Stunde der Serenissima                                                             0
+ItalienKrimiDonna Leon                    /                               12 Verschwiegene Kanäle                                                                          0
+ItalienKrimiDonna Leon                    /                               13 Beweise, daß es böse ist                                                                      0
+ItalienKrimiDonna Leon                    /                               14 Blutige Steine                                                                                0
+ItalienKrimiDonna Leon                    /                               15 Wie durch ein dunkles Glas                                                                    0
+ItalienKrimiDonna Leon                    /                               16 Lasset die Kinder zu mir kommen                                                               0
+ItalienKrimiDonna Leon                    /                               17 Das Mädchen seiner Träume                                                                     0
+ItalienKrimiDonna Leon                    /                               18 Schöner Schein                                                                                0
+ItalienKrimiDonna Leon                    /                               19 Auf Treu und Glauben                                                                          0
+ItalienKrimiDonna Leon                    /                               20 Reiches Erbe                                                                                  0
+ItalienKrimiDonna Leon                    /                               21 Tierische Profite                                                                             0
+ItalienKrimiDonna Leon                    /                               22 Das goldene Ei                                                                                0
+ItalienKrimiDonna Leon                    /                               23 Tod zwischen den Zeilen                                                                       0
+ItalienKrimiDonna Leon                    /                               24 Endlich mein                                                                                  0
+ItalienKrimiDonna Leon                    /                               25 Ewige Jugend                                                                                  0
+ItalienKrimiDonna Leon                    /                               26 Stille Wasser                                                                                 0
+ItalienKrimiDonna Leon                    /                               27 Heimliche Versuchung                                                                          0
+ItalienKrimiDonna Leon                    /                               28 Ein Sohn ist uns gegeben                                                                      0
+ItalienKrimiDonna Leon                    /                               29 Geheime Quellen                                                                               0
+ItalienKrimiDonna Leon                    /                               30 Bei den Brunettis zu Gast                                                                     0
+ItalienKrimiDonna Leon                    /                               31 Himmlische Juwelen                                                                            0
+ItalienKrimiLucarelli, Carlo              /                               01 Freie Hand für De Luca                                                                        0
+ItalienKrimiLucarelli, Carlo              /                               02 Der trübe Sommer                                                                              0
+ItalienKrimiLucarelli, Carlo              /                               03 Der rote Sonntag                                                                              0
+ItalienKrimiLucarelli, Carlo              /                               04 Italienische Intrige                                                                          0
+ItalienKrimiLucarelli, Carlo              /                               11 Schutzengel                                                                                   0
+ItalienKrimiLucarelli, Carlo              /                               21 Der grüne Leguan                                                                              0
+ItalienKrimiLucarelli, Carlo              /                               22 Der Kampfhund                                                                                 0
+ItalienKrimiLucarelli, Carlo              /Camilleri, Andrea              26 Das süße Antlitz des Todes                                                                    0
+ItalienKrimiLucarelli, Carlo              /                               00 Schüsse aus dem Walkman/Mafia alla Chinese                                                    0
+ItalienKrimiLucarelli, Carlo              /                               00 Mafia alle Chinese                                                                            0
+ItalienKrimiLucarelli, Carlo              /                               00 Autostrada                                                                                    0
+ItalienKrimiLucarelli, Carlo              /                               00 Die schwarze Insel                                                                            0
+ItalienKrimiLucarelli, Carlo              /                               00 Laura di Rimini                                                                               0
+ItalienKrimiMacchiavelli, Loriano         /                               01 Tödliches Gedenken                                                                            0
+ItalienKrimiMacchiavelli, Loriano         /                               02 Die Mörder von Sanleonardo                                                                    0
+ItalienKrimiMacchiavelli, Loriano         /                               03 Die Wahrheit der Rose                                                                         0
+ItalienKrimiMacchiavelli, Loriano         /                               00 Unter den Mauern von Bologna                                                                  0
+ItalienKrimiMalvaldi                      /                               04 Schlechte Karten für den Barista                                                              0
+ItalienKrimiMayall, Felicitas (Veit, B.)  /                               03 Nacht der Stachelschweine                                                                     0
+ItalienKrimiMayall, Felicitas (Veit, B.)  /                               04 Wie Krähen im Nebel                                                                           0
+ItalienKrimiMayall, Felicitas (Veit, B.)  /                               05 Die Löwin aus Cinque Terre                                                                    0
+ItalienKrimiMayall, Felicitas (Veit, B.)  /                               06 Wolfstod                                                                                      0
+ItalienKrimiMayall, Felicitas (Veit, B.)  /                               07 Nachtgefieder                                                                                 0
+ItalienKrimiMayall, Felicitas (Veit, B.)  /                               08 Zeit der Skorpione                                                                            0
+ItalienKrimiMayall, Felicitas (Veit, B.)  /                               09 Schwarze Katzen                                                                               0
+ItalienKrimiMistretta, Roberto            /                               01 Das falsche Spiel des Fischers                                                                0
+ItalienKrimiMistretta, Roberto            /                               02 Die dunkle Botschaft des Verführers                                                           0
+ItalienKrimiMistretta, Roberto            /                               03 Der kalte Blick der Rache                                                                     0
+ItalienKrimiMistretta, Roberto            /                               04 Tödliches Gelübde                                                                             0
+ItalienKrimiMongardi, Fabio               /                               05 Das stumme Urteil                                                                             0
+ItalienKrimiPaglieri, Claudio             /                               06 Kein Espresso für Commissario Luciani                                                         0
+ItalienKrimiPaglieri, Claudio             /                               07 Keine Pizza für Commissario Luciani                                                           0
+ItalienKrimiPaglieri, Claudio             /                               08 Kein Grappa für Commissario Luciani                                                           0
+ItalienKrimiPaglieri, Claudio             /                               09 Das letzte Abendmahl für Commissario Luciani                                                  0
+ItalienKrimiPiazzese, Santo               /                               00 Die Verbrechen in der Via Medina-Sidonia                                                      0
+ItalienKrimiPiazzese, Santo               /                               00 Das Doppelleben des M. Laurent                                                                0
+ItalienKrimiPittorru, Fabio               /                               00 Tod im Tiber                                                                                  0
+ItalienKrimiPrior, Lily                   /                               02 La Notte Azzurra oder Die Stimme der Versuchung                                               0
+ItalienKrimiPrior, Lily                   /                               03 Nektar oder Der Duft der Italienerin                                                          0
+ItalienKrimiPrior, Lily                   /                               04 Sentimenti Italiani oder Träume eines Sommers                                                 0
+ItalienKrimiRemin, Nicolas                /                               01 Schnee in Venedig                                                                             0
+ItalienKrimiRemin, Nicolas                /                               02 Venezianische Verlobung                                                                       0
+ItalienKrimiRemin, Nicolas                /                               03 Gondeln aus Glas                                                                              0
+ItalienKrimiRemin, Nicolas                /                               04 Die Masken von San Marco                                                                      0
+ItalienKrimiRemin, Nicolas                /                               05 Requiem am Rialto                                                                             0
+ItalienKrimiRemin, Nicolas                /                               06 Letzte Lagune                                                                                 0
+ItalienKrimiScerbanenco, Giorgio          /                               07 Das Mädchen aus Mailand (Leichte Mädchen sterben schwer)                                      0
+ItalienKrimiScerbanenco, Giorgio          /                               02 Die Verratenen (Doppelt gekillt hält besser)                                                  0
+ItalienKrimiScerbanenco, Giorgio          /                               03 Der lombardische Kurier (Mord stand nicht im Stundenplan)                                     0
+ItalienKrimiSimi, Giampaolo               /                               05 Die Tote am Lido                                                                              0
+ItalienKrimiSimi, Giampaolo               /                               06 Camorrista                                                                                    0
+ItalienKrimiSimi, Giampaolo               /                               08 Vater, Mörder, Kind                                                                           0
+ItalienKrimiSoria, Piero                  /                               01 Tod in Turin                                                                                  0
+ItalienKrimiSoria, Piero                  /                               02 Solo für eine Tote                                                                            0
+ItalienKrimiSoria, Piero                  /                               03 Das französische Mädchen                                                                      0
+ItalienKrimiVaresi, Valerio               /                               01 Lichtspiele                                                                                   0
+ItalienKrimiVaresi, Valerio               /                               02 Der Nebelfluss                                                                                0
+ItalienKrimiVaresi, Valerio               /                               03 Die Pension in der Via Saffi                                                                  0
+ItalienKrimiVaresi, Valerio               /                               04 Die Schatten von Montelupo                                                                    0
+ItalienKrimiVaresi, Valerio               /                               05 Mit leeren Händen                                                                             0
+ItalienKrimiVerasani, Giorgio             /                               01 Briefe einer Toten                                                                            0
+ItalienKrimiVerasani, Giorgio             /                               02 Die Tote in der Feengrotte                                                                    0
+ItalienKrimiVichi, Marco                  /                               01 Das Geheimnis der Signora                                                                     0
+ItalienKrimiVichi, Marco                  /                               02 Die Macht der Erinnerung                                                                      0
+ItalienKrimiVichi, Marco                  /                               03 Der zweite Tod des stummen Zeugen                                                             0
+ItalienKrimiVichi, Marco                  /                               04 Dunkle Wasser in Florenz                                                                      0
+ItalienKrimiVichi, Marco                  /                               04 Nachtschattenhaus                                                                             0
+ItalienKrimiZilahy, Mirko                 /                               01 Schattenkiller                                                                                0

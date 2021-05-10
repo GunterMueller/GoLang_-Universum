@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 201103 - license see µU.go
+// (c) Christian Maurer   v. 210504 - license see µU.go
 
 // #include <GL/gl.h>
 import
@@ -37,7 +37,7 @@ const (
 func Clear() { clear() }
 func Cls (c col.Colour) { cls(c) }
 func Colour (c col.Colour) { colour(c) }
-func ClearColor (c col.Colour) { clearColor(c) }
+func ClearColour (c col.Colour) { clearColour(c) }
 func Begin (f Figure) { begin(f) }
 func End() { end() }
 func Vertex (x, y, z float64) { vertex(x,y,z) }

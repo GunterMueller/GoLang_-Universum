@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 210419 - license see µU.go
+// (c) Christian Maurer   v. 210507 - license see µU.go
 
 import (
   "os"
@@ -154,7 +154,7 @@ func cds() {
 }
 
 func cd0() {
-  home, v := env.Home(), ".µU/" + env.Call()
+  home, v := env.Home(), "/.µU/" + env.Call()
   p := home + v
   if ! isPath (p) {
     ins (home, v)

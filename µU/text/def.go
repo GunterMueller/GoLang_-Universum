@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 201104 - license see µU.go
+// (c) Christian Maurer   v. 210509 - license see µU.go
 
 import (
   . "µU/obj"
@@ -14,6 +14,8 @@ type
   Editor
   Stringer
   Printer
+
+  TeX() string
 
 // Specs see str/def.go.
   Equiv (Y Text) bool

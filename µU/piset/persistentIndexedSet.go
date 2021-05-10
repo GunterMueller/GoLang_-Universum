@@ -1,6 +1,6 @@
 package piset
 
-// (c) Christian Maurer   v. 210418 - license see µU.go
+// (c) Christian Maurer   v. 210509 - license see µU.go
 
 import (
   "µU/ker"
@@ -185,8 +185,10 @@ func (x *persistentIndexedSet) Trav (op Op) {
   x.PersistentSequence.Jump (false)
   x.Set.Trav (func (a Any) {
     op (a)
+/*/
     x.PersistentSequence.Put (a)
     x.PersistentSequence.Step (true)
+/*/
   })
 }
 
@@ -212,14 +214,22 @@ func (x *persistentIndexedSet) Sort() {
   x.Set.Sort()
 }
 
-func (x *persistentIndexedSet) Operate (l, c uint) {
-  hint := "Kommandotaste drücken       Hilfe: F1       Programm beenden: Esc"
+var
+  tex string
+
+func TeX (a Any) {
+  o := a.(TeXer)
+  tex += o.TeX()
+}
+
+func (x *persistentIndexedSet) Operate() {
+  hint := "Hilfe: F1                  Ende: Esc"
   x.Jump (false)
   if x.Empty() {
     o := x.Object.(Indexer)
     o.Clr()
     for {
-      o.(Editor).Edit (l, c)
+      o.(Editor).Edit (0, 0)
       if ! o.Empty() {
         x.Ins (o)
         break
@@ -230,11 +240,11 @@ func (x *persistentIndexedSet) Operate (l, c uint) {
   for {
     o := x.Get().(Indexer)
     o0 := Clone(o).(Indexer)
-    o.(Editor).Write (l, c)
+    o.(Editor).Write (0, 0)
     errh.Hint (hint)
     switch k, _ := kbd.Command(); k {
     case kbd.Enter:
-      o.(Editor).Edit (l, c)
+      o.(Editor).Edit (0, 0)
       if o.Empty() {
         x.Del()
       } else {
@@ -255,7 +265,7 @@ func (x *persistentIndexedSet) Operate (l, c uint) {
     case kbd.Ins:
       errh.DelHint()
       o.Clr()
-      o.(Editor).Edit (l, c)
+      o.(Editor).Edit (0, 0)
       if ! o.Empty() {
         x.Ins (o)
       }
@@ -271,7 +281,10 @@ func (x *persistentIndexedSet) Operate (l, c uint) {
       errh.Help (help)
       errh.Hint (hint)
     case kbd.Search:
-      o.(Editor).Edit (l, c)
+      o.(Editor).Edit (0, 0)
+    case kbd.Print:
+      tex = ""
+      x.Trav (TeX)
     }
     errh.DelHint()
   }

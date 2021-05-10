@@ -1,20 +1,13 @@
-type
-  term struct {
-              theType
-              string
-              box.Box
-           wd uint // width of Box
-        value,
-         real float64
-           op r.Operation
-  left, right *term
-     variable string
-    variables []string
-            f r.Function
-          arg,
-     interior *term
-              errors
- actual, fehl uint
-       cF, cB col.Colour
-             }
-
+func (x *term) Type() string {
+func (x *term) Empty() bool {
+func (x *term) Clr() {
+func (x *term) String() string {
+func (x *term) Colours (f, b col.Colour) {
+func (x *term) Wd (w uint) {
+func (x *term) Write (l, c uint) {
+func (x *term) Edit (l, c uint) {
+func (x *term) Num() uint {
+func (x *term) Variables() []string {
+func (x *term) Val() float64 {
+func (x *term) Val1 (a float64) float64 {
+func (x *term) Eq (Y Term) bool {

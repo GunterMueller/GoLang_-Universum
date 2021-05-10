@@ -137,6 +137,15 @@ func (x *text) String() string {
   return x.string
 }
 
+func (x *text) TeX() string {
+  t := x.string
+  if ! str.DevilsDung (t) {
+    t = str.UTF8 (t)
+  }
+  str.OffSpc1 (&t)
+  return t
+}
+
 func (x *text) Colours (f, b col.Colour) {
   x.cF, x.cB = f, b
 }

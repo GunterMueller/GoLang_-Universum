@@ -1,23 +1,19 @@
 package pers
 
-// (c) Christian Maurer   v. 210308 - license see µU.go
+// (c) Christian Maurer   v. 210510 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
 )
 const ( // Format
-           // ohne Maske:            1 Zeile,
-  VeryShort = iota // Name, Vorname    maximal 35 Spalten
-  Short    // Name, Vorname                    42 Spalten
-  ShortB   // Name, Vorname (GebDat)           53 Spalten
-  ShortT   // Anrede, Name, Vorname
-  ShortTB  // Anrede, Name, Vorname (GebDat)
-           // mit Maske:
-  Long     // Name, Vorname, m/w     1 Zeile,  64 Spalten
-  LongB    // lang, GebDat           1 Zeile,  80 Spalten
-  LongT    // lang, Anrede           2 Zeilen, 64 Spalten
-  LongTB   // lang, GebDat, Anrede   2 Zeilen, 80 Spalten
+// ohne Maske
+  Short = iota // Name, Vorname         1 Zeile,  43 Spalten
+  ShortB       // Short + GebDat        1 Zeile,  53 Spalten
+// mit Maske
+  Long         // Name, Vorname         1 Zeile,  64 Spalten
+  LongB        // Long + GebDat         1 Zeile,  80 Spalten
+  LongTB       // Anrede + LongB + m/w  2 Zeilen, 80 Spalten
   NFormats
 )
 type

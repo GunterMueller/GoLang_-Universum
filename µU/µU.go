@@ -1,7 +1,6 @@
 package main
 
-/* (c) 1986-2021  Christian Maurer
-       christian.maurer-berlin.eu proprietary - all rights reserved
+/* (c) 1986-2021  Christian Maurer       maurer-berlin.eu proprietary - all rights reserved
 
   Das Mikrouniversum µU ist nur zum Einsatz in der Lehre konstruiert  und hat deshalb einen
   rein akademischen Charakter.  Es liefert u.a. eine Reihe von Beispielen für mein Lehrbuch
@@ -29,13 +28,18 @@ package main
   Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.) */
 
 import (
-  "µU/env"; "µU/time"; "µU/cdrom"; "µU/kbd"; "µU/col"; "µU/scr"; "µU/vect"; "µU/gl"
-  "µU/errh"; "µU/scale"; "µU/pbar"; "µU/files"; "µU/z"; "µU/lint"; "µU/q"; "µU/r"; "µU/stk"
-  "µU/buf"; "µU/bbuf"; "µU/bpqu"; "µU/menue"; "µU/date"; "µU/fuday"; "µU/ppm"; "µU/fig2"
-  "µU/piset"; "µU/persaddr"; "µU/mol"; "µU/schol"; "µU/gram"; "µU/audio"; "µU/book"; "µU/reg"
-  "µU/v"; "µU/car"; "µU/schan"; "µU/achan"; "µU/lock"; "µU/asem"; "µU/barr"; "µU/rw"; "µU/lr"
-  "µU/lock2"; "µU/lockn"; "µU/phil"; "µU/smok"; "µU/barb"; "µU/mstk"; "µU/mbuf"; "µU/mbbuf"
-  "µU/macc"; "µU/nchan"; "µU/naddr"; "µU/dlock"; "µU/dgra"; "µU/rpc"; "µU/vnset"
+  "µU/achan"; "µU/audio"; "µU/barb"; "µU/barr"; "µU/bbuf"; "µU/book"; "µU/bpqu"; "µU/bytes"
+  "µU/car"; "µU/cdrom"; "µU/col"; "µU/comp"; "µU/day"; "µU/date"; "µU/dgra"; "µU/dlock"
+  "µU/env"; "µU/errh"; "µU/f"; "µU/fig2"; "µU/files"; "µU/fuday"; "µU/gram"; "µU/host"
+  "µU/ieee"; "µU/kbd"; "µU/li"; "µU/lock2"; "µU/lr"; "µU/macc"; "µU/mbbuf"; "µU/mbuf"
+  "µU/mcorn"; "µU/menue"; "µU/mstk"; "µU/pbar"; "µU/persaddr"; "µU/phil"; "µU/piset"
+  "µU/pos"; "µU/ppm"; "µU/q"; "µU/r"; "µU/reg"; "µU/rpc"; "µU/rw"; "µU/scale"; "µU/schan"
+  "µU/scr"; "µU/smok"; "µU/term"; "µU/texts"; "µU/time"; "µU/vnset"; "µU/z"
+)
+const (
+  yy = 2021
+  mm =    5
+  dd =   10
 )
 var (
   red = col.FlashRed()
@@ -141,51 +145,27 @@ func main() { // get all packages compiled and show the license
     ht = int(scr.Ht())
   }
   defer scr.Fin()
+  achan.New(0); audio.New(); barb.NewDir(); barr.New(2); bbuf.New(nil, 0); book.New()
+  bpqu.New(0, 1); bytes.Touch(); if cdrom.MaxVol == 0 {}; comp.Touch(); date.New()
+  dgra.Touch(); dlock.New(0, nil, 0); f.Touch(); fig2.Touch(); fuday.New(); gram.Touch()
+  host.New(); ieee.New(); li.New(0); lock2.NewPeterson(); lr.NewMutex(); macc.New()
+  mbbuf.New(nil, 1); mbuf.New(0); mcorn.New(0); menue.Touch(); mstk.New(0); pbar.Touch()
+  persaddr.New(); phil.TouchPhil(); piset.Touch(); pos.Touch(); q.New(); r.String(0)
+  reg.Touch(); rpc.Touch(); rw.New1(); scale.Lim(0,0,0,0,0); schan.New(0)
+  smok.TouchSmok(); term.New(""); texts.Touch(); vnset.EmptySet(); z.String(0)
+  var v day.Calendarday = day.New()
+  v.Set (dd, mm, yy)
+  v.SetFormat (day.Yymmdd)
   wd = int(scr.Wd())
   nx = int(scr.Wd())
   nx1, ny1 = int(scr.Wd1()), int(scr.Ht1())
   wdtext = 91 * nx1 // 91 == width of license text lines + 2
   files.Cd (env.Gosrc() + "/µU")
-  vect.New()
-  gl.Touch()
-  if cdrom.MaxVol == 0 {}
-  scale.Lim(0,0,0,0,0)
-  pbar.Touch()
-  z.String(0); lint.New(0); q.New(); r.String(0)
-  stk.New(0); buf.New(0); bbuf.New(nil, 0); bpqu.New(0, 1)
-  menue.Touch()
-  date.New(); fuday.New()
-  fig2.Touch()
-  piset.Touch()
-  gram.Touch()
-  persaddr.New()
-  mol.Touch()
-  schol.New()
-  audio.New(); book.New()
-  reg.Touch()
-  schan.New(0)
-  achan.New(0)
-  lock.NewMutex()
-  asem.New(2)
-  barr.New(2)
-  rw.New1()
-  lr.NewMutex()
-  lock2.NewPeterson(); lockn.NewTiebreaker(2)
-  phil.TouchPhil()
-  smok.TouchSmok(); barb.NewDir()
-  mstk.New(0); mbuf.New(0); mbbuf.New(nil, 1)
-  macc.New()
-  naddr.New(nchan.Port0)
-  dgra.Touch()
-  dlock.New(0, nil, 0)
-  rpc.Touch()
-  vnset.EmptySet()
   go input()
-  cl, cf, cb := v.Colours()
+  cl, cf, cb := col.LightWhite(), col.LightGreen(), col.BlackGreen()
   circ (ht / 2, cf);
   circ (wd - ht / 2, cl)
-  errh.MuLicense ("µU", v.String(),
-                  "1986-2021  Christian Maurer   https://maurer-berlin.eu/mu", cl, cf, cb)
+  errh.MuLicense ("µU", v.String(), "1986-2021  Christian Maurer   https://maurer-berlin.eu/mU", cl, cf, cb)
   scr.ScrColourB (cb)
   done := make(chan bool)
   go drive (cl, cf, cb, done)

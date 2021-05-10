@@ -1,3 +1,3 @@
-package pbar
+package f
 
 func Touch() { }

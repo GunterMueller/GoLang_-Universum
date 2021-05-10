@@ -1,6 +1,6 @@
 package term
 
-// (c) Christian Maurer   v. 201214 - license see µU.go
+// (c) Christian Maurer   v. 210506 - license see µU.go
 //
 // >>> under development
 
@@ -13,8 +13,16 @@ type
 type
   Term interface {
 
-  Editor
+  Clearer
+
+  Eq (Y Term) bool
+
+  Write (l, c uint)
+  Edit (l, c uint)
   col.Colourer
+
+  Colours (f, b col.Colour)
+  Wd (w uint)
 
   String() string
 

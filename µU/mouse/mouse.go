@@ -1,11 +1,10 @@
 package mouse
 
-// (c) Christian Maurer  v. 191125 - license see µU.go
+// (c) Christian Maurer   v. 210505 - license see µU.go
 
 import (
   "os"
   "µU/ker"
-  "µU/xwin"
 )
 const (
   go_ = iota         // mousemove without any button pressed
@@ -31,38 +30,35 @@ var (
 )
 
 func init() {
-  if xwin.UnderX() {
-    mousepipe = (chan Command)(nil)
+  mousedev := "/dev" + Mouse
+  var e error
+  if file, e = os.Open (mousedev); e == nil {
+    Def (0, 0, 1600, 1200) // TODO
+    lastCommand = go_
+    oldButt = none
+    mousepipe = make (chan Command)
+    go catch()
   } else {
-    var e error
-    if file, e = os.Open ("/dev/input/mice"); e == nil {
-      Def (0, 0, 1000, 1000) // TODO
-      lastCommand = go_
-      oldButt = none
-      mousepipe = make (chan Command)
-      go catch()
-    } else {
-      ker.Panic ("/dev/input/mice nicht lesbar !")
-    }
+    ker.Panic (mousedev + " nicht lesbar !")
   }
 }
 
-func Ex() bool {
+func ex() bool {
   return mousepipe != (chan Command)(nil)
 }
 
-func Channel() chan Command {
+func channel() chan Command {
   return mousepipe
 }
 
-func Def (x, y, w, h uint) {
+func def (x, y, w, h uint) {
   x0, y0 = x, y
   x1, y1 = x0 + w - 1, y0 + h - 1
   yy = y1
   xm, ym = x0 + w / 2, y0 + h / 2
 }
 
-func Warp (x, y uint) {
+func warp (x, y uint) {
   if x > x1 {
     x = x1
   }
@@ -194,6 +190,6 @@ func catch() {
   }
 }
 
-func Pos() (int, int) {
+func pos() (int, int) {
   return int(xm), int(yy - ym)
 }

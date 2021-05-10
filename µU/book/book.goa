@@ -1,0 +1,182 @@
+package book
+
+// (c) Christian Maurer   v. 210415 - license see µU.go
+
+import (
+  . "µU/obj"
+  "µU/col"
+  "µU/text"
+  "µU/enum"
+  "µU/bn"
+  "µU/masks"
+  "µU/atom"
+  "µU/mol"
+)
+const (
+  lenAuthor = 30
+  lenTitle = 63
+)
+type
+  order int; const (
+  subject = iota
+  author
+  nOrders
+)
+var (
+  actOrd order
+  cF, cB = col.LightWhite(), col.Black()
+)
+type
+  book struct {
+              mol.Molecule
+              }
+
+func (x *book) imp (Y Any) mol.Molecule {
+  y, ok:= Y.(*book)
+  if ! ok { TypeNotEqPanic (x, Y) }
+  return y.Molecule
+}
+
+func new_() Book {
+  x := new (book)
+  x.Molecule = mol.New()
+
+  a := atom.New (enum.New (enum.Book)) // Gebiet
+  a.Colours (col.LightWhite(), col.Blue())
+  a.SetFormat (enum.Long)
+  x.Ins (a, 2, 1)
+
+  a = atom.New (text.New (lenAuthor)) // Autor
+  a.Colours (col.Yellow(), col.Red())
+  x.Ins (a, 2, 16)
+
+  a = atom.New (text.New (lenAuthor)) // Koautor
+  a.Colours (col.LightWhite(), col.Red())
+  x.Ins (a, 2, 49)
+
+  a = atom.New (bn.New (3)) // Nr
+  a.Colours (col.LightWhite(), col.DarkCyan())
+  x.Ins (a, 5, 10)
+
+  a = atom.New (text.New (lenTitle)) // Titel
+  a.Colours (col.LightWhite(), col.DarkGreen())
+  x.Ins (a, 5, 16)
+
+  a = atom.New (text.New (lenAuthor)) // Fundort
+  a.Colours (col.LightWhite(), col.DarkGray())
+  x.Ins (a, 8, 49)
+/*/
+          1         2         3         4         5         6         7
+01234567890123456789012345678901234567890123456789012345678901234567890123456789
+
+ Gebiet         Autor/in                         Koautor/in
+ ____________   ______________________________   ______________________________
+
+          Nr.   Titel
+          ___   _______________________________________________________________
+
+                                                 Fundort
+                                                 ______________________________
+/*/
+  m := masks.New()
+  m.Ins ("Gebiet",     1,  1)
+  m.Ins ("Autor/in",   1, 16)
+  m.Ins ("Koautor/in", 1, 49)
+  m.Ins ("Nr.",        4, 10)
+  m.Ins ("Titel",      4, 16)
+  m.Ins ("Fundort",    7, 49)
+  x.SetMasks (m)
+  return x
+}
+
+func (x *book) Eq (Y Any) bool {
+  return x.Molecule.Eq (x.imp (Y))
+}
+
+func (x *book) Copy (Y Any) {
+  x.Molecule.Copy (x.imp(Y))
+}
+
+func (x *book) Clone() Any {
+  y := new_()
+  y.Copy (x)
+  return y
+}
+
+func (x *book) Less (Y Any) bool {
+  y := x.imp(Y)
+  xs := x.Component(0).(atom.Atom)
+  xa := x.Component(1).(atom.Atom)
+  xt := x.Component(4).(atom.Atom)
+  ys := y.Component(0).(atom.Atom)
+  ya := y.Component(1).(atom.Atom)
+  yt := y.Component(4).(atom.Atom)
+  switch actOrd {
+  case subject:
+    if xs.Eq (ys) {
+      if xa.Eq (ya) {
+        return xt.Less (yt)
+      } else {
+        return xa.Less (ya)
+      }
+    }
+    return xs.Less (ys)
+  case author:
+    if xa.Eq (ya) {
+      if xs.Eq (ys) {
+        return xt.Less (yt)
+      } else {
+        return xs.Less (ys)
+      }
+    }
+    return xa.Less (ya)
+  }
+  panic ("")
+}
+
+func (x *book) String() string {
+  s := ""
+  s += (x.Component(0)).(Stringer).String()
+  s += " "
+  s += (x.Component(1)).(Stringer).String()
+  s += " "
+  s += (x.Component(2)).(Stringer).String()
+  s += " "
+  s += (x.Component(3)).(Stringer).String()
+  s += " "
+  s += (x.Component(4)).(Stringer).String()
+  s += " "
+  s += (x.Component(5)).(Stringer).String()
+  return s
+}
+
+func (x *book) Defined (s string) bool {
+  if ! (x.Component(0)).(Stringer).Defined (s[0:12]) {
+    return false
+  }
+  if ! (x.Component(1)).(Stringer).Defined (s[13:43]) {
+    return false
+  }
+  if ! (x.Component(2)).(Stringer).Defined (s[44:74]) {
+    return false
+  }
+  if ! (x.Component(3)).(Stringer).Defined (s[75:77]) {
+    return false
+  }
+  if ! (x.Component(4)).(Stringer).Defined (s[78:141]) {
+    return false
+  }
+  if ! (x.Component(5)).(Stringer).Defined (s[142:172]) {
+    return false
+  }
+  x.Write (8, 0)
+  return true
+}
+
+func (x *book) Index() Func {
+  return Id
+}
+
+func (x *book) Rotate() {
+  actOrd = (actOrd + 1) % nOrders
+}

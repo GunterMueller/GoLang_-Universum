@@ -12,6 +12,7 @@ type
 
   Pos() uint
   Index() Any
+  TeX() string
 }
 
 func New (a Any, n uint) Pair { return new_(a,n) }

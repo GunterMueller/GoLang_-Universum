@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 210314 - license see µU.go
+// (c) Christian Maurer   v. 210505 - license see µU.go
 
 //#include <stdlib.h>
 //#include <fcntl.h>
@@ -57,9 +57,9 @@ import (
   "µU/col"
   "µU/mode"
   "µU/linewd"
+  "µU/mouse"
   "µU/scr/shape"
   "µU/scr/ptr"
-  "µU/scr/mouse"
 )
 type
   console struct {

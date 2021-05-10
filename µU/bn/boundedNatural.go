@@ -1,6 +1,6 @@
 package bn
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 210509 - license see µU.go
 
 import (
   "µU/ker"
@@ -128,7 +128,10 @@ func (n *natural) Colours (f, b col.Colour) {
 }
 
 func (n *natural) Write (l, c uint) {
-  n.WriteGr (8 * int(c), 16 * int(l))
+  bx.Wd (n.wd)
+  bx.Colours (n.f, n.b)
+  bx.Write (str.New(n.wd), l, c)
+  bx.Write (n.String(), l, c)
 }
 
 func (x *natural) Edit (l, c uint) {
@@ -138,6 +141,7 @@ func (x *natural) Edit (l, c uint) {
 func (n *natural) WriteGr (x, y int) {
   bx.Wd (n.wd)
   bx.Colours (n.f, n.b)
+  bx.WriteGr (str.New(n.wd), x, y)
   bx.WriteGr (n.String(), x, y)
 }
 

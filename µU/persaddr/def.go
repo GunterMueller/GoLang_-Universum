@@ -1,15 +1,12 @@
 package persaddr
 
-// (c) Christian Maurer   v. 210308 - license see µU.go
+// (c) Christian Maurer   v. 210510 - license see µU.go
 
-import (
+import
   . "µU/obj"
-  "µU/col"
-)
 type
   PersonAddress interface { // pairs (person, address)
 
-  col.Colourer
   Indexer
   Rotator
 }
