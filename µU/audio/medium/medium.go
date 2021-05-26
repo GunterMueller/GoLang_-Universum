@@ -1,6 +1,6 @@
 package medium
 
-// (c) Christian Maurer   v. 210509 - license see µU.go
+// (c) Christian Maurer   v. 210514 - license see µU.go
 
 import (
   . "µU/obj"
@@ -19,8 +19,8 @@ const (
   nMedien
 )
 var tx = [nMedien]string {"   ",
-                          "SP ",
                           "LP ",
+                          "SP ",
                           "CD ",
                           "DVD",
                           "BR "}
@@ -97,6 +97,7 @@ func (x *medium) Edit (l, c uint) {
 }
 
 func (x *medium) TeX() string {
+  x.Text.Defined (tx[x.int])
   t := x.Text.String()
   str.OffSpc1 (&t)
   return t

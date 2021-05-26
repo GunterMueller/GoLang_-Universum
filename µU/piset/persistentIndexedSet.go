@@ -1,13 +1,11 @@
 package piset
 
-// (c) Christian Maurer   v. 210509 - license see µU.go
+// (c) Christian Maurer   v. 210525 - license see µU.go
 
 import (
   "µU/ker"
   . "µU/obj"
   "µU/str"
-  "µU/kbd"
-  "µU/errh"
   "µU/pseq"
   "µU/buf"
   "µU/set"
@@ -22,18 +20,6 @@ type
                               set.Set "pairs of index and position in the file"
                               buf.Buffer "free positions in the file"
                               }
-var
-  help = []string {" vor-/rückwärts: Pfeiltaste auf-/abwärts",
-                   "zum Anfang/Ende: Pos1/End               ",
-                   " Eintrag ändern: Enter                  ",
-                   "       einfügen: Einfg                  ",
-                   "      entfernen: Entf                   ",
-                   "       umordnen: F3                     ",
-                   "   Programmende: Esc                    " }
-
-func init() {
-  for i, h := range (help) { help[i] = str.Lat1 (h) }
-}
 
 func new_(o Indexer) PersistentIndexedSet {
   if ! IsIndexer (o) { ker.Oops() }
@@ -107,6 +93,21 @@ func (x *persistentIndexedSet) Num() uint {
 
 func (x *persistentIndexedSet) Ex (a Any) bool {
   return x.Set.Ex (pair.New (x.Func (a), 0))
+}
+
+func (x *persistentIndexedSet) ExPred (p Pred) bool {
+  x.Jump (false)
+  for {
+    o := x.Get()
+    if p (o) {
+      return true
+    }
+    if x.Eoc (true) {
+      return false
+    }
+    x.Step (true)
+  }
+  return false
 }
 
 func (x *persistentIndexedSet) Ins (a Any) {
@@ -184,7 +185,11 @@ func (x *persistentIndexedSet) Trav (op Op) {
   if x.Set.Empty() { return }
   x.PersistentSequence.Jump (false)
   x.Set.Trav (func (a Any) {
-    op (a)
+    p := a.(pair.Pair).Pos()
+    x.PersistentSequence.Seek (p)
+    x.Object = x.PersistentSequence.Get().(Object)
+    object := x.Object.Clone().(Object)
+    op (object)
 /*/
     x.PersistentSequence.Put (a)
     x.PersistentSequence.Step (true)
@@ -217,13 +222,30 @@ func (x *persistentIndexedSet) Sort() {
 var
   tex string
 
-func TeX (a Any) {
-  o := a.(TeXer)
-  tex += o.TeX()
+func texClr() {
+  tex = ""
 }
 
-func (x *persistentIndexedSet) Operate() {
-  hint := "Hilfe: F1                  Ende: Esc"
+func teX (a Any) {
+  tex += a.(TeXer).TeX()
+}
+
+func (x *persistentIndexedSet) TeX() string {
+  defer texClr()
+  return tex
+}
+
+/*/
+func (x *persistentIndexedSet) Operate (s func (i, i1 Indexer) bool) {
+  help := []string {" vor-/rückwärts: Pfeiltaste ab-/aufwärts",
+                    "zum Anfang/Ende: Pos1/Ende              ",
+                    " Eintrag ändern: Enter                  ",
+                    "       einfügen: Einfg                  ",
+                    "      entfernen: Entf                   ",
+                    "       umordnen: F3                     ",
+                    "         suchen: F2                     ",
+                    "   Programmende: Esc                    "}
+  for i, h := range (help) { help[i] = str.Lat1 (h) }
   x.Jump (false)
   if x.Empty() {
     o := x.Object.(Indexer)
@@ -241,7 +263,7 @@ func (x *persistentIndexedSet) Operate() {
     o := x.Get().(Indexer)
     o0 := Clone(o).(Indexer)
     o.(Editor).Write (0, 0)
-    errh.Hint (hint)
+    errh.Hint ("Hilfe: F1                  Ende: Esc")
     switch k, _ := kbd.Command(); k {
     case kbd.Enter:
       o.(Editor).Edit (0, 0)
@@ -269,23 +291,31 @@ func (x *persistentIndexedSet) Operate() {
       if ! o.Empty() {
         x.Ins (o)
       }
-      errh.Hint (hint)
     case kbd.Del:
       if errh.Confirmed() {
         x.Del()
       }
+    case kbd.Help:
+      errh.Help (help)
+    case kbd.Search:
+      x.Jump (false)
+      for {
+        if sub (o, x.Get().(Indexer)) {
+          break
+        }
+        if x.Eoc (true) {
+          break
+        }
+        x.Step (true)
+      }
     case kbd.Act:
       x.Object.(Rotator).Rotate()
       x.Sort()
-    case kbd.Help:
-      errh.Help (help)
-      errh.Hint (hint)
-    case kbd.Search:
-      o.(Editor).Edit (0, 0)
     case kbd.Print:
       tex = ""
-      x.Trav (TeX)
+      x.Trav (teX)
     }
     errh.DelHint()
   }
 }
+/*/

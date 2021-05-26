@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 210510 - license see µU.go
+// (c) Christian Maurer   v. 210511 - license see µU.go
 
 import (
   . "µU/obj"
@@ -23,7 +23,7 @@ type
   col.Colourer
   Editor
   Formatter
-  Stringer
+  TeXer
   Printer
   Rotator
 

@@ -1,10 +1,9 @@
 package persaddr
 
-// (c) Christian Maurer   v. 210510 - license see µU.go
+// (c) Christian Maurer   v. 210511 - license see µU.go
 
 import (
   . "µU/obj"
-  "µU/str"
   "µU/col"
   "µU/font"
   "µU/pers"
@@ -65,20 +64,8 @@ func (x *personAddress) Less (Y Any) bool {
   return x.Person.Less (y.Person)
 }
 
-func (x *personAddress) Defined (s string) bool {
-  if str.Empty (s) {
-    x.Clr()
-    return true
-  }
-// TODO
-  return false
-}
-
-func (x *personAddress) String() string {
-  s := ""
-  s += x.Person.String()
-  s += "\n"
-  s += x.Address.String()
+func (x *personAddress) TeX() string {
+  s := x.Person.TeX() + x.Address.TeX() + "\n\\smallskip"
   return s
 }
 

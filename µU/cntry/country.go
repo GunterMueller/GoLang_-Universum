@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 210405 - license see µU.go
+// (c) Christian Maurer   v. 210511 - license see µU.go
 
 import (
   . "µU/obj"
@@ -62,7 +62,7 @@ type (
               tld,       // len 2
              name string
            prefix uint16
-              kfz,
+              car,
               ioc,
              fifa string // len 3
                   }
@@ -122,7 +122,7 @@ func (x *country) Clr() {
   x.attribut.tld = str.New (2)
   x.attribut.name = str.New (length)
   x.attribut.prefix = 0
-  x.attribut.kfz = "   "
+  x.attribut.car = "   "
   x.attribut.ioc = "   "
   x.attribut.fifa = "   "
 }
@@ -134,7 +134,7 @@ func (x *country) Copy (Y Any) {
   x.attribut.tld = y.attribut.tld
   x.attribut.name = y.attribut.name
   x.attribut.prefix = y.attribut.prefix
-  x.attribut.kfz = y.attribut.kfz
+  x.attribut.car = y.attribut.car
   x.attribut.ioc = y.attribut.ioc
   x.attribut.fifa = y.attribut.fifa
   x.Format = y.Format
@@ -158,6 +158,12 @@ func (x *country) Less (Y Any) bool {
 
 func (x *country) String() string {
   return x.attribut.name
+}
+
+func (x *country) TeX() string {
+  s := x.attribut.car
+  str.OffSpc1 (&s)
+  return s
 }
 
 func (x *country) Defined (t string) bool {
@@ -219,7 +225,7 @@ func (x *country) Write (l, c uint) {
     n.Colours (x.cF, x.cB)
     n.Write (uint(x.attribut.prefix), l, c)
   case Car:
-    bx.Write (x.attribut.kfz, l, c)
+    bx.Write (x.attribut.car, l, c)
   case Ioc:
     bx.Write (x.attribut.ioc, l, c)
   case Fifa:
@@ -322,12 +328,12 @@ func (x *country) Name (t string) {
   x.name = str.New (length)
 }
 
-func def (n id, name, iso, tld string, prefix uint16, kfz, loc, fifa string) {
+func def (n id, name, iso, tld string, prefix uint16, car, loc, fifa string) {
   list[n].tld = tld
   list[n].name = str.Lat1 (name)
   list[n].iso = iso
   list[n].prefix = prefix
-  list[n].kfz = kfz
+  list[n].car = car
   list[n].ioc = loc
   list[n].fifa = fifa
 }
@@ -335,7 +341,7 @@ func def (n id, name, iso, tld string, prefix uint16, kfz, loc, fifa string) {
 func init() {
   bx.Wd (length)
   list = make ([]attribut, nNations)
-                                                   // iso   tld   Tel    kfz    ioc   fifa
+                                                   // iso   tld   Tel    car    ioc   fifa
   def (undefined,          "                      ", "   ", "  ", 0   , "   ", "   ", "   ")
 
   def (Afghanistan,        "Afghanistan",            "AFG", "af", 93  , "AFG", "AFG", "AFG")

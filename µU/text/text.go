@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 210513 - license see µU.go
 
 import (
   "µU/rand"
@@ -14,8 +14,8 @@ import (
 )
 type
   text struct {
-              uint "uint"
-              string "string"
+              uint "length of string"
+              string
        cF, cB col.Colour
               font.Font
               font.Size
@@ -157,8 +157,7 @@ func (x *text) Write (l, c uint) {
 }
 
 func (x *text) Edit (l, c uint) {
-  bx.Wd (x.uint)
-  bx.Colours (x.cF, x.cB)
+  x.Write (l, c)
   bx.Edit (&x.string, l, c)
 }
 

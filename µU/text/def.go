@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 210509 - license see µU.go
+// (c) Christian Maurer   v. 210511 - license see µU.go
 
 import (
   . "µU/obj"
@@ -13,9 +13,8 @@ type
   col.Colourer
   Editor
   Stringer
+  TeXer
   Printer
-
-  TeX() string
 
 // Specs see str/def.go.
   Equiv (Y Text) bool
@@ -32,9 +31,6 @@ type
 
 // starting with position p in x, n bytes are removed; tail filled with spaces up to the original length
   Rem (p, n uint)
-
-// x besteht aus Y ab Position p der Länge n, Rest Leerzeichen
-//  Cut (Y Text, p, n uint)
 
   IsUpper0() bool
   ToUpper()

@@ -1,10 +1,9 @@
 package pers
 
-// (c) Christian Maurer   v. 210510 - license see µU.go
+// (c) Christian Maurer   v. 210511 - license see µU.go
 
 import (
   . "µU/obj"
-  "µU/str"
   "µU/kbd"
   "µU/col"
   "µU/box"
@@ -37,14 +36,10 @@ type (
 )
 var (
   actualOrder = nameOrder
-  bx, shbx = box.New(), box.New()
+  bx = box.New()
   pbx = pbox.New()
   tmp = day.New()
 )
-
-func init() {
-  shbx.Wd (lenShort)
-}
 
 func new_() Person {
   x := new(person)
@@ -201,7 +196,6 @@ func (x *person) SetFormat (f Format) {
 func (x *person) Colours (f, b col.Colour) {
   x.surname.Colours (f, b)
   x.firstName.Colours (f, b)
-  shbx.Colours (f, b)
   x.TruthValue.Colours (f, b)
   x.Calendarday.Colours (f, b)
   x.title.Colours (f, b)
@@ -230,8 +224,7 @@ LongB:
 
 LongTB:
  Name: ___________________________   Vorname: _______________    geb.: ________
- Anr.: ___________________________      m/w: _
-
+ Anr.: ___________________________       m/w: _
 *******************************************************************************/
 
 func (x *person) writeMask (l, c uint) {
@@ -270,38 +263,14 @@ func (x *person) writeMask (l, c uint) {
   }
 }
 
-func (x *person) String() string {
-// TODO
-  n, f := x.surname.String(), x.firstName.String()
-  str.OffSpc (&n); str.OffSpc (&f)
-  nf, b := n + ", " + f, x.Calendarday.String()
-  switch x.Format {
-  case Short:
-    return nf
-  case ShortB:
-    return nf + " (" + b + ")"
-/* mit Maske:
-  case Long:    // Name, Vorname, m/w      1 line, 64 columns
-    return ""
-  case LongB:   // lang, GebDat            1 line, 80 columns
-    return ""
-  case LongT:   // lang, Anrede            2 line, 64 columns
-    return ""
-  case LongTB:  // lang, GebDat, Anrede   2 lines, 80 columns
-    return ""
-*/
-  }
-  return nf
-}
-
-func (x *person) Defined (s string) bool {
-// TODO
-  if ! x.surname.Defined (s[:26]) { return false }
-  if ! x.firstName.Defined (s[26:41]) { return false }
-  if ! x.TruthValue.Defined (s[41:42]) { return false }
-  if ! x.Calendarday.Defined (s[42:50]) { return false }
-//  if ! x.title.Defined (s[49:]) { return false }
-  return true
+func (x *person) TeX() string {
+  s := ""
+  if ! x.title.Empty() { s += "{\\bf " + x.title.TeX() + "} " }
+  s += "{\\bf " + x.firstName.TeX() + " " + x.surname.TeX() + "}"
+//  if ! x.TruthValue.Empty() { s += " (" + x.TruthValue.String() + ")" }
+  if ! x.Calendarday.Empty() { s += ", geb. " + x.Calendarday.String() }
+  s += "\\newline\n"
+  return s
 }
 
 func (x *person) Write (l, c uint) {
@@ -374,63 +343,11 @@ func (x *person) Edit (l, c uint) {
 }
 
 func (x *person) SetFont (f font.Font) {
-  x.surname.SetFont (f)
-  x.firstName.SetFont (f)
-  x.TruthValue.SetFont (f)
-  x.Calendarday.SetFont (f)
-  x.title.SetFont (f)
-}
-
-func (x *person) printMask (l, c uint) {
-  switch x.Format {
-  case Short, ShortB:
-    cn = 0; cv = 28; cb = 44
-  default:
-    cn = 6; cv = 42; cg = 63; cb = 71; ca = cn
-  }
-  switch x.Format {
-  case Short:
-    pbx.Print (",", l, c + cv - 2)
-    return
-  case ShortB:
-    pbx.Print (",", l, c + cv - 2)
-    pbx.Print ("(", l, c + cb - 1)
-    pbx.Print (")", l, c + cb + 8)
-    return
-  default:
-    pbx.Print ("Name:", l, c + cn - 6)
-    pbx.Print ("Vorname:", l, c + cv - 9)
-    pbx.Print ("u/m/w:", l, c + cg - 5)
-  }
-  switch x.Format {
-  case LongB, LongTB:
-    pbx.Print ("geb.:", l, c + cb - 6)
-  }
-  switch x.Format {
-  case LongTB:
-    pbx.Print ("Anr.:", l + 1, c + ca - 6)
-  }
+  // dummy
 }
 
 func (x *person) Print (l, c uint) {
-  x.printMask (l, c)
-  x.surname.SetFont (font.Bold)
-  x.surname.Print (l, c + cn)
-  x.firstName.SetFont (font.Bold)
-  x.firstName.Print (l, c + cv)
-  switch x.Format {
-  case Short, ShortB:
-  default:
-    x.TruthValue.Print (l, c + cg)
-  }
-  switch x.Format {
-  case ShortB, LongB, LongTB:
-    x.Calendarday.Print (l, c + cb)
-  }
-  switch x.Format {
-  case LongTB:
-    x.title.Print (l + 1, c + ca)
-  }
+  pbx.Print (x.TeX(), l, c)
 }
 
 func (x *person) Codelen() uint {

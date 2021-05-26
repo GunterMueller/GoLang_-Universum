@@ -1,6 +1,6 @@
 package book
 
-// (c) Christian Maurer   v. 210509 - license see µU.go
+// (c) Christian Maurer   v. 210525 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,30 +9,27 @@ import (
   "µU/scr"
   "µU/text"
   "µU/bn"
-  "µU/book/gebiet"
+  "µU/book/field"
 )
 const (
   len0 = 30
   len1 = 63
 )
-type
-  ordnung int; const (
-  nachGebiet = iota
-  nachAutor
-  nOrdnungen
+const (
+  fieldOrder = iota
+  authorOrder
 )
 type
   book struct {
-               gebiet.Gebiet
-         autor,
-       koautor text.Text
+               field.Field
+        author,
+      coauthor text.Text
                bn.Natural
-         titel,
-       fundort text.Text
+         title,
+       location text.Text
                }
-var (
-  aktuelleOrdnung ordnung
-)
+var
+  actOrder = fieldOrder
 
 func (x *book) imp (Y Any) *book {
   y, ok := Y.(*book)
@@ -42,54 +39,52 @@ func (x *book) imp (Y Any) *book {
 
 func new_() Book {
   x := new (book)
-  x.Gebiet = gebiet.New()
-  x.autor = text.New (len0)
-  x.koautor = text.New (len0)
+  x.Field = field.New()
+  x.author = text.New (len0)
+  x.coauthor = text.New (len0)
   x.Natural = bn.New (2)
-  x.titel = text.New (len1)
-  x.fundort = text.New (len0)
+  x.title = text.New (len1)
+  x.location = text.New (len0)
   x.Natural.Colours (col.LightWhite(), col.DarkCyan())
-  x.autor.Colours (col.Yellow(), col.Red())
-  x.koautor.Colours (col.Yellow(), col.Red())
-  x.titel.Colours (col.LightWhite(), col.DarkGreen())
-  x.fundort.Colours (col.LightWhite(), col.DarkGray())
+  x.author.Colours (col.Yellow(), col.Red())
+  x.coauthor.Colours (col.Yellow(), col.Red())
+  x.title.Colours (col.LightWhite(), col.DarkGreen())
+  x.location.Colours (col.LightWhite(), col.DarkGray())
   return x
 }
 
 func (x *book) Empty() bool {
-  return x.Gebiet.Empty() &&
-         x.autor.Empty() && x.koautor.Empty() &&
+  return x.Field.Empty() &&
+         x.author.Empty() && x.coauthor.Empty() &&
          x.Natural.Empty() &&
-         x.titel.Empty() &&
-         x.fundort.Empty()
+         x.title.Empty() &&
+         x.location.Empty()
 }
 
 func (x *book) Clr() {
-  x.Gebiet.Clr()
-  x.autor.Clr()
-  x.koautor.Clr()
+  x.Field.Clr()
+  x.author.Clr(); x.coauthor.Clr()
   x.Natural.Clr()
-  x.titel.Clr()
-  x.fundort.Clr()
+  x.title.Clr()
+  x.location.Clr()
 }
 
 func (x *book) Eq (Y Any) bool {
   y := x.imp(Y)
-  return x.Gebiet.Eq (y.Gebiet) &&
-         x.autor.Eq (y.autor) && x.koautor.Eq (y.koautor) &&
+  return x.Field.Eq (y.Field) &&
+         x.author.Eq (y.author) && x.coauthor.Eq (y.coauthor) &&
          x.Natural.Eq (y.Natural) &&
-         x.titel.Eq (y.titel) &&
-         x.fundort.Eq (y.fundort)
+         x.title.Eq (y.title) &&
+         x.location.Eq (y.location)
 }
 
 func (x *book) Copy (Y Any) {
   y := x.imp(Y)
-  x.Gebiet.Copy (y.Gebiet)
-  x.autor.Copy (y.autor)
-  x.koautor.Copy (y.koautor)
+  x.Field.Copy (y.Field)
+  x.author.Copy (y.author); x.coauthor.Copy (y.coauthor)
   x.Natural.Copy (y.Natural)
-  x.titel.Copy (y.titel)
-  x.fundort.Copy (y.fundort)
+  x.title.Copy (y.title)
+  x.location.Copy (y.location)
 }
 
 func (x *book) Clone() Any {
@@ -100,27 +95,37 @@ func (x *book) Clone() Any {
 
 func (x *book) Less (Y Any) bool {
   y := x.imp(Y)
-  switch aktuelleOrdnung {
-  case nachGebiet:
-    if x.Gebiet.Eq (y.Gebiet) {
-      if x.autor.Eq (y.autor) {
-//        return x.titel.Less (y.titel)
+  switch actOrder {
+  case fieldOrder:
+    if x.Field.Eq (y.Field) {
+      if x.author.Eq (y.author) {
         return x.Natural.Less (y.Natural)
       }
-      return x.autor.Less (y.autor)
+      return x.author.Less (y.author)
     }
-    return x.Gebiet.Less (y.Gebiet)
-  case nachAutor:
-    if x.autor.Eq (y.autor) {
-      if x.Gebiet.Eq (y.Gebiet) {
-//        return x.titel.Less (y.titel)
+    return x.Field.Less (y.Field)
+  case authorOrder:
+    if x.author.Eq (y.author) {
+      if x.Field.Eq (y.Field) {
         return x.Natural.Less (y.Natural)
       }
-      return x.Gebiet.Less (y.Gebiet)
+      return x.Field.Less (y.Field)
     }
-    return x.autor.Less (y.autor)
+    return x.author.Less (y.author)
   }
-  return false
+  panic ("")
+}
+
+func (x *book) Sub (Y Any) bool {
+  y := x.imp(Y)
+  s := false
+  if ! x.author.Empty() {
+    s = s || x.author.Sub (y.author)
+  }
+  if ! x.title.Empty() {
+    s = s || x.title.Sub (y.title)
+  }
+  return s
 }
 
 const (
@@ -143,24 +148,31 @@ Gebiet __________________
 
                                          Fundort ______________________________
 /*/
-func writeMask() {
+
+func writeMask (l, c uint) {
   scr.Colours (col.LightGray(), col.Black())
-  scr.Write ("Gebiet",     1,  0)
-  scr.Write ("Autor",      3,  1)
-  scr.Write ("Koautor",    3, 41)
-  scr.Write ("Nr",         5,  4)
-  scr.Write ("Titel",      5, 10)
-  scr.Write ("Fundort",    7, 41)
+  scr.Write ("Gebiet",  l + 1, c + 0)
+  scr.Write ("Autor",   l + 3, c + 1)
+  scr.Write ("Koautor", l + 3, c +41)
+  scr.Write ("Nr",      l + 5, c + 4)
+  scr.Write ("Titel",   l + 5, c +10)
+  scr.Write ("Fundort", l + 7, c +41)
 }
 
+var maskWritten = false
+
 func (x *book) Write (l, c uint) {
-  writeMask()
-  x.Gebiet.Write (lg, cg)
-  x.autor.Write (la, ca)
-  x.koautor.Write (lk, ck)
-  x.Natural.Write (ln, cn)
-  x.titel.Write (lt, ct)
-  x.fundort.Write (lf, cf)
+  if ! maskWritten {
+    writeMask (l, c)
+    maskWritten = true
+  }
+  writeMask (l, c)
+  x.Field.Write (l + lg, c + cg)
+  x.author.Write (l + la, c + ca)
+  x.coauthor.Write (l + lk, c + ck)
+  x.Natural.Write (l + ln, c + cn)
+  x.title.Write (l + lt, c + ct)
+  x.location.Write (l + lf, c + cf)
 }
 
 func (x *book) Edit (l, c uint) {
@@ -170,33 +182,37 @@ func (x *book) Edit (l, c uint) {
   for {
     switch i {
     case 0:
-      x.Gebiet.Edit (lg, cg)
+      x.Field.Edit (l + lg, c + cg)
     case 1:
-      x.autor.Edit (la, ca)
-      for i := 0; i < len(a); i++ {
-        if x.autor.Sub0 (autor[i]) {
-          x.autor.Copy (autor[i])
-          x.autor.Write (la, ca)
-          break
-        }
-      }
-    case 2:
-      x.koautor.Edit (lk, ck)
-      if ! x.koautor.Empty() {
+      x.author.Edit (l + la, c + ca)
+      if k, _ := kbd.LastCommand(); k == kbd.Tab {
         for i := 0; i < len(a); i++ {
-          if x.koautor.Sub0 (autor[i]) {
-            x.koautor.Copy (autor[i])
-            x.koautor.Write (lk, ck)
+          if x.author.Sub0 (author[i]) {
+            x.author.Copy (author[i])
+            x.author.Write (l + la, c + ca)
             break
           }
         }
       }
+    case 2:
+      x.coauthor.Edit (l + lk, c + ck)
+      if k, _ := kbd.LastCommand(); k == kbd.Tab {
+        if ! x.coauthor.Empty() {
+          for i := 0; i < len(a); i++ {
+            if x.coauthor.Sub0 (author[i]) {
+              x.coauthor.Copy (author[i])
+              x.coauthor.Write (l + lk, c + ck)
+              break
+            }
+          }
+        }
+      }
     case 3:
-      x.Natural.Edit (ln, cn)
+      x.Natural.Edit (l + ln, c + cn)
     case 4:
-      x.titel.Edit (lt, ct)
+      x.title.Edit (l + lt, c + ct)
     case 5:
-      x.fundort.Edit (lf, cf)
+      x.location.Edit (l + lf, c + cf)
     }
     switch k, _ := kbd.LastCommand(); k {
     case kbd.Esc:
@@ -215,59 +231,28 @@ func (x *book) Edit (l, c uint) {
   }
 }
 
-func (x *book) String() string {
-  s := x.Gebiet.String() + " "
-  s += x.autor.String() + " "
-  s += x.koautor.String() + " "
-  s += x.Natural.String() + " "
-  s += x.titel.String() + " "
-  s += x.fundort.String()
-  return s
-}
-
-var letztesGebiet = gebiet.New()
+var lastField = field.New()
 
 func (x *book) TeX() string {
   s := ""
-  if ! x.Gebiet.Eq (letztesGebiet) {
-    letztesGebiet.Copy (x.Gebiet)
-    s += "\\medskip{\\bf " + x.Gebiet.TeX() + "}\\smallskip\n"
+  if ! x.Field.Eq (lastField) {
+    lastField.Copy (x.Field)
+    s += "\\medskip{\\bf " + x.Field.TeX() + "}\\smallskip\n"
   }
-  s += x.autor.TeX()
-  if ! x.koautor.Empty() {
-    s += "/" + x.koautor.TeX()
+  s += "{\\bf " + x.author.TeX()
+  if ! x.coauthor.Empty() {
+    s += "/" + x.coauthor.TeX()
   }
-  s += ": " + x.titel.TeX()
-  if ! x.fundort.Empty() {
-    s += " (" + x.fundort.TeX() + ")"
+  s += "}: " + x.title.TeX()
+  if ! x.location.Empty() {
+    s += " (" + x.location.TeX() + ")"
   }
+  s += "\\newline\n"
   return s
 }
 
-func (x *book) Defined (s string) bool {
-  if ! x.Gebiet.(Stringer).Defined (s[0:12]) {
-    return false
-  }
-  if ! x.autor.(Stringer).Defined (s[13:43]) {
-    return false
-  }
-  if ! x.koautor.(Stringer).Defined (s[44:74]) {
-    return false
-  }
-  if ! x.Natural.(Stringer).Defined (s[75:77]) {
-    return false
-  }
-  if ! x.titel.(Stringer).Defined (s[78:141]) {
-    return false
-  }
-  if ! x.fundort.(Stringer).Defined (s[142:172]) {
-    return false
-  }
-  return true
-}
-
 func (x *book) Codelen() uint {
-  return x.Gebiet.Codelen() +
+  return x.Field.Codelen() +
        2 * len0 +
        x.Natural.Codelen() +
        len1 + len0
@@ -275,50 +260,48 @@ func (x *book) Codelen() uint {
 
 func (x *book) Encode() Stream {
   s := make(Stream, x.Codelen())
-  i, a := uint(0), x.Gebiet.Codelen()
-  copy (s[i:i+a], x.Gebiet.Encode())
+  i, a := uint(0), x.Field.Codelen()
+  copy (s[i:i+a], x.Field.Encode())
   i += a
   a = len0
-  copy (s[i:i+a], x.autor.Encode())
+  copy (s[i:i+a], x.author.Encode())
   i += a
-  copy (s[i:i+a], x.koautor.Encode())
+  copy (s[i:i+a], x.coauthor.Encode())
   i += a
   a = x.Natural.Codelen()
   copy (s[i:i+a], x.Natural.Encode())
   i += a
   a = len1
-  copy (s[i:i+a], x.titel.Encode())
+  copy (s[i:i+a], x.title.Encode())
   i += a
   a = len0
-  copy (s[i:i+a], x.fundort.Encode())
+  copy (s[i:i+a], x.location.Encode())
   return s
 }
 
 func (x *book) Decode (s Stream) {
-  i, a := uint(0), x.Gebiet.Codelen()
-  x.Gebiet.Decode (s[i:i+a])
+  i, a := uint(0), x.Field.Codelen()
+  x.Field.Decode (s[i:i+a])
   i += a
   a = len0
-  x.autor.Decode (s[i:i+a])
+  x.author.Decode (s[i:i+a])
   i += a
-  x.koautor.Decode (s[i:i+a])
+  x.coauthor.Decode (s[i:i+a])
   i += a
   a = x.Natural.Codelen()
   x.Natural.Decode (s[i:i+a])
   i += a
   a = len1
-  x.titel.Decode (s[i:i+a])
+  x.title.Decode (s[i:i+a])
   i += a
   a = len0
-  x.fundort.Decode (s[i:i+a])
+  x.location.Decode (s[i:i+a])
 }
 
 func (x *book) Rotate() {
-  aktuelleOrdnung = (aktuelleOrdnung + 1) % nOrdnungen
+  actOrder = 1 - actOrder
 }
 
 func (x *book) Index() Func {
-  return func (a Any) Any {
-    return a
-  }
+  return Id
 }

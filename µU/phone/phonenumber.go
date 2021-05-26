@@ -1,6 +1,6 @@
 package phone
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 210511 - license see µU.go
 
 import (
   . "µU/obj"
@@ -131,6 +131,12 @@ func (x *phonenumber) String() string {
   }
   str.Norm (&s, width)
   return s
+}
+
+func (x *phonenumber) TeX() string {
+  t := x.String()
+  str.OffSpc1 (&t)
+  return t
 }
 
 func (x *phonenumber) Colours (f, b col.Colour) {

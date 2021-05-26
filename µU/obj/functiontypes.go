@@ -69,4 +69,5 @@ func PredOp2Op (p Pred, o Op) Op {
 // we get rid of TravCond by:
 func PredCondOp2Op (p Pred, o CondOp) Op {
   return func (a Any) { if p(a) { o(a, true) } else { o(a, false) } }
+  return func (a Any) { o (a, p(a)) }
 }

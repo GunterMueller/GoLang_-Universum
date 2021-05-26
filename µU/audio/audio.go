@@ -1,6 +1,6 @@
 package audio
 
-// (c) Christian Maurer   v. 210510 - license see µU.go
+// (c) Christian Maurer   v. 210525 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,7 +9,7 @@ import (
   "µU/col"
   "µU/scr"
   "µU/text"
-  "µU/audio/gebiet"
+  "µU/audio/field"
   "µU/audio/medium"
 )
 const (
@@ -17,26 +17,26 @@ const (
   len1 = 60
 )
 type
-  ordnung int; const (
-  nachGebiet = iota
-  nachMedium
-  nachKomponist
-  nOrdnungen
+  order int; const (
+  fieldOrder = iota
+//  composerOrder
+  mediumOrder
+  nOrders
 )
 type
   audio struct {
-               gebiet.Gebiet
+               field.Field
                medium.Medium
-     komponist,
-          werk,
-    komponist1,
-         werk1,
-     orchester,
-      dirigent,
-        solist text.Text
+      composer,
+          work,
+     composer1,
+         work1,
+     orchestra,
+     conductor,
+       soloist text.Text
                }
 var
-  aktuelleOrdnung = nachGebiet
+  actOrder = fieldOrder
 
 func (x *audio) imp (Y Any) *audio {
   y, ok := Y.(*audio)
@@ -46,66 +46,64 @@ func (x *audio) imp (Y Any) *audio {
 
 func new_() Audio {
   x := new (audio)
-  x.Gebiet = gebiet.New()
+  x.Field = field.New()
   x.Medium = medium.New()
-  x.komponist = text.New (len0)
-  x.werk = text.New (len1)
-  x.komponist1 = text.New (len0)
-  x.werk1 = text.New (len1)
-  x.orchester = text.New (len1)
-  x.dirigent = text.New (len0)
-  x.solist = text.New (len0)
-  x.komponist.Colours (col.Yellow(), col.Red())
-  x.komponist1.Colours (col.Yellow(), col.Red())
-  x.werk.Colours (col.LightWhite(), col.DarkGreen())
-  x.werk1.Colours (col.LightWhite(), col.DarkGreen())
-  x.orchester.Colours (col.LightWhite(), col.DarkGray())
-  x.dirigent.Colours (col.LightWhite(), col.DarkGray())
-  x.solist.Colours (col.Yellow(), col.Red())
+  x.composer = text.New (len0)
+  x.work = text.New (len1)
+  x.composer1 = text.New (len0)
+  x.work1 = text.New (len1)
+  x.orchestra = text.New (len1)
+  x.conductor = text.New (len0)
+  x.soloist = text.New (len0)
+  x.composer.Colours (col.Yellow(), col.Red())
+  x.composer1.Colours (col.Yellow(), col.Red())
+  x.work.Colours (col.LightWhite(), col.DarkGreen())
+  x.work1.Colours (col.LightWhite(), col.DarkGreen())
+  x.orchestra.Colours (col.LightWhite(), col.DarkGray())
+  x.conductor.Colours (col.LightWhite(), col.DarkGray())
+  x.soloist.Colours (col.Yellow(), col.Red())
   return x
 }
 
 func (x *audio) Empty() bool {
-  return x.Gebiet.Empty() && x.Medium.Empty() &&
-         x.komponist.Empty() && x.werk.Empty() &&
-         x.komponist1.Empty() && x.werk1.Empty() &&
-         x.orchester.Empty() && x.dirigent.Empty() && x.solist.Empty()
+  return x.Field.Empty() && x.Medium.Empty() &&
+         x.composer.Empty() && x.work.Empty() &&
+         x.composer1.Empty() && x.work1.Empty() &&
+         x.orchestra.Empty() && x.conductor.Empty() && x.soloist.Empty()
 }
 
 func (x *audio) Clr() {
-  x.Gebiet.Clr()
+  x.Field.Clr()
   x.Medium.Clr()
-  x.komponist.Clr()
-  x.werk.Clr()
-  x.komponist1.Clr()
-  x.werk1.Clr()
-  x.orchester.Clr()
-  x.dirigent.Clr()
-  x.solist.Clr()
+  x.composer.Clr(); x.work.Clr()
+  x.composer1.Clr(); x.work1.Clr()
+  x.orchestra.Clr()
+  x.conductor.Clr()
+  x.soloist.Clr()
 }
 
 func (x *audio) Eq (Y Any) bool {
   y := x.imp(Y)
-  return x.Gebiet.Eq (y.Gebiet) &&
+  return x.Field.Eq (y.Field) &&
          x.Medium.Eq (y.Medium) &&
-         x.komponist.Eq (y.komponist) && x.werk.Eq (y.werk) &&
-         x.komponist1.Eq (y.komponist1) && x.werk1.Eq (y.werk1) &&
-         x.dirigent.Eq (y.dirigent) &&
-         x.orchester.Eq (y.orchester) &&
-         x.solist.Eq (y.solist)
+         x.composer.Eq (y.composer) && x.work.Eq (y.work) &&
+         x.composer1.Eq (y.composer1) && x.work1.Eq (y.work1) &&
+         x.conductor.Eq (y.conductor) &&
+         x.orchestra.Eq (y.orchestra) &&
+         x.soloist.Eq (y.soloist)
 }
 
 func (x *audio) Copy (Y Any) {
   y := x.imp(Y)
-  x.Gebiet = y.Gebiet
-  x.Medium = y.Medium
-  x.komponist.Copy (y.komponist)
-  x.werk.Copy (y.werk)
-  x.komponist1.Copy (y.komponist1)
-  x.werk1.Copy (y.werk1)
-  x.dirigent.Copy (y.dirigent)
-  x.orchester.Copy (y.orchester)
-  x.solist.Copy (y.solist)
+  x.Field.Copy (y.Field)
+  x.Medium.Copy (y.Medium)
+  x.composer.Copy (y.composer)
+  x.work.Copy (y.work)
+  x.composer1.Copy (y.composer1)
+  x.work1.Copy (y.work1)
+  x.conductor.Copy (y.conductor)
+  x.orchestra.Copy (y.orchestra)
+  x.soloist.Copy (y.soloist)
 }
 
 func (x *audio) Clone() Any {
@@ -116,37 +114,46 @@ func (x *audio) Clone() Any {
 
 func (x *audio) Less (Y Any) bool {
   y := x.imp(Y)
-  switch aktuelleOrdnung {
-  case nachGebiet:
-    if x.Gebiet.Eq (y.Gebiet) {
-      if x.komponist.Eq (y.komponist) {
-        if x.werk.Eq (y.werk) {
+  switch actOrder {
+  case fieldOrder:
+    if x.Field.Eq (y.Field) {
+      if x.composer.Eq (y.composer) {
+        if x.work.Eq (y.work) {
           return x.Medium.Less (y.Medium)
         }
-        return x.werk.Less (y.werk)
+        return x.work.Less (y.work)
       }
-      return x.komponist.Less (y.komponist)
+      return x.composer.Less (y.composer)
     }
-    return x.Gebiet.Less (y.Gebiet)
-  case nachMedium:
+    return x.Field.Less (y.Field)
+  case mediumOrder:
     if x.Medium.Eq (y.Medium) {
-      if x.Gebiet.Eq (y.Gebiet) {
-        if x.komponist.Eq (y.komponist) {
-          return x.werk.Less (y.werk)
+      if x.Field.Eq (y.Field) {
+        if x.composer.Eq (y.composer) {
+          return x.work.Less (y.work)
         }
-        return x.Gebiet.Less (y.Gebiet)
+        return x.composer.Less (y.composer)
       }
-      return x.komponist.Less (y.komponist)
+      return x.Field.Less (y.Field)
     }
     return x.Medium.Less (y.Medium)
-  case nachKomponist:
-    if x.komponist.Eq (y.komponist) {
-      if x.werk.Eq (y.werk) {
-        return x.Medium.Less (y.Medium)
-      }
-      return x.werk.Less (y.werk)
-    }
-    return x.komponist.Less (y.komponist)
+  }
+  panic ("")
+}
+
+func (x *audio) Sub (Y Any) bool {
+  y := x.imp(Y)
+  if ! x.Field.Empty() {
+    return x.Field.Eq (y.Field)
+  }
+  if ! x.composer.Empty() {
+    return x.composer.Sub (y.composer)
+  }
+  if ! x.composer1.Empty() {
+    return x.composer1.Sub (y.composer1)
+  }
+  if ! x.soloist.Empty() {
+    return x.soloist.Sub (y.soloist)
   }
   return false
 }
@@ -154,9 +161,9 @@ func (x *audio) Less (Y Any) bool {
 const (
   lg  =  1; cg  = 10
   lm  =  1; cm  = 49
-  lk  =  3; ck  = 10
+  lc  =  3; cc  = 10
   lw  =  5; cw  = 10
-  lk1 =  7; ck1 = 10
+  lc1 =  7; cc1 = 10
   lw1 =  9; cw1 = 10
   lo  = 11; co  = 10
   ld  = 13; cd  = 10
@@ -180,35 +187,35 @@ Orchester ____________________________________________________________________
  Dirigent ______________________________  Solist ______________________________
 
 /*/
-func writeMask() {
+func writeMask (l, c uint) {
   scr.Colours (col.LightGray(), col.Black())
-  scr.Write ("Gebiet",    lg,  3)
-  scr.Write ("Medium",    lm, 42)
-  scr.Write ("Komponist", lk,  0)
-  scr.Write ("Werk",      lw,  5)
-  scr.Write ("Komponist", lk1, 0)
-  scr.Write ("Werk",      lw1, 5)
-  scr.Write ("Orchester", lo,  0)
-  scr.Write ("Dirigent",  ld,  1)
-  scr.Write ("Solist",    ls, 42)
+  scr.Write ("Gebiet",    l + lg, c +  3)
+  scr.Write ("Medium",    l + lm, c + 42)
+  scr.Write ("Komponist", l + lc, c +  0)
+  scr.Write ("Werk",      l + lw, c +  5)
+  scr.Write ("Komponist", l + lc1, c + 0)
+  scr.Write ("Werk",      l + lw1, c + 5)
+  scr.Write ("Orchester", l + lo, c +  0)
+  scr.Write ("Dirigent",  l + ld, c +  1)
+  scr.Write ("Solist",    l + ls, c + 42)
 }
 
 var maskWritten = false
 
 func (x *audio) Write (l, c uint) {
   if ! maskWritten {
-    writeMask()
+    writeMask (l, c)
     maskWritten = true
   }
-  x.Gebiet.Write (lg, cg)
-  x.Medium.Write (lm, cm)
-  x.komponist.Write (lk, ck)
-  x.werk.Write (lw, cw)
-  x.komponist1.Write (lk1, ck1)
-  x.werk1.Write (lw1, cw1)
-  x.orchester.Write (lo, co)
-  x.dirigent.Write (ld, cd)
-  x.solist.Write (ls, cs)
+  x.Field.Write (l + lg, c + cg)
+  x.Medium.Write (l + lm, c + cm)
+  x.composer.Write (l + lc, c + cc)
+  x.work.Write (l + lw, c + cw)
+  x.composer1.Write (l + lc1, c + cc1)
+  x.work1.Write (l + lw1, c + cw1)
+  x.orchestra.Write (l + lo, c + co)
+  x.conductor.Write (l + ld, c + cd)
+  x.soloist.Write (l + ls, c + cs)
 }
 
 func (x *audio) Edit (l, c uint) {
@@ -218,63 +225,77 @@ func (x *audio) Edit (l, c uint) {
   for {
     switch i {
     case 0:
-      x.Gebiet.Edit (lg, cg)
+      x.Field.Edit (l + lg, c + cg)
     case 1:
-      x.Medium.Edit (lm, cm)
+      x.Medium.Edit (l + lm, c + cm)
     case 2:
-      x.komponist.Edit (lk, ck)
-      if ! x.komponist.Empty() {
-        for i := 0; i < len(k); i++ {
-          if x.komponist.Sub0 (komponist[i]) {
-            x.komponist.Copy (komponist[i])
-            break
+      x.composer.Edit (l + lc, c + cc)
+      if ! x.composer.Empty() {
+        if co, _ := kbd.LastCommand(); co == kbd.Tab {
+          for i := 0; i < len(k); i++ {
+            if x.composer.Sub0 (composer[i]) {
+              x.composer.Copy (composer[i])
+              x.composer.Write (l + lc, c + cc)
+              break
+            }
           }
         }
       }
-      x.komponist.Write (lk, ck)
     case 3:
-      x.werk.Edit (lw, cw)
-      s := x.werk.String()
+      x.work.Edit (l + lw, c + cw)
+      s := x.work.String()
       if str.ProperLen (s) == 1 {
         switch s[0] {
         case 'K':
-          x.werk.Defined ("Klavierkonzert")
+          x.work.Defined ("Klavierkonzert")
         case 'V':
-          x.werk.Defined ("Violinkonzert")
+          x.work.Defined ("Violinkonzert")
         }
-        x.werk.Write (lw, cw)
+        x.work.Write (l + lw, c + cw)
       }
     case 4:
-      x.komponist1.Edit (lk1, ck1)
-      if ! x.komponist1.Empty() {
-        for i := 0; i < len(k); i++ {
-          if x.komponist1.Sub0 (komponist[i]) {
-            x.komponist1.Copy (komponist[i])
-            x.komponist1.Write (lk1, ck1)
-            break
+      x.composer1.Edit (l + lc1, c + cc1)
+      if ! x.composer1.Empty() {
+        if co, _ := kbd.LastCommand(); co == kbd.Tab {
+          for i := 0; i < len(k); i++ {
+            if x.composer1.Sub0 (composer[i]) {
+              x.composer1.Copy (composer[i])
+              x.composer1.Write (l + lc1, c + cc1)
+              break
+            }
           }
         }
       }
     case 5:
-      x.werk1.Edit (lw1, cw1)
-      if ! x.werk1.Empty() {
-        s := x.werk1.String()
+      x.work1.Edit (l + lw1, c + cw1)
+      if ! x.work1.Empty() {
+        s := x.work1.String()
         if str.ProperLen (s) == 1 {
           switch s[0] {
           case 'K':
-            x.werk1.Defined ("Klavierkonzert")
+            x.work1.Defined ("Klavierkonzert")
           case 'V':
-            x.werk1.Defined ("Violinkonzert")
+            x.work1.Defined ("Violinkonzert")
           }
         }
       }
-      x.werk1.Write (lw1, cw1)
+      x.work1.Write (l + lw1, c + cw1)
     case 6:
-      x.orchester.Edit (lo, co)
+      x.orchestra.Edit (l + lo, c + co)
     case 7:
-      x.dirigent.Edit (ld, cd)
+      x.conductor.Edit (l + ld, c + cd)
+      if ! x.conductor.Empty() {
+        for i := 0; i < len(con); i++ {
+          if x.conductor.Sub0 (conductor[i]) {
+            x.conductor.Copy (conductor[i])
+            x.conductor.Write (l + ld, c + cd)
+            break
+          }
+        }
+      }
+      x.conductor.Write (l + ld, c + cd)
     case 8:
-      x.solist.Edit (ls, cs)
+      x.soloist.Edit (l + ls, c + cs)
     }
     switch k, _ := kbd.LastCommand(); k {
     case kbd.Esc:
@@ -293,96 +314,104 @@ func (x *audio) Edit (l, c uint) {
   }
 }
 
-var letztesGebiet = gebiet.New()
+var lastField = field.New()
 
 func (x *audio) TeX() string {
   s := ""
-  if ! x.Gebiet.Eq (letztesGebiet) {
-    letztesGebiet.Copy (x.Gebiet)
-    s += "\\medskip{\\bf " + x.Gebiet.TeX() + "}\\medskip\n"
+  if ! x.Field.Eq (lastField) {
+    lastField.Copy (x.Field)
+    s += "\\medskip{\\bf " + x.Field.TeX() + "}\\medskip\\nopagebreak\n"
   }
   s += "\\x " + x.Medium.TeX() + " "
-  s += "{\\bf " + x.komponist.TeX() + "}\\newline\n" + x.werk.TeX()
-  if ! x.komponist1.Empty() {
-    s += "\\newline\n{\\bf " + x.komponist1.TeX() + "}\\newline\n" + x.werk1.TeX()
+  if x.composer.Empty() {
+    s += "\\leavevmode"
+  } else {
+    s += "{\\bi " + x.composer.TeX() + "}"
   }
-  if ! x.orchester.Empty() {
-    s += "\\newline\n" + x.orchester.TeX()
-    if ! x.dirigent.Empty() {s += " (" + x.dirigent.TeX() + ") "}
+  if ! x.work.Empty() {
+    s += "\\newline\n" + x.work.TeX() + ""
   }
-  if ! x.solist.Empty() {s += "\\newline\n{\\bf " + x.solist.TeX() + "}"}
-  s += "\n\\smallskip\n"
+  if ! x.composer1.Empty() {
+    s += "\\newline\n{\\bi " + x.composer1.TeX() + "}"
+  }
+  if ! x.work1.Empty() {
+    s += "\\newline\n" + x.work1.TeX() + ""
+  }
+  if ! x.orchestra.Empty() {
+    s += "\\newline\n" + x.orchestra.TeX()
+    if ! x.conductor.Empty() {s += " (" + x.conductor.TeX() + ") "}
+  }
+  if ! x.soloist.Empty() {s += "\\newline\n{\\bi " + x.soloist.TeX() + "}"}
+  s += "\n\\par\\smallpagebreak\n"
   return s
 }
 
 func (x *audio) Codelen() uint {
-  return x.Gebiet.Codelen() + x.Medium.Codelen() +
+  return x.Field.Codelen() + x.Medium.Codelen() +
          len0 + len1 + len0 + len1 +
          len1 + 2 * len0
 }
 
 func (x *audio) Encode() Stream {
   s := make(Stream, x.Codelen())
-  i, a := uint(0), x.Gebiet.Codelen()
-  copy (s[i:i+a], x.Gebiet.Encode())
+  i, a := uint(0), x.Field.Codelen()
+  copy (s[i:i+a], x.Field.Encode())
   i += a
   a = x.Medium.Codelen()
   copy (s[i:i+a], x.Medium.Encode())
   i += a
   a = len0
-  copy (s[i:i+a], x.komponist.Encode())
+  copy (s[i:i+a], x.composer.Encode())
   i += a
   a = len1
-  copy (s[i:i+a], x.werk.Encode())
+  copy (s[i:i+a], x.work.Encode())
   i += a
   a = len0
-  copy (s[i:i+a], x.komponist1.Encode())
+  copy (s[i:i+a], x.composer1.Encode())
   i += a
   a = len1
-  copy (s[i:i+a], x.werk1.Encode())
+  copy (s[i:i+a], x.work1.Encode())
   i += a
-  copy (s[i:i+a], x.orchester.Encode())
+  copy (s[i:i+a], x.orchestra.Encode())
   i += a
   a = len0
-  copy (s[i:i+a], x.dirigent.Encode())
+  copy (s[i:i+a], x.conductor.Encode())
   i += a
-  copy (s[i:i+a], x.solist.Encode())
+  copy (s[i:i+a], x.soloist.Encode())
   return s
 }
 
 func (x *audio) Decode (s Stream) {
-  i, a := uint(0), x.Gebiet.Codelen()
-  x.Gebiet.Decode (s[i:i+a])
+  i, a := uint(0), x.Field.Codelen()
+  x.Field.Decode (s[i:i+a])
   i += a
   a = x.Medium.Codelen()
   x.Medium.Decode (s[i:i+a])
   i += a
   a = len0
-  x.komponist.Decode (s[i:i+a])
+  x.composer.Decode (s[i:i+a])
   i += a
   a = len1
-  x.werk.Decode (s[i:i+a])
+  x.work.Decode (s[i:i+a])
   i += a
   a = len0
-  x.komponist1.Decode (s[i:i+a])
+  x.composer1.Decode (s[i:i+a])
   i += a
   a = len1
-  x.werk1.Decode (s[i:i+a])
+  x.work1.Decode (s[i:i+a])
   i += a
-  x.orchester.Decode (s[i:i+a])
+  x.orchestra.Decode (s[i:i+a])
   i += a
   a = len0
-  x.dirigent.Decode (s[i:i+a])
+  x.conductor.Decode (s[i:i+a])
   i += a
-  x.solist.Decode (s[i:i+a])
+  x.soloist.Decode (s[i:i+a])
 }
 
 func (x *audio) Rotate() {
-  aktuelleOrdnung = (aktuelleOrdnung + 1) % nOrdnungen
+  actOrder = (actOrder + 1) % nOrders
 }
 
 func (x *audio) Index() Func {
-  return func (a Any) Any {
-    return a
-  }
+  return Id
 }

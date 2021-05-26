@@ -1,12 +1,13 @@
 package persaddr
 
-// (c) Christian Maurer   v. 210510 - license see µU.go
+// (c) Christian Maurer   v. 210511 - license see µU.go
 
 import
   . "µU/obj"
 type
   PersonAddress interface { // pairs (person, address)
 
+  TeXer
   Indexer
   Rotator
 }

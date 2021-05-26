@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 210511 - license see µU.go
 
 import (
   . "µU/obj"
@@ -32,6 +32,7 @@ type
   Editor
   Formatter
   Stringer
+  TeXer
   Printer
 
   InContinent (c Continent) bool

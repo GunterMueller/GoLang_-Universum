@@ -1,10 +1,10 @@
 package reg
 
-// (c) Christian Maurer   v. 210331 - license see murus.go
+// (c) Christian Maurer   v. 210512 - license see murus.go
 
 type
   register struct {
-                  uint "Wert des Registers"
+                  uint "value of the register"
                   }
 
 func null() Register {
@@ -12,7 +12,7 @@ func null() Register {
 }
 
 func fail (s string) {
-  panic ("Vor. von " + s + "() nicht eingehalten")
+  panic ("Pre of " + s + "() not met")
 }
 
 func (a *register) Inc() {
