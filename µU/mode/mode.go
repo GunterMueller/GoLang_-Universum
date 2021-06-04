@@ -1,16 +1,14 @@
 package mode
 
-// (c) Christian Maurer   v. 210101 - license see µU.go
+// (c) Christian Maurer   v. 210526 - license see µU.go
 
-import (
-  "strconv"
-  "µU/ker"
-)
-var
+var (
   x, y [NModes]uint
+  m Mode
+  wn, hn = uint(0), uint(0)
+)
 
-func init() {
-  var m Mode //         framebuffer colourdepth:  8 bit  16 bit 24 bit
+func init() { //       framebuffer colourdepth:  8 bit  16 bit 24 bit
   m = None;    x[m], y[m] =    0,    0
   m = Mini;    x[m], y[m] =  192,  160 //  6:5
   m = HQVGA;   x[m], y[m] =  240,  160 //  4:3
@@ -48,6 +46,7 @@ func init() {
   m = HSXGA;   x[m], y[m] = 5120, 4096 //  5:4
   m = HUXGA;   x[m], y[m] = 6400, 4800 //  4:3
   m = FUHD;    x[m], y[m] = 7680, 4320 // 16:9
+  m = NEW;     x[m], y[m] =   wn,   hn
 }
 
 func modeOf (w, h uint) Mode {
@@ -56,7 +55,8 @@ func modeOf (w, h uint) Mode {
       return m
     }
   }
-  ker.Panic ("hardware reports undefined mode " + strconv.Itoa(int(w)) +
-             " x " + strconv.Itoa(int(h)))
-  return NModes
+  m = NEW
+  wn, hn = w, h
+  x[m], y[m] = wn, hn
+  return m
 }

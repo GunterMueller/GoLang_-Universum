@@ -1,0 +1,3 @@
+package collop
+
+func Touch() { }

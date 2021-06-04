@@ -7,7 +7,6 @@ package prt
 import
   "µU/font"
 var
-//  PrintCommand = "lp -o fit-to-page -d pomona"
   PrintCommand = "lp"
 
 // The actual font is f.

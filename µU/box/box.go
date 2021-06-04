@@ -352,6 +352,7 @@ func (b *box) Edit (s *string, l, c uint) {
     b.editText (false, s, scr.Wd1() * c, scr.Ht1() * l)
   }
   b.width = w
+//  C, D := kbd.LastCommand(); println ("box Edit: C, D ==", C.String(), D) // bluse
 }
 
 func (b *box) EditGr (s *string, x, y int) {

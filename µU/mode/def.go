@@ -1,6 +1,6 @@
 package mode
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 210526 - license see µU.go
 
 type
   Mode byte; const (
@@ -41,6 +41,7 @@ type
   HSXGA  // 5120 x 4096  256 x 640
   HUXGA  // 6400 x 4800  300 x 800
   FUHD   // 7680 x 4320  270 x 960
+  NEW
   NModes )
 
 // Returns the pixelwidth of m.

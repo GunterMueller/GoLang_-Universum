@@ -28,18 +28,19 @@ package main
   Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.) */
 
 import (
-  "µU/achan"; "µU/audio"; "µU/barb"; "µU/barr"; "µU/bbuf"; "µU/book"; "µU/bpqu"; "µU/bytes"
-  "µU/car"; "µU/cdrom"; "µU/col"; "µU/comp"; "µU/day"; "µU/date"; "µU/dgra"; "µU/dlock"
-  "µU/env"; "µU/errh"; "µU/f"; "µU/fig2"; "µU/files"; "µU/fuday"; "µU/gram"; "µU/host"
-  "µU/ieee"; "µU/kbd"; "µU/li"; "µU/lock2"; "µU/lr"; "µU/macc"; "µU/mbbuf"; "µU/mbuf"
-  "µU/mcorn"; "µU/menue"; "µU/mstk"; "µU/pbar"; "µU/persaddr"; "µU/phil"; "µU/piset"
-  "µU/pos"; "µU/ppm"; "µU/q"; "µU/r"; "µU/reg"; "µU/rpc"; "µU/rw"; "µU/scale"; "µU/schan"
-  "µU/scr"; "µU/smok"; "µU/term"; "µU/texts"; "µU/time"; "µU/vnset"; "µU/z"
+  "µU/achan"; "µU/audio"; "µU/barb"; "µU/barr"; "µU/bbuf"; "µU/book"; "µU/bpqu"; "µU/br"
+  "µU/bytes"; "µU/car"; "µU/cdrom"; "µU/col"; "µU/collop"; "µU/cntry"; "µU/comp"; "µU/day"
+  "µU/date"; "µU/dgra"; "µU/dlock"; "µU/env"; "µU/errh"; "µU/euro"; "µU/f"; "µU/fig2"
+  "µU/files"; "µU/fuday"; "µU/gram"; "µU/host"; "µU/ieee"; "µU/kbd"; "µU/li"; "µU/lock2"
+  "µU/lr"; "µU/macc"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"; "µU/mstk"; "µU/pbar"
+  "µU/persaddr"; "µU/phil"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/q"; "µU/r"; "µU/reg"
+  "µU/rpc"; "µU/rw"; "µU/scale"; "µU/schan"; "µU/scr"; "µU/smok"; "µU/term"; "µU/texts"
+  "µU/time"; "µU/vnset"; "µU/z"
 )
 const (
   yy = 2021
-  mm =    5
-  dd =   25
+  mm =    6
+  dd =    1
 )
 var (
   red = col.FlashRed()
@@ -146,13 +147,14 @@ func main() { // get all packages compiled and show the license
   }
   defer scr.Fin()
   achan.New(0); audio.New(); barb.NewDir(); barr.New(2); bbuf.New(nil, 0); book.New()
-  bpqu.New(0, 1); bytes.Touch(); if cdrom.MaxVol == 0 {}; comp.Touch(); date.New()
-  dgra.Touch(); dlock.New(0, nil, 0); f.Touch(); fig2.Touch(); fuday.New(); gram.Touch()
-  host.New(); ieee.New(); li.New(0); lock2.NewPeterson(); lr.NewMutex(); macc.New()
-  mbbuf.New(nil, 1); mbuf.New(0); mcorn.New(0); menue.Touch(); mstk.New(0); pbar.Touch()
-  persaddr.New(); phil.TouchPhil(); piset.Touch(); pos.Touch(); q.New(); r.String(0)
-  reg.Touch(); rpc.Touch(); rw.New1(); scale.Lim(0,0,0,0,0); schan.New(0)
-  smok.TouchSmok(); term.New(""); texts.Touch(); vnset.EmptySet(); z.String(0)
+  bpqu.New(0, 1); br.New(1); bytes.Touch(); if cdrom.MaxVol == 0 {}; cntry.New()
+  collop.Touch(); comp.Touch(); date.New(); euro.New(); dgra.Touch(); dlock.New(0, nil, 0)
+  f.Touch(); fig2.Touch(); fuday.New(); gram.Touch(); host.New(); ieee.New(); li.New(0)
+  lock2.NewPeterson(); lr.NewMutex(); macc.New(); mbbuf.New(nil, 1); mbuf.New(0)
+  mcorn.New(0); menue.Touch(); mstk.New(0); pbar.Touch(); persaddr.New(); phil.TouchPhil()
+  piset.Touch(); pos.Touch(); q.New(); r.String(0); reg.Touch(); rpc.Touch(); rw.New1()
+  scale.Lim(0,0,0,0,0); schan.New(0); smok.TouchSmok(); term.New(""); texts.Touch()
+  vnset.EmptySet(); z.String(0)
   var v day.Calendarday = day.New()
   v.Set (dd, mm, yy)
   v.SetFormat (day.Yymmdd)
