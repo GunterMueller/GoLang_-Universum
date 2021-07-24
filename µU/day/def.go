@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 200130 - license see µU.go
+// (c) Christian Maurer   v. 210723 - license see µU.go
 
 import (
   . "µU/obj"
@@ -15,6 +15,8 @@ type
   Weekday byte; const (
   Monday = Weekday(iota); Tuesday; Wednesday; Thursday; Friday; Saturday; Sunday; nWeekdays
 )
+type
+  DayOp = func (d Calendarday)
 const
   NWeekdays = uint(nWeekdays)
 const ( // Format
@@ -175,7 +177,7 @@ type
   LastSunday (n bool) Calendarday
 
 // TODO Spec
-  SetAttribute (p Op)
+  SetAttribute (p DayOp)
 
 // Returns 0, if x is empty. Returns otherwise the number
 // of the week of x in the year of x due to DIN 1355/ISO 8601.

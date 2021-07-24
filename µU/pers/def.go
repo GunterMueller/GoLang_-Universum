@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 210601 - license see µU.go
+// (c) Christian Maurer   v. 210511 - license see µU.go
 
 import (
   . "µU/obj"
@@ -29,8 +29,6 @@ type
 
 // Returns true, if x and y coincide in surname, first name and birthday.
   Equiv (y Person) bool
-
-  Sub (y Any) bool
 
 // Returns true, iff surname, first name and birthday of x are not empty.
   Identifiable() bool

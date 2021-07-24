@@ -36,7 +36,7 @@ type
                      Format
               cF, cB col.Colour
                      font.Font
-                     }
+						 }
 var (
   today = New()
   currentCentury uint
@@ -76,7 +76,8 @@ var (
   actualHolidayYear = emptyYear
   holiday [1+maxday][1+maxmonth]bool
   actualSummer = emptyYear
-  op Op = attribute
+//  op Op = attribute
+  op = attribute
 //  carnival *calendarday
 )
 
@@ -1703,34 +1704,33 @@ func (x *calendarday) Print (l, c uint) {
   pbx.Print (x.String(), l, c)
 }
 
-func (x *calendarday) SetAttribute (p Op) {
+func (x *calendarday) SetAttribute (p DayOp) {
   op = p
 }
 
-func attribute (a Any) {
-  x, ok := a.(*calendarday)
-  if ! ok { TypeNotEqPanic (x, a) }
-  switch x.Format {
+func attribute (D Calendarday) {
+  d := D.(*calendarday)
+  switch d.Format {
   case Dd, Dd_mm_, Dd_mm_yy, Yymmdd, Yyyymmdd, Dd_mm_yyyy, Dd_M, Dd_M_yyyy:
-    if x.IsHoliday() {
-      x.Colours (HolidayF, HolidayB)
-      x.SetFont (font.Bold)
+    if d.IsHoliday() {
+      d.Colours (HolidayF, HolidayB)
+      d.SetFont (font.Bold)
     } else {
-      x.Colours (WeekdayF, WeekdayB)
-      x.SetFont (font.Roman)
+      d.Colours (WeekdayF, WeekdayB)
+      d.SetFont (font.Roman)
     }
   case Yy, Yyyy:
-    x.Colours (YearnumberF, YearnumberB)
-    x.SetFont (font.Bold)
+    d.Colours (YearnumberF, YearnumberB)
+    d.SetFont (font.Bold)
   case Wd, WD:
-    x.Colours (WeekdayNameF, WeekdayNameB)
-    x.SetFont (font.Italic)
+    d.Colours (WeekdayNameF, WeekdayNameB)
+    d.SetFont (font.Italic)
 //  case Mmm:
   case M, Myyyy:
-    x.Colours (MonthF, MonthB)
-    x.SetFont (font.Italic)
+    d.Colours (MonthF, MonthB)
+    d.SetFont (font.Italic)
   default:
-    x.Colours (WeekdayF, MonthB)
-    x.SetFont (font.Italic)
+    d.Colours (WeekdayF, MonthB)
+    d.SetFont (font.Italic)
   }
 }
