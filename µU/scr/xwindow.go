@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 210719 - license see µU.go
+// (c) Christian Maurer   v. 210418 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>

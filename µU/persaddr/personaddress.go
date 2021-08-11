@@ -64,6 +64,11 @@ func (x *personAddress) Less (Y Any) bool {
   return x.Person.Less (y.Person)
 }
 
+func (x *personAddress) Sub (Y Any) bool {
+  y := x.imp (Y)
+  return x.Person.Sub (y.Person)
+}
+
 func (x *personAddress) TeX() string {
   s := x.Person.TeX() + x.Address.TeX() + "\n\\smallskip"
   return s
