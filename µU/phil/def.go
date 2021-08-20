@@ -1,13 +1,13 @@
 package phil
 
-// (c) Christian Maurer   v. 190321 - license see µU.go
+// (c) Christian Maurer   v. 210820 - license see µU.go
 
 import
-  . "µU/lockn"
+  "µU/lockn"
 type
   Philos interface {
 
-  LockerN
+  lockn.LockerN
 }
 var
   NPhilos = uint(5)

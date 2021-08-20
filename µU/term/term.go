@@ -1,6 +1,6 @@
 package term
 
-// (c) Christian Maurer   v. 210226 - license see µU.go
+// (c) Christian Maurer   v. 210820 - license see µU.go
 
 import (
   "µU/ker"
@@ -354,7 +354,7 @@ func (x *term) Vals (f FuncVal) float64 {
   return val
 }
 
-func Null() Term {
+func null() Term {
   return realTerm (0)
 }
 
@@ -469,7 +469,7 @@ func (t *term) Sum() Term {
     if S == nil {
       t.fail (invalid); return nil
     }
-    S = opTerm (r.Sub, Null(), S)
+    S = opTerm (r.Sub, null(), S)
     if S == nil {
       t.fail (invalid); return nil
     }

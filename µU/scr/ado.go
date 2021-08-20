@@ -1,9 +1,9 @@
 package scr
 
-// (c) Christian Maurer   v. 210314 - license see µU.go
+// (c) Christian Maurer   v. 210820 - license see µU.go
 
 import (
-  . "µU/obj"
+  "µU/obj"
   "µU/env"
   "µU/mode"
   "µU/scr/shape"
@@ -145,11 +145,11 @@ func UnderMouseGr (x, y, x1, y1 int, d uint) bool { return sc().UnderMouseGr(x,y
 func UnderMouse1 (x, y int, d uint) bool { return sc().UnderMouse1(x,y,d) }
 
 func Codelen (w, h uint) uint { return sc().Codelen(w,h) }
-func Encode (x, y, w, h uint) Stream { return sc().Encode(x,y,w,h) }
-func Decode (bs Stream) { sc().Decode(bs) }
+func Encode (x, y, w, h uint) obj.Stream { return sc().Encode(x,y,w,h) }
+func Decode (bs obj.Stream) { sc().Decode(bs) }
 
 func PPMHeader (w, h uint) string { return sc().PPMHeader(w,h) }
 func PPMCodelen (w, h uint) uint { return sc().PPMCodelen(w,h) }
-func PPMEncode (x, y, w, h uint) Stream { return sc().PPMEncode(x,y,w,h) }
-func PPMDecode (s Stream, x, y uint) { sc().PPMDecode(s,x,y) }
-func PPMSize (s Stream) (uint, uint) { return sc().PPMSize(s) }
+func PPMEncode (x, y, w, h uint) obj.Stream { return sc().PPMEncode(x,y,w,h) }
+func PPMDecode (s obj.Stream, x, y uint) { sc().PPMDecode(s,x,y) }
+func PPMSize (s obj.Stream) (uint, uint) { return sc().PPMSize(s) }
