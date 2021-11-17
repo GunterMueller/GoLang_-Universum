@@ -1,6 +1,6 @@
 package li
 
-// (c) Christian Maurer   v. 210508 - license see µU.go
+// (c) Christian Maurer   v. 211106 - license see µU.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 
@@ -38,22 +38,14 @@ func init() {
   bx.Wd (64)
 }
 
-func newInt (n int) LongInteger {
+func new_(n int) LongInteger {
   x := new(longInteger)
   x.n = NewInt (int64(n))
   x.cF, x.cB = col.StartCols()
   return x
 }
 
-func new64 (n int64) LongInteger {
-  x := new(longInteger)
-  x.n = NewInt(n)
-  x.cF, x.cB = col.StartCols()
-  return x
-}
-
-/* deprecated, has to be moved into a package lnat !
-
+/*
 func newNat (n uint) LongInteger {
   x := new(longInteger)
   x.n = NewInt(int64(n))
@@ -222,13 +214,6 @@ func (x *longInteger) ValInt() int {
   return 0
 }
 
-func (x *longInteger) Val64() int64 {
-  if x.Less(max) {
-    return x.n.Int64()
-  }
-  return 0 // ? TODO
-}
-
 /* deprecated, has to be moved into a package lreal !
 
 func newReal (r float64) LongInteger {
@@ -282,15 +267,16 @@ func (x *longInteger) Zero() bool {
   return x.n.Sign() == 0
 }
 
-func (x *longInteger) Sum (Y, Z Adder) {
-  x.Copy (Y)
-  x.Add (Z)
-}
-
 func (x *longInteger) Add (Y ...Adder) {
   for _, y := range Y {
     x.n.Add (x.n, y.(*longInteger).n)
   }
+}
+
+func (x *longInteger) Sum (Y, Z Adder) {
+  y, z := Y.(Adder), Z.(Adder)
+  x.Copy (y)
+  x.Add (z)
 }
 
 func (x *longInteger) Inc() {
@@ -303,6 +289,12 @@ func (x *longInteger) Sub (Y ...Adder) {
   }
 }
 
+func (x *longInteger) Diff (Y, Z Adder) {
+  y, z := Y.(Adder), Z.(Adder)
+  x.Copy (y)
+  x.Sub (z)
+}
+
 func (x *longInteger) Dec() {
   x.n.Sub (x.n, one.n)
 }
@@ -311,10 +303,22 @@ func (x *longInteger) One() bool {
   return x.Eq (one)
 }
 
-func (x *longInteger) Mul (Y ...Any) {
+func (x *longInteger) Mul (Y ...Multiplier) {
   for _, y := range Y {
     x.n.Mul (x.n, y.(*longInteger).n)
   }
+}
+
+func (x *longInteger) Prod (Y, Z Multiplier) {
+  y, z := Y.(Multiplier), Z.(Multiplier)
+  x.Copy (y)
+  x.Mul (z)
+}
+
+func (x *longInteger) Quot (Y, Z Multiplier) {
+  y, z := Y.(Multiplier), Z.(Multiplier)
+  x.Copy (y)
+  x.DivBy (z)
 }
 
 func (x *longInteger) Sqr() {
@@ -336,13 +340,23 @@ func (x *longInteger) Power (n uint) {
   }
 }
 
-func (x *longInteger) div (Y, Z Any) {
-  z := x.imp (Z)
-  if z.Cmp (zero.n) == 0 { DivBy0Panic() }
-  x.n.Quo (x.imp (Y), z)
+func (x *longInteger) Invertible() bool {
+  return x.n.Cmp (zero.n) != 0
 }
 
-func (x *longInteger) DivBy (Y Any) {
+func (x *longInteger) Invert() {
+  e := new_(1)
+  e.DivBy (x)
+  x.Copy (e)
+}
+
+func (x *longInteger) div (Y, Z Multiplier) {
+  z := Z.(*longInteger)
+  if ! z.Invertible() { DivBy0Panic() }
+  x.n.Quo (x.imp (Y), z.imp (Z))
+}
+
+func (x *longInteger) DivBy (Y Multiplier) {
   x.div (x, Y)
 }
 
@@ -427,7 +441,7 @@ func (x *longInteger) Stirl2 (n, k uint) {
   }
   tmp.n.SetInt64 (1)
   e := k % 2 != 0
-  nn, ii := new64(int64(n)).(*longInteger), new64(1).(*longInteger)
+  nn, ii := new_(int(n)).(*longInteger), new_(1).(*longInteger)
   for i := uint(1); i <= k; i++ {
     tmp.n.Mul (tmp.n, tmp1.n.SetInt64 (int64(k - i + 1)))
     tmp.n.Div (tmp.n, ii.n)
@@ -455,4 +469,12 @@ func (x *longInteger) SetBit (i int, b bool) {
   u := uint(0)
   if b { u++ }
   x.n.SetBit (x.n, i, u)
+}
+
+func string_(x LongInteger) string {
+  return x.(*longInteger).n.String()
+}
+
+func sumDigits (x LongInteger) uint {
+  return uint(len(x.(*longInteger).n.String()))
 }

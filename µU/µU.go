@@ -33,14 +33,14 @@ import (
   "µU/date"; "µU/dgra"; "µU/dlock"; "µU/env"; "µU/errh"; "µU/euro"; "µU/f"; "µU/fig2"
   "µU/files"; "µU/fuday"; "µU/gram"; "µU/host"; "µU/ieee"; "µU/kbd"; "µU/li"; "µU/lock2"
   "µU/lr"; "µU/macc"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"; "µU/mstk"; "µU/pbar"
-  "µU/persaddr"; "µU/phil"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/q"; "µU/r"; "µU/reg"
-  "µU/rpc"; "µU/rw"; "µU/scale"; "µU/schan"; "µU/scr"; "µU/smok"; "µU/term"; "µU/texts"
-  "µU/time"; "µU/vnset"; "µU/z"
+  "µU/persaddr"; "µU/phil"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/q"; "µU/qmat"; "µU/r"
+  "µU/reg"; "µU/rpc"; "µU/rw"; "µU/scale"; "µU/schan"; "µU/scr"; "µU/smok"; "µU/term"
+  "µU/texts"; "µU/time"; "µU/vnset"; "µU/z"
 )
 const (
   yy = 2021
-  mm =    8
-  dd =   20
+  mm =   11
+  dd =    6
 )
 var (
   red = col.FlashRed()
@@ -152,7 +152,8 @@ func main() { // get all packages compiled and show the license
   f.Touch(); fig2.Touch(); fuday.New(); gram.Touch(); host.New(); ieee.New(); li.New(0)
   lock2.NewPeterson(); lr.NewMutex(); macc.New(); mbbuf.New(nil, 1); mbuf.New(0)
   mcorn.New(0); menue.Touch(); mstk.New(0); pbar.Touch(); persaddr.New(); phil.TouchPhil()
-  piset.Touch(); pos.Touch(); q.New(); r.String(0); reg.Touch(); rpc.Touch(); rw.New1()
+  piset.Touch(); pos.Touch(); q.Touch(); qmat.Touch(); r.String(0); reg.Touch(); rpc.Touch()
+  rw.New1()
   scale.Lim(0,0,0,0,0); schan.New(0); smok.TouchSmok(); term.New(""); texts.Touch()
   vnset.EmptySet(); z.String(0)
   var v day.Calendarday = day.New()

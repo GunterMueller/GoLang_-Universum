@@ -1,6 +1,6 @@
 package euro
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 211104 - license see µU.go
 
 import (
   "math"
@@ -147,6 +147,17 @@ func (x *euro) Add (Y ...Adder) {
   }
 }
 
+func (x *euro) Sum (Y, Z Adder) {
+  y, z := x.imp (Y), x.imp (Z)
+  if y.cent == undefined || z.cent == undefined {
+    return
+  }
+  x.cent += y.cent + z.cent
+  if x.cent >= undefined {
+    x.cent = undefined
+  }
+}
+
 func (x *euro) Sub (Y ...Adder) {
   if x.cent == undefined { return }
   for _, y := range Y {
@@ -160,6 +171,14 @@ func (x *euro) Sub (Y ...Adder) {
       break
     }
   }
+}
+
+func (x *euro) Diff (Y, Z Adder) {
+  y, z := x.imp (Y), x.imp (Z)
+  if y.cent == undefined || z.cent == undefined {
+    return
+  }
+  x.cent += y.cent - z.cent
 }
 
 func (x *euro) Operate (Faktor, Divisor uint) {

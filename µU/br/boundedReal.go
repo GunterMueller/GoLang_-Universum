@@ -1,6 +1,6 @@
 package br
 
-// (c) Christian Maurer   v. 210409 - license see µU.go
+// (c) Christian Maurer   v. 211406 - license see µU.go
 
 import (
   . "µU/obj"
@@ -188,6 +188,12 @@ func (x *breal) Add (Y ...Adder) {
   }
 }
 
+func (x *breal) Sum (Y, Z Adder) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.Add (z)
+}
+
 func (x *breal) Sub (Y ...Adder) {
   n := len(Y)
   y := make([]*breal, n)
@@ -197,17 +203,35 @@ func (x *breal) Sub (Y ...Adder) {
   }
 }
 
+func (x *breal) Diff (Y, Z Adder) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.Sub (z)
+}
+
 func (x *breal) One() bool {
   return x.float64 == 1. // XXX epsilon
 }
 
-func (x *breal) Mul (Y ...Any) {
+func (x *breal) Mul (Y ...Multiplier) {
   n := len(Y)
   y := make([]*breal, n)
   for i:= 0; i < n; i++ {
     y[i] = x.imp(Y[i])
     x.float64*= y[i].float64
   }
+}
+
+func (x *breal) Prod (Y, Z Multiplier) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.Mul (z)
+}
+
+func (x *breal) Quot (Y, Z Multiplier) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.DivBy (z)
 }
 
 func (x *breal) Sqr() {
@@ -230,8 +254,18 @@ func (x *breal) Power (n uint) {
   }
 }
 
-func (x *breal) DivBy (Y Any) {
+func (x *breal) Invertible() bool {
+  return ! x.Zero()
+}
+
+func (x *breal) Invert() {
+  e := new_(1)
+  e.DivBy (x)
+  x.Copy (e)
+}
+
+func (x *breal) DivBy (Y Multiplier) {
   y := x.imp(Y)
-  if Zero(y) { DivBy0Panic() }
-  x.float64 /= x.imp(Y).float64
+  if ! y.Invertible() { DivBy0Panic() }
+  x.float64 /= y.float64
 }

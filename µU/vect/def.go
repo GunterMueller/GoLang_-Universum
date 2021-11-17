@@ -1,6 +1,6 @@
 package vect
 
-// (c) Christian Maurer   v. 201027 - license see µU.go
+// (c) Christian Maurer   v. 211104 - license see µU.go
 
 import
   . "µU/obj"
@@ -34,12 +34,6 @@ type
 //      x2 + r * cos(theta)),
 // where the coordinates are those of x before.
   SetPolar (x, y, z, r, phi, theta float64)
-
-// x = a + b
-  Sum (a, b Vector)
-
-// x = a - b
-  Diff (a, b Vector)
 
 //  x = ((a0, 0, 0), (0, b1, 0), (0, 0, c2)).
   Project (a, b, c Vector)

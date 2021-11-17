@@ -1,6 +1,6 @@
 package li
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 211106 - license see µU.go
 
 import (
   . "µU/obj"
@@ -19,35 +19,41 @@ type
   Multiplier
 
   SetInt (n int)
-  SetInt64 (n int64)
 
   Len() uint
   Odd() bool
   ChSign()
   Val() int
-  Val64() int64
   SumDigits() uint
 
-// Specs see µU.nat
   Inc()
   Dec()
   Mod (y LongInteger)
-  MulMod (y, m LongInteger)
   Div2 (y, r LongInteger)
-  Gcd (y LongInteger)
-  Lcm (y LongInteger)
-  Pow (y LongInteger)
+  MulMod (y, m LongInteger)
   PowMod (y, m LongInteger)
-  Fak (n uint)
-  Binom (n, k uint)
-  LowFak (n, k uint)
-  Stirl2 (n, k uint)
   ProbabylPrime (n int) bool
 
   Bitlen() uint
   Bit (i int) uint
   SetBit (i int, b bool)
+
+// Specs see µU.n
+  Gcd (y LongInteger)
+  Lcm (y LongInteger)
+  Pow (y LongInteger)
+  Fak (n uint)
+  Binom (n, k uint)
+  LowFak (n, k uint)
+  Stirl2 (n, k uint)
 }
-// Return the long integer with Val(n) == n resp. Val64(n) == n.
-func New (n int) LongInteger { return newInt(n) }
-func New64 (n int64) LongInteger { return new64(n) }
+
+// Returns a new long integer with Val(n) == n.
+func New (n int) LongInteger { return new_(n) }
+
+func String (n LongInteger) string { return string_(n) }
+
+func SumDigits (n LongInteger) uint { return sumDigits(n) }
+
+// TODO func Write (n LongInteger, l, c uint) { write(n,l,c) }
+// TODO func Edit (n *LongInteger, l, c uint) { edit(n,l,c) }

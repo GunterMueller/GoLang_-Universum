@@ -1,6 +1,6 @@
 package q
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 211106 - license see µU.go
 
 import (
   "math"
@@ -13,8 +13,10 @@ import (
   "µU/n"
   "µU/errh"
 )
-const
-  max = 1e9 // numerator and denominator with at most 9 digits
+const (
+  w = 8
+  max = 1e6
+)
 type
   rational struct {
        num, denom uint
@@ -23,19 +25,18 @@ type
                   font.Font
                   }
 var (
-  reciprocal = new_().(*rational)
   bx = box.New()
   pbx = pbox.New()
 )
 
 func init() {
-  bx.Wd (1 + 9 + 1 + 9) // sign, numerator, fraction bar, denominator
+  bx.Wd (w) // sign, numerator, fraction bar, denominator
 }
 
 func new_() Rational {
   x := new(rational)
   x.cF, x.cB = col.StartCols()
-  if x.cF.IsWhite() && x.cB.IsBlack() { x.cF = col.LightWhite() } // Firlefanz
+  if x.cF.IsWhite() && x.cB.IsBlack() { x.cF = col.LightWhite() } // firlefanz
   x.geq0 = true
   return x
 }
@@ -99,6 +100,14 @@ func (x *rational) Less (Y Any) bool {
   p, q := uint64 (x.num) * uint64 (y.denom), uint64 (y.num) * uint64 (x.denom)
   if x.geq0 { return p < q } // y.geq0
   return p > q // ! x.geq0, ! y.geq0
+}
+
+func (x *rational) Vals() (bool, uint, uint) {
+  return x.geq0, x.num, x.denom
+}
+
+func (x *rational) Set1 (n int) bool {
+  return x.Set (n, 1)
 }
 
 func (x *rational) Set (n, d int) bool {
@@ -180,19 +189,20 @@ func (x *rational) Defined (s string) bool {
 
 func (x *rational) String() string {
   if x.denom == 0 {
-    return "num/denom"
+    return str.Const ('-', w)
   }
-  s := n.StringFmt (x.num, 9, false)
+  s := n.StringFmt (x.num, 2, false)
   str.OffSpc (&s)
   if ! x.geq0 {
     s = "-" + s
   }
   if x.denom == 1 {
-    return s
+    return s + "   "
   }
   s += "/"
-  t := n.StringFmt (x.denom, 9, false)
+  t := n.StringFmt (x.denom, 2, false)
   str.OffSpc (&t)
+  if len(t) == 1 { t += " " }
   return s + t
 }
 
@@ -202,6 +212,7 @@ func (x *rational) Colours (f, b col.Colour) {
 
 func (x *rational) Write (l, c uint) {
   bx.Colours (x.cF, x.cB)
+  bx.Write (str.New(w), l, c)
   bx.Write (x.String(), l, c)
 }
 
@@ -230,22 +241,28 @@ func (x *rational) Print (l, c uint) {
 }
 
 func (x *rational) Codelen() uint {
-  return 2 * 4 + 1
+  return 2 * C0 + 1
 }
 
 func (x *rational) Encode() Stream {
   b := make (Stream, x.Codelen())
-  copy (b[:4], Encode (x.num))
-  copy (b[4:8], Encode (x.denom))
-  b[9] = 0
-  if x.geq0 { b[9] = 1 }
+  i, a := uint(0), C0
+  copy (b[i:i+a], Encode (x.num))
+  i += a
+  copy (b[i:i+a], Encode (x.denom))
+  i += a
+  b[i] = 0
+  if x.geq0 { b[i] = 1 }
   return b
 }
 
 func (x *rational) Decode (b Stream) {
-  x.num = Decode (uint(0), b[:4]).(uint)
-  x.denom = Decode (uint(0), b[4:8]).(uint)
-  x.geq0 = b[9] == 1
+  i, a := uint(0), C0
+  x.num = Decode (uint(0), b[i:i+a]).(uint)
+  i += a
+  x.denom = Decode (uint(0), b[i:i+a]).(uint)
+  i += a
+  x.geq0 = b[i] == 1
 }
 
 func (x *rational) Integer() bool {
@@ -274,10 +291,14 @@ func (x *rational) reduce() {
   }
   if x.num == 0 {
     x.denom = 1
+    x.geq0 = true
     return
   }
   g := n.Gcd (x.num, x.denom)
   x.num, x.denom = x.num / g, x.denom / g
+  if x.num == 0 {
+    x.geq0 = true
+  }
 }
 
 func gcd (a, b uint64) uint64 {
@@ -339,7 +360,9 @@ func (x *rational) add (Y Adder) {
   }
   d := uint64 (x.denom) * uint64 (y.denom)
   g := gcd (n, d)
-  n, d = n / g, d / g
+  if g != 0 {
+    n, d = n / g, d / g
+  }
   if n > uint64(max) || d > uint64(max) {
     x.Clr()
     return
@@ -352,6 +375,12 @@ func (x *rational) Add (Y ...Adder) {
   for i, _ := range Y {
     x.add (Y[i])
   }
+}
+
+func (x *rational) Sum (Y, Z Adder) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.Add (z)
 }
 
 func (x *rational) changeSign() {
@@ -369,7 +398,13 @@ func (x *rational) Sub (Y ...Adder) {
   }
 }
 
-func (x *rational) mul (Y Any) {
+func (x *rational) Diff (Y, Z Adder) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.Sub (z)
+}
+
+func (x *rational) mul (Y Multiplier) {
   y := x.imp(Y)
   if y.denom == 0 {
     x.Clr()
@@ -379,25 +414,30 @@ func (x *rational) mul (Y Any) {
     x.num, x.denom, x.geq0 = 0, 1, true
     return
   }
-  if y.num == y.denom {
-    return
-  }
   n, d := uint64(x.num) * uint64(y.num), uint64(x.denom) * uint64(y.denom)
   g := gcd (n, d)
-  n, d = n / g, d / g
-  if n > uint64(max) || d > uint64(max) {
-    x.Clr()
-    return
+  if g != 0 {
+    n, d = n / g, d / g
+    if n > uint64(max) || d > uint64(max) {
+      x.Clr()
+      return
+    }
   }
   x.num, x.denom = uint(n), uint(d)
   x.geq0 = x.geq0 == y.geq0
   x.reduce()
 }
 
-func (x *rational) Mul (Y ...Any) {
+func (x *rational) Mul (Y ...Multiplier) {
   for i, _ := range Y {
     x.mul (Y[i])
   }
+}
+
+func (x *rational) Prod (Y, Z Multiplier) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.Mul (z)
 }
 
 func (x *rational) Sqr() {
@@ -421,6 +461,10 @@ func (x *rational) Power (n uint) {
   }
 }
 
+func (x *rational) Invertible() bool {
+  return x.num != 0 && x.denom != 0
+}
+
 func (x *rational) Invert() {
   if x.denom == 0 {
     x.num = 0
@@ -429,9 +473,9 @@ func (x *rational) Invert() {
   }
 }
 
-func (x *rational) DivBy (Y Any) {
+func (x *rational) DivBy (Y Multiplier) {
   y := x.imp(Y)
-  if y.num == 0 || y.denom == 0 {
+  if ! y.Invertible() {
     x.Clr()
     return
   }
@@ -440,19 +484,8 @@ func (x *rational) DivBy (Y Any) {
   x.Mul (inv)
 }
 
-/*
-type Operation byte; const (ADD = iota; SUB; MUL; DIV ) // TODO interface in µU/obj
-
-func (x *rational) Operate (Y ...Rational, op Operation) { // TODO Rational -> ...
-  switch op {
-  case ADD:
-    x.Sum (Y...)
-  case SUB:
-    x.Difference (Y)
-  case MUL:
-    x.Product (Y)
-  case DIV:
-    x.Quotient (Y)
-  }
+func (x *rational) Quot (Y, Z Multiplier) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.DivBy (z)
 }
-*/

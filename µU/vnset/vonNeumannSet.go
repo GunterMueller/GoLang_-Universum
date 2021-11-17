@@ -182,8 +182,9 @@ func (x *set) Zero() bool {
 }
 
 func (x *set) Sum (Y, Z Adder) {
-  x.Copy (Y)
-  x.Add (Z)
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.Add (z)
 }
 
 func (x *set) Add (Y ...Adder) {
@@ -199,7 +200,7 @@ func (x *set) Add (Y ...Adder) {
 
 func (x *set) Sub (Y ...Adder) {
   z := EmptySet()
-  z.Add(Y...)
+  z.Add (Y...)
   m := EmptySet().(*set)
   for _, a := range x.elem {
     if ! a.Element(z) {
@@ -207,6 +208,12 @@ func (x *set) Sub (Y ...Adder) {
     }
   }
   *x = *m
+}
+
+func (x *set) Diff (Y, Z Adder) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.Sub (z)
 }
 
 func (x *set) Union (Y VonNeumannSet) VonNeumannSet {

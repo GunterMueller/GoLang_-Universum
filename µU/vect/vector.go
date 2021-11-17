@@ -1,6 +1,6 @@
 package vect
 
-// (c) Christian Maurer   v. 201101 - license see µU.go
+// (c) Christian Maurer   v. 211104 - license see µU.go
 
 import (
   "math"
@@ -196,13 +196,13 @@ func (x *vector) Sub (Y ...Adder) {
   }
 }
 
-func (x *vector) Sum (Y, Z Vector) {
+func (x *vector) Sum (Y, Z Adder) {
   y, z := x.imp(Y), x.imp(Z)
   x.Copy (y)
   x.Add (z)
 }
 
-func (x *vector) Diff (Y, Z Vector) {
+func (x *vector) Diff (Y, Z Adder) {
   y, z := x.imp(Y), x.imp(Z)
   x.Copy (y)
   x.Sub (z)

@@ -1,11 +1,11 @@
 package obj
 
-// (c) Christian Maurer   v. 210509 - license see µU.go
+// (c) Christian Maurer   v. 211104 - license see µU.go
 
 type
   TeXer interface {
 
-// Returns a TeX-string representation of x.
+// Returns an AMSTeX-string representation of x.
   TeX() string
 }
 
