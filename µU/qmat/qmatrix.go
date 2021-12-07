@@ -1,6 +1,6 @@
 package qmat
 
-// (c) Christian Maurer   v. 211106 - license see µU.go
+// (c) Christian Maurer   v. 211118 - license see µU.go
 
 // >>> matrices with rational fractions as entries
 
@@ -14,7 +14,6 @@ import (
 type
   qmatrix struct {
           nl, nc uint // number of lines and columns
-               d uint // maximal number of digits of the fractions
          matrix  [][]q.Rational
                  }
 
@@ -22,24 +21,23 @@ func nofit() {
   ker.Panic ("wrong number of lines or columns")
 }
 
-func new_(m, n, d uint) QMatrix {
+func new_(m, n uint) QMatrix {
   x := new (qmatrix)
   x.nl, x.nc = m, n
-  x.d = d
-  x.matrix = make([][]q.Rational, n)
-  for l := uint(0); l < n; l++ {
-    x.matrix[l] = make([]q.Rational, n)
-    for c := uint(0); c < n; c++ {
+  x.matrix = make([][]q.Rational, x.nl)
+  for l := uint(0); l < x.nl; l++ {
+    x.matrix[l] = make([]q.Rational, x.nc)
+    for c := uint(0); c < x.nc; c++ {
       x.matrix[l][c] = q.New()
     }
   }
   return x
 }
 
-func unit (m, n, d uint) QMatrix {
-  u := new_(m, n, d).(*qmatrix)
-  for l := uint(0); l < n; l++ {
-    for c := uint(0); c < n; c++ {
+func unit (m, n uint) QMatrix {
+  u := new_(m, n).(*qmatrix)
+  for l := uint(0); l < u.nl; l++ {
+    for c := uint(0); c < u.nc; c++ {
       if c == l {
         u.matrix[l][c].Set1 (1)
       } else {
@@ -93,7 +91,7 @@ func (x *qmatrix) Zero() bool {
 
 func (x *qmatrix) Eq (Y Any) bool {
   y := x.imp (Y)
-  if y.nl != x.nl || y.nc != x.nc || y.d != x.d {
+  if y.nl != x.nl || y.nc != x.nc { // || y.d != x.d {
     return false
   }
   for l := uint(0); l < x.nl; l++ {
@@ -117,7 +115,7 @@ func (x *qmatrix) Copy (Y Any) {
 }
 
 func (x *qmatrix) Clone () Any {
-  y := new_(x.nl, x.nc, x.d)
+  y := new_(x.nl, x.nc)
   y.Copy (x)
   return y
 }
@@ -183,7 +181,7 @@ func (x *qmatrix) Decode (s Stream) {
 
 func (x *qmatrix) add (Y Adder) {
   y := x.imp(Y)
-  if y.nl != x.nl || y.nc != x.nc || y.d != x.d { nofit() }
+  if y.nl != x.nl || y.nc != x.nc { nofit() }
   for l := uint(0); l < x.nl; l++ {
     for c := uint(0); c < x.nc; c++ {
       x.matrix[l][c].Add (y.matrix[l][c])
@@ -211,7 +209,7 @@ func (x *qmatrix) Diff (Y, Z Adder) {
 
 func (x *qmatrix) sub (Y Adder) {
   y := x.imp(Y)
-  if y.nl != x.nl || y.nc != x.nc || y.d != x.d { nofit() }
+  if y.nl != x.nl || y.nc != x.nc { nofit() }
   for l := uint(0); l < x.nl; l++ {
     for c := uint(0); c < x.nc; c++ {
       x.matrix[l][c].Sub (y.matrix[l][c])
@@ -247,10 +245,10 @@ func (x *qmatrix) One() bool {
 
 func (x *qmatrix) mul (Y Multiplier) {
   y := x.imp(Y)
-  if y.nl != x.nc || y.d != x.d { nofit() }
+  if y.nl != x.nc { nofit() }
   a := q.New()
   b := q.New()
-  xy := New (x.nl, y.nc, x.d).(*qmatrix)
+  xy := New (x.nl, y.nc).(*qmatrix)
   for l := uint(0); l < xy.nl; l++ {
     for c := uint(0); c < xy.nc; c++ {
       a.Set1 (0)
@@ -262,11 +260,8 @@ func (x *qmatrix) mul (Y Multiplier) {
       xy.matrix[l][c].Copy (a)
     }
   }
-  if xy.nl == xy.nc {
-    x.Copy (xy)
-  } else {
-    ker.Panic ("not yet implemented")
-  }
+  x.nl, x.nc = xy.nl, xy.nc
+  x.Copy (xy)
 }
 
 func (x *qmatrix) Mul (Y ...Multiplier) {
@@ -281,26 +276,42 @@ func (x *qmatrix) Prod (Y, Z Multiplier) {
   x.mul (z)
 }
 
-// x and y are changed in a way s.t.
-// x.matrix[m][m] is set to 1.
 func (x *qmatrix) norm (y *qmatrix, m uint) {
   a := x.matrix[m][m].Clone().(q.Rational)
+  _, _, d := a.Vals()
+  if d == 0 {
+    errh.Error ("0/0 bei", m)
+    return
+  }
   for c := uint(0); c < x.nc; c++ {
     x.matrix[m][c].DivBy (a)
     y.matrix[m][c].DivBy (a)
   }
 }
 
-// x and y are changed in a way s.t.
-// x.matrix[l][0] is set to 0 for all lines > m.
+const
+  withProtocol = false
+
+func write (a q.Rational, i, j uint, t, t1 string) {
+  if withProtocol {
+    v, N, Z := a.Vals()
+    s :=  t + n.String(i + 1) + "][" + n.String(j + 1) + t1; if ! v { s += " -" }
+    if Z == 1 { errh.Error (s, N) } else { errh.Error2 (s, N, "/", Z) }
+  }
+}
+
 func (x *qmatrix) do1 (y *qmatrix, m uint) {
   for l := m + 1; l < x.nc; l++ {
     z := x.matrix[l][m].Clone().(q.Rational)
     for c := uint(0); c < x.nc; c++ {
       a := z.Clone().(q.Rational)
+      write (a, l, m, "a = a[", "] =")
       a1 := x.matrix[m][c].Clone().(q.Rational)
+      write (a1, m, c, "a1 = a[", "] =")
       a1.Mul (a)
+      write (a1, m, c, "a1 * a = a[", "] =")
       x.matrix[l][c].Sub (a1)
+      write (x.matrix[l][c], l, c, "a[", "] -= a * a1 =")
       b1 := y.matrix[m][c].Clone().(q.Rational)
       b1.Mul (a)
       y.matrix[l][c].Sub (b1)
@@ -308,8 +319,6 @@ func (x *qmatrix) do1 (y *qmatrix, m uint) {
   }
 }
 
-// x and y are changed in a way s.t.
-// x.matrix[l][m] is set to 0 for all lines < m;
 func (x *qmatrix) do2 (y *qmatrix, m uint) {
   for l := uint(0); l < m; l++ {
     a := x.matrix[l][m].Clone().(q.Rational)
@@ -348,36 +357,39 @@ func (x *qmatrix) repair() {
   }
 }
 
+var
+  step = uint(0)
+
 func wait() {
-  errh.Error0 ("")
+  errh.Error ("done step", step)
+  step++
 }
 
 func (x *qmatrix) DivBy (Y Multiplier) {
   y := x.imp(Y)
   if ! y.Invertible() {
-    DivBy0Panic()
+    errh.Hint ("the matrix is not invertible")
   }
   if y.matrix[0][0].Zero() {
     y.repair()
   }
   y.norm (x, 0)
-  withProtocol := false
-  c := (x.nc + 1) * (2 * (x.d + 1) + 1)
-  if withProtocol { y.Write (0, 0); x.Write (0, c); wait() }
+  step = 1
+  if withProtocol { y.Write (0, 0); x.Write (12, 0); wait() }
   for i := uint(0); i < x.nc - 1; i++ {
     y.do1 (x, i)
-    if withProtocol { y.Write (0, 0); x.Write (0, c); wait() }
+    if withProtocol { y.Write (0, 0); x.Write (12, 0); wait() }
     y.norm (x, i + 1)
-    if withProtocol { y.Write (0, 0); x.Write (0, c); wait() }
+    if withProtocol { y.Write (0, 0); x.Write (12, 0); wait() }
   }
   for i := x.nc - 1; i > 0; i-- {
     y.do2 (x, i)
-    if withProtocol { y.Write (0, 0); x.Write (0, c); wait() }
+    if withProtocol { y.Write (0, 0); x.Write (12, 0); wait() }
   }
 }
 
 func (x *qmatrix) Invert() {
-  e := unit (x.nl, x.nc, x.d).(*qmatrix)
+  e := unit (x.nl, x.nc /* , x.d */).(*qmatrix)
   e.DivBy (x)
   x.Copy (e)
 }
@@ -406,7 +418,7 @@ func (x *qmatrix) Set1 (i ...int) {
   if uint(len(i)) != x.nl * x.nc { nofit() }
   for l := uint(0); l < x.nl; l++ {
     for c := uint(0); c < x.nc; c++ {
-      x.matrix[l][c].Set (i[x.nl * l + c], 1)
+      x.matrix[l][c].Set (i[x.nc * l + c], 1)
     }
   }
   if x.matrix[0][0].Zero() {
@@ -433,18 +445,33 @@ func (x *qmatrix) Vals (l, c uint) (bool, uint, uint) {
   return x.matrix[l][c].Vals()
 }
 
-func (x *qmatrix) Write (z, s uint) {
+func (x *qmatrix) wd() uint {
+  w := uint(0)
   for l := uint(0); l < x.nl; l++ {
     for c := uint(0); c < x.nc; c++ {
-      x.matrix[l][c].Write (z + l, c + s + (1 + x.d + 1 + x.d) * c)
+      w0 := x.matrix[l][c].Wd()
+      if w0 > w {
+        w = w0 // * x.nc
+      }
+    }
+  }
+  return w
+}
+
+func (x *qmatrix) Write (z, s uint) {
+  w := x.wd()
+  for l := uint(0); l < x.nl; l++ {
+    for c := uint(0); c < x.nc; c++ {
+      x.matrix[l][c].Write (z + l, c + s + w * c)
     }
   }
 }
 
 func (x *qmatrix) Edit (z, s uint) {
+  w := x.wd()
   for l := uint(0); l < x.nl; l++ {
     for c := uint(0); c < x.nc; c++ {
-      x.matrix[l][c].Edit (z + l, c + s + (1 + x.d + 1 + x.d) * c)
+      x.matrix[l][c].Edit (z + l, c + s + w * c)
     }
   }
 }

@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 210418 - license see µU.go
+// (c) Christian Maurer   v. 211127 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -57,6 +57,16 @@ void fullscreen (Display *d, Window w, Window w0, int on) {
 //   if (XSync (d, False) < 0) ;
 // }
 
+void getPixelColour (Display *d, XImage *i, Colormap m, int x, int y, int16_t *r, int16_t *g, int16_t *b) {
+  XColor c;
+  c.pixel = XGetPixel (i, x, y);
+  XFree (i);
+  XQueryColor (d, m, &c);
+  *r = c.red;
+  *g = c.green;
+  *b = c.blue;
+}
+
 Window keyWin (XEvent *e) { return (*e).xkey.window; }
 unsigned int keyState (XEvent *e) { return (*e).xkey.state; }
 unsigned int keyCode (XEvent *e) { return (*e).xkey.keycode; }
@@ -109,8 +119,6 @@ unsigned long xGetPixel (XImage *i, int x, int y) { return ((*((i)->f.get_pixel)
 void xPutPixel (XImage *i, int x, int y, unsigned long p) { ((*((i)->f.put_pixel))((i), (x), (y), (p))); }
 void xDestroyImage (XImage *i) { ((*((i)->f.destroy_image))((i))); }
 
-void copy (Display *d, char* s, int n) { XStoreBytes (d, s, n); }
-char *paste (Display *d, int* n) { return XFetchBytes (d, n); }
 void xfree (char* s) { Xfree (s); }
 
 int etyp (XEvent *e) { return (*e).type; }
@@ -200,6 +208,7 @@ var (
   actualW *xwindow
   first bool = true // to start goSendEvents only once
   winList []*xwindow
+  cutbuffer []string
   txt = []string {"", "",
                   "KeyPress", "KeyRelease", "ButtonPress", "ButtonRelease", "MotionNotify",
                   "EnterNotify", "LeaveNotify", "FocusIn", "FocusOut", "KeymapNotify",
@@ -214,7 +223,10 @@ var (
 )
 
 func init() {
-  go sendEvents()
+  cutbuffer = make([]string, 0)
+  if ker.UnderX() {
+    go sendEvents()
+  }
 }
 
 func initX() {
@@ -292,8 +304,6 @@ func (X *xwindow) OffFocus() bool {
   return actualW != X
 }
 
-// func (X *xwindow) Win2buf()
-
 // colours /////////////////////////////////////////////////////////////
 
 func (X *xwindow) ScrColours (f, b col.Colour) {
@@ -323,8 +333,8 @@ func (X *xwindow) ScrColB() col.Colour {
 func (X *xwindow) Colours (f, b col.Colour) {
   if ! initializedW { panic ("xwin.Colours: ! initializedW"); return }
   X.cF, X.cB = f, b
-  C.XSetForeground (dpy, X.gc, cu (X.cF))
-  C.XSetBackground (dpy, X.gc, cu (X.cB))
+  X.ColourF (X.cF)
+  X.ColourB (X.cB)
 }
 
 func (X *xwindow) ColourF (f col.Colour) {
@@ -350,8 +360,10 @@ func (X *xwindow) ColB() col.Colour {
 }
 
 func (X *xwindow) Colour (x, y uint) col.Colour {
-  return X.scrB
-//  return X.colour[x][y].Clone().(col.Colour)
+  var r, g, b C.int16_t
+  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(x), C.int(y), 1, 1, C.AllPlanes, C.XYPixmap)
+  C.getPixelColour (dpy, ximg, swa.colormap, C.int(0), C.int(0), &r, &g, &b)
+  return col.New3 (byte(r), byte(g), byte(b))
 }
 
 // ranges //////////////////////////////////////////////////////////////
@@ -402,12 +414,13 @@ func natord (x, y, x1, y1 *uint) {
 }
 
 func (X *xwindow) Save (l, c, w, h uint) {
-  x, y := C.int(X.wd1) * C.int(c), C.int(X.ht1) * C.int(l)
-  w_, h_ := C.uint(X.wd1 * w), C.uint(X.ht1 * h)
-  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.shadow), X.gc, x, y, w_, h_, x, y)
+  x, y := int(X.wd1) * int(c), int(X.ht1) * int(l)
+  x1, y1 := int(X.wd1 * w), int(X.ht1 * h)
+  X.SaveGr (x, y, x1, y1)
 }
 
 func (X *xwindow) SaveGr (x, y, x1, y1 int) {
+// return // XXX
   intordW (&x, &y, &x1, &y1)
   w, h := C.uint(x1 - x + 1), C.uint(y1 - y + 1)
 //  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.shadow), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
@@ -419,10 +432,9 @@ func (X *xwindow) Save1() {
 }
 
 func (X *xwindow) Restore (l, c, w, h uint) {
-  x, y := C.int(X.wd1) * C.int(c), C.int(X.ht1) * C.int(l)
-  w_, h_ := C.uint(X.wd1 * w), C.uint(X.ht1 * h)
-  C.XCopyArea (dpy, C.Drawable(X.shadow), C.Drawable(X.win), X.gc, x, y, w_, h_, x, y)
-  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.buffer), X.gc, x, y, w_, h_, x, y)
+  x, y := int(X.wd1) * int(c), int(X.ht1) * int(l)
+  x1, y1 := int(X.wd1 * w), int(X.ht1 * h)
+  RestoreGr (x, y, x1, y1)
 }
 
 func (X *xwindow) RestoreGr (x, y, x1, y1 int) {
@@ -629,7 +641,9 @@ func intordW (x, y, x1, y1 *int) {
 
 func (X *xwindow) point (x, y int, n bool) {
   if ! n { C.XSetFunction (dpy, X.gc, C.GXinvert) }
-  if ! X.buff { C.XDrawPoint (dpy, C.Drawable(X.win), X.gc, C.int(x), C.int(y)) }
+  if ! X.buff {
+    C.XDrawPoint (dpy, C.Drawable(X.win), X.gc, C.int(x), C.int(y))
+  }
   C.XDrawPoint (dpy, C.Drawable(X.buffer), X.gc, C.int(x), C.int(y))
   if ! n { C.XSetFunction (dpy, X.gc, C.GXcopy) }
   C.XFlush (dpy)
@@ -659,12 +673,12 @@ func ok4W (xs, ys, xs1, ys1 []int) bool {
 }
 
 func (X *xwindow) points (xs, ys []int, b bool) {
-  n:= len (xs)
+  n := len (xs)
   if n == 0 { return }
   if ! ok2W (xs, ys) { return }
   if n == 1 { X.point (xs[0], ys[0], b) }
   p := make ([]C.XPoint, n)
-  for i:= 0; i < n; i++ {
+  for i := 0; i < n; i++ {
     p[i].x, p[i].y = C.short(xs[i]), C.short(ys[i])
   }
   if ! b { C.XSetFunction (dpy, X.gc, C.GXinvert) }
@@ -719,14 +733,14 @@ func (X *xwindow) OnLine (x, y, x1, y1, a, b int, t uint) bool {
     return betweenW (y, y, b, int(t))
   }
   if near (x, y, a, b, t) || near (x1, y1, a, b, t) { return true }
-  m:= float64(y1 - y) / float64(x1 - x)
+  m := float64(y1 - y) / float64(x1 - x)
   return near (a, b, a, y + int(m * float64(a - x) + 0.5), t)
 }
 
 func (X *xwindow) lines (xs, ys, xs1, ys1 []int, n bool) {
-  l:= len (xs); if len (ys) != l { return }
-  s:= make ([]C.XSegment, l)
-  for i:= 0; i < l; i++ {
+  l := len (xs); if len (ys) != l { return }
+  s := make ([]C.XSegment, l)
+  for i := 0; i < l; i++ {
     s[i].x1, s[i].y1, s[i].x2, s[i].y2 = C.short(xs[i]), C.short(ys[i]), C.short(xs1[i]), C.short(ys1[i])
   }
   if ! n { C.XSetFunction (dpy, X.gc, C.GXinvert) }
@@ -747,7 +761,7 @@ func (X *xwindow) LinesInv (xs, ys, xs1, ys1 []int) {
 func (X *xwindow) OnLines (xs, ys, xs1, ys1 []int, a, b int, t uint) bool {
   if len (xs) == 0 { return false }
   if ! ok4W (xs, ys, xs1, ys1) { return false }
-  for i:= 0; i < len (xs); i++ {
+  for i := 0; i < len (xs); i++ {
     if X.OnLine (xs[i], ys[i], xs1[i], ys1[i], a, b, t) {
       return true
     }
@@ -756,9 +770,9 @@ func (X *xwindow) OnLines (xs, ys, xs1, ys1 []int, a, b int, t uint) bool {
 }
 
 func (X *xwindow) segments (xs, ys []int, n bool) {
-  l:= len (xs); if len (ys) != l { return }
-  p:= make ([]C.XPoint, l)
-  for i:= 0; i < l; i++ {
+  l := len (xs); if len (ys) != l { return }
+  p := make ([]C.XPoint, l)
+  for i := 0; i < l; i++ {
     p[i].x, p[i].y = C.short(xs[i]), C.short(ys[i])
   }
   if ! n { C.XSetFunction (dpy, X.gc, C.GXinvert) }
@@ -779,7 +793,7 @@ func (X *xwindow) SegmentsInv (xs, ys []int) {
 func (X *xwindow) OnSegments (xs, ys []int, a, b int, t uint) bool {
   if ! ok2W (xs, ys) { return false }
   if len (xs) == 1 { return xs[0] == a && ys[0] == b }
-  for i:= 1; i < len (xs); i++ {
+  for i := 1; i < len (xs); i++ {
     if X.OnLine (xs[i-1], ys[i-1], xs[i], ys[i], a, b, t) {
       return true
     }
@@ -837,7 +851,7 @@ func (X *xwindow) OnInfLine (x, y, x1, y1, a, b int, t uint) bool {
   }
   if near (x, y, a, b, t) || near (x1, y1, a, b, t) { return true }
   X.border (&x, &y, &x1, &y1)
-  m:= float64(y1 - y) / float64(x1 - x)
+  m := float64(y1 - y) / float64(x1 - x)
   return near (a, b, a, y + int(m * float64(a - x) + 0.5), t)
 }
 
@@ -910,9 +924,9 @@ func (X *xwindow) PolygonInv (xs, ys []int) {
 }
 
 func (X *xwindow) polygonFull (xs, ys []int, n bool) {
-  l:= len (xs); if len (ys) != l { return }
-  p:= make ([]C.XPoint, l)
-  for i:= 0; i < l; i++ {
+  l := len (xs); if len (ys) != l { return }
+  p := make ([]C.XPoint, l)
+  for i := 0; i < l; i++ {
     p[i].x, p[i].y = C.short(xs[i]), C.short(ys[i])
   }
   if ! n { C.XSetFunction (dpy, X.gc, C.GXcopyInverted) }
@@ -931,11 +945,11 @@ func (X *xwindow) PolygonFullInv (xs, ys []int) {
 }
 
 func (X *xwindow) OnPolygon (xs, ys []int, a, b int, t uint) bool {
-  n:= len (xs)
+  n := len (xs)
   if n == 0 { return false }
   if ! ok2W (xs, ys) { return false }
   if n == 1 { return xs[0] == a && ys[0] == b }
-  for i:= 1; i < int(n); i++ {
+  for i := 1; i < int(n); i++ {
     if X.OnLine (xs[i-1], ys[i-1], xs[i], ys[i], a, b, t) {
       return true
     }
@@ -944,8 +958,8 @@ func (X *xwindow) OnPolygon (xs, ys []int, a, b int, t uint) bool {
 }
 
 func (X *xwindow) ellipse (x, y int, a, b uint, n, f bool) {
-  x0, y0:= C.int(x) - C.int(a), C.int(y) - C.int(b)
-  aa, bb:= C.uint(2 * a), C.uint(2 * b)
+  x0, y0 := C.int(x) - C.int(a), C.int(y) - C.int(b)
+  aa, bb := C.uint(2 * a), C.uint(2 * b)
   const a0 = C.int(0)
   if f {
     if ! n { C.XSetFunction (dpy, X.gc, C.GXinvert) } // C.GXcopyInverted ?
@@ -983,8 +997,8 @@ func (X *xwindow) OnCircle (x, y int, r uint, a, b int, t uint) bool {
 func (X *xwindow) arc (x, y int, r uint, a, b float64, n, f bool) {
   for a >= 360 { a -= 360 }
   for a <= -360 { a += 360 }
-  x0, y0:= C.int(x) - C.int(r), C.int(y) - C.int(r)
-  rr, aa, bb:= C.uint(2 * r), C.int(64 * a + 0.5), C.int(64 * b + 0.5)
+  x0, y0 := C.int(x) - C.int(r), C.int(y) - C.int(r)
+  rr, aa, bb := C.uint(2 * r), C.int(64 * a + 0.5), C.int(64 * b + 0.5)
   if f {
     if ! n { C.XSetFunction (dpy, X.gc, C.GXinvert) } // C.GXcopyInverted ?
     if ! X.buff { C.XFillArc (dpy, C.Drawable(X.win), X.gc, x0, y0, rr, rr, aa, bb) }
@@ -1036,8 +1050,8 @@ func dist2 (x, y, x1, y1 int) int {
 
 // work around Bresenham ellipse
 func (X *xwindow) OnEllipse (x, y int, a, b uint, A, B int, t uint) bool {
-  e:= int(math.Sqrt(math.Abs(float64(a * a) - float64(b * b))) + 0.5)
-  r:= 2 * int(a); z:= 2 * dist2 (x, y, A, B) // if a == b
+  e := int(math.Sqrt(math.Abs(float64(a * a) - float64(b * b))) + 0.5)
+  r := 2 * int(a); z:= 2 * dist2 (x, y, A, B) // if a == b
   if a > b {
     z = dist2 (x - e, y, A, B) + dist2 (x + e, y, A, B)
   }
@@ -1049,11 +1063,11 @@ func (X *xwindow) OnEllipse (x, y int, a, b uint, A, B int, t uint) bool {
 }
 
 func (X *xwindow) curve (xs, ys []int, xs1, ys1 *[]int) {
-  m:= len (xs)
+  m := len (xs)
   if m == 0 || m != len (ys) { return }
-  n:= ker.ArcLen (xs, ys)
+  n := ker.ArcLen (xs, ys)
   *xs1, *ys1 = make ([]int, n), make ([]int, n)
-  for i:= uint(0); i < n; i++ {
+  for i := uint(0); i < n; i++ {
     (*xs1)[i], (*ys1)[i] = ker.Bezier (xs, ys, uint(m), n, i)
   }
   C.XFlush (dpy)
@@ -1076,11 +1090,11 @@ func (X *xwindow) CurveInv (xs, ys []int) {
 func (X *xwindow) OnCurve (xs, ys []int, a, b int, t uint) bool {
   var xs1, ys1 []int
   X.curve (xs, ys, &xs1, &ys1)
-  if near (xs[0], ys[0], a, b, t) { return true }
-  for i:= 0; i < len (xs1); i++ {
-    if near (xs1[i], ys1[i], a, b, t) { return true }
+  if ! near (xs[0], ys[0], a, b, t) { return false }
+  for i := 0; i < len (xs1); i++ {
+    if ! near (xs1[i], ys1[i], a, b, t) { return false }
   }
-  return false
+  return true
 }
 
 // mouse ///////////////////////////////////////////////////////////////
@@ -1144,18 +1158,18 @@ func (X *xwindow) MousePointerOn() bool {
 }
 
 func (X *xwindow) UnderMouse (l, c, w, h uint) bool {
-  xm, ym:= X.MousePos()
+  xm, ym := X.MousePos()
   return l <= xm && xm < l + h && c <= ym && ym < c + w
 }
 
 func (X *xwindow) UnderMouseGr (x, y, x1, y1 int, t uint) bool {
   intordW (&x, &y, &x1, &y1)
-  xm, ym:= X.MousePosGr()
+  xm, ym := X.MousePosGr()
   return x <= xm + int(t) && xm <= x1 + int(t) && y <= ym + int(t) && ym <= y1 + int(t)
 }
 
 func (X *xwindow) UnderMouse1 (x, y int, d uint) bool {
-  xm, ym:= X.MousePosGr()
+  xm, ym := X.MousePosGr()
   return (x - xm) * (x - xm) + (y - ym) * (y - ym) <= int(d * d)
 }
 
@@ -1290,28 +1304,6 @@ func (X *xwindow) PPMDecode (s obj.Stream, x0, y0 uint) {
     copy (e[i:], s[j:])
   }
   X.Decode (e)
-}
-
-// cut buffer //////////////////////////////////////////////////////////
-
-func (X *xwindow) Cut (s *string) {
-  // TODO
-}
-
-func (X *xwindow) Copy (s string) {
-  cs, n := C.CString (s), C.int(len (s))
-  defer C.free (unsafe.Pointer (cs))
-  C.copy (dpy, cs, n)
-}
-
-func (X *xwindow) Paste() string {
-  var (cs *C.char; n C.int)
-  defer C.free (unsafe.Pointer (cs))
-  cs = C.paste (dpy, &n)
-  s := C.GoStringN (cs, n)
-  C.xfree (cs)
-  X.Flush()
-  return s
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -1590,6 +1582,9 @@ func NewW (x, y uint, m mode.Mode) Screen {
   return NewWHW (x, y, mode.Wd (m), mode.Ht (m))
 }
 
+var
+  swa C.XSetWindowAttributes
+
 func NewWHW (x, y, w, h uint) Screen {
   initX()
   X := new(xwindow)
@@ -1609,7 +1604,7 @@ func NewWHW (x, y, w, h uint) Screen {
   vi := C.glXChooseVisual (dpy, screen, &a[0] )
   cx := C.glXCreateContext (dpy, vi, C.GLXContext(nil), C.True)
   rootWin = C.XRootWindow (dpy, vi.screen)
-  var swa C.XSetWindowAttributes
+//  var swa C.XSetWindowAttributes
   swa.colormap = C.XCreateColormap (dpy, rootWin, vi.visual, C.AllocNone)
   swa.border_pixel = 8
   swa.event_mask = C.KeyPressMask | C.KeyReleaseMask | C.ButtonPressMask | C.ButtonReleaseMask |

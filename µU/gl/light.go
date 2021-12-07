@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 201027 - license see µU.go
+// (c) Christian Maurer   v. 211127 - license see µU.go
 
 // #cgo LDFLAGS: -lGL
 // #include <GL/gl.h> 
@@ -58,7 +58,7 @@ func initLight (n uint, x, y, z, a0, a1, a2 float64, r, g, b byte) {
   lightVis = true
   amb[n][0], amb[n][1], amb[n][2] = C.GLfloat(a0), C.GLfloat(a1), C.GLfloat(a2)
   amb[n][3] = C.GLfloat(1)
-  lightColour[n] = col.New3 ("", r, g, b)
+  lightColour[n] = col.New3 (r, g, b)
   diff[n][0], diff[n][1], diff[n][2] = C.GLfloat(r), C.GLfloat(g), C.GLfloat(b)
   diff[n][3] = C.GLfloat(1)
   lightSource[n][0], lightSource[n][1], lightSource[n][2] = x, y, z

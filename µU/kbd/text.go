@@ -1,10 +1,10 @@
 package kbd
 
-// (c) Christian Maurer   v. 210315 - license see µU.go
+// (c) Christian Maurer   v. 211125 - license see µU.go
 
 var
   text = [NComms]string {
-    "        ", "Esc     ", "Enter   ", "Back    ",
+    "None    ", "Esc     ", "Enter   ", "Back    ",
     "Left    ", "Right   ", "Up      ", "Down    ",
     "PgLeft  ", "PgRight ", "PgUp    ", "PgDown  ",
     "Pos1    ", "End     ", "Tab     ",

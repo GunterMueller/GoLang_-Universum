@@ -29,14 +29,18 @@ func new_() Colour {
   return c
 }
 
-func new3 (n string, r, g, b byte) Colour {
+func new3 (r, g, b byte) Colour {
   c := new(colour)
   c.r, c.g, c.b = r, g, b
-  if n == "" {
-    c.string = c.String1()
-  } else {
-    c.string = n
-  }
+  c.string = c.String1()
+  return c
+}
+
+func new3n (n string, r, g, b byte) Colour {
+  c := new(colour)
+  c.r, c.g, c.b = r, g, b
+  if n == "" { c.string = c.String1() } // panic ("affe") }
+  c.string = n
   return c
 }
 
@@ -225,9 +229,10 @@ func (c *colour) Defined (s string) bool {
 }
 
 func (c *colour) String1() string {
-  return char (uint(c.r) / 16) + char (uint(c.r) % 16) +
-         char (uint(c.g) / 16) + char (uint(c.g) % 16) +
-         char (uint(c.b) / 16) + char (uint(c.b) % 16)
+  s := char (uint(c.r) / 16) + char (uint(c.r) % 16)
+  s += char (uint(c.g) / 16) + char (uint(c.g) % 16)
+  s += char (uint(c.b) / 16) + char (uint(c.b) % 16)
+  return s
 }
 
 func (c *colour) Defined1 (s string) bool {

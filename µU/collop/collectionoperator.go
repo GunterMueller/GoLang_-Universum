@@ -1,6 +1,6 @@
 package collop
 
-// (c) Christian Maurer   v. 210525 - license see µU.go
+// (c) Christian Maurer   v. 211126 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,7 +9,7 @@ import (
   "µU/errh"
 )
 
-func operate (c Collector, o Indexer, f func (x, y Indexer) bool) {
+func operate (c Collector, o Indexer, f func (x, y Indexer) bool, tex *string) {
   help := []string {" vor-/rückwärts: Pfeiltaste ab-/aufwärts",
                     "zum Anfang/Ende: Pos1/Ende              ",
                     " Eintrag ändern: Enter                  ",
@@ -29,7 +29,7 @@ func operate (c Collector, o Indexer, f func (x, y Indexer) bool) {
       }
     }
   }
-  tex := ""
+//  tex := ""
   loop:
   for {
     o = c.Get().(Indexer)
@@ -114,11 +114,8 @@ func operate (c Collector, o Indexer, f func (x, y Indexer) bool) {
     case kbd.Act:
       o.(Rotator).Rotate()
       c.Sort()
-    case kbd.Print:
-      tex = ""
-      c.Trav (func (a Any) { tex += a.(TeXer).TeX() })
-      break loop
     }
   }
+  c.Trav (func (a Any) { *tex += a.(TeXer).TeX() })
   errh.DelHint()
 }

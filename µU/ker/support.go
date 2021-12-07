@@ -1,31 +1,42 @@
 package ker
 
-// (c) Christian Maurer   v. 201226 - license see µU.go
+// (c) Christian Maurer   v. 211203 - license see µU.go
 
-import
+import (
   "runtime"
+  "µU/env"
+)
+const
+  fail = " not supported by µU"
+var (
+  under_C, under_X bool
+)
 
 func init() {
-  switch runtime.GOARCH {
-  case "386": // arm mips mipsle ?
-    Panic ("µU does not support any longer 32-bit computers")
+  goarch, goos := runtime.GOARCH, runtime.GOOS
+  switch goarch {
+  case "386":
+    Panic ("µU does not support 32-bit computers")
   case "amd64":
-    // at the time being the only supported architecture
-/*/
-  case arm64: // s390x ppc64 ppc64le mips64 mips64le ?
-    TODO
-/*/
-  default:
-    Panic ("$GOARCH not yet supported by µU")
+    switch goos {
+    case "linux":
+      under_X = env.UnderX()
+      under_C = ! under_X
+    case "windows":
+      under_X = true
+      under_C = false
+    default:
+      Panic (goarch + fail)
+    }
+  default: // arm64, ios
+    Panic (goarch + fail)
   }
-  switch runtime.GOOS {
-  case "linux":
-    // at the time beeing the only supported system
-//  case openbsd, freebsd, netbsd, solaris:
-//    Panic ("please give me a note, if $GOOS is your operating system")
-  case "windows":
-    Panic ("windows is not yet supported by µU, but support is under work")
-  default: // aix, android, darwin, plan9, dragonfly
-    Panic ("$GOOS not yet supported by µU")
-  }
+}
+
+func underC() bool {
+  return under_C
+}
+
+func underX() bool {
+  return under_X
 }

@@ -1,6 +1,6 @@
 package qmat
 
-// (c) Christian Maurer   v. 211106 - license see µU.go
+// (c) Christian Maurer   v. 211118 - license see µU.go
 
 import (
   . "µU/obj"
@@ -18,8 +18,14 @@ type
   Multiplier
   Invert()
 
-  Set1 (n ...int)
+// Pre: n is the product of the number of lines
+// and the number of columns of x.
+// x has []n/[]n+1 as entry in row 1 and column1,
+// []n+2/[]n+3 as entry in row 1 and column 2,
+// and so on.
   Set (n ...int)
+// x has the entries n/1.
+  Set1 (n ...int)
 
 // Pre: l < number of lines of x, c < number of columns of x.
 // Returns the values of the fraction in position (l, c) of x
@@ -30,12 +36,10 @@ type
   Det() q.Rational
 }
 
-// Pre: d <= 3.
-// Returns a new empty matrix with m lines and n colums with fractions as entries,
-// whose numerators and denominators of it have at most d digits.
-func New (m, n, d uint) QMatrix { return new_(m, n, d) }
+// Returns a new empty matrix with m lines and n colums
+// for rationals as entries.
+func New (m, n uint) QMatrix { return new_(m, n) }
 
-// Pre: d <= 3.
 // Returns a new matrix with m lines and n colums,
 // in which all diagonal entries are 1 and all others 0.
-func Unit (m, n, d uint) QMatrix { return unit(m, n, d) }
+func Unit (m, n uint) QMatrix { return unit(m, n) }

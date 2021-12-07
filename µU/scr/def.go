@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 210315 - license see µU.go
+// (c) Christian Maurer   v. 211202 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -14,17 +14,16 @@ package scr
    Fore-/background colour of the screen and actual fore-/backgroundcolour
    are White and Black. The screen is cleared and the cursor is off.
    In a console SIGUSR1 and SIGUSR2 are used internally and not any more available.
-   No process is in the exclusive possession of the screen. */
+   GNo process is in the exclusive possession of the screen. */
 
 import (
+  "µU/ker"
   "µU/obj"
   "µU/col"
-  "µU/env"
   "µU/mode"
   "µU/scr/shape"
   "µU/linewd"
   "µU/scr/ptr"
-//  "µU/scr/xwin"
   "µU/font"
 )
 type
@@ -79,7 +78,8 @@ type
 
 // colours /////////////////////////////////////////////////////////////
 
-// The colours of the screen are set to f and b (fore-/background).
+// The colours of the screen are set to f and b (fore-/background);
+// to get the effect of these calls, you have to call "Cls()" afterwards.
   ScrColours (f, b col.Colour)
   ScrColourF (f col.Colour)
   ScrColourB (b col.Colour)
@@ -471,17 +471,6 @@ type
 // Returns width and height of the corresponding raw ppm-file.
   PPMSize (s obj.Stream) (uint, uint)
 
-// cut buffer //////////////////////////////////////////////////////////
-
-// The content of the cutbuffer is the former *s and *s is now empty.
-  Cut (s *string)
-
-// The content of the cutbuffer is s.
-  Copy (s string)
-
-// Returns the content of the cutbuffer.
-  Paste() string
-
 // openGL //////////////////////////////////////////////////////////////
 
 // Pre: m <= Fly
@@ -491,16 +480,16 @@ type
 // Returns a new screen with the size of the physical screen.
 // The keyboard is switched to raw mode.
 func New (x, y uint, m mode.Mode) Screen {
-  if env.UnderX() {
-    return NewW (x,y,m)
+  if ker.UnderX() {
+    return NewW (x, y, m)
   }
-  return NewC (x,y,m)
+  return NewC (x, y, m)
 }
 
 // Returns a new screen of the size given by the mode m.
 // The keyboard is switched to raw mode.
 func NewMax() Screen {
-  if env.UnderX() {
+  if ker.UnderX() {
     return NewMaxW()
   }
   return NewMaxC()
@@ -511,7 +500,7 @@ func NewMax() Screen {
 // Returns a new screen with upper left corner (x, y),
 // width w and height h. The keyboard is switched to raw mode.
 func NewWH (x, y, w, h uint) Screen {
-  if env.UnderX() {
+  if ker.UnderX() {
     return NewWHW (x, y, w, h)
   }
   return NewWHC (x, y, w, h)
@@ -519,7 +508,7 @@ func NewWH (x, y, w, h uint) Screen {
 
 // Returns the (X, Y)-resolution of the screen in pixels.
 func MaxRes() (uint, uint) {
-  if env.UnderX() {
+  if ker.UnderX() {
     return MaxResW()
   }
   return MaxResC()
@@ -527,7 +516,7 @@ func MaxRes() (uint, uint) {
 
 // Returns true, iff mode.Res(m) <= MaxRes().
 func Ok (m mode.Mode) bool {
-  if env.UnderX() {
+  if ker.UnderX() {
     return OkW (m)
   }
   return OkC (m)
@@ -555,7 +544,7 @@ func P6HeaderData (s obj.Stream) (uint, uint, uint, int) {
 }
 
 func Act() Screen {
-  if env.UnderX() {
+  if ker.UnderX() {
     return actualW
   }
   return actualC

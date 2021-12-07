@@ -31,7 +31,9 @@ import (
   "µU/achan"; "µU/audio"; "µU/barb"; "µU/barr"; "µU/bbuf"; "µU/book"; "µU/bpqu"; "µU/br"
   "µU/bytes"; "µU/car"; "µU/cdrom"; "µU/col"; "µU/collop"; "µU/cntry"; "µU/comp"; "µU/day"
   "µU/date"; "µU/dgra"; "µU/dlock"; "µU/env"; "µU/errh"; "µU/euro"; "µU/f"; "µU/fig2"
-  "µU/files"; "µU/fuday"; "µU/gram"; "µU/host"; "µU/ieee"; "µU/kbd"; "µU/li"; "µU/lock2"
+  "µU/files"; "µU/fuday"; "µU/gram"; "µU/host"; "µU/ieee";
+//  "µU/ker";
+  "µU/kbd"; "µU/li"; "µU/lock2"
   "µU/lr"; "µU/macc"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"; "µU/mstk"; "µU/pbar"
   "µU/persaddr"; "µU/phil"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/q"; "µU/qmat"; "µU/r"
   "µU/reg"; "µU/rpc"; "µU/rw"; "µU/scale"; "µU/schan"; "µU/scr"; "µU/smok"; "µU/term"
@@ -39,8 +41,8 @@ import (
 )
 const (
   yy = 2021
-  mm =   11
-  dd =    6
+  mm =   12
+  dd =    2
 )
 var (
   red = col.FlashRed()

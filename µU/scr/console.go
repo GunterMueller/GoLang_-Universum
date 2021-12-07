@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 210505 - license see µU.go
+// (c) Christian Maurer   v. 211202 - license see µU.go
 
 //#include <stdlib.h>
 //#include <fcntl.h>
@@ -101,7 +101,6 @@ var (
   mouseIndex int
   width, height uint
   fullScreen mode.Mode
-  underX = false
 )
 
 func (x *console) Fin() {
@@ -235,9 +234,7 @@ func (X *console) Colour (x, y uint) col.Colour {
   y += uint(X.y)
   i := int(width * y + x) * int(colourdepth)
   s := fbcop [i:i+int(colourdepth)]
-  c := col.New()
-  c.Set (s[0], s[1], s[2])
-  return c
+  return col.New3 (s[0], s[1], s[2])
 }
 
 // ranges //////////////////////////////////////////////////////////////
@@ -9743,25 +9740,25 @@ func ppmHeaderData (s obj.Stream) (uint, uint, uint, int) {
   return w, h, m, i + 1
 }
 
-func (X *console) PPMDecode (s obj.Stream, x0, y0 uint) {
-  w, h, _, j := ppmHeaderData (s)
+func (X *console) PPMDecode (st obj.Stream, x0, y0 uint) {
+  w, h, _, j := ppmHeaderData (st)
   if w == 0 || h == 0 || w > X.Wd() || h > X.Ht() { return }
   i := 4 * uint(2)
   l := i + 3 * w * h
   e := make(obj.Stream, l)
   copy (e[:i], obj.Encode4 (uint16(x0), uint16(y0), uint16(w), uint16(h)))
-  if underX {
+  if under_X {
     c := col.New()
     for y := uint(0); y < h; y++ {
       for x := uint(0); x < w; x++ {
-        c.Decode (s[j:j+3])
+        c.Decode (st[j:j+3])
         copy (e[i:i+3], obj.Encode (c.Code()))
         i += 3
         j += 3
       }
     }
-  } else { // console
-    copy (e[i:], s[j:])
+  } else { // under_C, i.e. console
+    copy (e[i:], st[j:])
   }
   X.Decode (e)
 }

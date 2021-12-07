@@ -1,6 +1,6 @@
 package audio
 
-// (c) Christian Maurer   v. 210525 - license see µU.go
+// (c) Christian Maurer   v. 210526 - license see µU.go
 
 import (
   . "µU/obj"
@@ -320,7 +320,7 @@ func (x *audio) TeX() string {
   s := ""
   if ! x.Field.Eq (lastField) {
     lastField.Copy (x.Field)
-    s += "\\medskip{\\bf " + x.Field.TeX() + "}\\medskip\\nopagebreak\n"
+    s += "\\bigskip\\line{\\bf\\hfil " + x.Field.TeX() + "\\hfil}\\medskip\\nopagebreak\n"
   }
   s += "\\x " + x.Medium.TeX() + " "
   if x.composer.Empty() {
@@ -341,7 +341,9 @@ func (x *audio) TeX() string {
     s += "\\newline\n" + x.orchestra.TeX()
     if ! x.conductor.Empty() {s += " (" + x.conductor.TeX() + ") "}
   }
-  if ! x.soloist.Empty() {s += "\\newline\n{\\bi " + x.soloist.TeX() + "}"}
+  if ! x.soloist.Empty() {
+    s += "\\newline\n{\\bi " + x.soloist.TeX() + "}"
+  }
   s += "\n\\par\\smallpagebreak\n"
   return s
 }

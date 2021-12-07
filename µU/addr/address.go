@@ -1,6 +1,6 @@
 package addr
 
-// (c) Christian Maurer   v. 210511 - license see µU.go
+// (c) Christian Maurer   v. 211126 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,6 +9,7 @@ import (
   "µU/box"
   "µU/font"
   "µU/pbox"
+  "µU/str"
   "µU/text"
   "µU/bn"
   "µU/phone"
@@ -311,7 +312,9 @@ func (x *address) TeX() string {
     s += ", Fax " + x.faxnumber.TeX()
   }
   if ! x.email.Empty() {
-    s += "\\newline\nE-Mail: {\\tt " + x.email.TeX() + "}"
+    em := x.email.TeX()
+    str.ReplaceAll (&em, '_', "\\_")
+    s += "\\newline\nE-Mail: {\\tte " + em + "}"
   }
   return s
 }

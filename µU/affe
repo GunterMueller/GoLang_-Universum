@@ -1,0 +1,4 @@
+  var r, g, b C.int16_t
+  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(x), C.int(y), 1, 1, C.AllPlanes, C.XYPixmap)
+  C.getPixelColour (dpy, ximg, swa.colormap, C.int(0), C.int(0), &r, &g, &b)
+  return col.New3 (byte(r), byte(g), byte(b))

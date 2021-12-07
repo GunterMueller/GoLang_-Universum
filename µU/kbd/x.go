@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 210314 - license see µU.go
+// (c) Christian Maurer   v. 211124 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -12,21 +12,28 @@ import (
   "µU/scr"
 )
 var (
-  underX bool
   xpipe chan scr.Event
   ch chan int = make (chan int, 1)
 )
 
+func lock() {
+  <-ch
+}
+
+func unlock() {
+  ch <- 0
+}
+
 // Pre: scr.x.initialized == true
-func catchX () {
+func catchX() {
   for scr.Eventpipe == nil {
     time.Msleep (10)
   }
-//  ch <- 0
+//  unlock()
 //  println ("keyboard.catchX: Eventpipe != nil")
   for p := range scr.Eventpipe {
     xpipe <- p
-    <-ch
+    lock()
   }
   close (xpipe)
 }
@@ -52,8 +59,8 @@ loop:
   for {
     *B, *C, *D = 0, None, 0
     e, ok = <-xpipe
-    ch <- 0
     if ! ok { panic ("kbd/x.go inputX: ! ok") }
+    unlock()
     if e.S == 64 { continue } // d(o,o)f-key
     shift := isSet (shiftBit, e.S)
     shiftLock := isSet (shiftLockBit, e.S)
@@ -214,7 +221,7 @@ loop:
       ; // is ignored
     case C.ButtonPress:
       if *D > 1 {
-        *D = 1 // because the bloody WM eats everything else up
+        *D = 1 // because the WM eats everything else up
       }
       switch e.C {
       case 1:
@@ -235,7 +242,7 @@ loop:
       }
     case C.ButtonRelease:
       if *D > 1 {
-        *D = 1 // because the bloody fucking WM eats everything else up
+        *D = 1 // because the WM eats everything else up
       }
       ctrl = false
       alt = false

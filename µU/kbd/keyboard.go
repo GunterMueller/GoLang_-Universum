@@ -1,17 +1,18 @@
 package kbd
 
-// (c) Christian Maurer   v. 210505 - license see µU.go
+// (c) Christian Maurer   v. 211202 - license see µU.go
+
+// >>> under development
 
 import (
+  "µU/ker"
   . "µU/obj"
   "µU/char"
-  "µU/env"
   "µU/mouse"
   "µU/scr"
 //  "µU/navi"
 )
 const (
-// PIPE_BUF = 256
 // control keys
   esc       =   1
   enter     =  28
@@ -119,6 +120,7 @@ const (
 //  function  = 143
 )
 var (
+  under_C, under_X, under_S bool
   shift, ctrl, alt, altGr, /* fn, */ mouseL, mouseM, mouseR bool
   bb, aa Stream
   kK [noKeycodes]Comm
@@ -195,12 +197,16 @@ func init() {
 //  kK[lower]  = Lower
 //  kK[louder] = Louder
   lastbyte, lastcommand, lastdepth = 0, None, 0
-  underX = env.UnderX()
-  if underX {
-    xpipe = make (chan scr.Event)
+  under_C, under_X = ker.UnderC(), ker.UnderX()
+  if under_X {
+    xpipe = make(chan scr.Event)
     go catchX()
   } else {
-    initConsole()
+    if under_C {
+      initConsole()
+    } else {
+      ker.Panic ("no X, no C")
+    }
   }
 }
 
@@ -248,19 +254,19 @@ func isKeypad (n uint) bool {
 
 func read() (byte, Comm, uint) {
   var (b byte; c Comm; d uint)
-  if underX {
+  if under_X {
     inputX (&b, &c, &d)
-  } else {
+  } else { // under_C
     inputC (&b, &c, &d)
   }
   return b, c, d
 }
 
 func mouseEx() bool {
-  if underX {
+  if under_X || under_S {
     return true
   }
-  return mouse.Ex()
+  return mouse.Ex() // under_C
 }
 
 func byte_() byte {

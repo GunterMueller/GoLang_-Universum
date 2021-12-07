@@ -1,6 +1,6 @@
 package q
 
-// (c) Christian Maurer   v. 211106 - license see µU.go
+// (c) Christian Maurer   v. 211119 - license see µU.go
 
 import (
   "math"
@@ -14,8 +14,8 @@ import (
   "µU/errh"
 )
 const (
-  w = 8
-  max = 1e6
+  d = 9
+  w = 1 + d + 1 + d // numerator and denominator with maximal 9 digits
 )
 type
   rational struct {
@@ -165,11 +165,7 @@ func (x *rational) Defined (s string) bool {
   p, ok := str.Pos (s, '/')
   if ok {
     s1 := str.Part (s, p + 1, k - p - 1)
-    if x.denom, ok = n.Natural (s1); ok {
-      if x.denom >= max {
-        return false
-      }
-    } else {
+    if x.denom, ok = n.Natural (s1); ! ok {
       return false
     }
   } else {
@@ -177,11 +173,7 @@ func (x *rational) Defined (s string) bool {
     x.denom = 1
   }
   s1 := str.Part (s, 0, p)
-  if x.num, ok = n.Natural (s1); ok {
-    if x.num >= max {
-      return false
-    }
-  } else {
+  if x.num, ok = n.Natural (s1); ! ok {
     return false
   }
   return true
@@ -204,6 +196,10 @@ func (x *rational) String() string {
   str.OffSpc (&t)
   if len(t) == 1 { t += " " }
   return s + t
+}
+
+func (x *rational) Wd() uint {
+  return uint(len(x.String()))
 }
 
 func (x *rational) Colours (f, b col.Colour) {
@@ -287,6 +283,7 @@ func (x *rational) GeqNull() bool {
 func (x *rational) reduce() {
   if x.denom == 0 {
     x.num = 0
+    x.geq0 = true
     return
   }
   if x.num == 0 {
@@ -363,10 +360,6 @@ func (x *rational) add (Y Adder) {
   if g != 0 {
     n, d = n / g, d / g
   }
-  if n > uint64(max) || d > uint64(max) {
-    x.Clr()
-    return
-  }
   x.num, x.denom = uint(n), uint(d)
   x.reduce()
 }
@@ -418,10 +411,6 @@ func (x *rational) mul (Y Multiplier) {
   g := gcd (n, d)
   if g != 0 {
     n, d = n / g, d / g
-    if n > uint64(max) || d > uint64(max) {
-      x.Clr()
-      return
-    }
   }
   x.num, x.denom = uint(n), uint(d)
   x.geq0 = x.geq0 == y.geq0

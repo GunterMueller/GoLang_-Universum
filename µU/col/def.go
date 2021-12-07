@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 211127 - license see µU.go
 
 import
  . "µU/obj"
@@ -54,8 +54,11 @@ type
 // Returns the colour White.
 func New() Colour { return new_() }
 
+// Returns the colour defined by (r, g, b).
+func New3 (r, g, b byte) Colour { return new3(r,g,b) }
+
 // Returns the colour defined by (r, g, b) with name n.
-func New3 (n string, r, g, b byte) Colour { return new3(n,r,g,b) }
+func New3n (n string, r, g, b byte) Colour { return new3n(n,r,g,b) }
 
 // Returns a random colour.
 func Rand() Colour { return random() }

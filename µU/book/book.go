@@ -1,6 +1,6 @@
 package book
 
-// (c) Christian Maurer   v. 210525 - license see µU.go
+// (c) Christian Maurer   v. 211126 - license see µU.go
 
 import (
   . "µU/obj"
@@ -237,17 +237,22 @@ func (x *book) TeX() string {
   s := ""
   if ! x.Field.Eq (lastField) {
     lastField.Copy (x.Field)
-    s += "\\medskip{\\bf " + x.Field.TeX() + "}\\smallskip\n"
+    s += "\\bigskip\\line{\\bfbig\\hfil " + x.Field.TeX() + "\\hfil}\\medskip\\nopagebreak\n"
   }
-  s += "{\\bf " + x.author.TeX()
+  s += "{\\bi " + x.author.TeX()
   if ! x.coauthor.Empty() {
     s += "/" + x.coauthor.TeX()
   }
-  s += "}: " + x.title.TeX()
+  s += "}\n\\newline"
+  sn := x.Natural.String()
+  if sn == "0" { sn = "" }
+  s += "\\hbox to 16pt{\\hfil"
+  s += sn
+  s += "}\\quad " + x.title.TeX()
   if ! x.location.Empty() {
     s += " (" + x.location.TeX() + ")"
   }
-  s += "\\newline\n"
+  s += "\n\\par\\smallpagebreak\n"
   return s
 }
 
