@@ -1,12 +1,13 @@
 package book
 
-// (c) Christian Maurer   v. 210525 - license see µU.go
+// (c) Christian Maurer   v. 211212 - license see µU.go
 
 import
   . "µU/obj"
 type
   Book interface {
 
+  Stringer
   TeXer
   Indexer
   Rotator

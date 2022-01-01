@@ -1,6 +1,8 @@
 package kbd
 
-// (c) Christian Maurer   v. 210315 - license see µU.go
+// (c) Christian Maurer   v. 211226 - license see µU.go
+//
+// >>> Pre: The preconditions of mouse are met.
 
 /* We distinguish between three groups of keys to operate and control a system
    with keyboard and mouse:
@@ -86,9 +88,6 @@ type
 // This object is now removed from the keyboard buffer.
 // If there is no mouse, then c < Go.
 func Read() (byte, Comm, uint) { return read() }
-
-// Returns true, iff a mouse was found.
-func MouseEx() bool { return mouseEx() }
 
 // The calling process was blocked, until there is a byte in the keyboard buffer.
 // Returns the first byte from the keyboard buffer.

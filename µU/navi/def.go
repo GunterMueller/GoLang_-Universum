@@ -14,7 +14,7 @@ package navi
 type
   Command byte
 
-func Exists () bool { return exists() }
+func Exists() bool { return exists() }
 
 func Channel () (chan Command) { return navipipe }
 

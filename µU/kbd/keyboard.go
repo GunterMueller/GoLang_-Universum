@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 211202 - license see µU.go
+// (c) Christian Maurer   v. 211226 - license see µU.go
 
 // >>> under development
 
@@ -8,7 +8,6 @@ import (
   "µU/ker"
   . "µU/obj"
   "µU/char"
-  "µU/mouse"
   "µU/scr"
 //  "µU/navi"
 )
@@ -260,13 +259,6 @@ func read() (byte, Comm, uint) {
     inputC (&b, &c, &d)
   }
   return b, c, d
-}
-
-func mouseEx() bool {
-  if under_X || under_S {
-    return true
-  }
-  return mouse.Ex() // under_C
 }
 
 func byte_() byte {

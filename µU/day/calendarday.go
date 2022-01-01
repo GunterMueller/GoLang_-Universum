@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 211226 - license see µU.go
 
 import (
   . "µU/ker"
@@ -1209,7 +1209,6 @@ func (x *calendarday) PosInYear() (uint, uint) {
 }
 
 func (x *calendarday) changeWithMouse (p Period, vertical bool, a, l, c, l0, c0 uint) {
-  if ! scr.MouseEx() { return }
   switch p {
   case Daily, Decadic:
     return;

@@ -1,19 +1,24 @@
 package book
 
-// (c) Christian Maurer   v. 211126 - license see µU.go
+// (c) Christian Maurer   v. 211213 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/kbd"
   "µU/col"
   "µU/scr"
+  "µU/errh"
   "µU/text"
+  "µU/str"
   "µU/bn"
   "µU/book/field"
 )
 const (
   len0 = 30
   len1 = 63
+  sep = ';'
+  seps = ";"
+  nosep = " darf kein " + seps + " enthalten"
 )
 const (
   fieldOrder = iota
@@ -26,8 +31,8 @@ type
       coauthor text.Text
                bn.Natural
          title,
-       location text.Text
-               }
+      location text.Text
+              }
 var
   actOrder = fieldOrder
 
@@ -63,7 +68,8 @@ func (x *book) Empty() bool {
 
 func (x *book) Clr() {
   x.Field.Clr()
-  x.author.Clr(); x.coauthor.Clr()
+  x.author.Clr()
+  x.coauthor.Clr()
   x.Natural.Clr()
   x.title.Clr()
   x.location.Clr()
@@ -81,7 +87,8 @@ func (x *book) Eq (Y Any) bool {
 func (x *book) Copy (Y Any) {
   y := x.imp(Y)
   x.Field.Copy (y.Field)
-  x.author.Copy (y.author); x.coauthor.Copy (y.coauthor)
+  x.author.Copy (y.author)
+  x.coauthor.Copy (y.coauthor)
   x.Natural.Copy (y.Natural)
   x.title.Copy (y.title)
   x.location.Copy (y.location)
@@ -116,14 +123,54 @@ func (x *book) Less (Y Any) bool {
   panic ("")
 }
 
+func (x *book) String() string {
+  s := x.Field.String()
+  str.OffSpc1 (&s)
+  s += seps
+  t := x.author.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.coauthor.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.Natural.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.title.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.location.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  return s
+}
+
+func (x *book) Defined (s string) bool {
+  ss, n := str.SplitByte (s, sep)
+  if n != 6 { return false }
+  if ! x.Field.Defined (ss[0]) { return false }
+  if ! x.author.Defined (ss[1]) { return false }
+  if ! x.coauthor.Defined (ss[2]) { return false }
+  if ! x.Natural.Defined (ss[3]) { return false }
+  if ! x.title.Defined (ss[4]) { return false }
+  if ! x.location.Defined (ss[5]) { return false }
+  return true
+}
+
 func (x *book) Sub (Y Any) bool {
   y := x.imp(Y)
   s := false
+  if ! x.Field.Empty() {
+    s = s || x.Field.Eq (y.Field)
+  }
   if ! x.author.Empty() {
     s = s || x.author.Sub (y.author)
   }
   if ! x.title.Empty() {
     s = s || x.title.Sub (y.title)
+  }
+  if ! x.location.Empty() {
+    s = s || x.location.Sub (y.location)
   }
   return s
 }
@@ -136,8 +183,8 @@ const (
   lt = 5; ct = 16
   lf = 7; cf = 49
 )
-/*/
-          1         2         3         4         5         6         7
+
+/*        1         2         3         4         5         6         7
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
 
 Gebiet __________________
@@ -146,17 +193,16 @@ Gebiet __________________
 
     Nr __ Titel _______________________________________________________________
 
-                                         Fundort ______________________________
-/*/
+                                         Fundort ______________________________ */
 
 func writeMask (l, c uint) {
   scr.Colours (col.LightGray(), col.Black())
-  scr.Write ("Gebiet",  l + 1, c + 0)
-  scr.Write ("Autor",   l + 3, c + 1)
-  scr.Write ("Koautor", l + 3, c +41)
-  scr.Write ("Nr",      l + 5, c + 4)
-  scr.Write ("Titel",   l + 5, c +10)
-  scr.Write ("Fundort", l + 7, c +41)
+  scr.Write ("Gebiet",  l + 1, c +  0)
+  scr.Write ("Autor",   l + 3, c +  1)
+  scr.Write ("Koautor", l + 3, c + 41)
+  scr.Write ("Nr",      l + 5, c +  4)
+  scr.Write ("Titel",   l + 5, c + 10)
+  scr.Write ("Fundort", l + 7, c + 41)
 }
 
 var maskWritten = false
@@ -175,16 +221,33 @@ func (x *book) Write (l, c uint) {
   x.location.Write (l + lf, c + cf)
 }
 
+func containsSep (t text.Text) bool {
+  _, c := str.Pos (t.String(), sep)
+  return c
+}
+
+func edit (t text.Text, s string, l, c uint) {
+  for {
+    t.Edit (l, c)
+    if containsSep (t) {
+      errh.Error0 (s + nosep)
+    } else {
+      break
+    }
+  }
+}
+
 func (x *book) Edit (l, c uint) {
-  x.Write (l, c)
   i := 0
   loop:
   for {
+    x.Write (l, c)
     switch i {
     case 0:
+      x.Write (l, c)
       x.Field.Edit (l + lg, c + cg)
     case 1:
-      x.author.Edit (l + la, c + ca)
+      edit (x.author, "Autor", l + la, c + ca)
       if k, _ := kbd.LastCommand(); k == kbd.Tab {
         for i := 0; i < len(a); i++ {
           if x.author.Sub0 (author[i]) {
@@ -195,7 +258,7 @@ func (x *book) Edit (l, c uint) {
         }
       }
     case 2:
-      x.coauthor.Edit (l + lk, c + ck)
+      edit (x.coauthor, "Koautor", l + lk, c + ck)
       if k, _ := kbd.LastCommand(); k == kbd.Tab {
         if ! x.coauthor.Empty() {
           for i := 0; i < len(a); i++ {
@@ -210,9 +273,9 @@ func (x *book) Edit (l, c uint) {
     case 3:
       x.Natural.Edit (l + ln, c + cn)
     case 4:
-      x.title.Edit (l + lt, c + ct)
+      edit (x.title, "Titel", l + lt, c + ct)
     case 5:
-      x.location.Edit (l + lf, c + cf)
+      edit (x.location, "Fundort", l + lf, c + cf)
     }
     switch k, _ := kbd.LastCommand(); k {
     case kbd.Esc:

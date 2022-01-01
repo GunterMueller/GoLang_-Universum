@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 211202 - license see µU.go
+// (c) Christian Maurer   v. 211223 - license see µU.go
 
 import (
   "µU/ker"
@@ -96,10 +96,11 @@ func SetFontsize (f font.Size) { s().SetFontsize(f) }
 func ActLinewidth() linewd.Linewidth { return s().ActLinewidth() }
 func SetLinewidth (w linewd.Linewidth) { s().SetLinewidth(w) }
 func Point (x, y int) { s().Point(x,y) }
+func OnPoint (x, y, a, b int, d uint) bool { return s().OnPoint(x,y,a,b,d) }
 func PointInv (x, y int) { s().PointInv(x,y) }
 func Points (xs, ys []int) { s().Points (xs,ys) }
 func PointsInv (xs, ys []int) { s().PointsInv(xs,ys) }
-func OnPoint (x, y, a, b int, d uint) bool { return s().OnPoint(x,y,a,b,d) }
+func OnPoints (xs, ys []int, a, b int, d uint) bool { return s().OnPoints(xs,ys,a,b,d) }
 func Line (x, y, x1, y1 int) { s().Line(x,y,x1,y1) }
 func LineInv (x, y, x1, y1 int) { s().LineInv(x,y,x1,y1) }
 func OnLine (x, y, x1, y1, a, b int, t uint) bool { return s().OnLine(x,y,x1,y1,a,b,t) }
@@ -132,7 +133,7 @@ func CircleInv (x, y int, r uint) { s().CircleInv(x,y,r) }
 func CircleFull (x, y int, r uint) { s().CircleFull(x,y,r) }
 func CircleFullInv (x, y int, r uint) { s().CircleFullInv(x,y,r) }
 func OnCircle (x, y int, r uint, a, b int, t uint) bool { return s().OnCircle(x,y,r,a,b,t) }
-// func InCircle (x, y int, r uint, a, b int) bool { return s().InCircle(x,y,r,a,b) } // TODO
+func InCircle (x, y int, r uint, a, b int, t uint) bool { return s().InCircle(x,y,r,a,b,t) }
 func Arc (x, y int, r uint, a, b float64) { s().Arc(x,y,r,a,b) }
 func ArcInv (x, y int, r uint, a, b float64) { s().ArcInv(x,y,r,a,b) }
 func ArcFull (x, y int, r uint, a, b float64) { s().ArcFull(x,y,r,a,b) }
@@ -147,7 +148,6 @@ func Curve (xs, ys []int) { s().Curve(xs,ys) }
 func CurveInv (xs, ys []int) { s().CurveInv(xs,ys) }
 func OnCurve (xs, ys []int, a, b int, t uint) bool { return s().OnCurve(xs,ys,a,b,t) }
 
-func MouseEx() bool { return s().MouseEx() }
 func SetPointer (p ptr.Pointer) { s().SetPointer(p) }
 func MousePos() (uint, uint) { return s().MousePos() }
 func MousePosGr() (int, int) { return s().MousePosGr() }

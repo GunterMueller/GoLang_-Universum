@@ -1,10 +1,9 @@
 package errh
 
-// (c) Christian Maurer   v. 210321 - license see µU.go
+// (c) Christian Maurer   v. 211214 - license see µU.go
 
 import (
   "strconv"
-//  "µU/env"
   "µU/char"
   "µU/str"
   "µU/kbd"
@@ -15,7 +14,6 @@ import (
 )
 var (
   errorbox, headbox, hintbox, licenseBox, choiceBox = box.New(), box.New(), box.New(), box.New(), box.New()
-  headWritten, hintWritten, hintPosWritten /* , DocExists */ bool
   hintwidth uint
   transparent bool
 //           1         2         3         4         5         6         7         8         9
@@ -48,7 +46,6 @@ var (
   " Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.) ",
   "                                                                                           ",
   " Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen. " }
-  first bool = true
 )
 
 func init() {
@@ -61,8 +58,8 @@ func init() {
 //                                         1         2         3         4         5         6         7
 //                               012345678901234567890123456789012345678901234567890123456789012345678901234567
   ToWait            = str.Lat1 ("bitte etwas Geduld ...")
-  ToContinue        = str.Lat1 ("weiter: Einter")
-  ToContinueOrNot   = str.Lat1 ("weiter: Einter                                                     fertig: Esc")
+  ToContinue        = str.Lat1 ("weiter: Enter")
+  ToContinueOrNot   = str.Lat1 ("weiter: Enter                                                      fertig: Esc")
   ToCancel          = str.Lat1 ("                                                                abbrechen: Esc")
   ToScroll          = str.Lat1 ("blättern: Pfeiltasten                                           abbrechen: Esc")
   ToSelect          = str.Lat1 ("blättern/auswählen/abbrechen: Pfeiltasten/Enter/Esc, Maus bewegen/links/rechts")
@@ -75,11 +72,8 @@ func init() {
 func pre() {
   transparent = Transparent()
   if transparent { Transparence (false) }
-  if first {
-    first = false
-//    errorbox = box.New()
-//    errorbox.Colours (col.ErrorF(), col.ErrorB())
-  }
+////    errorbox = box.New()
+////    errorbox.Colours (col.ErrorF(), col.ErrorB())
 //  actualFontsize = ActFontsize()
 //  if actualFontsize # Normal {
 //    SwitchFontsize (Normal)
@@ -95,38 +89,36 @@ func post() {
 //  }
 }
 
+func delHead() {
+  pre()
+  Restore (0, 0, NColumns(), 1)
+  post()
+}
+
 func head (s string) {
-  delHead()
   pre()
   w := NColumns()
   Save (0, 0, w, 1)
   headbox.Wd (w)
   str.Norm (&s, w)
   headbox.Write (s, 0, 0)
-  headWritten = true
   post()
 }
 
-func delHead() {
+func delHint() {
   pre()
-  if headWritten {
-    headWritten = false
-    Restore (0, 0, NColumns(), 1)
-  }
+  Restore (NLines() - 1, 0, NColumns(), 1)
   post()
 }
 
 func hint (s string) {
-  delHint()
   pre()
-  w := NColumns()
+  l, w := NLines() - 1, NColumns()
+  Save (l, 0, w, 1)
   s = str.Lat1 (s)
   str.Center (&s, w)
-  l := NLines() - 1
-  Save (l, 0, w, 1)
   hintbox.Wd (w)
   hintbox.Write (s, l, 0)
-  hintWritten = true
   post()
 }
 
@@ -138,17 +130,11 @@ func hint2 (s string, k uint, s1 string, k1 uint) {
   hint (s + " " + n.String (k) + " " + s1 + " " + n.String (k1))
 }
 
-func delHint() {
-  pre()
-  if hintWritten {
-    hintWritten = false
-    Restore (NLines() - 1, 0, NColumns(), 1)
-  }
-  post()
+func delHintPos (s string, l, c uint) {
+  Restore (l, c, uint(len (s)), 1)
 }
 
 func hintPos (s string, l, c uint) {
-//  delHintPos (s)
   pre()
   if l >= NLines() { l = NLines() - 1 }
   w := uint(len (s))
@@ -156,15 +142,7 @@ func hintPos (s string, l, c uint) {
   Save (l, c, w, 1)
   hintbox.Wd (w)
   hintbox.Write (s, l, c)
-  hintPosWritten = true
   post()
-}
-
-func delHintPos (s string, l, c uint) {
-  if hintPosWritten {
-    hintPosWritten = false
-    Restore (l, c, uint(len (s)), 1)
-  }
 }
 
 func do (s string, enter bool) {

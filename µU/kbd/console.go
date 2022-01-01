@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 210505 - license see µU.go
+// (c) Christian Maurer   v. 211226 - license see µU.go
 
 import (
   "os"
@@ -11,12 +11,10 @@ import (
 )
 var (
   keypipe chan byte
-  mousepipe chan mouse.Command = nil
 //  navipipe chan navi.Command
 )
 
 func catch() {
-//  shift, ctrl, alt, altGr, fn = false, false, false, false, false
   shift, ctrl, alt, altGr = false, false, false, false
   defer ker.Fin() // hilft nich
   for {
@@ -73,15 +71,36 @@ func inputC (B *byte, C *Comm, D *uint) {
     b0 byte
     k, k1 uint
     mc mouse.Command
-//    m3c navi.Command
+//    nc navi.Command
     ok bool
   )
 loop:
   for {
     *B, *C, *D = 0, None, 0
     select {
-    case mc = <-mousepipe:
-      *C, *D = Go + Comm (mc), 0
+    case mc = <-mouse.Pipe:
+      switch mc {
+      case mouse.Go:
+        *C = Go
+      case mouse.Here:
+        *C = Here
+      case mouse.Drag:
+        *C = Drag
+      case mouse.To:
+        *C = To
+      case mouse.This:
+        *C = This
+      case mouse.Drop:
+        *C = Drop
+      case mouse.There:
+        *C = There
+      case mouse.That:
+        *C = That
+      case mouse.Move:
+        *C = Move
+      case mouse.Hither:
+        *C = Hither
+      }
       if shift || ctrl {
         *D = 1
       }
@@ -90,8 +109,8 @@ loop:
       }
       break loop
 /*/
-    case m3c = <-navipipe:
-      *C, *D = Go + Comm (m3c), 0
+    case nc = <-navi.Pipe:
+      *C, *D = Go + Comm (nc), 0
       if shift || ctrl {
         *D = 1
       }
@@ -152,7 +171,7 @@ loop:
       case windoof:
         ;
       default:
-        ker.Panic1 ("kbd.console", 10000 + k) // z.B. für k == 125
+        ker.Panic1 ("kbd.console", 10000 + k) // e.g. for k == 125
       }
     }
     if k1 < off { // key pressed, not released
@@ -167,17 +186,43 @@ loop:
       }
     }
   }
-  lastcommand = *C
   lastdepth = *D
+//  Under console, there is a bloody bug:
+//  This and Drag, 
+//  That and To, 
+//  Move and There are exchanged.
+//  Fuck knows, why.
+//
+//  Here; This; That
+//  Drag; Drop; Move
+//  To; There; Hither
+//  Lousy attempt to compensate,
+//  but That and Move get lost:
+//
+/*/
+  switch *C {
+  case This:
+    *C = Drag
+  case Drag:
+    *C = This
+  case That:
+    *C = To
+  case To:
+    *C = That
+  case Move:
+    *C = There
+  case There:
+    *C = Move
+  }
+/*/
+//
+  lastcommand = *C
 }
 
 func initConsole() {
   internal.New()
   ker.InstallTerm (func() { internal.Fin() } )
   keypipe = make (chan byte, 256)
-  if mouse.Ex() {
-    mousepipe = mouse.Channel()
-  }
 //  navipipe = navi.Channel()
   go catch()
 }

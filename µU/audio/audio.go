@@ -169,7 +169,8 @@ const (
   ld  = 13; cd  = 10
   ls  = 13; cs  = 49
 )
-/*/       1         2         3         4         5         6         7
+
+/*        1         2         3         4         5         6         7
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
 
    Gebiet ________                        Medium ___
@@ -184,20 +185,19 @@ Komponist ______________________________
 
 Orchester ____________________________________________________________________
 
- Dirigent ______________________________  Solist ______________________________
+ Dirigent ______________________________  Solist ______________________________ */
 
-/*/
 func writeMask (l, c uint) {
   scr.Colours (col.LightGray(), col.Black())
-  scr.Write ("Gebiet",    l + lg, c +  3)
-  scr.Write ("Medium",    l + lm, c + 42)
-  scr.Write ("Komponist", l + lc, c +  0)
-  scr.Write ("Werk",      l + lw, c +  5)
-  scr.Write ("Komponist", l + lc1, c + 0)
-  scr.Write ("Werk",      l + lw1, c + 5)
-  scr.Write ("Orchester", l + lo, c +  0)
-  scr.Write ("Dirigent",  l + ld, c +  1)
-  scr.Write ("Solist",    l + ls, c + 42)
+  scr.Write ("Gebiet",    l + lg,  c +  3)
+  scr.Write ("Medium",    l + lm,  c + 42)
+  scr.Write ("Komponist", l + lc,  c +  0)
+  scr.Write ("Werk",      l + lw,  c +  5)
+  scr.Write ("Komponist", l + lc1, c +  0)
+  scr.Write ("Werk",      l + lw1, c +  5)
+  scr.Write ("Orchester", l + lo,  c +  0)
+  scr.Write ("Dirigent",  l + ld,  c +  1)
+  scr.Write ("Solist",    l + ls,  c + 42)
 }
 
 var maskWritten = false

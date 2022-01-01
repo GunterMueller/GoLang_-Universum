@@ -1,6 +1,6 @@
 package field
 
-// (c) Christian Maurer   v. 210515 - license see µU.go
+// (c) Christian Maurer   v. 211212 - license see µU.go
 
 import (
   . "µU/obj"
@@ -154,7 +154,9 @@ func (x *field) TeX() string {
 
 func (x *field) Defined (s string) bool {
   for i := 0; i < nFields; i++ {
-	  if s == tx[i] {
+    t := tx[i]
+    str.OffSpc1 (&t)
+	  if s == t || s == kx[i] {
       x.int = i
       x.Text.Defined (tx[i])
       return true

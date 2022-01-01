@@ -1,6 +1,6 @@
 package collop
 
-// (c) Christian Maurer   v. 211126 - license see µU.go
+// (c) Christian Maurer   v. 211214 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,7 +9,7 @@ import (
   "µU/errh"
 )
 
-func operate (c Collector, o Indexer, f func (x, y Indexer) bool, tex *string) {
+func operate (c Collector, o Indexer, f func (x, y Indexer) bool) {
   help := []string {" vor-/rückwärts: Pfeiltaste ab-/aufwärts",
                     "zum Anfang/Ende: Pos1/Ende              ",
                     " Eintrag ändern: Enter                  ",
@@ -17,7 +17,7 @@ func operate (c Collector, o Indexer, f func (x, y Indexer) bool, tex *string) {
                     "      entfernen: Entf                   ",
                     "       umordnen: F3                     ",
                     "         suchen: F2                     ",
-                    "   Programmende: Esc                    " }
+                    "   Programmende: Esc                    "}
   for i, h := range (help) { help[i] = str.Lat1 (h) }
   c.Jump (false)
   if c.Empty() {
@@ -29,16 +29,15 @@ func operate (c Collector, o Indexer, f func (x, y Indexer) bool, tex *string) {
       }
     }
   }
-//  tex := ""
+  errh.Hint ("Hilfe: F1                  Ende: Esc")
   loop:
   for {
     o = c.Get().(Indexer)
     o.Write (0, 0)
-    errh.Hint ("Hilfe: F1                  Ende: Esc")
     switch k, _ := kbd.Command(); k {
     case kbd.Enter:
       o1 := o.Clone().(Indexer)
-      o.(Indexer).Edit (0, 0)
+      o.Edit (0, 0)
       if o.Empty() {
         c.Del()
       } else {
@@ -57,7 +56,7 @@ func operate (c Collector, o Indexer, f func (x, y Indexer) bool, tex *string) {
     case kbd.End:
       c.Jump (true)
     case kbd.Ins:
-      errh.DelHint()
+//      errh.DelHint()
       o.Clr()
       o.Edit (0, 0)
       if ! o.Empty() {
@@ -101,6 +100,11 @@ func operate (c Collector, o Indexer, f func (x, y Indexer) bool, tex *string) {
                     break
                   }
                 }
+
+              case kbd.Del:
+                if errh.Confirmed() {
+                  c.Del()
+                }
               }
             }
           }
@@ -116,6 +120,5 @@ func operate (c Collector, o Indexer, f func (x, y Indexer) bool, tex *string) {
       c.Sort()
     }
   }
-  c.Trav (func (a Any) { *tex += a.(TeXer).TeX() })
   errh.DelHint()
 }

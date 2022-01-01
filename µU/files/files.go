@@ -153,15 +153,6 @@ func cds() {
   cd (env.Gosrc() + "/" + env.Call())
 }
 
-func cd0() {
-  home, v := env.Home(), "/.µU/" + env.Call()
-  p := home + v
-  if ! isPath (p) {
-    ins (home, v)
-  }
-  cd (p)
-}
-
 /*/
 func Temp (filename *string) {
   path, name := path.Split (*filename)

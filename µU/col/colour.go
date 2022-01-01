@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 210312 - license see µU.go
+// (c) Christian Maurer   v. 211216 - license see µU.go
 
 import (
   . "µU/obj"
@@ -39,7 +39,9 @@ func new3 (r, g, b byte) Colour {
 func new3n (n string, r, g, b byte) Colour {
   c := new(colour)
   c.r, c.g, c.b = r, g, b
-  if n == "" { c.string = c.String1() } // panic ("affe") }
+  if n == "" {
+    n = c.String1()
+  }
   c.string = n
   return c
 }
@@ -116,8 +118,8 @@ func (c *colour) Less (Y Any) bool {
 }
 
 func (c *colour) Copy (Y Any) {
- y := c.imp(Y)
- c.r, c.g, c.b = y.r, y.g, y.b
+  y := c.imp(Y)
+  c.r, c.g, c.b = y.r, y.g, y.b
 }
 
 func (c *colour) Clone() Any {

@@ -4,13 +4,16 @@ package kbd
 
 var
   text = [NComms]string {
-    "None    ", "Esc     ", "Enter   ", "Back    ",
+    "None    ",
+    "Esc     ", "Enter   ", "Back    ",
     "Left    ", "Right   ", "Up      ", "Down    ",
     "PgLeft  ", "PgRight ", "PgUp    ", "PgDown  ",
-    "Pos1    ", "End     ", "Tab     ",
+    "Pos1    ", "End     ",
+    "Tab     ",
     "Del     ", "Ins     ",
-    "Help    ", "Search  ", "Act     ",
-    "Cfg     ", "Mark    ", "Unmark  ",
+    "Help    ", "Search  ",
+    "Act     ", "Cfg     ",
+    "Mark    ", "Unmark  ",
     "Cut     ", "Copy    ", "Paste   ",
     "Red     ", "Green   ", "Blue    ",
     "Print   ", "Roll    ", "Pause   ",

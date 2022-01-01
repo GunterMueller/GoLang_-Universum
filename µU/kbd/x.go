@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 211124 - license see µU.go
+// (c) Christian Maurer   v. 211214 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -85,8 +85,8 @@ loop:
       break loop
 /*/
     case C.KeyPress:
-      if e.C < 9 {
-        println ("oops, got keycode ", e.C, " < 9") // XXX ?
+      if e.C <= 8 {
+        println ("oops, kbd/x.go C.Keypress keycode ", e.C, " <= 8")
       } else {
         e.C -= 8
         switch {
@@ -199,8 +199,8 @@ loop:
           if e.C == back && *D > 2 {
             *C, *D = None, 0
           } // doesn't help: wm crashes
-//        case k == numOnOff:
-//          // TODO
+        case e.C == numOnOff:
+//        // TODO
         case isKeypad (e.C):
           switch *D {
           case 0:
@@ -211,7 +211,7 @@ loop:
         case e.C == 127:
           *B = backslash
         default:
-          println ("C.KeyPress: keycode ", e.C, "/ state ", e.S) // XXX
+          println ("kbd/x.go C.KeyPress: keycode ", e.C, "/ state ", e.S) // XXX
         }
       }
       if *B > 0 || *C > 0 {
@@ -221,7 +221,7 @@ loop:
       ; // is ignored
     case C.ButtonPress:
       if *D > 1 {
-        *D = 1 // because the WM eats everything else up
+        *D = 1 // because the WM eats up everything else
       }
       switch e.C {
       case 1:
@@ -235,14 +235,14 @@ loop:
       case 5:
         *C = ScrollDown
       default:
-        println ("scr.ButtonPress: button ", e.C ,"/ state ", e.S) // XXX
+        println ("kbd/x.go C.ButtonPress: button ", e.C ,"/ state ", e.S) // XXX
       }
       if *C > 0 {
         break loop
       }
     case C.ButtonRelease:
       if *D > 1 {
-        *D = 1 // because the WM eats everything else up
+        *D = 1 // because WM eats everything else up
       }
       ctrl = false
       alt = false
@@ -268,13 +268,13 @@ loop:
       case 5:
         *C = ScrollDown
       default:
-        println ("scr.ButtonRelease: button ", e.C ,"/ state ", e.S) // XXX
+        println ("kbd/x.go C.ButtonRelease: button ", e.C ,"/ state ", e.S) // XXX
       }
       if *C > 0 {
         break loop
       }
     case C.MotionNotify:
-      *D = 0
+//      *D = 0
       if mouseL {
         *C = Drag
       } else if mouseM {

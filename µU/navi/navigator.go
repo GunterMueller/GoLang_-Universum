@@ -15,7 +15,7 @@ import (
 //  . "µU/spc"
 )
 type
-  button byte; const (
+  buttons byte; const (
   none = iota
   right
   left
@@ -34,7 +34,7 @@ const ( // see mouse: Go, ...
 var (
   file *os.File
   navipipe chan Command
-  but button
+  button buttons
   data [2 * 3]int16
   index [3]int16 // 0..2
   sign [3]int16 // +1, -1

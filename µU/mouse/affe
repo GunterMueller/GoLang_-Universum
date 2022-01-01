@@ -1,0 +1,1 @@
+// Pre: The mouse device is /dev/input/mice, that is readable for the world and a mouse is working.

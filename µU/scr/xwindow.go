@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 211127 - license see µU.go
+// (c) Christian Maurer   v. 211229 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -420,10 +420,8 @@ func (X *xwindow) Save (l, c, w, h uint) {
 }
 
 func (X *xwindow) SaveGr (x, y, x1, y1 int) {
-// return // XXX
-  intordW (&x, &y, &x1, &y1)
   w, h := C.uint(x1 - x + 1), C.uint(y1 - y + 1)
-//  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.shadow), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
+  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.shadow), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
   C.XCopyArea (dpy, C.Drawable(X.buffer), C.Drawable(X.shadow), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
 }
 
@@ -438,7 +436,6 @@ func (X *xwindow) Restore (l, c, w, h uint) {
 }
 
 func (X *xwindow) RestoreGr (x, y, x1, y1 int) {
-  intordW (&x, &y, &x1, &y1)
   w, h := C.uint(x1 - x + 1), C.uint(y1 - y + 1)
   C.XCopyArea (dpy, C.Drawable(X.shadow), C.Drawable(X.win), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
   C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.buffer), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
@@ -662,6 +659,10 @@ func (X *xwindow) PointInv (x, y int) {
   X.point (x, y, false)
 }
 
+func (X *xwindow) OnPoint (x, y, a, b int, d uint) bool {
+  return near (x, y, a, b, d)
+}
+
 func ok2W (xs, ys []int) bool {
   return len (xs) == len (ys)
 }
@@ -696,8 +697,15 @@ func (X *xwindow) PointsInv (xs, ys []int) {
   X.points (xs, ys, false)
 }
 
-func (X *xwindow) OnPoint (x, y, a, b int, d uint) bool {
-  return near (x, y, a, b, d)
+func (X *xwindow) OnPoints (xs, ys []int, a, b int, d uint) bool {
+  n := len(xs)
+  if n == 0 { return false }
+  for i := 0; i < n; i++ {
+    if near (xs[i], ys[i], a, b, d) {
+      return true
+    }
+  }
+  return false
 }
 
 func (X *xwindow) line (x, y, x1, y1 int, n bool) {
@@ -887,28 +895,29 @@ func (X *xwindow) rectangle (x, y, w, h int, n, f bool) {
 
 func (X *xwindow) Rectangle (x, y, x1, y1 int) {
   intordW (&x, &y, &x1, &y1)
-  X.rectangle (x, y, x1 - x + 1, y1 - y + 1, true, false)
+  X.rectangle (x, y, x1 - x, y1 - y, true, false)
 }
 
 func (X *xwindow) RectangleInv (x, y, x1, y1 int) {
   intordW (&x, &y, &x1, &y1)
-  X.rectangle (x, y, x1 - x + 1, y1 - y + 1, false, false)
+  X.rectangle (x, y, x1 - x, y1 - y, false, false)
 }
 
 func (X *xwindow) RectangleFull (x, y, x1, y1 int) {
   intordW (&x, &y, &x1, &y1)
-  X.rectangle (x, y, x1 - x + 1, y1 - y + 1, true, true)
+  X.rectangle (x, y, x1 - x, y1 - y, true, true)
 }
 
 func (X *xwindow) RectangleFullInv (x, y, x1, y1 int) {
   intordW (&x, &y, &x1, &y1)
-  X.rectangle (x, y, x1 - x + 1, y1 - y + 1, false, true)
+  X.rectangle (x, y, x1 - x, y1 - y, false, true)
 }
 
 func (X *xwindow) OnRectangle (x, y, x1, y1, a, b int, t uint) bool {
-  if ! X.InRectangle (x, y, x1, y1, a, b, t) { return false }
-  return betweenW (x, x, a, int(t)) || betweenW (x1, x1, a, int(t)) ||
-         betweenW (y, y, b, int(t)) || betweenW (y1, y1, b, int(t))
+  return X.OnLine (x,  y,  x1, y,  a, b, t) ||
+         X.OnLine (x,  y1, x1, y1, a, b, t) ||
+         X.OnLine (x,  y,  x,  y1, a, b, t) ||
+         X.OnLine (x1, y,  x1, y1, a, b, t)
 }
 
 func (X *xwindow) InRectangle (x, y, x1, y1, a, b int, t uint) bool {
@@ -916,11 +925,19 @@ func (X *xwindow) InRectangle (x, y, x1, y1, a, b int, t uint) bool {
 }
 
 func (X *xwindow) Polygon (xs, ys []int) {
+  n := len(xs)
+  if n < 2 { return }
+  n--
   X.segments (xs, ys, true)
+  X.line (xs[0], ys[0], xs[n], ys[n], true)
 }
 
 func (X *xwindow) PolygonInv (xs, ys []int) {
+  n := len(xs)
+  if n < 3 { return }
+  n--
   X.segments (xs, ys, false)
+  X.line (xs[0], ys[0], xs[n], ys[n], false)
 }
 
 func (X *xwindow) polygonFull (xs, ys []int, n bool) {
@@ -991,7 +1008,15 @@ func (X *xwindow) CircleFullInv (x, y int, r uint) {
 }
 
 func (X *xwindow) OnCircle (x, y int, r uint, a, b int, t uint) bool {
-  return X.OnEllipse (x, y, r, r, a, b, t)
+  d := uint(dist2 (x, y, a, b))
+  if d >= r {
+    return d <= t + r
+  }
+  return d + t > r
+}
+
+func (X *xwindow) InCircle (x, y int, r uint, a, b int, t uint) bool {
+  return uint(dist2 (x, y, a, b)) <= r + t
 }
 
 func (X *xwindow) arc (x, y int, r uint, a, b float64, n, f bool) {
@@ -1108,10 +1133,6 @@ func (X *xwindow) clear() { // XXX
   C.XSetForeground (dpy, X.gc, cu (X.scrF))
 }
 /*/
-
-func (X *xwindow) MouseEx() bool {
-  return true // a mouse should be running on any GUI
-}
 
 func (X *xwindow) SetPointer (p ptr.Pointer) {
   C.XDefineCursor (dpy, X.win, C.XCreateFontCursor (dpy, C.uint(ptr.Code (p))))
@@ -1262,7 +1283,7 @@ func (X *xwindow) PPMCodelen (w, h uint) uint {
 }
 
 func (X *xwindow) PPMSize (s obj.Stream) (uint, uint) {
-  w, h, _, _ := ppmHeaderData (s)
+  w, h, _, _ := X.PPMHeaderData (s)
   return w, h
 }
 
@@ -1271,9 +1292,18 @@ func (X *xwindow) PPMEncode (x0, y0, w, h uint) obj.Stream {
   return append (obj.Stream(X.PPMHeader (w, h)), s[2*4:]...)
 }
 
-func ppmHeaderDataW (s obj.Stream) (uint, uint, uint, int) {
+func (X *xwindow) PPMHeaderData (s obj.Stream) (uint, uint, uint, int) {
   p := string(s[:2]); if p != "P6" { panic ("wrong ppm-header: " + p) }
   i := 3
+  if s[i] == '#' {
+    for {
+      i++
+      if s[i] == byte(10) {
+        i++
+        break
+      }
+    }
+  }
   w, dw := numberW (s[i:])
   i += dw + 1
   h, dh := numberW (s[i:])
@@ -1284,7 +1314,7 @@ func ppmHeaderDataW (s obj.Stream) (uint, uint, uint, int) {
 }
 
 func (X *xwindow) PPMDecode (s obj.Stream, x0, y0 uint) {
-  w, h, _, j := ppmHeaderData (s)
+  w, h, _, j := X.PPMHeaderData (s)
   if w == 0 || h == 0 || w > X.Wd() || h > X.Ht() { return }
   i := 4 * uint(2)
   l := i + 3 * w * h
@@ -1824,7 +1854,7 @@ func sendEvents() {
         W = imp (w) // w == W.win
         event.C, event.S = uint(0), uint(C.motionState (&xev))
         W.xM, W.yM = int(C.motionX (&xev)), int(C.motionY (&xev))
-xMouse, yMouse = W.xM, W.yM
+        xMouse, yMouse = W.xM, W.yM
       case C.EnterNotify, C.LeaveNotify:
         w = C.enterLeaveWin (&xev)
         W = imp (w) // w == W.win

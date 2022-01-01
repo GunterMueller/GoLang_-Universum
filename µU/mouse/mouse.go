@@ -1,19 +1,13 @@
 package mouse
 
-// (c) Christian Maurer   v. 210505 - license see µU.go
+// (c) Christian Maurer   v. 211226 - license see µU.go
 
 import (
   "os"
   "µU/ker"
 )
-const (
-  go_ = iota         // mousemove without any button pressed
-  here; this; that   // left mousebutton
-  drag; drop; move   // right mousebutton
-  to_; there; hither // middle mousebutton
-)
 type
-  button byte; const (
+  buttons byte; const (
   none = iota
   left
   right
@@ -21,34 +15,22 @@ type
 )
 var (
   file *os.File
-  mousepipe chan Command
-  lastCommand Command
-  butt, oldButt button
+  lastCommand = None
+  button = none
+  lastButton = none
   yy, // vertical swap
   x0, y0, x1, y1, // boundaries
-  xm, ym uint // location of mouse pointer
+  xm, ym uint // position of mouse pointer
 )
 
 func init() {
-  mousedev := "/dev" + Mouse
+  dev := "/dev/input/mice"
   var e error
-  if file, e = os.Open (mousedev); e == nil {
-    Def (0, 0, 1600, 1200) // TODO
-    lastCommand = go_
-    oldButt = none
-    mousepipe = make (chan Command)
-    go catch()
-  } else {
-    ker.Panic (mousedev + " nicht lesbar !")
-  }
-}
-
-func ex() bool {
-  return mousepipe != (chan Command)(nil)
-}
-
-func channel() chan Command {
-  return mousepipe
+  file, e = os.Open (dev)
+  if e != nil { ker.Panic (dev + " is not readable !") }
+  Def (0, 0, 1600, 1200)
+  Pipe = make (chan Command)
+  go catch()
 }
 
 func def (x, y, w, h uint) {
@@ -72,27 +54,26 @@ func catch() {
   var (
     bs [3]byte
     a, dx, dy uint
-    dragged bool
-    c Command
+    moved bool
+    cmd Command
   )
   for {
-    i, _:= file.Read (bs[:])
+    i, _ := file.Read (bs[:])
     if i < 3 { continue }
     a = uint(bs[0])
     switch a % 8 {
     case 0:
-      butt = none
+      button = none
     case 1, 5: // left, left and middle
-      butt = left
+      button = left
     case 2, 6: // right, right and middle
-      butt = right
+      button = right
     default:   // left and right, middle, all three
-      butt = middle
+      button = middle
     }
-    dx = uint(bs[1])
-    dy = uint(bs[2])
-    dragged = dx > 0 || dy > 0
-    if butt == oldButt && ! dragged { continue }
+    dx, dy = uint(bs[1]), uint(bs[2])
+    moved = dx > 0 || dy > 0
+    if button == lastButton && ! moved { continue }
     a /= 8
     if a == 0 { break }
     a = (a - 1) / 2
@@ -109,8 +90,7 @@ func catch() {
       xm += dx
       if ym > dy { ym -= dy } else { ym = 0 }
     case 3:
-      dx = 256 - dx
-      dy = 256 - dy
+      dx, dy = 256 - dx, 256 - dy
       if xm > dx { xm -= dx } else { xm = 0 }
       if ym > dy { ym -= dy } else { ym = 0 }
     default:
@@ -126,67 +106,67 @@ func catch() {
     } else if ym > y1 {
       ym = y1
     }
-    switch butt {
+    switch button {
     case none:
       switch lastCommand {
-      case go_:
-        if dragged {
-        c = go_
+      case Go:
+        if moved {
+        cmd = Go
       } else {
         continue
       }
-    case here, this:
-      c = that
-    case drag, drop:
-      c = move
-    case to_, there:
-      c = hither
-    case that, move, hither:
-      c = go_
+    case Here, Drag:
+      cmd = To
+    case This, Drop:
+      cmd = There
+    case That, Move:
+      cmd = Hither
+    case To, There, Hither:
+      cmd = Go
     }
     case left:
       switch lastCommand {
-      case go_, that, move, hither:
-        c = here
-      case here, this:
-        if dragged {
-          c = this
+      case Go, To, There, Hither:
+        cmd = Here
+      case Here, Drag:
+        if moved {
+          cmd = Drag
         } else {
           continue
         }
       default:
-        c = lastCommand
+        cmd = lastCommand
       }
     case right:
       switch lastCommand {
-      case go_, that, move, hither:
-        c = drag
-      case drag, drop:
-        if dragged {
-          c = drop
+      case Go, To, There, Hither:
+        cmd = This
+      case This, Drop:
+        if moved {
+          cmd = Drop
         } else {
           continue
         }
       default:
-        c = lastCommand
+        cmd = lastCommand
       }
     case middle:
       switch lastCommand {
-      case go_, that, move, hither:
-      c = to_
-      case to_, there:
-        if dragged {
-          c = there
+      case Go, To, There, Hither:
+      cmd = That
+      case That, Move:
+        if moved {
+          cmd = Move
         } else {
           continue
         }
       default:
-        c = lastCommand
+        cmd = lastCommand
       }
     }
-    oldButt = butt
-    lastCommand = c
-    mousepipe <- c
+    lastButton = button
+    lastCommand = cmd
+    Pipe <- cmd
   }
 }
 

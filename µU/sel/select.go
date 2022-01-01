@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 210408 - license see µU.go
+// (c) Christian Maurer   v. 211218 - license see µU.go
 
 import (
   "µU/ker"
@@ -70,7 +70,7 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
     case kbd.Esc, kbd.Move:
       *i = n
       break loop
-    case kbd.Enter, kbd.That:
+    case kbd.Enter, kbd.There:
       break loop
     case kbd.Left, kbd.Up:
       if d == 0 {
@@ -139,8 +139,7 @@ var
 
 func hasSuffix (a Any) bool {
   p, ok := str.Sub (ptSuffix, a.(string))
-  return ok &&
-         p == str.ProperLen (a.(string)) - uint(len (ptSuffix))
+  return ok && p == str.ProperLen (a.(string)) - uint(len (ptSuffix))
 }
 
 func aus (n, l, c uint, f, b col.Colour) {

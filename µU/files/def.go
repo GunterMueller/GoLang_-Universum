@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 210419 - license see µU.go
+// (c) Christian Maurer   v. 211216 - license see µU.go
 
 import
   . "µU/obj"
@@ -72,14 +72,11 @@ func IsFile (f string) bool { return isFile(f) }
 // otherwise p is appended to the former actual path.
 func Cd (p string) { cd(p) }
 
-// Spec: The source is the doc.
+// Spec: The actual directory is $HOME + "/." + name of the call.
 func Cdp() { cdp() }
 
-// Spec: The source is the doc.
+// Spec: The actual directory is $GOSRC + "/" + name of the call.
 func Cds() { cds() }
-
-// Spec: The source is the doc.
-func Cd0() { cd0() }
 
 // Pre: d is a name of a directory entry.
 //      The calling process has the necessary access rights.
