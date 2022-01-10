@@ -1,4 +1,13 @@
-func ok (m mode.Mode) bool {
-  w, h := maxRes()
-  return mode.Wd (m) <= w && mode.Ht(m) <= h
+
+func (X *xwindow) InEllipse (x, y int, a, b uint, A, B int, t uint) bool {
+  if a == b {
+    return dist2 (x, y, A, B) <= int(a + t)
+  }
+  if a > b {
+    f := int(math.Sqrt (float64(a * a - b * b)) + 0.5)
+    return dist2 (A, B, x - f, y) + dist2 (A, B, x + f, y) <= 2 * int(a)
+  }
+// a < b
+  f := int(math.Sqrt (float64(b * b - a * a)) + 0.5)
+  return dist2 (A, B, x, y - f) + dist2 (A, B, x, y + f) <= 2 * int(b)
 }

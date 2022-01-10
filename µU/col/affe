@@ -1,1 +1,1 @@
-  return (uint(c.r) << 8 + uint(c.g)) << 8 + uint(c.b)
+func MiddleRed() Colour        { return new3n ("MiddleRed",       153,   0,   0) }

@@ -1,0 +1,8 @@
+  xm, ym := scr.MousePosGr()
+  n := len(f.x)
+  for i := 0; i < n; i++ {
+    if scr.OnPoint (f.x[i], f.y[i], xm, ym, t) {
+      return true
+    }
+  }
+  return false

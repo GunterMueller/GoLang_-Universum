@@ -1,15 +1,15 @@
 package sel
 
-// (c) Christian Maurer   v. 191125 - license see µU.go
+// (c) Christian Maurer   v. 2201177777icense see µU.go
 
 import (
   "µU/col"
   "µU/font"
 )
-const (
-  M = 16
-  N = 36
-)
+// const (
+//   M = 16
+//   N = 36
+// )
 type // TODO description of semantics !
   WritingCol func (uint, uint, uint, col.Colour, col.Colour)
 
@@ -50,8 +50,8 @@ func Name (m, s string, i uint, l, c uint, f, b col.Colour) (string, string) {
 }
 
 // Returns an interactively selected Colour.
-func Colour16() col.Colour { return colour16() }
-func Colour() col.Colour { return colour() }
+// func Colour16() col.Colour { return colour16() }
+func Colour (x, y int) col.Colour { return colour(x,y) }
 
 // Returns an interactively selected font size.
-func Size (c col.Colour) font.Size { return size(c) }
+func Fontsize (f, b col.Colour) font.Size { return fontsize(f,b) }

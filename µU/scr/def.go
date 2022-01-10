@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 211229 - license see µU.go
+// (c) Christian Maurer   v. 220110 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -23,7 +23,6 @@ import (
   "µU/mode"
   "µU/scr/shape"
   "µU/linewd"
-  "µU/scr/ptr"
   "µU/font"
 )
 type
@@ -316,13 +315,8 @@ type
 // inside the rectangle given by (x, y) and (x1, y1).
   InRectangle (x, y, x1, y1, a, b int, t uint) bool
 
-// Pre: See above. For n:= len(x) == len(y): n > 2 and
-//      PolygonFull:
-//        The calling process runs under X;
-//        the polygon defined by x and y is convex and drawn in the same colour.
-//      PolygonFull1:
-//        (x0, y0) lies in the interior of the polygon defined by x and y.
-//        The polygon is drawn in the same colour.
+// Pre: len(x) == len(y).
+//      PolygonFull: The polygon defined by x and y is convex (see function Convex).
 // A polygon is drawn between (x[0], y[0]), (x[1], y[1]), ... (x[n-1], y[n-1), (x[0], y[0])
 // resp. all pixels on it are inverted resp. the polygon is filled.
   Polygon (x, y []int)
@@ -330,6 +324,15 @@ type
   PolygonFull (x, y []int)
   PolygonFullInv (x, y []int)
 
+// Pre: len(x) == len(y).
+//      The polygon defined by x and y is not convex (see function Convex),
+//      but its lines do not intersect.
+//      In a console: (a, b) is a point inside the polygon;
+//      under X: The values of a and b do not matter.
+  PolygonFull1 (x, y []int, a, b int)
+  PolygonFullInv1 (x, y []int, a, b int)
+
+// Pre: len(x) == len(y).
 // Returns true, iff the point at (a, b) has a distance of at most d pixels
 // from the polyon defined by x and y.
   OnPolygon (x, y []int, a, b int, d uint) bool
@@ -346,6 +349,8 @@ type
 // from the border of the circle around (a, b) with radius r.
   OnCircle (x, y int, r uint, a, b int, d uint) bool
 
+// Returns true, iff the point at (x, y) has a distance of at most d pixels
+// from the interior of the circle around (a, b) with radius r.
   InCircle (x, y int, r uint, a, b int, d uint) bool
 
 // Pre: See above. r <= x, x + r < Wd, r <= y, y + r < Ht,
@@ -370,7 +375,8 @@ type
 // Returns true, iff the point at (A, B) has a distance of at most d pixels
 // from the border of the ellipse around (x, y) with semiaxis a and b.
   OnEllipse (x, y int, a, b uint, A, B int, d uint) bool
-// func InEllipse (x, y int, a, b uint, A, B int) bool // TODO
+
+  InEllipse (x, y int, a, b uint, A, B int, d uint) bool
 
 // Pre: See above. n:= len(xs) == len(ys).
 // From (xs[0], ys[0]) to (xs[n], ys[n]) a Beziercurve of order n
@@ -388,7 +394,7 @@ type
 // mouse ///////////////////////////////////////////////////////////////
 
 // The mousepointer is represented by p.
-  SetPointer (p ptr.Pointer)
+  SetPointer (p uint)
 
 // Returns the position of the mouse cursor.
 // For the result (l, c) holds 0 <= l < NLines and 0 <= c < NColumns.
@@ -541,4 +547,9 @@ func Act() Screen {
     return actualW
   }
   return actualC
+}
+
+// Returns true, iff len(x) == len(y) and x, y define a convex polygon.
+func Convex (x, y []int) bool {
+  return convex (x,y)
 }

@@ -1,6 +1,6 @@
 package prt
 
-// (c) Christian Maurer   v. 210315 - license see µU.go
+// (c) Christian Maurer   v. 220108 - license see µU.go
 
 // >>> Pre: TeX is installed.
 
@@ -43,3 +43,7 @@ func Print (s string, l, c uint) { print(s, l, c) }
 
 // All lines of the printer buffer are printed; the printer buffer is not empty.
 func GoPrint() { goPrint() }
+
+// Pre: n is the name of an postscript file in the actual directory.
+// This file is printed.
+func PrintPS (n string) { printPS(n) }

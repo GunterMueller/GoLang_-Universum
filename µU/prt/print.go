@@ -1,6 +1,6 @@
 package prt
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 220108 - license see µU.go
 
 import (
   "os/exec"
@@ -170,4 +170,10 @@ func goPrint() {
   exec.Command (PrintCommand, psname, "-o", "fit-to-page").Run()
 //  tex.Clr(); log.Clr(); dvi.Clr(); ps.Clr()
 //  pseq.Erase (texname); pseq.Erase (logname); pseq.Erase (dviname); pseq.Erase (psname) // TODO
+}
+
+func printPS (psname string) {
+  if files.IsFile (psname) {
+    exec.Command (PrintCommand, psname).Run()
+  }
 }

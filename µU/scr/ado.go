@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 211223 - license see µU.go
+// (c) Christian Maurer   v. 220110 - license see µU.go
 
 import (
   "µU/ker"
@@ -8,7 +8,6 @@ import (
   "µU/mode"
   "µU/scr/shape"
   "µU/linewd"
-  "µU/scr/ptr"
   "µU/font"
   "µU/col"
 )
@@ -127,6 +126,8 @@ func Polygon (xs, ys []int) { s().Polygon(xs,ys) }
 func PolygonInv (xs, ys []int) { s().PolygonInv(xs,ys) }
 func PolygonFull (xs, ys []int) { s().PolygonFull(xs,ys) }
 func PolygonFullInv (xs, ys []int) { s().PolygonFullInv(xs,ys) }
+func PolygonFull1 (xs, ys []int, a, b int) { s().PolygonFull1(xs,ys,a,b) }
+func PolygonFullInv1 (xs, ys []int, a, b int) { s().PolygonFullInv1(xs,ys,a,b) }
 func OnPolygon (xs, ys []int, a, b int, t uint) bool { return s().OnPolygon(xs,ys,a,b,t) }
 func Circle (x, y int, r uint) { s().Circle(x,y,r) }
 func CircleInv (x, y int, r uint) { s().CircleInv(x,y,r) }
@@ -143,12 +144,12 @@ func EllipseInv (x, y int, a, b uint) { s().EllipseInv(x,y,a,b) }
 func EllipseFull (x, y int, a, b uint) { s().EllipseFull(x,y,a,b) }
 func EllipseFullInv (x, y int, a, b uint) { s().EllipseFullInv(x,y,a,b) }
 func OnEllipse (x, y int, a, b uint, A, B int, t uint) bool { return s().OnEllipse(x,y,a,b,A,B,t) }
-// func InEllipse (x, y int, a, b uint, A, B int) bool { return s().InEllipse(x,y,a,b,A,B) } // TODO
+func InEllipse (x, y int, a, b uint, A, B int, t uint) bool { return s().InEllipse(x,y,a,b,A,B,t) }
 func Curve (xs, ys []int) { s().Curve(xs,ys) }
 func CurveInv (xs, ys []int) { s().CurveInv(xs,ys) }
 func OnCurve (xs, ys []int, a, b int, t uint) bool { return s().OnCurve(xs,ys,a,b,t) }
 
-func SetPointer (p ptr.Pointer) { s().SetPointer(p) }
+func SetPointer (p uint) { s().SetPointer(p) }
 func MousePos() (uint, uint) { return s().MousePos() }
 func MousePosGr() (int, int) { return s().MousePosGr() }
 func WarpMouse (l, c uint) { s().WarpMouse(l,c) }

@@ -1,6 +1,6 @@
 package psp
 
-// (c) Christian Maurer   v. 170121 - license see µU.go
+// (c) Christian Maurer   v. 220109 - license see µU.go
 
 import (
   "µU/col"
@@ -8,10 +8,9 @@ import (
 )
 type
   PostscriptPage interface { // all float64-parameters in pt
-                             // (see µU/ker/metric.go)
 
-  S (pt int) float64
-  Sy (pt int) float64
+  X (pt int) float64
+  Y (pt int) float64
 
   Name (n string)
 
@@ -24,8 +23,8 @@ type
 
   SetColour (c col.Colour)
 
-  SetFont (f font.Font)
-  SwitchFontsize (f font.Size)
+  SetFont (s font.Size)
+
   Write (s string, x, y float64)
 
   SetLinewidth (w float64)

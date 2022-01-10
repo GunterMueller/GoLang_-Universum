@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 211216 - license see µU.go
+// (c) Christian Maurer   v. 220103 - license see µU.go
 
 import (
   . "µU/obj"
@@ -144,35 +144,13 @@ func random() Colour {
   return y
 }
 
-var (
-  black = Black()
-  white = White()
-  lightWhite = LightWhite()
-  red = Red()
-)
-
 func startCols() (Colour, Colour) {
-  return white, black
+  return White().Clone().(Colour), Black().Clone().(Colour)
 }
 
 func startColsA() (Colour, Colour) {
-  return red, black
+  return Red().Clone().(Colour), Black().Clone().(Colour)
 }
-
-/*/
-func (c *colour) ansiEncode() uint { // 0..15 // doch vielleicht Mist
-  const (black = 1 << iota / 2; red; green; blue; light)
-  const m3 = m1 / 3
-  const m2 = 2 * m3
-  r, g, b := c.r, c.g, c.b
-  n := uint(black)
-  if r >= m2 { r -= m2; n += red }
-  if g >= m2 { g -= m2; n += green }
-  if b >= m2 { b -= m2; n += blue }
-  if r >= m3 && g >= m3 && b >= m3 { n += light }
-  return n
-}
-/*/
 
 func (c *colour) Invert() {
   c.r, c.g, c.b = m1 - c.r, m1 - c.g, m1 - c.b
@@ -183,11 +161,11 @@ func (c *colour) Contrast() {
                          // highly dependent of the intensity of green,
                          // and our eyes are particularly sensible for green !
   if c.g > 224 {
-    c = black.(*colour)
+    c = Black().Clone().(*colour)
   } else if int(c.r) + int(c.g) + int(c.b) < lightlimit {
-    c = lightWhite.(*colour)
+    c = LightWhite().Clone().(*colour)
   } else {
-    c = black.(*colour)
+    c = Black().Clone().(*colour)
   }
 }
 
@@ -264,7 +242,7 @@ func (c *colour) Decode (s Stream) {
   if len(s) == 3 {
     c.r, c.g, c.b = s[0], s[1], s[2]
   } else {
-    c = lightWhite.(*colour)
+    c = LightWhite().(*colour)
   }
 }
 

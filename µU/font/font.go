@@ -1,6 +1,6 @@
 package font
 
-// (c) Christian Maurer   v. 200904 - license see µU.go
+// (c) Christian Maurer   v. 220110 - license see µU.go
 
 var (
   sign = []string {"r", "b", "i"}
@@ -13,7 +13,7 @@ func init() {
   Name = []string {"tiny  ", //  6pt
                    "small ", //  8pt
                    "normal", // 10pt
-                   "big",    // 12pt
+                   "big   ", // 12pt
                    "large ", // 14pt
                    "huge  ", // 17pt
                   }

@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 211218 - license see µU.go
+// (c) Christian Maurer   v. 220108 - license see µU.go
 
 import (
   "µU/ker"
@@ -70,9 +70,9 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
     case kbd.Esc, kbd.Move:
       *i = n
       break loop
-    case kbd.Enter, kbd.There:
+    case kbd.Enter, kbd.Here:
       break loop
-    case kbd.Left, kbd.Up:
+    case kbd.Left, kbd.Up, kbd.ScrollUp:
       if d == 0 {
         if *i > 0 {
           *i--
@@ -82,7 +82,7 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
           *i -= 10
         }
       }
-    case kbd.Right, kbd.Down:
+    case kbd.Right, kbd.Down, kbd.ScrollDown:
       if d == 0 {
         if *i + 1 < n {
           *i++
@@ -130,8 +130,7 @@ func select1 (s []string, h, w uint, n *uint, l, c uint, f, b col.Colour) {
   bx.Wd (w)
   Select (func (k, l, c uint, f, b col.Colour) {
             if k < ls { bx.Colours (f, b); bx.Write (s[k], l, c) }
-          },
-          h, h, w, n, l, c, f, b)
+          }, h, h, w, n, l, c, f, b)
 }
 
 var

@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 211229 - license see µU.go
+// (c) Christian Maurer   v. 220102 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -145,7 +145,6 @@ import (
   "µU/mode"
   "µU/linewd"
   "µU/scr/shape"
-  "µU/scr/ptr"
 //  "µU/navi"
   "µU/vect"
   "µU/gl"
@@ -165,7 +164,8 @@ type
           wd, ht uint // window
       proportion float64
               gc C.GC
-  buffer, shadow C.Pixmap
+          buffer C.Pixmap
+         shadows []C.Pixmap
             buff bool
           cF, cB,
         cFA, cBA,
@@ -175,6 +175,7 @@ type
         fontsize font.Size
    wd1, ht1, bl1 uint // font baseline
      transparent bool
+         pointer uint
      cursorShape,
     consoleShape,
       blinkShape shape.Shape
@@ -188,6 +189,7 @@ type
           origin,
            focus,
              top vect.Vector
+ polygonW, doneW [][]bool // to fill polygons
        ppmheader string
               lh uint
                  }
@@ -248,7 +250,6 @@ func cu (c col.Colour) C.ulong {
 
 func (x *xwindow) Fin() {
   C.XFreePixmap (dpy, x.buffer)
-  C.XFreePixmap (dpy, x.shadow)
   C.XUnmapWindow (dpy, x.win)
 //  C.XFreeGC (dpy, x.gc)
 //  C.XCloseDisplay (dpy) // XXX "BadDrawable (invalid .. Window parameter)"
@@ -420,9 +421,13 @@ func (X *xwindow) Save (l, c, w, h uint) {
 }
 
 func (X *xwindow) SaveGr (x, y, x1, y1 int) {
+  pixmap := C.XCreatePixmap (dpy, C.Drawable(X.win), C.uint(X.wd), C.uint(X.ht), planes)
+  X.shadows = append (X.shadows, pixmap)
+  n := len(X.shadows) - 1
+// println ("save", n, ":", x, y, x1, y1)
   w, h := C.uint(x1 - x + 1), C.uint(y1 - y + 1)
-  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.shadow), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
-  C.XCopyArea (dpy, C.Drawable(X.buffer), C.Drawable(X.shadow), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
+  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.shadows[n]), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
+  C.XCopyArea (dpy, C.Drawable(X.buffer), C.Drawable(X.shadows[n]), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
 }
 
 func (X *xwindow) Save1() {
@@ -437,8 +442,14 @@ func (X *xwindow) Restore (l, c, w, h uint) {
 
 func (X *xwindow) RestoreGr (x, y, x1, y1 int) {
   w, h := C.uint(x1 - x + 1), C.uint(y1 - y + 1)
-  C.XCopyArea (dpy, C.Drawable(X.shadow), C.Drawable(X.win), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
+  n := len(X.shadows)
+  if n == 0 { return }
+  n--
+  C.XCopyArea (dpy, C.Drawable(X.shadows[n]), C.Drawable(X.win), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
   C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.buffer), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
+// println ("restore", n, ":", x, y, x1, y1)
+  C.XFreePixmap (dpy, X.shadows[n], )
+  X.shadows = X.shadows[:n]
 }
 
 func (X *xwindow) Restore1() {
@@ -579,7 +590,6 @@ func (X *xwindow) ActFontsize() font.Size {
 }
 
 func (X *xwindow) SetFontsize (s font.Size) {
-if X == nil { panic ("kubische Scheiße") }
   X.fontsize = s
   name := "-xos4-terminus-bold"
   h := int(font.Ht (s))
@@ -914,10 +924,9 @@ func (X *xwindow) RectangleFullInv (x, y, x1, y1 int) {
 }
 
 func (X *xwindow) OnRectangle (x, y, x1, y1, a, b int, t uint) bool {
-  return X.OnLine (x,  y,  x1, y,  a, b, t) ||
-         X.OnLine (x,  y1, x1, y1, a, b, t) ||
-         X.OnLine (x,  y,  x,  y1, a, b, t) ||
-         X.OnLine (x1, y,  x1, y1, a, b, t)
+  if ! X.InRectangle (x, y, x1, y1, a, b, t) { return false }
+  return betweenW (x, x, a, int(t)) || betweenW (x1, x1, a, int(t)) ||
+         betweenW (y, y, b, int(t)) || betweenW (y1, y1, b, int(t))
 }
 
 func (X *xwindow) InRectangle (x, y, x1, y1, a, b int, t uint) bool {
@@ -940,25 +949,43 @@ func (X *xwindow) PolygonInv (xs, ys []int) {
   X.line (xs[0], ys[0], xs[n], ys[n], false)
 }
 
-func (X *xwindow) polygonFull (xs, ys []int, n bool) {
+func (X *xwindow) polygonFull (xs, ys []int, shape int, n bool) {
   l := len (xs); if len (ys) != l { return }
   p := make ([]C.XPoint, l)
   for i := 0; i < l; i++ {
     p[i].x, p[i].y = C.short(xs[i]), C.short(ys[i])
   }
   if ! n { C.XSetFunction (dpy, X.gc, C.GXcopyInverted) }
-  if ! X.buff { C.XFillPolygon (dpy, C.Drawable(X.win), X.gc, &p[0], C.int(l), C.Convex, C.CoordModeOrigin) }
-  C.XFillPolygon (dpy, C.Drawable(X.buffer), X.gc, &p[0], C.int(l), C.Convex, C.CoordModeOrigin)
+  if ! X.buff { C.XFillPolygon (dpy, C.Drawable(X.win), X.gc, &p[0], C.int(l), C.int(shape), C.CoordModeOrigin) }
+  C.XFillPolygon (dpy, C.Drawable(X.buffer), X.gc, &p[0], C.int(l), C.int(shape), C.CoordModeOrigin)
   if ! n { C.XSetFunction (dpy, X.gc, C.GXcopy) }
   C.XFlush (dpy)
 }
 
 func (X *xwindow) PolygonFull (xs, ys []int) {
-  X.polygonFull (xs, ys, true)
+  shape := C.Nonconvex
+  if convex (xs, ys) {
+    shape = C.Convex
+  } else {
+    shape = C.Complex
+  }
+  X.polygonFull (xs, ys, shape, true)
 }
 
 func (X *xwindow) PolygonFullInv (xs, ys []int) {
-  X.polygonFull (xs, ys, false)
+  shape := C.Nonconvex
+  if convex (xs, ys) {
+    shape = C.Convex
+  }
+  X.polygonFull (xs, ys, shape, false)
+}
+
+func (X *xwindow) PolygonFull1 (xs, ys []int, a, b int) {
+  X.polygonFull (xs, ys, C.Nonconvex, true)
+}
+
+func (X *xwindow) PolygonFullInv1 (xs, ys []int, a, b int) {
+  X.polygonFull (xs, ys, C.Nonconvex, false)
 }
 
 func (X *xwindow) OnPolygon (xs, ys []int, a, b int, t uint) bool {
@@ -1087,39 +1114,32 @@ func (X *xwindow) OnEllipse (x, y int, a, b uint, A, B int, t uint) bool {
   return betweenW (r, r, z, int(t))
 }
 
-func (X *xwindow) curve (xs, ys []int, xs1, ys1 *[]int) {
-  m := len (xs)
-  if m == 0 || m != len (ys) { return }
-  n := ker.ArcLen (xs, ys)
-  *xs1, *ys1 = make ([]int, n), make ([]int, n)
-  for i := uint(0); i < n; i++ {
-    (*xs1)[i], (*ys1)[i] = ker.Bezier (xs, ys, uint(m), n, i)
-  }
-  C.XFlush (dpy)
+func (X *xwindow) InEllipse (x, y int, a, b uint, A, B int, t uint) bool {
+  return inEllipse (x, y, a, b, A, B, t)
 }
 
 func (X *xwindow) Curve (xs, ys []int) {
   var xs1, ys1 []int
-  X.curve (xs, ys, &xs1, &ys1)
-  X.Point (xs[0], ys[0])
+  curve (xs, ys, &xs1, &ys1)
   X.Points (xs1, ys1)
 }
 
 func (X *xwindow) CurveInv (xs, ys []int) {
   var xs1, ys1 []int
-  X.curve (xs, ys, &xs1, &ys1)
-  X.PointInv (xs[0], ys[0])
+  curve (xs, ys, &xs1, &ys1)
   X.PointsInv (xs1, ys1)
 }
 
 func (X *xwindow) OnCurve (xs, ys []int, a, b int, t uint) bool {
   var xs1, ys1 []int
-  X.curve (xs, ys, &xs1, &ys1)
-  if ! near (xs[0], ys[0], a, b, t) { return false }
-  for i := 0; i < len (xs1); i++ {
-    if ! near (xs1[i], ys1[i], a, b, t) { return false }
+  curve (xs, ys, &xs1, &ys1)
+  n := len(xs1)
+  for i := 0; i < n; i++ {
+    if near (xs1[i], ys1[i], a, b, t) {
+      return true
+    }
   }
-  return true
+  return false
 }
 
 // mouse ///////////////////////////////////////////////////////////////
@@ -1129,13 +1149,14 @@ func (X *xwindow) clear() { // XXX
   C.XSetForeground (dpy, X.gc, cu (X.scrB))
   C.XFillRectangle (dpy, C.Drawable(X.win), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
   C.XFillRectangle (dpy, C.Drawable(X.buffer), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
-  C.XFillRectangle (dpy, C.Drawable(X.shadow), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
+  C.XFillRectangle (dpy, C.Drawable(X.shadow1), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
   C.XSetForeground (dpy, X.gc, cu (X.scrF))
 }
 /*/
 
-func (X *xwindow) SetPointer (p ptr.Pointer) {
-  C.XDefineCursor (dpy, X.win, C.XCreateFontCursor (dpy, C.uint(ptr.Code (p))))
+func (X *xwindow) SetPointer (p uint) {
+  X.pointer = p
+  C.XDefineCursor (dpy, X.win, C.XCreateFontCursor (dpy, C.uint(p)))
 }
 
 func (X *xwindow) MousePos() (uint, uint) {
@@ -1160,7 +1181,7 @@ func (X *xwindow) WarpMouseGr (x, y int) {
 func (X *xwindow) MousePointer (on bool) {
   if on {
 //    C.XUndefineCursor (dpy, X.win)
-    X.SetPointer (ptr.Gumby) // funny !
+    X.SetPointer (X.pointer)
   } else {
     var c C.XColor; c.red, c.green, c.blue = C.ushort(0), C.ushort(0), C.ushort(0)
     s := C.CString(string(obj.Stream{ 0, 8, 0, 0, 0, 0 })); defer C.free (unsafe.Pointer(s))
@@ -1623,9 +1644,17 @@ func NewWHW (x, y, w, h uint) Screen {
   X.wd, X.ht = w, h
   if X.wd > monitorWd || X.ht > monitorHt { panic ("win too large: " +
                          strconv.Itoa(int(X.wd)) + " x " + strconv.Itoa(int(X.ht))) }
+
+  X.polygonW = make([][]bool, X.wd)
+  X.doneW = make([][]bool, X.wd)
+  for i := 0; i < int(X.wd); i++ {
+    X.polygonW[i] = make([]bool, X.ht)
+    X.doneW[i] = make([]bool, X.ht)
+  }
   X.proportion = float64(X.wd)/float64(X.ht)
   X.Transparence (false)
   X.lineWd = linewd.Thin
+  X.pointer = Standard
   X.scrF, X.scrB = col.StartCols()
   X.cF, X.cB = col.StartCols()
   X.cFA, X.cBA = col.StartColsA()
@@ -1656,7 +1685,6 @@ func NewWHW (x, y, w, h uint) Screen {
 //  C.glXMakeContextCurrent (dpy, C.GLXDrawable(X.win), C.GLXDrawable(X.win), cx)
   C.glXMakeCurrent (dpy, C.GLXDrawable(X.win), cx)
   X.buffer = C.XCreatePixmap (dpy, C.Drawable(X.win), C.uint(X.wd), C.uint(X.ht), planes)
-  X.shadow = C.XCreatePixmap (dpy, C.Drawable(X.win), C.uint(X.wd), C.uint(X.ht), planes)
   const mask = C.KeyPressMask + // C.KeyReleaseMask +
                C.ButtonPressMask + C.ButtonReleaseMask +
                C.EnterWindowMask + C.LeaveWindowMask +
@@ -1854,7 +1882,7 @@ func sendEvents() {
         W = imp (w) // w == W.win
         event.C, event.S = uint(0), uint(C.motionState (&xev))
         W.xM, W.yM = int(C.motionX (&xev)), int(C.motionY (&xev))
-        xMouse, yMouse = W.xM, W.yM
+xMouse, yMouse = W.xM, W.yM
       case C.EnterNotify, C.LeaveNotify:
         w = C.enterLeaveWin (&xev)
         W = imp (w) // w == W.win

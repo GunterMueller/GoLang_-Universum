@@ -1,6 +1,6 @@
 package seq
 
-// (c) Christian Maurer   v. 210321 - license see µU.go
+// (c) Christian Maurer   v. 220106 - license see µU.go
 
 import (
   "sync"
@@ -21,7 +21,8 @@ type (
           ordered bool
                   }
 )
-var mutex sync.Mutex
+var
+  mutex sync.Mutex
 
 func (x *sequence) check (a Any) {
   CheckTypeEq (x.anchor.Any, a)
@@ -485,18 +486,19 @@ func (x *sequence) Cut (Y Collector, p Pred) {
 func (x *sequence) ClrPred (p Pred) {
   c := x.anchor.next
   for c != x.anchor {
-    a := c
-    c := c.next
-    if p (a.Any) {
-      a.prev.next = a.next
-      a.next.prev = a.prev
-      a.prev, a.next = nil, nil
-      if x.actual == a {
-        x.actual = c
+    d := c.next
+    if p (c.Any) {
+      c.prev.next = c.next
+      c.next.prev = c.prev
+      c.prev, c.next = nil, nil
+      if x.actual == c {
+        x.actual = d
         x.pos++
       }
       x.num--
+    } else {
     }
+    c = d
   }
 }
 

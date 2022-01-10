@@ -35,6 +35,7 @@ func VeryLightBrown() Colour   { return new3n ("VeryLightBrown",  206, 170, 127)
 func BlackRed() Colour         { return new3n ("BlackRed",         46,  18,  26) }
 func DarkRed() Colour          { return new3n ("DarkRed",          85,   0,   0) }
 func Red() Colour              { return new3n ("Red",             170,   0,   0) }
+func MiddleRed() Colour        { return new3n ("MiddleRed",       153,   0,   0) }
 func FlashRed() Colour         { return new3n ("FlashRed",        255,   0,   0) }
 func LightRed() Colour         { return new3n ("LightRed",        255,  85,  85) }
 func WhiteRed() Colour         { return new3n ("WhiteRed",        255, 170, 170) }

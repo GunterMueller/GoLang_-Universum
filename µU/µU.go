@@ -1,6 +1,6 @@
 package main
 
-/* (c) 1986-2021  Christian Maurer       maurer-berlin.eu proprietary - all rights reserved
+/* (c) 1986-2022  Christian Maurer       maurer-berlin.eu proprietary - all rights reserved
 
   Das Mikrouniversum µU ist nur zum Einsatz in der Lehre konstruiert  und hat deshalb einen
   rein akademischen Charakter.  Es liefert u.a. eine Reihe von Beispielen für mein Lehrbuch
@@ -38,9 +38,9 @@ import (
   "µU/texts"; "µU/time"; "µU/vnset"; "µU/z"
 )
 const (
-  yy = 2021
-  mm =   12
-  dd =   30
+  yy = 2022
+  mm =    1
+  dd =   10
 )
 var (
   red = col.FlashRed()
@@ -166,7 +166,7 @@ func main() { // get all packages compiled and show the license
   cl, cf, cb := col.LightWhite(), col.LightGreen(), col.BlackGreen()
   circ (ht / 2, cf);
   circ (wd - ht / 2, cl)
-  errh.MuLicense ("µU", v.String(), "1986-2021  Christian Maurer   https://maurer-berlin.eu/mU", cl, cf, cb)
+  errh.MuLicense ("µU", v.String(), "1986-2022  Christian Maurer   https://maurer-berlin.eu/mU", cl, cf, cb)
   scr.ScrColourB (cb)
   done := make(chan bool)
   go drive (cl, cf, cb, done)

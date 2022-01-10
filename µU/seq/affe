@@ -1,0 +1,64 @@
+type (
+  cell struct {
+              Any "content of the cell"
+         next,
+         prev *cell
+       }
+  sequence struct {
+              num,
+              pos uint
+           anchor,
+           actual *cell
+          ordered bool
+                  }
+)
+
+func new_(a Any) Sequence {
+  CheckAtomicOrObject(a)
+  x := new(sequence)
+  x.anchor = new(cell)
+  x.anchor.Any = Clone(a)
+  x.anchor.next, x.anchor.prev = x.anchor, x.anchor
+  x.actual = x.anchor
+  return x
+}
+
+func (x *sequence) Get() Any {
+  if x.actual == x.anchor {
+    return nil
+  }
+  return Clone (x.actual.Any)
+}
+
+func (x *sequence) Trav (op Op) {
+  for c := x.anchor.next; c != x.anchor; c = c.next {
+    op (c.Any)
+  }
+}
+
+var AA = 1
+var aa = 1
+
+func (x *sequence) ClrPred (p Pred) {
+  c := x.anchor.next
+println ("AA ==", AA); AA++
+  for c != x.anchor {
+    a := c
+    a = c.Any  // .(*cell)
+    if p (a.Any) {
+println ("aa ==", aa); aa++
+      a.prev.next = a.next
+      a.next.prev = a.prev
+      a.prev, a.next = nil, nil
+      if x.actual == a {
+        x.actual = c
+        x.pos++
+      }
+      x.num--
+    } else {
+println ("wrong a")
+    }
+    c = c.next
+  }
+println ("fertig")
+}

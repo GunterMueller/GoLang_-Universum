@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 211222 - license see µU.go
+// (c) Christian Maurer   v. 220110 - license see µU.go
 
 //#include <stdlib.h>
 //#include <fcntl.h>
@@ -59,7 +59,6 @@ import (
   "µU/linewd"
   "µU/mouse"
   "µU/scr/shape"
-  "µU/scr/ptr"
 )
 type
   console struct {
@@ -69,7 +68,7 @@ type
           nLines,
         nColumns uint
          archive obj.Stream
-          shadow []obj.Stream
+         shadows [][]obj.Stream
             buff bool
         wd1, ht1 uint
           cF, cB,
@@ -86,10 +85,9 @@ type
       blinkMutex sync.Mutex
         blinking bool
          mouseOn bool
-         pointer ptr.Pointer
+         pointer uint
   xMouse, yMouse int
-         polygon [][]bool // to fill polygons
-            done [][]bool // to fill polygons
+   polygon, done [][]bool // to fill polygons
         incident bool
    xx_, yy_, tt_ int // for incidence tests
        ppmheader string
@@ -101,6 +99,7 @@ var (
   mouseIndex int
   width, height uint
   fullScreen mode.Mode
+  ptr [133][]string
 )
 
 func (x *console) Fin() {
@@ -353,13 +352,19 @@ func (X *console) Save (l, c, w, h uint) {
 
 func (X *console) SaveGr (x, y, x1, y1 int) {
   if ! X.rectangOk (&x, &y, &x1, &y1) { return }
+  shadow := make ([]obj.Stream, X.ht)
+  for i := 0; i < int(X.ht); i++ {
+    shadow[i] = make(obj.Stream, X.wd * colourdepth)
+  }
+  X.shadows = append (X.shadows, shadow)
+  n := len(X.shadows) - 1
   w, h := x1 - x + 1, y1 - y + 1
   x0, y0 := X.x + x, X.y + y
   a, da := x * int(colourdepth), w * int(colourdepth)
   if X.mouseOn { X.MousePointer (false) }
   for i := 0; i < h; i++ {
     b := (int(width) * (y0 + i) + x0) * int(colourdepth)
-    copy (X.shadow[i][a:a+da], fbmem[b:b+da])
+    copy (X.shadows[n][i][a:a+da], fbmem[b:b+da])
   }
   if X.mouseOn { X.MousePointer (true) }
 }
@@ -375,14 +380,18 @@ func (X *console) Restore (l, c, w, h uint) {
 
 func (X *console) RestoreGr (x, y, x1, y1 int) {
   if ! X.rectangOk (&x, &y, &x1, &y1) { return }
+  n := len(X.shadows)
+  if n == 0 { return }
+  n--
   w, h := x1 - x + 1, y1 - y + 1
   x0, y0 := X.x + x, X.y + y
   a, da := x * int(colourdepth), w * int(colourdepth)
   for i := 0; i < h; i++ {
     b := (int(width) * (y0 + i) + x0) * int(colourdepth)
-    copy (fbmem[b:b+da], X.shadow[i][a:a+da])
-    copy (fbcop[b:b+da], X.shadow[i][a:a+da])
+    copy (fbmem[b:b+da], X.shadows[n][i][a:a+da])
+    copy (fbcop[b:b+da], X.shadows[n][i][a:a+da])
   }
+  X.shadows = X.shadows[:n]
 }
 
 func (X *console) Restore1() {
@@ -784,7 +793,7 @@ func (X *console) vertical (x, y, y1 int, f pointFunc) {
 }
 
 // Pre: 0 <= x <= x1 < NColumns, 0 <= y != y1 < NLines.
-func (X *console) bresenham (x, y, x1, y1 int, f pointFunc) {
+func bresenham (x, y, x1, y1 int, f pointFunc) {
   dx := x1 - x
   Fehler, dy := 0, 0
   if y <= y1 { // gradient positive
@@ -963,7 +972,7 @@ func (X *console) line (x, y, x1, y1 int, f pointFunc) {
     X.vertical (x, y, y1, f)
     return
   }
-  X.bresenham (x, y, x1, y1, f)
+  bresenham (x, y, x1, y1, f)
 }
 
 func (X *console) Line (x, y, x1, y1 int) {
@@ -986,7 +995,7 @@ func (X *console) OnLine (x, y, x1, y1, a, b int, t uint) bool {
     return between (y, y, b, int(t)) && between (x, x1, a, int(t))
   }
   X.xx_, X.yy_, X.tt_, X.incident = a, b, int(t * t), false
-  X.bresenham (x, y, x1, y1, X.onPoint)
+  bresenham (x, y, x1, y1, X.onPoint)
   return X.incident
 }
 
@@ -1055,7 +1064,7 @@ func (X *console) SegmentsInv (xs, ys []int) {
 func (X *console) OnSegments (xs, ys []int, a, b int, t uint) bool {
   if ! ok2 (xs, ys) { return false }
   if len (xs) == 1 {
-    return xs[0] == a && ys[0] == b // TODO, weil das noch Blödsinn ist
+    return xs[0] == a && ys[0] == b
   }
   for i := 1; i < len (xs); i++ {
     if X.OnLine (xs[i-1], ys[i-1], xs[i], ys[i], a, b, t) {
@@ -1200,32 +1209,6 @@ func (X *console) PolygonInv (xs, ys []int) {
   X.PointInv (xs[n-1], ys[n-1])
 }
 
-func (X *console) interior (x, y int, xs, ys []int) bool {
-  return false // TODO winding number algorithm
-}
-
-func (X *console) mark (x, y int) {
-  X.polygon[x][y] = true
-  X.Point (x, y)
-}
-
-func (X *console) markInv (x, y int) {
-  X.polygon[x][y] = true
-  X.PointInv (x, y)
-}
-
-func (X *console) demark (x, y int) {
-  X.polygon[x][y] = false
-}
-
-func (X *console) dedone() {
-  for x := uint(0); x < X.wd; x++ {
-    for y := uint(0); y < X.ht; y++ {
-      X.done[x][y] = false
-    }
-  }
-}
-
 func (X *console) st (x, y int, f pointFunc) {
   if X.polygon[x][y] {
     return
@@ -1240,40 +1223,70 @@ func (X *console) st (x, y int, f pointFunc) {
   }
 }
 
-func (X *console) setInv (x, y int) {
-  X.st (x, y, X.PointInv)
+func (X *console) setPol (x, y int) {
+  X.polygon[x][y] = true
 }
 
-func (X *console) set (x, y int) {
-  X.st (x, y, X.Point)
+func angle (x, y, x1, y1 int) float64 {
+  a, b, c, d := float64(x), float64(y), float64(x1), float64(y1)
+  return math.Acos ((a * c + b * d) / math.Sqrt ((a * a + b * b) * (c * c + d * d)))
 }
 
-func (X *console) polygonFull (xs, ys []int, m, s pointFunc) {
-  if ! ok2 (xs, ys) { return }
-  n := len (xs)
-  if n < 2 { return }
-  X.segs (xs, ys, m)
-  xx, yy := 0, 0
-  xMin, yMin := int(X.wd), int(X.ht)
-  xMax, yMax := 0, 0
-  for i := 0; i < int(n); i++ {
-    xx += xs[i]; yy += ys[i]
-    if xs[i] < xMin { xMin = xs[i] }
-    if ys[i] < yMin { yMin = ys[i] }
-    if xs[i] > xMax { xMax = xs[i] }
-    if ys[i] > yMax { yMax = ys[i] }
+// Returns true, iff the sum of all angles == (n - 2) * 180°
+func convex (x, y []int) bool {
+  n, s := len(x), 0.0
+  if len(y) != n { return false }
+  if n < 3 { return true }
+  for i := 0; i < n; i++ {
+    i0, i1 := (i + 1) % n, (i + n - 1) % n
+    s += angle (x[i0] - x[i], y[i0] - y[i], x[i1] - x[i], y[i1] - y[i])
   }
-  s (xx / n, yy / n)
-  X.segs (xs, ys, X.demark)
-  X.dedone()
+  return math.Abs (s / math.Pi - float64(n - 2)) < epsilon
+}
+
+func (X *console) polygonFull (xs, ys []int, f pointFunc) {
+  if ! ok2 (xs, ys) { return }
+  if ! convex (xs, ys) { return }
+  n := len(xs)
+  if n <= 2 { return }
+  x, y := 0, 0
+  for i := 0; i < n; i++ {
+    x += xs[i]
+    y += ys[i]
+  }
+  x /= n
+  y /= n
+  X.line (xs[0], ys[0], xs[n-1], ys[n-1], X.setPol)
+  for i := 1; i < n; i++ {
+    X.line (xs[i-1], ys[i-1], xs[i], ys[i], X.setPol)
+  }
+  X.st (x, y, f)
 }
 
 func (X *console) PolygonFull (xs, ys []int) {
-  X.polygonFull (xs, ys, X.mark, X.set)
+  X.polygonFull (xs, ys, X.Point)
 }
 
 func (X *console) PolygonFullInv (xs, ys []int) {
-  X.polygonFull (xs, ys, X.markInv, X.setInv)
+  X.polygonFull (xs, ys, X.PointInv)
+}
+
+func (X *console) polygonFull1 (xs, ys []int, a, b int, f pointFunc) {
+  n := len(xs)
+  if len(ys) != n { return }
+  X.line (xs[0], ys[0], xs[n-1], ys[n-1], X.setPol)
+  for i := 1; i < n; i++ {
+    X.line (xs[i-1], ys[i-1], xs[i], ys[i], X.setPol)
+  }
+  X.st (a, b, f)
+}
+
+func (X *console) PolygonFull1 (xs, ys []int, a, b int) {
+  X.polygonFull1 (xs, ys, a, b, X.Point)
+}
+
+func (X *console) PolygonFullInv1 (xs, ys []int, a, b int) {
+  X.polygonFull1 (xs, ys, a, b, X.PointInv)
 }
 
 func (X *console) OnPolygon (xs, ys []int, a, b int, t uint) bool {
@@ -1567,39 +1580,54 @@ func (X *console) OnEllipse (x, y int, a, b uint, A, B int, t uint) bool {
   return X.incident
 }
 
-func (X *console) curve (xs, ys []int, f pointFunc) {
+func inEllipse (x, y int, a, b uint, A, B int, t uint) bool {
+  if a == b {
+    return dist2 (x, y, A, B) <= int(a + t)
+  }
+  if a > b {
+    f := int(math.Sqrt (float64(a * a - b * b)) + 0.5)
+    return dist2 (A, B, x - f, y) + dist2 (A, B, x + f, y) <= 2 * int(a)
+  }
+// a < b
+  f := int(math.Sqrt (float64(b * b - a * a)) + 0.5)
+  return dist2 (A, B, x, y - f) + dist2 (A, B, x, y + f) <= 2 * int(b)
+}
+
+func (X *console) InEllipse (x, y int, a, b uint, A, B int, t uint) bool {
+  return inEllipse (x, y, a, b, A, B, t)
+}
+
+func curve (xs, ys []int, xs1, ys1 *[]int) {
   m := len (xs)
-  if m == 0 || m != len (ys) {
-panic ("curve: wrong m")
-    return
-  }
+  if m == 0 || m != len (ys) { return }
   n := ker.ArcLen (xs, ys)
-  xs1, ys1 := make ([]int, n), make ([]int, n)
+  *xs1, *ys1 = make ([]int, n), make ([]int, n)
   for i := uint(0); i < n; i++ {
-    xs1[i], ys1[i] = ker.Bezier (xs, ys, uint(m), n, i)
-  }
-  f (xs[0], ys[0])
-  for i := 0; i < len(xs1); i++ {
-    f (xs1[i], ys1[i])
+    (*xs1)[i], (*ys1)[i] = ker.Bezier (xs, ys, uint(m), n, i)
   }
 }
 
 func (X *console) Curve (xs, ys []int) {
-  X.curve (xs, ys, X.Point)
+  var xs1, ys1 []int
+  curve (xs, ys, &xs1, &ys1)
+  X.Points (xs1, ys1)
 }
 
 func (X *console) CurveInv (xs, ys []int) {
-  X.curve (xs, ys, X.PointInv)
+  var xs1, ys1 []int
+  curve (xs, ys, &xs1, &ys1)
+  X.PointsInv (xs1, ys1)
 }
 
 func (X *console) OnCurve (xs, ys []int, a, b int, t uint) bool {
-  if ! ok2 (xs, ys) {
-panic ("OnCurve: ! ok2")
-    return false
+  var xs1, ys1 []int
+  curve (xs, ys, &xs1, &ys1)
+  for i := 1; i < len (xs); i++ {
+    if near (xs1[i], ys1[i], a, b, t) {
+      return true
+    }
   }
-  X.xx_, X.yy_, X.tt_, X.incident = a, b, int(t * t), false
-  X.curve (xs, ys, X.onPoint)
-  return X.incident
+  return false
 }
 
 // mouse ///////////////////////////////////////////////////////////////
@@ -1614,104 +1642,34 @@ func (X *console) MousePosGr() (int, int) {
   return xm - X.x, ym - X.y // Offset
 }
 
-func (X *console) SetPointer (p ptr.Pointer) {
-  X.pointer = p
+func (X *console) SetPointer (p uint) {
+  switch p {
+  case Gumby:
+    X.pointer = p
+  default:
+    X.pointer = Standard
+  }
 }
 
-var (
-  pointer = [ptr.NPointers][]string {
-    []string { // Ptr
-      "# . . . . . . . . . . . . ",
-      "# # . . . . . . . . . . . ",
-      "# o # . . . . . . . . . . ",
-      "# * o # . . . . . . . . . ",
-      "# * * o # . . . . . . . . ",
-      "# * * * o # . . . . . . . ",
-      "# * * * * o # . . . . . . ",
-      "# * * * * * o # . . . . . ",
-      "# * * * * * * o # . . . . ",
-      "# * * * * * * * o # . . . ",
-      "# * * * * * * * * o # . . ",
-      "# * * * * * * * * * o # . ",
-      "# * * * * * # # # # # # # ",
-      "# * * * o * o # . . . . . ",
-      "# * * # * * * # . . . . . ",
-      "# * # # # o * o # . . . . ",
-      "# # . . . # * * # . . . . ",
-      "# . . . . # o * o . . . . ",
-      ". . . . . . # o # . . . . " },
-    []string { // Gumby
-      ". . # # # # # # . . . . . . . . ",
-      "* * o # * * * * # . . . . . . . ",
-      "# # * o # * * * * # . . . . . . ",
-      "# # # * # * . * . * # . . . . . ",
-      "# # * o # * * * * * # . . . . . ",
-      "# # * o # * . . . * # * * * . . ",
-      "# # # # # * * * * * # # # # * . ",
-      "* * # # # * * * * * # # # # # # ",
-      ". . * * # * * * * * # . * # # # ",
-      ". . . . # * * * * * # . * # # # ",
-      ". . . . # * * # * * # * # # # # ",
-      ". . . . # * * # * * # . * # # # ",
-      ". . . . # * * # * * # . . * * * ",
-      ". . . # * * * # * * * # . . . . ",
-      ". . # * * * * # * * * * # . . . ",
-      ". . # # # # # . # # # # # . . . " },
-    []string { // Hand
-      ". . . o # # o . . . . . . . . . ",
-      ". . . # * * # . . . . . . . . . ",
-      ". . . # * * # . . . . . . . . . ",
-      ". . . # * * # . . . . . . . . . ",
-      ". . . # * * # # # o . . . . . . ",
-      ". . . # * * # o * o # # o . . . ",
-      ". . . # * * # * * # o * # # # o ",
-      ". # # # * * # * * * * * # o * # ",
-      "# o * # * * # * * * * * * * * # ",
-      "# * * # * * * * * * * * * * * # ",
-      "# * * # * * * * * * * * * * * # ",
-      "# * * * * o o * o o * o o * * # ",
-      "# * * * * * * * * * * * * * * # ",
-      "# * * * * * * * * * * * * * * # ",
-      "# o * * * * * * * * * * * * o # ",
-      ". # # # # # # # # # # # # # # . " },
-    []string { // Gobbler
-      ". . . . . . . . * * * * * * . . ",
-      ". . . . . . . . * # # # # * . . ",
-      "* * . . . . . . * # # # * * * * ",
-      "# * * * * * * * * * # # * * # # ",
-      "# * * # # # # # # * # # * * * * ",
-      "# # # # # # # # # # # # * * . . ",
-      "# # # # # # # * * * # # * * . . ",
-      "# # # # # # * * * * # # * * . . ",
-      "* # # * * * * * * * # # # * . . ",
-      "* * * * * * * * # # # # * * . . ",
-      ". * * # * # # # # # # * * . . . ",
-      ". . . * # * * * * * * * . . . . ",
-      ". . . * # * . . . . . . . . . . ",
-      ". . . * # * . . . . . . . . . . ",
-      ". . * * # * * * . . . . . . . . ",
-      ". . * # # # # * . . . . . . . . " },
-    []string { // Watch
-      ". . . . o # # # # # o . . . . . ",
-      ". . . # o * * * * * # # . . . . ",
-      ". . # * * * * * * * * * # . . . ",
-      ". # * * * * * * * * * * * # . . ",
-      "o o * * * * * * * * * * * o o . ",
-      "# * * * * * * * * * * * * * # . ",
-      "# * * * * * o # o * * * * * # . ",
-      "# * * o # # # # # * * * * * # . ",
-      "# * # # o * o # o * * * * * # . ",
-      "# * * * * * * * # * * * * * # . ",
-      "o o * * * * * * # * * * * o o . ",
-      ". # * * * * * * * # * * * # . . ",
-      ". . # * * * * * * # * * # . . . ",
-      ". . . # o * * * * * # # . . . . ",
-      ". . . . o # # # # # o . . . . . ",
-      ". . . . . . . . . . . . . . . . " },
+func pointerHt (p uint) int {
+  switch p {
+  case Standard:
+    return 19
+  case Crosshair:
+    return 15
   }
-  pointerHt = [ptr.NPointers]int { 18, 16, 16, 16, 16 }
-  pointerWd = [ptr.NPointers]int { 12, 16, 16, 16, 16 }
-)
+  return 16
+}
+
+func pointerWd (p uint) int {
+  switch p {
+  case Standard:
+    return 13
+  case Crosshair:
+    return 15
+  }
+  return 16
+}
 
 func (X *console) initMouse () {
 //  X.mouseOn = false
@@ -1722,10 +1680,10 @@ func (X *console) initMouse () {
 
 func (X *console) restore (x, y int) {
   a := (int(width) * y + x) * int(colourdepth)
-  da := pointerWd[X.pointer] * int(colourdepth)
+  da := pointerWd (X.pointer) * int(colourdepth)
   w := width * colourdepth
 // TODO limit to right screen border ???
-  h1, ht := pointerHt[X.pointer], int(X.ht)
+  h1, ht := pointerHt (X.pointer), int(X.ht)
   if y + h1 > ht { h1 = ht - y }
   for h := 0; h < h1; h++ {
     copy (fbmem[a:a+da], fbcop[a:a+da])
@@ -1738,9 +1696,9 @@ func (X *console) writePointer (x, y int) {
   cW := col.LightWhite().EncodeInv()
   cG := col.LightGray().EncodeInv()
   var p obj.Stream
-  for h := 0; h < pointerHt[X.pointer]; h++ {
-    for w := 0; w < pointerWd[X.pointer]; w++ {
-      switch pointer[X.pointer][h][2 * w] {
+  for h := 0; h < pointerHt (X.pointer); h++ {
+    for w := 0; w < pointerWd (X.pointer); w++ {
+      switch ptr[X.pointer][h][2 * w] {
       case '#':
         p = cB
       case '*':
@@ -1763,10 +1721,11 @@ func (X *console) writePointer (x, y int) {
 
 func (X *console) MousePointer (on bool) {
   X.mouseOn = on
+  if on { X.SetPointer (Standard) }
 //  if ! mouse.Ex() || ! X.mouseOn || ! visible { return }
   if ! X.mouseOn || ! visible { return }
-  if X.x <= X.xMouse + pointerWd[X.pointer] && X.xMouse < X.x + int(X.wd) &&
-     X.y <= X.yMouse + pointerHt[X.pointer] && X.yMouse < X.y + int(X.ht) {
+  if X.x <= X.xMouse + pointerWd (X.pointer) && X.xMouse < X.x + int(X.wd) &&
+     X.y <= X.yMouse + pointerHt (X.pointer) && X.yMouse < X.y + int(X.ht) {
     X.restore (X.xMouse, X.yMouse)
   }
   if X == mouseConsole {
@@ -2066,10 +2025,7 @@ func (X *console) init_(x, y uint) {
                                            d + " + " + e + " > " + f)
   }
   X.archive = make(obj.Stream, fbmemsize)
-  X.shadow = make([]obj.Stream, X.ht)
-  for i := 0; i < int(X.ht); i++ {
-    X.shadow[i] = make(obj.Stream, X.wd * colourdepth)
-  }
+  X.shadows = make([][]obj.Stream, X.ht)
   X.initMouse()
   X.SetLinewidth (linewd.Thin)
   wm, _ := MaxResC()
@@ -2092,6 +2048,76 @@ func (X *console) init_(x, y uint) {
   X.SetFontsize (font.Normal)
   X.doBlink()
   X.Cls()
+  ptr[Crosshair] = []string {
+      ". . . . . . # . # . . . . . . ",
+      ". . . . . . # . # . . . . . . ",
+      ". . . . . . # . # . . . . . . ",
+      ". . . . . . # . # . . . . . . ",
+      ". . . . . . # . # . . . . . . ",
+      ". . . . . . # . # . . . . . . ",
+      "# # # # # # # . # # # # # # # ",
+      ". . . . . . . . . . . . . . - ",
+      "# # # # # # # . # # # # # # # ",
+      ". . . . . . # . # . . . . . . ",
+      ". . . . . . # . # . . . . . . ",
+      ". . . . . . # . # . . . . . . ",
+      ". . . . . . # . # . . . . . . ",
+      ". . . . . . # . # . . . . . . ",
+      ". . . . . . # . # . . . . . . "}
+  ptr[Standard] = []string {
+      "# . . . . . . . . . . . . ",
+      "# # . . . . . . . . . . . ",
+      "# o # . . . . . . . . . . ",
+      "# * o # . . . . . . . . . ",
+      "# * * o # . . . . . . . . ",
+      "# * * * o # . . . . . . . ",
+      "# * * * * o # . . . . . . ",
+      "# * * * * * o # . . . . . ",
+      "# * * * * * * o # . . . . ",
+      "# * * * * * * * o # . . . ",
+      "# * * * * * * * * o # . . ",
+      "# * * * * * * * * * o # . ",
+      "# * * * * * # # # # # # # ",
+      "# * * * o * o # . . . . . ",
+      "# * * # * * * # . . . . . ",
+      "# * # # # o * o # . . . . ",
+      "# # . . . # * * # . . . . ",
+      "# . . . . # o * o . . . . ",
+      ". . . . . . # o # . . . . "}
+  ptr[Gumby] = []string {
+      ". . # # # # # # . . . . . . . . ",
+      "* * o # * * * * # . . . . . . . ",
+      "# # * o # * * * * # . . . . . . ",
+      "# # # * # * . * . * # . . . . . ",
+      "# # * o # * * * * * # . . . . . ",
+      "# # * o # * . . . * # * * * . . ",
+      "# # # # # * * * * * # # # # * . ",
+      "* * # # # * * * * * # # # # # # ",
+      ". . * * # * * * * * # . * # # # ",
+      ". . . . # * * * * * # . * # # # ",
+      ". . . . # * * # * * # * # # # # ",
+      ". . . . # * * # * * # . * # # # ",
+      ". . . . # * * # * * # . . * * * ",
+      ". . . # * * * # * * * # . . . . ",
+      ". . # * * * * # * * * * # . . . ",
+      ". . # # # # # . # # # # # . . . "}
+  ptr[Gumby] = []string {
+      ". . # # # # # # . . . . . . . . ",
+      "* * o # * * * * # . . . . . . . ",
+      "# # * o # * * * * # . . . . . . ",
+      "# # # * # * . * . * # . . . . . ",
+      "# # * o # * * * * * # . . . . . ",
+      "# # * o # * . . . * # * * * . . ",
+      "# # # # # * * * * * # # # # * . ",
+      "* * # # # * * * * * # # # # # # ",
+      ". . * * # * * * * * # . * # # # ",
+      ". . . . # * * * * * # . * # # # ",
+      ". . . . # * * # * * # * # # # # ",
+      ". . . . # * * # * * # . * # # # ",
+      ". . . . # * * # * * # . . * * * ",
+      ". . . # * * * # * * * # . . . . ",
+      ". . # * * * * # * * * * # . . . ",
+      ". . # # # # # . # # # # # . . . "}
 }
 
 func NewC (x, y uint, m mode.Mode) Screen {

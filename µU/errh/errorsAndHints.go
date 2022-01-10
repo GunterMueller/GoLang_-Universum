@@ -45,7 +45,7 @@ var (
   " Deshalb wird vor der Verwendung irgendwelcher Quellen von µU in Programmen zu ernsthaften ",
   " Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.) ",
   "                                                                                           ",
-  " Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen. " }
+  " Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen. "}
 )
 
 func init() {
