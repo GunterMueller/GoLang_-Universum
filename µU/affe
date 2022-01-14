@@ -1,4 +1,1 @@
-
-func (X *xwindow) InEllipse (x, y int, a, b uint, A, B int, t uint) bool {
-  return false
-}
+  Polygon (x, y []float64, f bool)

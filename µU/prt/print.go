@@ -1,6 +1,6 @@
 package prt
 
-// (c) Christian Maurer   v. 220108 - license see µU.go
+// (c) Christian Maurer   v. 220112 - license see µU.go
 
 import (
   "os/exec"
@@ -174,6 +174,12 @@ func goPrint() {
 
 func printPS (psname string) {
   if files.IsFile (psname) {
-    exec.Command (PrintCommand, psname).Run()
+    exec.Command (PrintCommand, psname, "-o", "fit-to-page").Run()
   }
 }
+
+// func printPPM (ppmname string, x, y int) {
+//   if files.IsFile (ppmname + ".ppm") {
+//     println ("oha: " + ppmname)
+//   }
+// }

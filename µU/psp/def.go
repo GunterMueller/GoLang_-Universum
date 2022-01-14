@@ -1,6 +1,6 @@
 package psp
 
-// (c) Christian Maurer   v. 220109 - license see µU.go
+// (c) Christian Maurer   v. 220112 - license see µU.go
 
 import (
   "µU/col"
@@ -9,8 +9,8 @@ import (
 type
   PostscriptPage interface { // all float64-parameters in pt
 
-  X (pt int) float64
-  Y (pt int) float64
+  X (x int) float64
+  Y (y int) float64
 
   Name (n string)
 
@@ -23,7 +23,8 @@ type
 
   SetColour (c col.Colour)
 
-  SetFont (s font.Size)
+//  SetFont (f font.Font)
+  SetFontsize (s font.Size)
 
   Write (s string, x, y float64)
 

@@ -187,35 +187,6 @@ loop:
     }
   }
   lastdepth = *D
-//  Under console, there is a bloody bug:
-//  This and Drag, 
-//  That and To, 
-//  Move and There are exchanged.
-//  Fuck knows, why.
-//
-//  Here; This; That
-//  Drag; Drop; Move
-//  To; There; Hither
-//  Lousy attempt to compensate,
-//  but That and Move get lost:
-//
-/*/
-  switch *C {
-  case This:
-    *C = Drag
-  case Drag:
-    *C = This
-  case That:
-    *C = To
-  case To:
-    *C = That
-  case Move:
-    *C = There
-  case There:
-    *C = Move
-  }
-/*/
-//
   lastcommand = *C
 }
 

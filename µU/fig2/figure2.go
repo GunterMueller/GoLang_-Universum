@@ -1,6 +1,6 @@
 package fig2
 
-// (c) Christian Maurer   v. 220110 - license see µU.go
+// (c) Christian Maurer   v. 220111 - license see µU.go
 
 import (
   "math"
@@ -53,7 +53,10 @@ func init() {
 func new_() Figure {
   wd, ht = int(scr.Wd()), int(scr.Ht())
   f := new(figure)
-  f.Clr()
+  f.x, f.y = nil, nil
+  f.marked, f.filled = false, false
+  f.string = str.New (lenText)
+  f.string = ""
   f.typ = Segments
   c, _ := col.StartCols()
   f.colour = c
@@ -168,7 +171,12 @@ func (f *figure) SetPos (x, y int) {
 var a0, b0, a1, b1 int
 
 func (f *figure) ShowPoints (v bool) {
+  switch f.typ {
+  case Polygon, Rectangle, Circle:
+    return
+  }
   n := len(f.x)
+  if f.typ == InfLine { n = 1 }
   if n == 0 { return }
   scr.ColourF (f.colour)
   x0, y0 := f.x[0], f.y[0]
@@ -219,9 +227,9 @@ func (f *figure) On (a, b int, t uint) bool {
     return scr.OnCircle (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), a, b, t)
   case Ellipse:
     if f.filled {
-      return scr.InEllipse (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[2] - f.y[0]), a, b, t)
+      return scr.InEllipse (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]), a, b, t)
     }
-    return scr.OnEllipse (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[2] - f.y[0]), a, b, t)
+    return scr.OnEllipse (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]), a, b, t)
   case Text:
     return scr.InRectangle (f.x[0], f.y[0], f.x[1], f.y[1], a, b, 0)
   case Image:
@@ -285,9 +293,6 @@ func (f *figure) Move (dx, dy int) {
   if f.remainsOnEboard (dx, dy) {
     f.WriteInv()
     n := len(f.x)
-//    if f.typ == Ellipse {
-//      n = 1 // move only the center
-//    }
     for i := 0; i < n; i++ {
       f.x[i] += dx
       f.y[i] += dy
@@ -334,9 +339,12 @@ func (f *figure) Defined (s string) bool {
   return false
 }
 
+func (f *figure) NumPoints() int {
+  return len(f.x)
+}
+
 func (f *figure) Write() {
   if f.Empty() { return }
-//  n := len(f.y); for i := 0; i < n; i++ { f.y[i] = int(scr.Ht()) - f.y[i] } // XXX
   scr.ColourF (f.colour)
   switch f.typ {
   case Points:
@@ -366,9 +374,9 @@ func (f *figure) Write() {
     }
   case Ellipse:
     if f.filled {
-      scr.EllipseFull (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[2] - f.y[0]))
+      scr.EllipseFull (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
     } else {
-      scr.Ellipse (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[2] - f.y[0]))
+      scr.Ellipse (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
     }
   case Text:
     bx.Wd (str.ProperLen (f.string))
@@ -410,15 +418,15 @@ func (f *figure) WriteInv() {
     }
   case Ellipse:
     if f.filled {
-      scr.EllipseFullInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[2] - f.y[0]))
+      scr.EllipseFullInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
     } else {
-      scr.EllipseInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[2] - f.y[0]))
+      scr.EllipseInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
     }
   case Text:
-// >>>  sollte in bx integriert werden:
-//  bx.WriteInvGr (string, x[0], y[0])
     scr.Transparence (true)
     scr.WriteInvGr (f.string, f.x[0], f.y[0])
+  case Image:
+//  images cannot be written inversely yet.
   }
 }
 
@@ -440,7 +448,7 @@ func (f *figure) editPoints() {
   }
 }
 
-func (f *figure) editSC() { // Segments, Curve
+func (f *figure) editSegments() {
   scr.ColourF (f.colour)
   xm, ym, n := f.x[0], f.y[0], 0
   loop:
@@ -464,6 +472,59 @@ func (f *figure) editSC() { // Segments, Curve
       n = len(f.x)
       f.x, f.y = append (f.x, xm), append (f.y, ym)
       scr.Line (f.x[n-1], f.y[n-1], f.x[n], f.y[n])
+    }
+  }
+}
+
+func (f *figure) editCurve() {
+  scr.ColourF (f.colour)
+  xm, ym, n := f.x[0], f.y[0], 0
+  loop:
+    for {
+    c, _ := kbd.Command()
+    scr.MousePointer (true)
+    switch c {
+    case kbd.This:
+      xm, ym = scr.MousePosGr()
+      f.x, f.y = append (f.x, xm), append (f.y, ym)
+      break loop
+    case kbd.Go:
+      n = len(f.x)
+      scr.LineInv (f.x[n-1], f.y[n-1], xm, ym)
+      xm, ym = scr.MousePosGr()
+      scr.Line (f.x[n-1], f.y[n-1], xm, ym)
+    case kbd.Here:
+      if n == 0 { continue }
+      scr.LineInv (f.x[n-1], f.y[n-1], xm, ym)
+      xm, ym = scr.MousePosGr()
+      n = len(f.x)
+      f.x, f.y = append (f.x, xm), append (f.y, ym)
+      scr.Line (f.x[n-1], f.y[n-1], f.x[n], f.y[n])
+    }
+  }
+}
+
+func (f *figure) changeCurve() { // TODO
+  xm, ym := scr.MousePosGr()
+  if f.On (xm, ym, 7) {
+    f.ShowPoints (true)
+  }
+  loop:
+  for {
+//  i, ok := f.pointUnderMouse()
+//  if ! ok { return }
+    scr.MousePointer (true)
+    xm, ym = scr.MousePosGr()
+    c, _ := kbd.Command()
+    switch c {
+    case kbd.Drag:
+/*/
+      xm, ym = scr.MousePosGr()
+      f.x[i], f.y[i] = xm, ym
+      f.Write()
+/*/
+    case kbd.To:
+      break loop
     }
   }
 }
@@ -500,13 +561,35 @@ func (f *figure) editPolygon() {
   }
 }
 
+func (f *figure) changeSegPol() {
+  f.ShowPoints (true)
+  i, ok := f.pointUnderMouse()
+  if ! ok { return }
+  loop:
+  for {
+    scr.MousePointer (true)
+    xm, ym := scr.MousePosGr()
+    c, _ := kbd.Command()
+    switch c {
+    case kbd.Drag:
+      xm, ym = scr.MousePosGr()
+      f.x[i], f.y[i] = xm, ym
+      f.Write()
+    case kbd.To:
+      break loop
+    }
+  }
+  f.ShowPoints (false)
+}
+
 func (f *figure) editInfLine() {
-// TODO start with horizontal infLine
   scr.ColourF (f.colour)
   f.x, f.y = append (f.x, f.x[0]), append (f.y, f.x[0])
+  f.x[1], f.y[1] = f.x[0] + 8, f.y[0]
   loop:
   for {
     c, _ := kbd.Command()
+    scr.InfLineInv (f.x[0], f.y[0], f.x[1], f.y[1])
     switch c {
     case kbd.Drag:
       if f.x[1] != f.x[0] || f.y[1] != f.y[0] {
@@ -515,6 +598,29 @@ func (f *figure) editInfLine() {
       f.x[1], f.y[1] = scr.MousePosGr()
       if f.x[1] != f.x[0] || f.y[1] != f.y[0] {
         scr.InfLine (f.x[0], f.y[0], f.x[1], f.y[1])
+      }
+    case kbd.To:
+      break loop
+    }
+  }
+}
+
+func (f *figure) changeInfLine() {
+  xm, ym := scr.MousePosGr()
+  if scr.OnInfLine (f.x[0], f.y[0], f.x[1], f.y[0], xm, ym, 7) {
+    scr.ColourF (col.Yellow())
+    scr.InfLine (f.x[0], f.y[0], f.x[1], f.y[0])
+  }
+  loop:
+  for {
+    scr.MousePointer (true)
+    c, _ := kbd.Command()
+    switch c {
+    case kbd.Drag:
+      xm, ym = scr.MousePosGr()
+      if f.x[1] != f.x[0] || f.y[1] != f.y[0] {
+        f.x[1], f.y[1] = xm, ym
+        f.Write()
       }
     case kbd.To:
       break loop
@@ -536,6 +642,38 @@ func (f *figure) editRectangle() {
       scr.Rectangle (f.x[0], f.y[0], f.x[1], f.y[1])
     case kbd.To:
       f.filled = d > 0
+      break loop
+    }
+  }
+}
+
+func (f *figure) changeRectangle() {
+  xm, ym := scr.MousePosGr()
+  oben   := scr.OnLine (f.x[0], f.y[0], f.x[1], f.y[0], xm, ym, 7)
+  unten  := scr.OnLine (f.x[0], f.y[1], f.x[1], f.y[1], xm, ym, 7)
+  rechts := scr.OnLine (f.x[1], f.y[1], f.x[1], f.y[0], xm, ym, 7)
+  links  := scr.OnLine (f.x[0], f.y[0], f.x[0], f.y[1], xm, ym, 7)
+  loop:
+  for {
+    scr.MousePointer (true)
+    c, _ := kbd.Command()
+    switch c {
+    case kbd.Drag:
+      xm, ym = scr.MousePosGr()
+      if oben {
+        f.y[0] = ym
+      }
+      if unten {
+        f.y[1] = ym
+      }
+      if rechts {
+        f.x[1] = xm
+      }
+      if links {
+        f.x[0] = xm
+      }
+      f.WriteInv()
+    case kbd.To:
       break loop
     }
   }
@@ -563,6 +701,24 @@ func (f *figure) editCircle() {
   }
 }
 
+func (f *figure) changeCircle() {
+  loop:
+  for {
+    scr.MousePointer (true)
+    xm, ym := scr.MousePosGr()
+    c, _ := kbd.Command()
+    switch c {
+    case kbd.Drag:
+      xm, ym = scr.MousePosGr()
+      r := dist (f.x[0], f.y[0], xm, ym)
+      f.x[1] = f.x[0] + r
+      f.Write()
+    case kbd.To:
+      break loop
+    }
+  }
+}
+
 func (f *figure) editEllipse() {
   scr.ColourF (f.colour)
   f.x, f.y = append (f.x, 0), append (f.y, 0)
@@ -572,23 +728,55 @@ func (f *figure) editEllipse() {
     c, d := kbd.Command()
     switch c {
     case kbd.Drag:
-      scr.EllipseInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[2] - f.y[0]))
-      a, b := scr.MousePosGr()
+      scr.EllipseInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
+      xm, ym := scr.MousePosGr()
       f.x[2] = f.x[0]
       f.y[1] = f.y[0]
-      if a > f.x[0] {
-        f.x[1] = a
+      if xm >= f.x[0] {
+        f.x[1] = xm
       } else {
-        f.x[1] = f.x[0] + f.x[0] - a
+        f.x[1] = 2 * f.x[0] - xm
       }
-      if b > f.y[0] {
-        f.y[2] = b
+      if ym >= f.y[0] {
+        f.y[2] = 2 * f.y[0] - ym
       } else {
-        f.y[2] = f.y[0] + f.y[0] - b
+        f.y[2] = ym
       }
-      scr.Ellipse (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[2] - f.y[0]))
+      scr.Ellipse (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
     case kbd.To:
       f.filled = d > 0
+      break loop
+    }
+  }
+}
+
+func (f *figure) changeEllipse() {
+  i, ok := f.pointUnderMouse()
+  if ! ok { return }
+  if i == 0 { return }
+  loop:
+  for {
+    scr.MousePointer (true)
+    xm, ym := scr.MousePosGr()
+    c, _ := kbd.Command()
+    switch c {
+    case kbd.Drag:
+      xm, ym = scr.MousePosGr()
+      if i == 1 {
+        if xm >= f.x[0] {
+          f.x[1] = xm
+        } else {
+          f.x[1] = 2 * f.x[0] - xm
+        }
+      } else { // i == 2
+        if ym >= f.y[0] {
+          f.y[2] = 2 * f.y[0] - ym
+        } else {
+          f.y[2] = ym
+        }
+      }
+      f.Write()
+    case kbd.To:
       break loop
     }
   }
@@ -605,23 +793,26 @@ func (f *figure) editText() {
   if y1 >= ht { y1 = ht - 1 }
   scr.SaveGr (f.x[0], f.y[0], x1, y1)
   bx.Transparence (false)
-  f.string = str.New (lenText)
   bx.EditGr (&f.string, f.x[0], f.y[0])
   str.OffSpc1 (&f.string)
-  k := len(f.string) * wd1
+  k := len(f.string)
   bx.Transparence (true)
   scr.RestoreGr (f.x[0], f.y[0], x1, y1)
-  if c, _ := kbd.LastCommand(); c == kbd.Enter {
+  switch c, _ := kbd.LastCommand(); c {
+  case kbd.Enter:
     bx.Transparence (true)
     scr.RestoreGr (f.x[0], f.y[0], x1, y1)
     bx.WriteGr (f.string, f.x[0], f.y[0])
     f.x, f.y = append (f.x, f.x[0] + k * wd1), append (f.y, f.y[0] + ht1)
-//    scr.WarpMouseGr (f.x[0], f.y[1])
-  } else {
+    f.Write()
+  default:
     f.Clr()
   }
-  f.Write()
   scr.MousePointer (true)
+}
+
+func (f *figure) changeText() {
+  f.editText()
 }
 
 func (f *figure) EditImage (n string) {
@@ -648,13 +839,6 @@ func (f *figure) pointUnderMouse() (uint, bool) {
   return 0, false
 }
 
-// TODO
-func (f *figure) mark (i uint) {
-  for r := uint(3); r <= 4; r++ {
-    scr.CircleInv (f.x[i], f.y[i], r)
-  }
-}
-
 func (f *figure) Edit() {
   if f.Empty() {
     scr.ColourF (f.colour)
@@ -664,11 +848,11 @@ func (f *figure) Edit() {
     case Points:
       f.editPoints()
     case Segments:
-      f.editSC()
+      f.editSegments()
     case Polygon:
       f.editPolygon()
     case Curve:
-      f.editSC()
+      f.editCurve()
     case InfLine:
       f.editInfLine()
     case Rectangle:
@@ -685,36 +869,29 @@ func (f *figure) Edit() {
     }
     return
   }
+  f.Change()
+}
+
+func (f *figure) Change() {
   switch f.typ {
+  case Points:
+    return // Points cannot be changed
+  case Segments, Polygon:
+    f.changeSegPol()
+  case Curve:
+    f.changeCurve()
+  case InfLine:
+    f.changeInfLine()
+  case Rectangle:
+    f.changeRectangle()
+  case Circle:
+    f.changeCircle()
+  case Ellipse:
+    f.changeEllipse()
   case Text:
-    f.string = str.New (uint(len(f.string)))
-    f.editText()
-  default:
-    i, ok := f.pointUnderMouse()
-    if ! ok { return }
-    loop:
-    for {
-      scr.MousePointer (true)
-      xm, ym := scr.MousePosGr()
-      c, _ := kbd.Command()
-      switch c {
-      case kbd.Here:
-//        scr.CircleFull (f.x[i], f.y[i], 3)
-      case kbd.Drag:
-//        scr.CircleFullInv (f.x[i], f.y[i], 3)
-        xm, ym = scr.MousePosGr()
-        f.x[i], f.y[i] = xm, ym
-        f.Write()
-//        scr.CircleFull (xm, ym, 3)
-      case kbd.To:
-        f.WriteInv()
-//        scr.CircleFullInv (xm, ym, 3)
-        xm, ym = scr.MousePosGr()
-        f.x[i], f.y[i] = xm, ym
-        f.Write()
-        break loop
-      }
-    }
+    f.changeText()
+  case Image:
+    return // images cannot be changed
   }
 }
 
@@ -722,6 +899,10 @@ func (f *figure) SetFont (s font.Size) {
   if f.typ == Text {
     fontsize = s
   }
+}
+
+func delta (s string, x int) {
+  println (s, float64 (x) / float64(scr.Wd()) * 596) // ker.A4wdPt
 }
 
 func (f *figure) Print (p psp.PostscriptPage) {
@@ -757,20 +938,20 @@ func (f *figure) Print (p psp.PostscriptPage) {
     x, y, x1, y1 := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1]), p.Y (f.y[1])
     p.Line (x, y, x1, y1)
   case Rectangle:
-    x, y, x1, y1 := p.X (f.x[0]), p.Y (f.y[0]), p.X(f.x[1]), p.Y (f.y[1])
+    x, y, x1, y1 := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1]), p.Y (f.y[1])
     p.Rectangle (x, y, x1 - x, y1 - y, f.filled)
   case Circle:
     x, y, r := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1] - f.x[0])
     p.Circle (x, y, r, f.filled)
   case Ellipse:
-    x, y, a, b := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1] - f.x[0]), p.Y (f.y[2] - f.y[0])
+    x, y, a, b := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1] - f.x[0]), p.X (f.y[0] - f.y[2])
     p.Ellipse (x, y, a, b, f.filled)
   case Text:
     x, y := p.X (f.x[0]), p.Y (f.y[0])
-    p.SetFont (fontsize)
+    p.SetFontsize (fontsize)
     p.Write (f.string, x, y)
   case Image:
-// TODO
+// TODO print the image
   }
 }
 
@@ -868,4 +1049,8 @@ func (f *figure) Decode (bs Stream) {
   }
   f.filled = bs[a] % 2 == 1
   f.marked = (bs[a] / 2) % 2 == 1
+}
+
+func dist (x, y, x1, y1 int) int {
+  return int(math.Sqrt(float64((x-x1)*(x-x1)+(y-y1)*(y-y1)))+0.5)
 }

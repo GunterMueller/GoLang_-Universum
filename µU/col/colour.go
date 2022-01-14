@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 220103 - license see µU.go
+// (c) Christian Maurer   v. 220111 - license see µU.go
 
 import (
   . "µU/obj"
@@ -145,11 +145,11 @@ func random() Colour {
 }
 
 func startCols() (Colour, Colour) {
-  return White().Clone().(Colour), Black().Clone().(Colour)
+  return White(), Black()
 }
 
 func startColsA() (Colour, Colour) {
-  return Red().Clone().(Colour), Black().Clone().(Colour)
+  return Red(), Black()
 }
 
 func (c *colour) Invert() {
@@ -161,11 +161,11 @@ func (c *colour) Contrast() {
                          // highly dependent of the intensity of green,
                          // and our eyes are particularly sensible for green !
   if c.g > 224 {
-    c = Black().Clone().(*colour)
+    c = Black().(*colour)
   } else if int(c.r) + int(c.g) + int(c.b) < lightlimit {
-    c = LightWhite().Clone().(*colour)
+    c = LightWhite().(*colour)
   } else {
-    c = Black().Clone().(*colour)
+    c = Black().(*colour)
   }
 }
 

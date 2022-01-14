@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220102 - license see µU.go
+// (c) Christian Maurer   v. 220111 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -190,8 +190,6 @@ type
            focus,
              top vect.Vector
  polygonW, doneW [][]bool // to fill polygons
-       ppmheader string
-              lh uint
                  }
 var (
   dspl string = env.Val ("DISPLAY")
@@ -734,21 +732,16 @@ func (X *xwindow) LineInv (x, y, x1, y1 int) {
   X.line (x, y, x1, y1, false)
 }
 
-// Returns true, if m is - up to tolerance t - between i and k.
-func betweenW (i, k, m, t int) bool {
-  return i <= m + t && m <= k + t || k <= m + t && m <= i + t
-}
-
 func (X *xwindow) OnLine (x, y, x1, y1, a, b int, t uint) bool {
   if x > x1 { x, x1 = x1, x; y, y1 = y1, y }
-  if ! (betweenW (x, x1, a, int(t)) && betweenW (y, y1, b, int(t))) {
-    return false
-  }
   if x == x1 {
-    return betweenW (x, x, a, int(t))
+    return between (x, x, a, int(t)) && between (y, y1, b, int(t))
   }
   if y == y1 {
-    return betweenW (y, y, b, int(t))
+    return between (y, y, b, int(t)) && between (x, x1, a, int(t))
+  }
+  if ! (between (x, x1, a, int(t)) && between (y, y1, b, int(t))) {
+    return false
   }
   if near (x, y, a, b, t) || near (x1, y1, a, b, t) { return true }
   m := float64(y1 - y) / float64(x1 - x)
@@ -862,10 +855,10 @@ func (X *xwindow) InfLineInv (x, y, x1, y1 int) {
 func (X *xwindow) OnInfLine (x, y, x1, y1, a, b int, t uint) bool {
   if x > x1 { x, x1 = x1, x; y, y1 = y1, y }
   if x == x1 {
-    return betweenW (x, x, a, int(t))
+    return between (x, x, a, int(t))
   }
   if y == y1 {
-    return betweenW (y, y, b, int(t))
+    return between (y, y, b, int(t))
   }
   if near (x, y, a, b, t) || near (x1, y1, a, b, t) { return true }
   X.border (&x, &y, &x1, &y1)
@@ -925,12 +918,12 @@ func (X *xwindow) RectangleFullInv (x, y, x1, y1 int) {
 
 func (X *xwindow) OnRectangle (x, y, x1, y1, a, b int, t uint) bool {
   if ! X.InRectangle (x, y, x1, y1, a, b, t) { return false }
-  return betweenW (x, x, a, int(t)) || betweenW (x1, x1, a, int(t)) ||
-         betweenW (y, y, b, int(t)) || betweenW (y1, y1, b, int(t))
+  return between (x, x, a, int(t)) || between (x1, x1, a, int(t)) ||
+         between (y, y, b, int(t)) || between (y1, y1, b, int(t))
 }
 
 func (X *xwindow) InRectangle (x, y, x1, y1, a, b int, t uint) bool {
-  return betweenW (x, x1, a, int(t)) && betweenW (y, y1, b, int(t))
+  return between (x, x1, a, int(t)) && between (y, y1, b, int(t))
 }
 
 func (X *xwindow) Polygon (xs, ys []int) {
@@ -1111,7 +1104,7 @@ func (X *xwindow) OnEllipse (x, y int, a, b uint, A, B int, t uint) bool {
     z = dist2 (x, y - e, A, B) + dist2 (x, y + e, A, B)
     r = 2 * int(b)
   }
-  return betweenW (r, r, z, int(t))
+  return between (r, r, z, int(t))
 }
 
 func (X *xwindow) InEllipse (x, y int, a, b uint, A, B int, t uint) bool {
@@ -1272,70 +1265,29 @@ func (X *xwindow) Decode (s obj.Stream) {
 
 // ppm-serialisation ///////////////////////////////////////////////////
 
-func stringW (n uint) string {
-  if n == 0 { return "0" }
-  var s string
-  for s = ""; n > 0; n /= 10 {
-    s = string(n % 10 + '0') + s
-  }
-  return s
-}
-
-func numberW (s obj.Stream) (uint, int) {
-  n := uint(0)
-  i := 0
-  for char.IsDigit (s[i]) { i++ }
-  for j := 0; j < i; j++ {
-    n = 10 * n + uint(s[j] - '0')
-  }
-  return n, i
+func (X *xwindow) PPMSize (s obj.Stream) (uint, uint) {
+  return ppmSize (s)
 }
 
 func (X *xwindow) PPMHeader (w, h uint) string {
-  s := "P6 " + stringW (w) + " " + stringW (h) + " 255" + string(byte(10))
-  X.ppmheader = s
-  X.lh = uint(len(s))
-  return s
+  return ppmHeader (w, h)
+}
+
+func (X *xwindow) PPMHeaderData (s obj.Stream) (uint, uint, uint, int) {
+  return ppmHeaderData (s)
 }
 
 func (X *xwindow) PPMCodelen (w, h uint) uint {
-  X.PPMHeader (w, h)
-  return X.lh + 3 * w * h
-}
-
-func (X *xwindow) PPMSize (s obj.Stream) (uint, uint) {
-  w, h, _, _ := X.PPMHeaderData (s)
-  return w, h
+  return ppmCodelen (w, h)
 }
 
 func (X *xwindow) PPMEncode (x0, y0, w, h uint) obj.Stream {
   s := X.Encode (x0, y0, w, h)
-  return append (obj.Stream(X.PPMHeader (w, h)), s[2*4:]...)
-}
-
-func (X *xwindow) PPMHeaderData (s obj.Stream) (uint, uint, uint, int) {
-  p := string(s[:2]); if p != "P6" { panic ("wrong ppm-header: " + p) }
-  i := 3
-  if s[i] == '#' {
-    for {
-      i++
-      if s[i] == byte(10) {
-        i++
-        break
-      }
-    }
-  }
-  w, dw := numberW (s[i:])
-  i += dw + 1
-  h, dh := numberW (s[i:])
-  i += dh + 1
-  m, dm := numberW (s[i:])
-  i += dm
-  return w, h, m, i + 1
+  return append (obj.Stream(ppmHeader (w, h)), s[2*4:]...)
 }
 
 func (X *xwindow) PPMDecode (s obj.Stream, x0, y0 uint) {
-  w, h, _, j := X.PPMHeaderData (s)
+  w, h, _, j := ppmHeaderData (s)
   if w == 0 || h == 0 || w > X.Wd() || h > X.Ht() { return }
   i := 4 * uint(2)
   l := i + 3 * w * h

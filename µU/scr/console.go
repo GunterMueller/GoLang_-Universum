@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220110 - license see µU.go
+// (c) Christian Maurer   v. 220111 - license see µU.go
 
 //#include <stdlib.h>
 //#include <fcntl.h>
@@ -51,7 +51,6 @@ import (
   "math"
   "µU/ker"
   "µU/time"
-  "µU/char"
   "µU/obj"
   "µU/font"
   "µU/col"
@@ -90,8 +89,6 @@ type
    polygon, done [][]bool // to fill polygons
         incident bool
    xx_, yy_, tt_ int // for incidence tests
-       ppmheader string
-              lh uint // length of ppmheader
                  }
 var (
   actMutex sync.Mutex
@@ -1808,40 +1805,20 @@ func (X *console) Decode (s obj.Stream) {
 
 // ppm-serialisation ///////////////////////////////////////////////////
 
-func string_(n uint) string {
-  if n == 0 { return "0" }
-  var s string
-  for s = ""; n > 0; n /= 10 {
-    s = string(n % 10 + '0') + s
-  }
-  return s
-}
-
-func number (s obj.Stream) (uint, int) {
-  n := uint(0)
-  i := 0
-  for char.IsDigit (s[i]) { i++ }
-  for j := 0; j < i; j++ {
-    n = 10 * n + uint(s[j] - '0')
-  }
-  return n, i
+func (X *console) PPMSize (s obj.Stream) (uint, uint) {
+  return ppmSize (s)
 }
 
 func (X *console) PPMHeader (w, h uint) string {
-  s := "P6 " + string_(w) + " " + string_(h) + " 255" + string(byte(10))
-  X.ppmheader = s
-  X.lh = uint(len(s))
-  return s
+  return ppmHeader (w, h)
+}
+
+func (X *console) PPMHeaderData (s obj.Stream) (uint, uint, uint, int) {
+  return ppmHeaderData (s)
 }
 
 func (X *console) PPMCodelen (w, h uint) uint {
-  X.PPMHeader (w, h)
-  return X.lh + 3 * w * h
-}
-
-func (X *console) PPMSize (s obj.Stream) (uint, uint) {
-  w, h, _, _ := X.PPMHeaderData (s)
-  return w, h
+  return ppmCodelen (w, h)
 }
 
 func (X *console) PPMEncode (x0, y0, w, h uint) obj.Stream {
@@ -1849,29 +1826,8 @@ func (X *console) PPMEncode (x0, y0, w, h uint) obj.Stream {
   return append (obj.Stream(X.PPMHeader (w, h)), s[2*4:]...)
 }
 
-func (X *console) PPMHeaderData (s obj.Stream) (uint, uint, uint, int) {
-  p := string(s[:2]); if p != "P6" { panic ("wrong ppm-header: " + p) }
-  i := 3
-  if s[i] == '#' {
-    for {
-      i++
-      if s[i] == byte(10) {
-        i++
-        break
-      }
-    }
-  }
-  w, dw := number (s[i:])
-  i += dw + 1
-  h, dh := number (s[i:])
-  i += dh + 1
-  m, dm := number (s[i:])
-  i += dm
-  return w, h, m, i + 1
-}
-
 func (X *console) PPMDecode (st obj.Stream, x0, y0 uint) {
-  w, h, _, j := X.PPMHeaderData (st)
+  w, h, _, j := ppmHeaderData (st)
   if w == 0 || h == 0 || w > X.Wd() || h > X.Ht() { return }
   i := 4 * uint(2)
   l := i + 3 * w * h
