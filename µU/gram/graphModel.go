@@ -1,6 +1,6 @@
 package gram
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 220119 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,7 +9,7 @@ import (
   "µU/col"
   "µU/scr"
   "µU/errh"
-  "µU/ppm"
+//  "µU/ppm"
   "µU/gra"
   "µU/vtx"
   "µU/edg"
@@ -64,7 +64,7 @@ func new_(d bool, v, e Any) GraphModel {
 func (x *graphModel) Background (n string) {
   x.bool = ! str.Empty (n)
   x.string = n
-  ppm.Get (x.string, 0, 0)
+//  ppm.Get (x.string, 0, 0)
   scr.Save1()
 }
 
@@ -273,8 +273,8 @@ func (x *graphModel) Edit() {
       }
     case kbd.Print:
       errh.DelHint()
-      ppm.Put ("tmp.g")
-      ppm.Print ("graph")
+//      ppm.Put ("tmp.g")
+//      ppm.Print ("graph")
       errh.Hint ("Graph editieren - Hilfe: F1, fertig: Esc")
     }
   }

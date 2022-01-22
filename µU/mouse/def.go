@@ -1,6 +1,6 @@
 package mouse
 
-// (c) Christian Maurer   v. 211226 - license see µU.go
+// (c) Christian Maurer   v. 220119 - license see µU.go
 
 // >>> This package only serves the implementation of µU/kbd/console.go;
 //     it must not be used elsewhere.
@@ -14,6 +14,7 @@ type
   Here; This; That  // left, right, middle button pressed
   Drag; Drop; Move  // move with left, right, middle button
   To; There; Hither // left, right, middle button released
+  nCommands
 )
 var
   Pipe chan Command

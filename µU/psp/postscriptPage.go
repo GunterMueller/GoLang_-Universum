@@ -1,6 +1,6 @@
 package psp
 
-// (c) Christian Maurer   v. 220113 - license see µU.go
+// (c) Christian Maurer   v. 220114 - license see µU.go
 
 import (
   "os"
@@ -16,7 +16,7 @@ import (
 )
 const (
   dx = -72
-  dy = 341
+  dy = 342
 )
 type
   postscriptPage struct {
@@ -314,7 +314,7 @@ func (x *postscriptPage) nodes (xs, ys []float64) int {
   a, b := 0., 0.
   ns := 0
   for i := 1; i < n; i++ {
-    a, b = math.Abs (xs[i] - xs[i-1]), math.Abs (xs[i] - xs[i-1])
+    a, b = math.Abs (xs[i] - xs[i-1]), math.Abs (ys[i] - ys[i-1])
     ns += int(math.Sqrt (a * a + b * b + 0.5))
   }
   return ns
@@ -327,6 +327,8 @@ func bezier (t float64, k uint, xs, ys []float64) (float64, float64) {
     x += a * xs[i]
     y += a * ys[i]
   }
+  x += dx
+  y += dy
   return x, y
 }
 
@@ -335,11 +337,11 @@ func (x *postscriptPage) Curve (xs, ys []float64) {
   if len (ys) != n { return }
   x.newpath()
   m := x.nodes (xs, ys)
-  xs[0] += dx; ys[0] += dy
   if m == 0 { return }
-  x.moveto (xs[0], ys[0])
-  for i := 1; i < m; i++ {
-    xb, yb := bezier (float64(i) / float64(m), uint(n - 1), xs, ys)
+  xb, yb := bezier (float64(1) / float64(m), uint(n - 1), xs, ys)
+  x.moveto (xb, yb)
+  for i := 2; i < m; i++ {
+    xb, yb = bezier (float64(i) / float64(m), uint(n - 1), xs, ys)
     x.lineto (xb, yb)
   }
   x.stroke()

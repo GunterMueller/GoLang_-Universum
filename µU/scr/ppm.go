@@ -1,10 +1,11 @@
 package scr
 
-// (c) Christian Maurer   v. 220111 - license see µU.go
+// (c) Christian Maurer   v. 220119 - license see µU.go
 
 import (
-  "µU/char"
+  "µU/ker"
   "µU/obj"
+  "µU/char"
 )
 var (
   ppmheader string
@@ -43,7 +44,7 @@ func ppmHeader (w, h uint) string {
 }
 
 func ppmHeaderData (s obj.Stream) (uint, uint, uint, int) {
-  p := string(s[:2]); if p != "P6" { panic ("wrong ppm-header: " + p) }
+  p := string(s[:2]); if p != "P6" { ker.Panic ("wrong ppm-header: " + p) }
   i := 3
   if s[i] == '#' {
     for {

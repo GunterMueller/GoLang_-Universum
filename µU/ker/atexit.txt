@@ -12,6 +12,5 @@ import (
 
 
 func installTerm (f func()) {
-//
   C.atexit ((*[0]byte)(unsafe.Pointer(&f)))
 }

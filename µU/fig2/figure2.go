@@ -1,6 +1,6 @@
 package fig2
 
-// (c) Christian Maurer   v. 220111 - license see µU.go
+// (c) Christian Maurer   v. 220120 - license see µU.go
 
 import (
   "math"
@@ -28,6 +28,7 @@ type
          marked,
          filled bool
                 string
+                ppm.Image
                 }
 var (
   wd, ht int
@@ -55,11 +56,137 @@ func new_() Figure {
   f := new(figure)
   f.x, f.y = nil, nil
   f.marked, f.filled = false, false
-  f.string = str.New (lenText)
   f.string = ""
   f.typ = Segments
   c, _ := col.StartCols()
   f.colour = c
+  f.Image = ppm.New()
+  return f
+}
+
+func newPoints (xs, ys []int, c col.Colour) Figure {
+  f := new_().(*figure)
+  f.typ = Points
+  f.colour = c
+  n := len(xs)
+  if n == 0 || len(ys) != n { return nil }
+  f.x, f.y = make([]int, n), make([]int, n)
+  for i := 0; i < n; i++ {
+    f.x[i], f.y[i] = xs[i], ys[i]
+  }
+  return f
+}
+
+func newSegments (xs, ys []int, c col.Colour) Figure {
+  f := new_().(*figure)
+  f.typ = Segments
+  f.colour = c
+  n := len(xs)
+  if n == 0 || len(ys) != n { return nil }
+  f.x, f.y = make([]int, n), make([]int, n)
+  for i := 0; i < n; i++ {
+    f.x[i], f.y[i] = xs[i], ys[i]
+  }
+  return f
+}
+
+func newPolygon (xs, ys []int, b bool, c col.Colour) Figure {
+  f := new_().(*figure)
+  f.typ = Polygon
+  f.colour = c
+  n := len(xs)
+  if n == 0 || len(ys) != n { return nil }
+  f.x, f.y = make([]int, n), make([]int, n)
+  for i := 0; i < n; i++ {
+    f.x[i], f.y[i] = xs[i], ys[i]
+  }
+  f.filled = b
+  return f
+}
+
+func newCurve (xs, ys []int, c col.Colour) Figure {
+  f := new_().(*figure)
+  f.typ = Curve
+  f.colour = c
+  n := len(xs)
+  if n == 0 || len(ys) != n { return nil }
+  f.x, f.y = make([]int, n), make([]int, n)
+  for i := 0; i < n; i++ {
+    f.x[i], f.y[i] = xs[i], ys[i]
+  }
+  return f
+}
+
+func newInfLine (x, y, x1, y1 int, c col.Colour) Figure {
+  f := new_().(*figure)
+  f.typ = InfLine
+  f.colour = c
+  f.x, f.y = make([]int, 2), make([]int, 2)
+  f.x[0], f.y[0] = x, y
+  f.x[1], f.y[1] = x1, y1
+  return f
+}
+
+func newRectangle (x, y, x1, y1 int, b bool, c col.Colour) Figure {
+  if x > x1 { x, x1 = x1, x }
+  if y > y1 { y, y1 = y1, y }
+  f := new_().(*figure)
+  f.typ = Rectangle
+  f.colour = c
+  f.x, f.y = make([]int, 2), make([]int, 2)
+  f.x[0], f.y[0] = x, y
+  f.x[1], f.y[1] = x1, y1
+  f.filled = b
+  return f
+}
+
+func newCircle (x, y, r int, b bool, c col.Colour) Figure {
+  f := new_().(*figure)
+  f.typ = Circle
+  f.colour = c
+  f.x, f.y = make([]int, 2), make([]int, 2)
+  f.x[0], f.y[0] = x, y
+  f.x[1], f.y[1] = x + r, y - r
+  f.filled = b
+  return f
+}
+
+func newEllipse (x, y, a, b int, f bool, c col.Colour) Figure {
+  e := new_().(*figure)
+  e.typ = Ellipse
+  e.colour = c
+  e.x, e.y = make([]int, 3), make([]int, 3)
+  e.x[0], e.y[0] = x, y
+  e.x[1], e.y[1] = x + a, y
+  e.x[2], e.y[2] = x, y - b
+  e.filled = f
+  return e
+}
+
+func newText (x, y int, s string, c col.Colour) Figure {
+  f := new_().(*figure)
+  f.typ = Text
+  f.colour = c
+  f.x, f.y = make([]int, 1), make([]int, 1)
+  f.x[0], f.y[0] = x, y
+  f.string = s
+  return f
+}
+
+func newImage (x, y int, n string) Figure {
+  f := new_().(*figure)
+  f.typ = Image
+  f.x, f.y = make([]int, 1), make([]int, 1)
+  f.x[0], f.y[0] = x, y
+  f.string = n
+  f.Image.Load (f.string)
+  W, H := f.Image.Size()
+  w, h := int(W) - 1, int(H) - 1
+  if f.x[0] + w <= wd && f.y[0] + h <= ht {
+    f.x, f.y = append (f.x, f.x[0] + w), append (f.y, f.y[0] + h)
+  } else {
+    f.x, f.y = nil, nil
+  }
   return f
 }
 
@@ -270,38 +397,17 @@ func (f *figure) focus() (int, int) {
   return x, y
 }
 
-func (f *figure) remainsOnEboard (dx, dy int) bool {
-  n := len(f.x)
-  W, H := scr.Wd(), scr.Ht()
-  w, h := int(W), int(H)
-  switch f.typ {
-  case Points, Segments, Polygon, Curve, InfLine, Rectangle:
-    x, y := f.focus()
-    return x + dx >= 0 && x + dx <= w && y + dy >= 0 && y + dy <= h
-  case Circle, Ellipse:
-    n = 1 // only the center has to remain on the eboard
-  }
-  for i := 0; i < n; i++ {
-    if f.x[i] + dx < 0 || f.x[i] + dx >= w || f.y[i] + dy < 0 || f.y[i] + dy >= h {
-      return false
-    }
-  }
-  return true
-}
-
 func (f *figure) Move (dx, dy int) {
-  if f.remainsOnEboard (dx, dy) {
-    f.WriteInv()
-    n := len(f.x)
-    for i := 0; i < n; i++ {
-      f.x[i] += dx
-      f.y[i] += dy
-    }
-    if f.typ == Image {
-      scr.Rectangle (f.x[0], f.y[0], f.x[1], f.y[1])
-    } else {
-      f.Write()
-    }
+  f.WriteInv()
+  n := len(f.x)
+  for i := 0; i < n; i++ {
+    f.x[i] += dx
+    f.y[i] += dy
+  }
+  if f.typ == Image {
+    scr.Rectangle (f.x[0], f.y[0], f.x[1], f.y[1])
+  } else {
+    f.Write()
   }
 }
 
@@ -343,88 +449,169 @@ func (f *figure) NumPoints() int {
   return len(f.x)
 }
 
+func (f *figure) writePoints() {
+  scr.Points (f.x, f.y)
+}
+
+func (f *figure) writeSegments() {
+  scr.Segments (f.x, f.y)
+}
+
+func (f *figure) writePolygon() {
+  scr.Polygon (f.x, f.y)
+  if f.filled {
+    scr.PolygonFull (f.x, f.y)
+  }
+}
+
+func (f *figure) writeCurve() {
+  scr.Curve (f.x, f.y)
+}
+
+func (f *figure) writeInfLine() {
+  scr.InfLine (f.x[0], f.y[0], f.x[1], f.y[1])
+}
+
+func (f *figure) writeRectangle() {
+  if f.filled {
+    scr.RectangleFull (f.x[0], f.y[0], f.x[1], f.y[1])
+  } else {
+    scr.Rectangle (f.x[0], f.y[0], f.x[1], f.y[1])
+  }
+}
+
+func (f *figure) writeCircle() {
+  if f.filled {
+    scr.CircleFull (f.x[0], f.y[0], uint(f.x[1] - f.x[0]))
+  } else {
+    scr.Circle (f.x[0], f.y[0], uint(f.x[1] - f.x[0]))
+  }
+}
+
+func (f *figure) writeEllipse() {
+  if f.filled {
+    scr.EllipseFull (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
+  } else {
+    scr.Ellipse (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
+  }
+}
+
+func (f *figure) writeText() {
+  bx.Wd (str.ProperLen (f.string))
+  bx.ColourF (f.colour)
+  bx.WriteGr (f.string, f.x[0], f.y[0])
+}
+
+func (f *figure) writeImage() {
+  f.Image.Load (f.string)
+  scr.WriteImage (f.Image.Colours(), f.x[0], f.y[0])
+}
+
 func (f *figure) Write() {
   if f.Empty() { return }
   scr.ColourF (f.colour)
   switch f.typ {
   case Points:
-    scr.Points (f.x, f.y)
+    f.writePoints()
   case Segments:
-    scr.Segments (f.x, f.y)
+    f.writeSegments()
   case Polygon:
-    scr.Polygon (f.x, f.y)
-    if f.filled {
-      scr.PolygonFull (f.x, f.y)
-    }
+    f.writePolygon()
   case Curve:
-    scr.Curve (f.x, f.y)
+    f.writeCurve()
   case InfLine:
-    scr.InfLine (f.x[0], f.y[0], f.x[1], f.y[1])
+    f.writeInfLine()
   case Rectangle:
-    if f.filled {
-      scr.RectangleFull (f.x[0], f.y[0], f.x[1], f.y[1])
-    } else {
-      scr.Rectangle (f.x[0], f.y[0], f.x[1], f.y[1])
-    }
+    f.writeRectangle()
   case Circle:
-    if f.filled {
-      scr.CircleFull (f.x[0], f.y[0], uint(f.x[1] - f.x[0]))
-    } else {
-      scr.Circle (f.x[0], f.y[0], uint(f.x[1] - f.x[0]))
-    }
+    f.writeCircle()
   case Ellipse:
-    if f.filled {
-      scr.EllipseFull (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
-    } else {
-      scr.Ellipse (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
-    }
+    f.writeEllipse()
   case Text:
-    bx.Wd (str.ProperLen (f.string))
-    bx.ColourF (f.colour)
-    bx.WriteGr (f.string, f.x[0], f.y[0])
+    f.writeText()
   case Image:
-    ppm.Get (f.string, uint(f.x[0]), uint(f.y[0]))
+    f.writeImage()
   }
+}
+
+func (f *figure) writePointsInv() {
+  scr.PointsInv (f.x, f.y)
+}
+
+func (f *figure) writeSegmentsInv() {
+  scr.SegmentsInv (f.x, f.y)
+}
+
+func (f *figure) writePolygonInv() {
+  scr.PolygonInv (f.x, f.y)
+  if f.filled {
+    scr.PolygonFullInv (f.x, f.y)
+  }
+}
+
+func (f *figure) writeCurveInv() {
+  scr.CurveInv (f.x, f.y)
+}
+
+func (f *figure) writeInfLineInv() {
+  scr.InfLineInv (f.x[0], f.y[0], f.x[1], f.y[1])
+}
+
+func (f *figure) writeRectangleInv() {
+  if f.filled {
+    scr.RectangleFullInv (f.x[0], f.y[0], f.x[1], f.y[1])
+  } else {
+    scr.RectangleInv (f.x[0], f.y[0], f.x[1], f.y[1])
+  }
+}
+
+func (f *figure) writeCircleInv() {
+  if f.filled {
+    scr.CircleFullInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]))
+  } else {
+    scr.CircleInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]))
+  }
+}
+
+func (f *figure) writeEllipseInv() {
+  if f.filled {
+    scr.EllipseFullInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
+  } else {
+    scr.EllipseInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
+  }
+}
+
+func (f *figure) writeTextInv() {
+  scr.Transparence (true)
+  scr.WriteInvGr (f.string, f.x[0], f.y[0])
+}
+
+func (f *figure) writeImageInv() {
+//  ppm.Get (f.string, uint(f.x[0]), uint(f.y[0]))
 }
 
 func (f *figure) WriteInv() {
   if f.Empty() { return }
+  scr.ColourF (f.colour)
   switch f.typ {
   case Points:
-    scr.PointsInv (f.x, f.y)
+    f.writePointsInv()
   case Segments:
-    scr.SegmentsInv (f.x, f.y)
+    f.writeSegmentsInv()
   case Polygon:
-    if f.filled {
-      scr.PolygonFullInv (f.x, f.y)
-    } else {
-      scr.PolygonInv (f.x, f.y)
-    }
+    f.writePolygonInv()
   case Curve:
-    scr.CurveInv (f.x, f.y)
+    f.writeCurveInv()
   case InfLine:
-    scr.InfLineInv (f.x[0], f.y[0], f.x[1], f.y[1])
+    f.writeInfLineInv()
   case Rectangle:
-    if f.filled {
-      scr.RectangleFullInv (f.x[0], f.y[0], f.x[1], f.y[1])
-    } else {
-      scr.RectangleInv (f.x[0], f.y[0], f.x[1], f.y[1])
-    }
+    f.writeRectangleInv()
   case Circle:
-    if f.filled {
-      scr.CircleFullInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]))
-    } else {
-      scr.CircleInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]))
-    }
+    f.writeCircleInv()
   case Ellipse:
-    if f.filled {
-      scr.EllipseFullInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
-    } else {
-      scr.EllipseInv (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
-    }
+    f.writeEllipseInv()
   case Text:
-    scr.Transparence (true)
-    scr.WriteInvGr (f.string, f.x[0], f.y[0])
+    f.writeTextInv()
   case Image:
 //  images cannot be written inversely yet.
   }
@@ -504,25 +691,25 @@ func (f *figure) editCurve() {
   }
 }
 
-func (f *figure) changeCurve() { // TODO
+func (f *figure) changeCurve() {
   xm, ym := scr.MousePosGr()
   if f.On (xm, ym, 7) {
     f.ShowPoints (true)
   }
+  scr.MousePointer (true)
   loop:
   for {
-//  i, ok := f.pointUnderMouse()
-//  if ! ok { return }
-    scr.MousePointer (true)
-    xm, ym = scr.MousePosGr()
+    i, ok := f.pointUnderMouse()
+//    scr.CircleInv (f.x[i], f.y[i], 4)
     c, _ := kbd.Command()
     switch c {
     case kbd.Drag:
-/*/
-      xm, ym = scr.MousePosGr()
-      f.x[i], f.y[i] = xm, ym
-      f.Write()
-/*/
+      if ok {
+        xm, ym = scr.MousePosGr()
+        scr.CircleInv (f.x[i], f.y[i], 4)
+        f.x[i], f.y[i] = xm, ym
+        f.Write()
+      }
     case kbd.To:
       break loop
     }
@@ -819,13 +1006,10 @@ func (f *figure) EditImage (n string) {
   f.x, f.y = make ([]int, 1), make ([]int, 1)
   f.x[0], f.y[0] = scr.MousePosGr()
   f.string = n
-  W, H := ppm.Size (f.string)
-  w, h := int(W) - 1, int(H) - 1
-  if f.x[0] + w <= wd && f.y[0] + h <= ht {
-    f.x, f.y = append (f.x, f.x[0] + w), append (f.y, f.y[0] + h)
-  } else {
-    f.x, f.y = nil, nil
-  }
+  f.Image.Load (f.string)
+  w, h := f.Image.Size()
+//  f.x, f.y = append (f.x, f.x[0] + int(w) - 1), append (f.y, f.y[0] + int(h) - 1)
+  f.x, f.y = append (f.x, f.x[0] + int(w)), append (f.y, f.y[0] + int(h))
 }
 
 func (f *figure) pointUnderMouse() (uint, bool) {
@@ -836,7 +1020,7 @@ func (f *figure) pointUnderMouse() (uint, bool) {
       return uint(i), true
     }
   }
-  return 0, false
+  return uint(n), false
 }
 
 func (f *figure) Edit() {
@@ -901,57 +1085,96 @@ func (f *figure) SetFont (s font.Size) {
   }
 }
 
-func delta (s string, x int) {
-  println (s, float64 (x) / float64(scr.Wd()) * 596) // ker.A4wdPt
+func (f *figure) printPoints (p psp.PostscriptPage) {
+  n := uint(len (f.x))
+  x, y := make ([]float64, n), make ([]float64, n)
+  for i := uint(0); i < n; i++ {
+    x[i], y[i] = p.X (f.x[i]), p.Y (f.y[i])
+  }
+  p.Points (x, y)
+}
+
+func (f *figure) printSegments (p psp.PostscriptPage) {
+  n := uint(len (f.x))
+  x, y := make ([]float64, n), make ([]float64, n)
+  for i := uint(0); i < n; i++ {
+    x[i], y[i] = p.X (f.x[i]), p.Y (f.y[i])
+  }
+  p.Segments (x, y)
+}
+
+func (f *figure) printPolygon (p psp.PostscriptPage) {
+  n := uint(len (f.x))
+  x, y := make ([]float64, n), make ([]float64, n)
+  for i := uint(0); i < n; i++ {
+    x[i], y[i] = p.X (f.x[i]), p.Y (f.y[i])
+  }
+  p.Polygon (x, y, f.filled)
+}
+
+func (f *figure) printCurve (p psp.PostscriptPage) {
+  n := uint(len (f.x))
+  x, y := make ([]float64, n), make ([]float64, n)
+  for i := uint(0); i < n; i++ {
+    x[i], y[i] = p.X (f.x[i]), p.Y (f.y[i])
+  }
+  p.Curve (x, y)
+}
+
+func (f *figure) printInfLine (p psp.PostscriptPage) {
+  x, y, x1, y1 := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1]), p.Y (f.y[1])
+  p.Line (x, y, x1, y1)
+}
+
+func (f *figure) printRectangle (p psp.PostscriptPage) {
+  x, y, x1, y1 := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1]), p.Y (f.y[1])
+  p.Rectangle (x, y, x1 - x, y1 - y, f.filled)
+}
+
+func (f *figure) printCircle (p psp.PostscriptPage) {
+  x, y, r := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1] - f.x[0])
+  p.Circle (x, y, r, f.filled)
+}
+
+func (f *figure) printEllipse (p psp.PostscriptPage) {
+  x, y, a, b := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1] - f.x[0]), p.X (f.y[0] - f.y[2])
+  p.Ellipse (x, y, a, b, f.filled)
+}
+
+func (f *figure) printText (p psp.PostscriptPage) {
+  x, y := p.X (f.x[0]), p.Y (f.y[0])
+  p.SetFontsize (fontsize)
+  p.Write (f.string, x, y)
+}
+
+func (f *figure) printImage (p psp.PostscriptPage) {
+  f.Image.Print (f.x[0], f.y[0])
 }
 
 func (f *figure) Print (p psp.PostscriptPage) {
   if f.Empty() { return }
-  n := uint(len (f.x))
   p.SetColour (f.colour)
   switch f.typ {
   case Points:
-    x, y := make ([]float64, n), make ([]float64, n)
-    for i := uint(0); i < n; i++ {
-      x[i], y[i] = p.X (f.x[i]), p.Y (f.y[i])
-    }
-    p.Points (x, y)
+    f.printPoints (p)
   case Segments:
-    x, y := make ([]float64, n), make ([]float64, n)
-    for i := uint(0); i < n; i++ {
-      x[i], y[i] = p.X (f.x[i]), p.Y (f.y[i])
-    }
-    p.Segments (x, y)
+    f.printSegments (p)
   case Polygon:
-    x, y := make ([]float64, n), make ([]float64, n)
-    for i := uint(0); i < n; i++ {
-      x[i], y[i] = p.X (f.x[i]), p.Y (f.y[i])
-    }
-    p.Polygon (x, y, f.filled)
+    f.printPolygon (p)
   case Curve:
-    x, y := make ([]float64, n), make ([]float64, n)
-    for i := uint(0); i < n; i++ {
-      x[i], y[i] = p.X (f.x[i]), p.Y (f.y[i])
-    }
-    p.Curve (x, y)
+    f.printCurve (p)
   case InfLine:
-    x, y, x1, y1 := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1]), p.Y (f.y[1])
-    p.Line (x, y, x1, y1)
+    f.printInfLine (p)
   case Rectangle:
-    x, y, x1, y1 := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1]), p.Y (f.y[1])
-    p.Rectangle (x, y, x1 - x, y1 - y, f.filled)
+    f.printRectangle (p)
   case Circle:
-    x, y, r := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1] - f.x[0])
-    p.Circle (x, y, r, f.filled)
+    f.printCircle (p)
   case Ellipse:
-    x, y, a, b := p.X (f.x[0]), p.Y (f.y[0]), p.X (f.x[1] - f.x[0]), p.X (f.y[0] - f.y[2])
-    p.Ellipse (x, y, a, b, f.filled)
+    f.printEllipse (p)
   case Text:
-    x, y := p.X (f.x[0]), p.Y (f.y[0])
-    p.SetFontsize (fontsize)
-    p.Write (f.string, x, y)
+    f.printText (p)
   case Image:
-// TODO print the image
+    f.printImage (p)
   }
 }
 

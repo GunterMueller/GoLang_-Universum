@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220122 - license see µU.go
+// (c) Christian Maurer   v. 211127 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -145,6 +145,7 @@ import (
   "µU/mode"
   "µU/linewd"
   "µU/scr/shape"
+  "µU/scr/ptr"
 //  "µU/navi"
   "µU/vect"
   "µU/gl"
@@ -164,8 +165,7 @@ type
           wd, ht uint // window
       proportion float64
               gc C.GC
-          buffer C.Pixmap
-         shadows []C.Pixmap
+  buffer, shadow C.Pixmap
             buff bool
           cF, cB,
         cFA, cBA,
@@ -175,7 +175,6 @@ type
         fontsize font.Size
    wd1, ht1, bl1 uint // font baseline
      transparent bool
-         pointer uint
      cursorShape,
     consoleShape,
       blinkShape shape.Shape
@@ -189,7 +188,8 @@ type
           origin,
            focus,
              top vect.Vector
- polygonW, doneW [][]bool // to fill polygons
+       ppmheader string
+              lh uint
                  }
 var (
   dspl string = env.Val ("DISPLAY")
@@ -231,9 +231,9 @@ func init() {
 
 func initX() {
   if initializedW { return }
-  if C.XInitThreads() == 0 { ker.Panic ("XKern.XInitThreads error") }
+  if C.XInitThreads() == 0 { panic ("XKern.XInitThreads error") }
   d := C.CString(dspl); defer C.free (unsafe.Pointer(d))
-  dpy = C.XOpenDisplay (d); if dpy == nil { ker.Panic ("dpy == nil") }
+  dpy = C.XOpenDisplay (d); if dpy == nil { panic ("dpy == nil") }
   screen = C.XDefaultScreen (dpy)
   monitorWd, monitorHt = uint(C.XDisplayWidth (dpy, screen)),
                          uint(C.XDisplayHeight (dpy, screen))
@@ -248,33 +248,13 @@ func cu (c col.Colour) C.ulong {
 
 func (x *xwindow) Fin() {
   C.XFreePixmap (dpy, x.buffer)
+  C.XFreePixmap (dpy, x.shadow)
   C.XUnmapWindow (dpy, x.win)
 //  C.XFreeGC (dpy, x.gc)
 //  C.XCloseDisplay (dpy) // XXX "BadDrawable (invalid .. Window parameter)"
   C.XDestroyWindow (dpy, x.win)
   initializedW = false
-}
-
-func err (e C.int) { // see /usr/incluode/X11/X.h
-  switch e {
-    case  1: ker.Panic ("BadRequeset")
-    case  2: ker.Panic ("BadValue")
-    case  3: ker.Panic ("BadWindow")
-    case  4: ker.Panic ("BadPixmap")
-    case  5: ker.Panic ("BadAtom")
-    case  6: ker.Panic ("BadCursor")
-    case  7: ker.Panic ("BadFont")
-    case  8: ker.Panic ("BadMatch")
-    case  9: ker.Panic ("BadDrawable")
-    case 10: ker.Panic ("BadAccess")
-    case 11: ker.Panic ("BadAlloc")
-    case 12: ker.Panic ("BadColor")
-    case 13: ker.Panic ("BadGC")
-    case 14: ker.Panic ("BadIDChoice")
-    case 15: ker.Panic ("BadName")
-    case 16: ker.Panic ("BadLength")
-    case 17: ker.Panic ("BadImplementation")
-  }
+// mouse.showCursor (true)
 }
 
 func (X *xwindow) Flush() {
@@ -351,7 +331,7 @@ func (X *xwindow) ScrColB() col.Colour {
 }
 
 func (X *xwindow) Colours (f, b col.Colour) {
-  if ! initializedW { ker.Panic ("xwin.Colours: ! initializedW"); return }
+  if ! initializedW { panic ("xwin.Colours: ! initializedW"); return }
   X.cF, X.cB = f, b
   X.ColourF (X.cF)
   X.ColourB (X.cB)
@@ -398,15 +378,17 @@ func (X *xwindow) clr (x, y int, w, h uint) {
 
 func (X *xwindow) Clr (l, c, w, h uint) {
   x, y := int(c) * int(X.wd1), int(l) * int(X.ht1)
-  X.ClrGr (x, y, w * X.wd1, h * X.ht1)
+  x1, y1 := int(c + w) * int(X.wd1), int(l + h) * int(X.ht1)
+  X.ClrGr (x, y, x1, y1)
 }
 
-func (X *xwindow) ClrGr (x, y int, w, h uint) {
-  X.clr (x, y, w, h)
+func (X *xwindow) ClrGr (x, y, x1, y1 int) {
+  intordW (&x, &y, &x1, &y1)
+  X.clr (x, y, uint(x1 - x) + 1, uint(y1 - y) + 1) // incl. right and bottom border; man XDrawRectangle
 }
 
 func (X *xwindow) Cls() {
-  X.clr (0, 0, X.wd, X.ht)
+  X.clr (0, 0, uint(X.wd), uint(X.ht))
 }
 
 func (X *xwindow) Buffered () bool {
@@ -433,44 +415,37 @@ func natord (x, y, x1, y1 *uint) {
 
 func (X *xwindow) Save (l, c, w, h uint) {
   x, y := int(X.wd1) * int(c), int(X.ht1) * int(l)
-  X.SaveGr (x, y, x + int(X.wd1 * w), y + int(X.ht1 * h))
+  x1, y1 := int(X.wd1 * w), int(X.ht1 * h)
+  X.SaveGr (x, y, x1, y1)
 }
 
 func (X *xwindow) SaveGr (x, y, x1, y1 int) {
-  intord (&x, &y, &x1, &y1)
-  w, h := x1 - x, y1 - y
-  pixmap := C.XCreatePixmap (dpy, C.Drawable(X.win), C.uint(X.wd), C.uint(X.ht), planes)
-  X.shadows = append (X.shadows, pixmap)
-  n := len(X.shadows) - 1
-  C.XCopyArea (dpy, C.Drawable(X.buffer), C.Drawable(X.shadows[n]), X.gc,
-               C.int(x), C.int(y), C.uint(w), C.uint(h), C.int(x), C.int(y))
+// return // XXX
+  intordW (&x, &y, &x1, &y1)
+  w, h := C.uint(x1 - x + 1), C.uint(y1 - y + 1)
+//  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.shadow), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
+  C.XCopyArea (dpy, C.Drawable(X.buffer), C.Drawable(X.shadow), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
 }
 
 func (X *xwindow) Save1() {
-  X.SaveGr (0, 0, int(X.wd), int(X.ht))
+  X.SaveGr (0, 0, int(X.wd) - 1, int(X.ht) - 1)
 }
 
 func (X *xwindow) Restore (l, c, w, h uint) {
   x, y := int(X.wd1) * int(c), int(X.ht1) * int(l)
-  RestoreGr (x, y, x + int(X.wd1 * w), y + int(X.ht1 * h))
+  x1, y1 := int(X.wd1 * w), int(X.ht1 * h)
+  RestoreGr (x, y, x1, y1)
 }
 
 func (X *xwindow) RestoreGr (x, y, x1, y1 int) {
-  intord (&x, &y, &x1, &y1)
-  w, h := x1 - x, y1 - y
-  n := len(X.shadows)
-  if n == 0 { return }
-  n--
-  C.XCopyArea (dpy, C.Drawable(X.shadows[n]), C.Drawable(X.win),
-               X.gc, C.int(x), C.int(y), C.uint(w), C.uint(h), C.int(x), C.int(y))
-  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.buffer),
-               X.gc, C.int(x), C.int(y), C.uint(w), C.uint(h), C.int(x), C.int(y))
-  C.XFreePixmap (dpy, X.shadows[n])
-  X.shadows = X.shadows[:n]
+  intordW (&x, &y, &x1, &y1)
+  w, h := C.uint(x1 - x + 1), C.uint(y1 - y + 1)
+  C.XCopyArea (dpy, C.Drawable(X.shadow), C.Drawable(X.win), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
+  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.buffer), X.gc, C.int(x), C.int(y), w, h, C.int(x), C.int(y))
 }
 
 func (X *xwindow) Restore1() {
-  X.RestoreGr (0, 0, int(X.wd), int(X.ht))
+  X.RestoreGr (0, 0, int(X.wd) - 1, int(X.ht) - 1)
 }
 
 // cursor //////////////////////////////////////////////////////////////
@@ -536,35 +511,29 @@ func (X *xwindow) Write (s string, l, c uint) {
 }
 
 func (X *xwindow) WriteNat (n uint, l, c uint) {
-  x, y := int(c * X.wd1), int(l * X.ht1)
-  X.WriteNatGr (n, x, y)
+  t := "00"
+  if n > 0 {
+    const M = 10
+    bs := make (obj.Stream, M)
+    for i := 0; i < M; i++ {
+      bs[M - 1 - i] = byte('0' + n % 10)
+      n = n / M
+    }
+    s := 0
+    for s < M && bs[s] == '0' {
+      s++
+    }
+    t = ""
+    if s == M - 1 { s = M - 2 }
+    for i := s; i < M - int(n); i++ {
+      t += string(bs[i])
+    }
+  }
+  X.Write (t, l, c)
 }
 
 func (X *xwindow) WriteNatGr (n uint, x, y int) {
-  s := ""
-  if n == 0 {
-    s = "0"
-  } else {
-    for n > 0 {
-      s = string(byte (n % 10 + '0')) + s
-      n /= 10
-    }
-  }
-  X.WriteGr (s, x, y)
-}
-
-func (X *xwindow) WriteInt (n int, l, c uint) {
-  x, y := int(c * X.wd1), int(l * X.ht1)
-  X.WriteIntGr (n, x, y)
-}
-
-func (X *xwindow) WriteIntGr (n, x, y int) {
-  if n < 0 {
-    n = -n
-    Write1Gr ('-', x, y)
-    x += int(X.wd1)
-  }
-  X.WriteNatGr (uint(n), x, y)
+ // TODO
 }
 
 func (X *xwindow) Write1Gr (b byte, x, y int) {
@@ -613,6 +582,7 @@ func (X *xwindow) ActFontsize() font.Size {
 }
 
 func (X *xwindow) SetFontsize (s font.Size) {
+if X == nil { panic ("kubische Scheiße") }
   X.fontsize = s
   name := "-xos4-terminus-bold"
   h := int(font.Ht (s))
@@ -621,12 +591,12 @@ func (X *xwindow) SetFontsize (s font.Size) {
   }
   name += "-r-*-*-" + strconv.Itoa(h) + "-*-*-*-*-*-*-*"
   f := C.CString (name); defer C.free (unsafe.Pointer(f))
-  if dpy == nil { ker.Panic ("xwin.SetFontsize: dpy == nil") }
+  if dpy == nil { panic ("xwin.SetFontsize: dpy == nil") }
   X.fsp = C.XLoadQueryFont (dpy, f)
-  if X.fsp == nil { ker.Panic ("terminus-bitmap-fonts are not installed !") }
+  if X.fsp == nil { panic ("terminus-bitmap-fonts are not installed !") }
   X.ht1 = uint(h)
   X.wd1, X.bl1 = uint(X.fsp.max_bounds.width), uint(X.fsp.max_bounds.ascent)
-  if X.bl1 + uint(X.fsp.max_bounds.descent) != X.ht1 { ker.Panic ("xwin: font bl + d != ht") }
+  if X.bl1 + uint(X.fsp.max_bounds.descent) != X.ht1 { panic ("xwin: font bl + d != ht") }
   C.XSetFont (dpy, X.gc, C.Font(X.fsp.fid))
 }
 
@@ -664,6 +634,11 @@ func (X *xwindow) SetLinewidth (w linewd.Linewidth) {
   C.XSetLineAttributes (dpy, X.gc, cw, C.LineSolid, C.CapRound, C.JoinRound)
 }
 
+func intordW (x, y, x1, y1 *int) {
+  if *x > *x1 { *x, *x1 = *x1, *x }
+  if *y > *y1 { *y, *y1 = *y1, *y }
+}
+
 func (X *xwindow) point (x, y int, n bool) {
   if ! n { C.XSetFunction (dpy, X.gc, C.GXinvert) }
   if ! X.buff {
@@ -685,10 +660,6 @@ func near (x, y, a, b int, d uint) bool {
 
 func (X *xwindow) PointInv (x, y int) {
   X.point (x, y, false)
-}
-
-func (X *xwindow) OnPoint (x, y, a, b int, d uint) bool {
-  return near (x, y, a, b, d)
 }
 
 func ok2W (xs, ys []int) bool {
@@ -725,15 +696,8 @@ func (X *xwindow) PointsInv (xs, ys []int) {
   X.points (xs, ys, false)
 }
 
-func (X *xwindow) OnPoints (xs, ys []int, a, b int, d uint) bool {
-  n := len(xs)
-  if n == 0 { return false }
-  for i := 0; i < n; i++ {
-    if near (xs[i], ys[i], a, b, d) {
-      return true
-    }
-  }
-  return false
+func (X *xwindow) OnPoint (x, y, a, b int, d uint) bool {
+  return near (x, y, a, b, d)
 }
 
 func (X *xwindow) line (x, y, x1, y1 int, n bool) {
@@ -752,16 +716,21 @@ func (X *xwindow) LineInv (x, y, x1, y1 int) {
   X.line (x, y, x1, y1, false)
 }
 
+// Returns true, if m is - up to tolerance t - between i and k.
+func betweenW (i, k, m, t int) bool {
+  return i <= m + t && m <= k + t || k <= m + t && m <= i + t
+}
+
 func (X *xwindow) OnLine (x, y, x1, y1, a, b int, t uint) bool {
   if x > x1 { x, x1 = x1, x; y, y1 = y1, y }
+  if ! (betweenW (x, x1, a, int(t)) && betweenW (y, y1, b, int(t))) {
+    return false
+  }
   if x == x1 {
-    return between (x, x, a, int(t)) && between (y, y1, b, int(t))
+    return betweenW (x, x, a, int(t))
   }
   if y == y1 {
-    return between (y, y, b, int(t)) && between (x, x1, a, int(t))
-  }
-  if ! (between (x, x1, a, int(t)) && between (y, y1, b, int(t))) {
-    return false
+    return betweenW (y, y, b, int(t))
   }
   if near (x, y, a, b, t) || near (x1, y1, a, b, t) { return true }
   m := float64(y1 - y) / float64(x1 - x)
@@ -875,10 +844,10 @@ func (X *xwindow) InfLineInv (x, y, x1, y1 int) {
 func (X *xwindow) OnInfLine (x, y, x1, y1, a, b int, t uint) bool {
   if x > x1 { x, x1 = x1, x; y, y1 = y1, y }
   if x == x1 {
-    return between (x, x, a, int(t))
+    return betweenW (x, x, a, int(t))
   }
   if y == y1 {
-    return between (y, y, b, int(t))
+    return betweenW (y, y, b, int(t))
   }
   if near (x, y, a, b, t) || near (x1, y1, a, b, t) { return true }
   X.border (&x, &y, &x1, &y1)
@@ -902,8 +871,7 @@ func (X *xwindow) TriangleFullInv (x, y, x1, y1, x2, y2 int) {
   X.PolygonFullInv ([]int{x, x1, x2}, []int{y, y1, y2})
 }
 
-func (X *xwindow) rectangle (x, y, x1, y1 int, n, f bool) {
-  w, h := x1 - x, y1 - y
+func (X *xwindow) rectangle (x, y, w, h int, n, f bool) {
   if f {
     if ! n { C.XSetFunction (dpy, X.gc, C.GXinvert) } // C.GXcopyInverted ? 
     if ! X.buff { C.XFillRectangle (dpy, C.Drawable(X.win), X.gc, C.int(x), C.int(y), C.uint(w), C.uint(h)) }
@@ -918,97 +886,62 @@ func (X *xwindow) rectangle (x, y, x1, y1 int, n, f bool) {
 }
 
 func (X *xwindow) Rectangle (x, y, x1, y1 int) {
-  intord (&x, &y, &x1, &y1)
-  X.rectangle (x, y, x1, y1, true, false)
+  intordW (&x, &y, &x1, &y1)
+  X.rectangle (x, y, x1 - x + 1, y1 - y + 1, true, false)
 }
 
 func (X *xwindow) RectangleInv (x, y, x1, y1 int) {
-  intord (&x, &y, &x1, &y1)
-  X.rectangle (x, y, x1, y1, false, false)
+  intordW (&x, &y, &x1, &y1)
+  X.rectangle (x, y, x1 - x + 1, y1 - y + 1, false, false)
 }
 
 func (X *xwindow) RectangleFull (x, y, x1, y1 int) {
-  intord (&x, &y, &x1, &y1)
-  X.rectangle (x, y, x1, y1, true, true)
+  intordW (&x, &y, &x1, &y1)
+  X.rectangle (x, y, x1 - x + 1, y1 - y + 1, true, true)
 }
 
 func (X *xwindow) RectangleFullInv (x, y, x1, y1 int) {
-  intord (&x, &y, &x1, &y1)
-  X.rectangle (x, y, x1, y1, false, true)
+  intordW (&x, &y, &x1, &y1)
+  X.rectangle (x, y, x1 - x + 1, y1 - y + 1, false, true)
 }
 
 func (X *xwindow) OnRectangle (x, y, x1, y1, a, b int, t uint) bool {
   if ! X.InRectangle (x, y, x1, y1, a, b, t) { return false }
-  return between (x, x, a, int(t)) || between (x1, x1, a, int(t)) ||
-         between (y, y, b, int(t)) || between (y1, y1, b, int(t))
+  return betweenW (x, x, a, int(t)) || betweenW (x1, x1, a, int(t)) ||
+         betweenW (y, y, b, int(t)) || betweenW (y1, y1, b, int(t))
 }
 
 func (X *xwindow) InRectangle (x, y, x1, y1, a, b int, t uint) bool {
-  return between (x, x1, a, int(t)) && between (y, y1, b, int(t))
-}
-
-func (X *xwindow) CopyRectangle (x0, y0, x1, y1, x, y int) {
-  intord (&x0, &y0, &x1, &y1)
-  w, h := x1 - x0, y1 - y0
-  if w == 0 || h == 0 { return }
-  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.win), X.gc, C.int(x0), C.int(y0),
-               C.uint(w), C.uint(h), C.int(x), C.int(y))
-  X.Flush()
+  return betweenW (x, x1, a, int(t)) && betweenW (y, y1, b, int(t))
 }
 
 func (X *xwindow) Polygon (xs, ys []int) {
-  n := len(xs)
-  if n < 2 { return }
-  n--
   X.segments (xs, ys, true)
-  X.line (xs[0], ys[0], xs[n], ys[n], true)
 }
 
 func (X *xwindow) PolygonInv (xs, ys []int) {
-  n := len(xs)
-  if n < 3 { return }
-  n--
   X.segments (xs, ys, false)
-  X.line (xs[0], ys[0], xs[n], ys[n], false)
 }
 
-func (X *xwindow) polygonFull (xs, ys []int, shape int, n bool) {
+func (X *xwindow) polygonFull (xs, ys []int, n bool) {
   l := len (xs); if len (ys) != l { return }
   p := make ([]C.XPoint, l)
   for i := 0; i < l; i++ {
     p[i].x, p[i].y = C.short(xs[i]), C.short(ys[i])
   }
   if ! n { C.XSetFunction (dpy, X.gc, C.GXcopyInverted) }
-  if ! X.buff { C.XFillPolygon (dpy, C.Drawable(X.win), X.gc, &p[0], C.int(l), C.int(shape), C.CoordModeOrigin) }
-  C.XFillPolygon (dpy, C.Drawable(X.buffer), X.gc, &p[0], C.int(l), C.int(shape), C.CoordModeOrigin)
+  if ! X.buff { C.XFillPolygon (dpy, C.Drawable(X.win), X.gc, &p[0], C.int(l), C.Convex, C.CoordModeOrigin) }
+  C.XFillPolygon (dpy, C.Drawable(X.buffer), X.gc, &p[0], C.int(l), C.Convex, C.CoordModeOrigin)
   if ! n { C.XSetFunction (dpy, X.gc, C.GXcopy) }
   C.XFlush (dpy)
 }
 
 func (X *xwindow) PolygonFull (xs, ys []int) {
-  shape := C.Nonconvex
-  if convex (xs, ys) {
-    shape = C.Convex
-  } else {
-    shape = C.Complex
-  }
-  X.polygonFull (xs, ys, shape, true)
+  X.polygonFull (xs, ys, true)
 }
 
 func (X *xwindow) PolygonFullInv (xs, ys []int) {
-  shape := C.Nonconvex
-  if convex (xs, ys) {
-    shape = C.Convex
-  }
-  X.polygonFull (xs, ys, shape, false)
-}
-
-func (X *xwindow) PolygonFull1 (xs, ys []int, a, b int) {
-  X.polygonFull (xs, ys, C.Nonconvex, true)
-}
-
-func (X *xwindow) PolygonFullInv1 (xs, ys []int, a, b int) {
-  X.polygonFull (xs, ys, C.Nonconvex, false)
+  X.polygonFull (xs, ys, false)
 }
 
 func (X *xwindow) OnPolygon (xs, ys []int, a, b int, t uint) bool {
@@ -1058,15 +991,7 @@ func (X *xwindow) CircleFullInv (x, y int, r uint) {
 }
 
 func (X *xwindow) OnCircle (x, y int, r uint, a, b int, t uint) bool {
-  d := uint(dist2 (x, y, a, b))
-  if d >= r {
-    return d <= t + r
-  }
-  return d + t > r
-}
-
-func (X *xwindow) InCircle (x, y int, r uint, a, b int, t uint) bool {
-  return uint(dist2 (x, y, a, b)) <= r + t
+  return X.OnEllipse (x, y, r, r, a, b, t)
 }
 
 func (X *xwindow) arc (x, y int, r uint, a, b float64, n, f bool) {
@@ -1134,35 +1059,42 @@ func (X *xwindow) OnEllipse (x, y int, a, b uint, A, B int, t uint) bool {
     z = dist2 (x, y - e, A, B) + dist2 (x, y + e, A, B)
     r = 2 * int(b)
   }
-  return between (r, r, z, int(t))
+  return betweenW (r, r, z, int(t))
 }
 
-func (X *xwindow) InEllipse (x, y int, a, b uint, A, B int, t uint) bool {
-  return inEllipse (x, y, a, b, A, B, t)
+func (X *xwindow) curve (xs, ys []int, xs1, ys1 *[]int) {
+  m := len (xs)
+  if m == 0 || m != len (ys) { return }
+  n := ker.ArcLen (xs, ys)
+  *xs1, *ys1 = make ([]int, n), make ([]int, n)
+  for i := uint(0); i < n; i++ {
+    (*xs1)[i], (*ys1)[i] = ker.Bezier (xs, ys, uint(m), n, i)
+  }
+  C.XFlush (dpy)
 }
 
 func (X *xwindow) Curve (xs, ys []int) {
   var xs1, ys1 []int
-  curve (xs, ys, &xs1, &ys1)
+  X.curve (xs, ys, &xs1, &ys1)
+  X.Point (xs[0], ys[0])
   X.Points (xs1, ys1)
 }
 
 func (X *xwindow) CurveInv (xs, ys []int) {
   var xs1, ys1 []int
-  curve (xs, ys, &xs1, &ys1)
+  X.curve (xs, ys, &xs1, &ys1)
+  X.PointInv (xs[0], ys[0])
   X.PointsInv (xs1, ys1)
 }
 
 func (X *xwindow) OnCurve (xs, ys []int, a, b int, t uint) bool {
   var xs1, ys1 []int
-  curve (xs, ys, &xs1, &ys1)
-  n := len(xs1)
-  for i := 0; i < n; i++ {
-    if near (xs1[i], ys1[i], a, b, t) {
-      return true
-    }
+  X.curve (xs, ys, &xs1, &ys1)
+  if ! near (xs[0], ys[0], a, b, t) { return false }
+  for i := 0; i < len (xs1); i++ {
+    if ! near (xs1[i], ys1[i], a, b, t) { return false }
   }
-  return false
+  return true
 }
 
 // mouse ///////////////////////////////////////////////////////////////
@@ -1172,14 +1104,17 @@ func (X *xwindow) clear() { // XXX
   C.XSetForeground (dpy, X.gc, cu (X.scrB))
   C.XFillRectangle (dpy, C.Drawable(X.win), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
   C.XFillRectangle (dpy, C.Drawable(X.buffer), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
-  C.XFillRectangle (dpy, C.Drawable(X.shadow1), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
+  C.XFillRectangle (dpy, C.Drawable(X.shadow), X.gc, 0, 0, C.uint(X.wd), C.uint(X.ht))
   C.XSetForeground (dpy, X.gc, cu (X.scrF))
 }
 /*/
 
-func (X *xwindow) SetPointer (p uint) {
-  X.pointer = p
-  C.XDefineCursor (dpy, X.win, C.XCreateFontCursor (dpy, C.uint(p)))
+func (X *xwindow) MouseEx() bool {
+  return true // a mouse should be running on any GUI
+}
+
+func (X *xwindow) SetPointer (p ptr.Pointer) {
+  C.XDefineCursor (dpy, X.win, C.XCreateFontCursor (dpy, C.uint(ptr.Code (p))))
 }
 
 func (X *xwindow) MousePos() (uint, uint) {
@@ -1204,7 +1139,7 @@ func (X *xwindow) WarpMouseGr (x, y int) {
 func (X *xwindow) MousePointer (on bool) {
   if on {
 //    C.XUndefineCursor (dpy, X.win)
-    X.SetPointer (X.pointer)
+    X.SetPointer (ptr.Gumby) // funny !
   } else {
     var c C.XColor; c.red, c.green, c.blue = C.ushort(0), C.ushort(0), C.ushort(0)
     s := C.CString(string(obj.Stream{ 0, 8, 0, 0, 0, 0 })); defer C.free (unsafe.Pointer(s))
@@ -1228,7 +1163,7 @@ func (X *xwindow) UnderMouse (l, c, w, h uint) bool {
 }
 
 func (X *xwindow) UnderMouseGr (x, y, x1, y1 int, t uint) bool {
-  intord (&x, &y, &x1, &y1)
+  intordW (&x, &y, &x1, &y1)
   xm, ym := X.MousePosGr()
   return x <= xm + int(t) && xm <= x1 + int(t) && y <= ym + int(t) && ym <= y1 + int(t)
 }
@@ -1240,23 +1175,22 @@ func (X *xwindow) UnderMouse1 (x, y int, d uint) bool {
 
 // serialisation ///////////////////////////////////////////////////////
 
-// const
-//   M = C.ulong(1 << 32 - 1)
+const
+  M = C.ulong(1 << 32 - 1)
 
 func (X *xwindow) Codelen (w, h uint) uint {
   return 2 * 4 + 3 * w * h
 }
 
 func (X *xwindow) Encode (x0, y0, w, h uint) obj.Stream {
-  if w == 0 || h == 0 { ker.Panic ("xwin.Encode: w == 0 or h == 0") }
-  if w > uint(X.wd) { ker.Panic ("xwin.Encode: w > X.wd") }
-  if h > uint(X.ht) { ker.Panic ("xwin.Encode: h > X.ht") }
+  if w == 0 || h == 0 { panic ("xwin.Encode: w == 0 or h == 0") }
+  if w > uint(X.wd) { panic ("xwin.Encode: w > X.wd") }
+  if h > uint(X.ht) { panic ("xwin.Encode: h > X.ht") }
   s := make (obj.Stream, X.Codelen (w, h))
   i := 2 * 4
   copy (s[:i], obj.Encode4 (uint16(x0), uint16(y0), uint16(w), uint16(h)))
   ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(x0), C.int(y0),
-                       C.uint(w), C.uint(h), C.AllPlanes, C.XYPixmap)
-//                       C.uint(w), C.uint(h), M, C.XYPixmap)
+                       C.uint(w), C.uint(h), M, C.XYPixmap)
   var pixel C.ulong
   for y := 0; y < int(h); y++ {
     for x := 0; x < int(w); x++ {
@@ -1276,8 +1210,7 @@ func (X *xwindow) Decode (s obj.Stream) {
   n := uint32(2 * 4)
   x0, y0, w, h := obj.Decode4 (s[:n])
   ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(x0), C.int(y0),
-                       C.uint(w), C.uint(h), C.AllPlanes, C.XYPixmap)
-//                       C.uint(w), C.uint(h), M, C.XYPixmap)
+                       C.uint(w), C.uint(h), M, C.XYPixmap)
   var pixel C.ulong
   c := col.New()
   for j := uint16(0); j < uint16(h); j++ {
@@ -1295,52 +1228,82 @@ func (X *xwindow) Decode (s obj.Stream) {
   C.XFlush (dpy)
 }
 
-// image-operations ////////////////////////////////////////////////////
+// ppm-serialisation ///////////////////////////////////////////////////
 
-func (X *xwindow) WriteImage (c [][]col.Colour, x0, y0 int) {
-  w := len(c[0])
-  h := len(c)
-  for x := 0; x < w; x++ {
-    for y := 0; y < h; y++ {
-      if x0 + x < int(X.Wd()) && y0 + y < int(X.Ht()) {
-        X.ColourF (c[y][x])
-        X.Point (x0 + x, y0 + y)
+func stringW (n uint) string {
+  if n == 0 { return "0" }
+  var s string
+  for s = ""; n > 0; n /= 10 {
+    s = string(n % 10 + '0') + s
+  }
+  return s
+}
+
+func numberW (s obj.Stream) (uint, int) {
+  n := uint(0)
+  i := 0
+  for char.IsDigit (s[i]) { i++ }
+  for j := 0; j < i; j++ {
+    n = 10 * n + uint(s[j] - '0')
+  }
+  return n, i
+}
+
+func (X *xwindow) PPMHeader (w, h uint) string {
+  s := "P6 " + stringW (w) + " " + stringW (h) + " 255" + string(byte(10))
+  X.ppmheader = s
+  X.lh = uint(len(s))
+  return s
+}
+
+func (X *xwindow) PPMCodelen (w, h uint) uint {
+  X.PPMHeader (w, h)
+  return X.lh + 3 * w * h
+}
+
+func (X *xwindow) PPMSize (s obj.Stream) (uint, uint) {
+  w, h, _, _ := ppmHeaderData (s)
+  return w, h
+}
+
+func (X *xwindow) PPMEncode (x0, y0, w, h uint) obj.Stream {
+  s := X.Encode (x0, y0, w, h)
+  return append (obj.Stream(X.PPMHeader (w, h)), s[2*4:]...)
+}
+
+func ppmHeaderDataW (s obj.Stream) (uint, uint, uint, int) {
+  p := string(s[:2]); if p != "P6" { panic ("wrong ppm-header: " + p) }
+  i := 3
+  w, dw := numberW (s[i:])
+  i += dw + 1
+  h, dh := numberW (s[i:])
+  i += dh + 1
+  m, dm := numberW (s[i:])
+  i += dm
+  return w, h, m, i + 1
+}
+
+func (X *xwindow) PPMDecode (s obj.Stream, x0, y0 uint) {
+  w, h, _, j := ppmHeaderData (s)
+  if w == 0 || h == 0 || w > X.Wd() || h > X.Ht() { return }
+  i := 4 * uint(2)
+  l := i + 3 * w * h
+  e := make(obj.Stream, l)
+  copy (e[:i], obj.Encode4 (uint16(x0), uint16(y0), uint16(w), uint16(h)))
+  if env.UnderX() {
+    c := col.New()
+    for y := uint(0); y < h; y++ {
+      for x := uint(0); x < w; x++ {
+        c.Decode (s[j:j+3])
+        copy (e[i:i+3], obj.Encode (c.Code()))
+        i += 3
+        j += 3
       }
     }
+  } else { // console
+    copy (e[i:], s[j:])
   }
-}
-
-type
-  image struct {
-             xi C.XImage
-           x, y int
-           w, h uint
-                string
-                }
-var
-  images []image
-
-func (X *xwindow) GetImage (n string, x, y int, w, h uint) {
-  m := new(image)
-  m.string = n
-  m.x, m.y = x, y
-  m.w, m.h = w, h
-  m.xi = *C.XGetImage (dpy, C.Drawable(X.win),
-                       C.int(x), C.int(y), C.uint(w), C.uint(h), C.AllPlanes, C.XYPixmap)
-  images = append (images, *m)
-}
-
-func (X *xwindow) PutImage (n string, x, y int) {
-  k := len(images)
-  if k == 0 { return }
-  for i := 0; i < k; i++ {
-    if images[i].string == n {
-      e := C.XPutImage (dpy, C.Drawable(X.win), X.gc, &images[i].xi,
-                        C.int(images[i].x), C.int(images[i].y), C.int(x), C.int(y),
-                        C.uint(images[i].w), C.uint(images[i].h))
-      err (e)
-    }
-  }
+  X.Decode (e)
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -1628,19 +1591,11 @@ func NewWHW (x, y, w, h uint) Screen {
   X.Mode = mode.None // mode.ModeOf (w, h)
   X.x, X.y = int(x), int(y)
   X.wd, X.ht = w, h
-  if X.wd > monitorWd || X.ht > monitorHt { ker.Panic ("win too large: " +
+  if X.wd > monitorWd || X.ht > monitorHt { panic ("win too large: " +
                          strconv.Itoa(int(X.wd)) + " x " + strconv.Itoa(int(X.ht))) }
-
-  X.polygonW = make([][]bool, X.wd)
-  X.doneW = make([][]bool, X.wd)
-  for i := 0; i < int(X.wd); i++ {
-    X.polygonW[i] = make([]bool, X.ht)
-    X.doneW[i] = make([]bool, X.ht)
-  }
   X.proportion = float64(X.wd)/float64(X.ht)
   X.Transparence (false)
   X.lineWd = linewd.Thin
-  X.pointer = Standard
   X.scrF, X.scrB = col.StartCols()
   X.cF, X.cB = col.StartCols()
   X.cFA, X.cBA = col.StartColsA()
@@ -1671,6 +1626,7 @@ func NewWHW (x, y, w, h uint) Screen {
 //  C.glXMakeContextCurrent (dpy, C.GLXDrawable(X.win), C.GLXDrawable(X.win), cx)
   C.glXMakeCurrent (dpy, C.GLXDrawable(X.win), cx)
   X.buffer = C.XCreatePixmap (dpy, C.Drawable(X.win), C.uint(X.wd), C.uint(X.ht), planes)
+  X.shadow = C.XCreatePixmap (dpy, C.Drawable(X.win), C.uint(X.wd), C.uint(X.ht), planes)
   const mask = C.KeyPressMask + // C.KeyReleaseMask +
                C.ButtonPressMask + C.ButtonReleaseMask +
                C.EnterWindowMask + C.LeaveWindowMask +
@@ -1688,9 +1644,7 @@ func NewWHW (x, y, w, h uint) Screen {
 //               C.ColormapChangeMask + C.OwnerGrabButtonMask
   C.XSelectInput (dpy, X.win, mask)
   X.MousePointer (true)
-  if X.wd == monitorWd && X.ht == monitorHt {
-    C.fullscreen (dpy, X.win, rootWin, _NET_WM_STATE_ADD)
-  }
+  if X.wd == monitorWd && X.ht == monitorHt { C.fullscreen (dpy, X.win, rootWin, _NET_WM_STATE_ADD) }
   winList = append (winList, X)
   defer X.doBlink()
 //  X.firstExpose = true
@@ -1775,8 +1729,7 @@ func imp (w C.Window) *xwindow {
       return x
     }
   }
-  ker.Panic ("µU/xwin.imp: there is no xwindow there")
-  return nil
+  panic ("µU/xwin.imp: there is no xwindow there")
 }
 
 /*/
@@ -1784,7 +1737,7 @@ func Win (i uint) *xwindow {
   if int(i) < len(winList) {
     return winList[i]
   }
-  ker.Panic ("µU/xwin.Win: there is no xwindow there with number" + strconv.Itoa(int(i)))
+  panic ("µU/xwin.Win: there is no xwindow there with number" + strconv.Itoa(int(i)))
 }
 /*/
 

@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 220114 - license see µU.go
+// (c) Christian Maurer   v. 220120 - license see µU.go
 
 import (
   "µU/col"

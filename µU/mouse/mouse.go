@@ -1,6 +1,6 @@
 package mouse
 
-// (c) Christian Maurer   v. 211226 - license see µU.go
+// (c) Christian Maurer   v. 220119 - license see µU.go
 
 import (
   "os"
@@ -8,16 +8,13 @@ import (
 )
 type
   buttons byte; const (
-  none = iota
-  left
-  right
-  middle
+  noButton = iota
+  leftButton
+  rightButton
+  middleButton
 )
 var (
   file *os.File
-  lastCommand = None
-  button = none
-  lastButton = none
   yy, // vertical swap
   x0, y0, x1, y1, // boundaries
   xm, ym uint // position of mouse pointer
@@ -56,6 +53,9 @@ func catch() {
     a, dx, dy uint
     moved bool
     cmd Command
+    lastCommand = Go
+    button = noButton
+    lastButton = noButton
   )
   for {
     i, _ := file.Read (bs[:])
@@ -63,13 +63,13 @@ func catch() {
     a = uint(bs[0])
     switch a % 8 {
     case 0:
-      button = none
-    case 1, 5: // left, left and middle
-      button = left
-    case 2, 6: // right, right and middle
-      button = right
-    default:   // left and right, middle, all three
-      button = middle
+      button = noButton
+    case 1, 5: // leftButton, left and middleButton
+      button = leftButton
+    case 2, 6: // rightButton, right and middleButton
+      button = rightButton
+    default:   // leftButton and rightButton, middleButton, all three
+      button = middleButton
     }
     dx, dy = uint(bs[1]), uint(bs[2])
     moved = dx > 0 || dy > 0
@@ -107,24 +107,24 @@ func catch() {
       ym = y1
     }
     switch button {
-    case none:
+    case noButton:
       switch lastCommand {
       case Go:
         if moved {
+          cmd = Go
+        } else {
+          continue
+        }
+      case Here, Drag:
+        cmd = To
+      case This, Drop:
+        cmd = There
+      case That, Move:
+        cmd = Hither
+      case To, There, Hither:
         cmd = Go
-      } else {
-        continue
       }
-    case Here, Drag:
-      cmd = To
-    case This, Drop:
-      cmd = There
-    case That, Move:
-      cmd = Hither
-    case To, There, Hither:
-      cmd = Go
-    }
-    case left:
+    case leftButton:
       switch lastCommand {
       case Go, To, There, Hither:
         cmd = Here
@@ -134,10 +134,11 @@ func catch() {
         } else {
           continue
         }
-      default:
+//      case None, This, That, Drop, Move:
+      case This, That, Drop, Move:
         cmd = lastCommand
       }
-    case right:
+    case rightButton:
       switch lastCommand {
       case Go, To, There, Hither:
         cmd = This
@@ -147,10 +148,11 @@ func catch() {
         } else {
           continue
         }
-      default:
+ //     case None, Here, That, Drag, Move:
+      case Here, That, Drag, Move:
         cmd = lastCommand
       }
-    case middle:
+    case middleButton:
       switch lastCommand {
       case Go, To, There, Hither:
       cmd = That
@@ -160,13 +162,16 @@ func catch() {
         } else {
           continue
         }
-      default:
+//        case None, Here, This, Drag, Drop:
+        case Here, This, Drag, Drop:
         cmd = lastCommand
       }
     }
     lastButton = button
     lastCommand = cmd
-    Pipe <- cmd
+    if cmd != None {
+      Pipe <- cmd
+    }
   }
 }
 

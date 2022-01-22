@@ -1,6 +1,6 @@
 package prt
 
-// (c) Christian Maurer   v. 220112 - license see µU.go
+// (c) Christian Maurer   v. 220120 - license see µU.go
 
 // >>> Pre: TeX is installed.
 
@@ -46,6 +46,4 @@ func GoPrint() { goPrint() }
 
 // Pre: n is the name of an postscript file in the actual directory.
 // This file is printed.
-func PrintPS (n string) { printPS(n) }
-
-// func PrintPPM (n string, x, y int) { printPPM(n,x,y) }
+func PrintImage (n string) { printImage(n) }

@@ -1,6 +1,6 @@
 package ker
 
-// (c) Christian Maurer   v. 210419 - license see µU.go
+// (c) Christian Maurer   v. 220115 - license see µU.go
 
 const (
   PointsPerInch = 72
@@ -9,12 +9,18 @@ const (
                         // 1 mm = 2.834645669291338582677165354330708661417322 pt
   PointsPerCentimeter = 10 * PointsPerMillimeter
 
+  A3wd = 297 // mm
+  A3ht = 420 // mm
+  A3wdPt = 842 // A3wd * PointsPerMillimeter // pt
+  A3htPt = 1191 // A3ht * PointsPerMillimeter // pt
+
   A4wd = 210 // mm
   A4ht = 297 // mm
-  A4wdPt = 596 // A4wd * PointsPerMillimeter // pt
+  A4wdPt = 595 // A4wd * PointsPerMillimeter // pt
   A4htPt = 842 // A4ht * PointsPerMillimeter // pt
+
   A5wd = 148 // mm
   A5ht = 210 // mm
-  A5wdPt = 421
-  A5htPt = 596
+  A5wdPt = 421 // A5wd * PointsPerMillimeter // pt
+  A5htPt = 595 // A5ht * PointsPerMillimeter // pt
 )

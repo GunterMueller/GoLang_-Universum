@@ -33,9 +33,9 @@ func (x *distributedGraph) maurerfm() {
   }
   x.cycle.Write()
   x.leader = valueMax (x.cycle)
-  affe := vertexMax (x.cycle)
+  vm := vertexMax (x.cycle)
   exValue (x.cycle, x.leader)
-  x.cycle.Mark (affe)
+  x.cycle.Mark (vm)
   x.cycle.Write()
 }
 

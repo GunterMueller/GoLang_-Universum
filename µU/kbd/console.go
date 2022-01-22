@@ -74,12 +74,13 @@ func inputC (B *byte, C *Comm, D *uint) {
 //    nc navi.Command
     ok bool
   )
-loop:
+  loop:
   for {
     *B, *C, *D = 0, None, 0
     select {
     case mc = <-mouse.Pipe:
       switch mc {
+      case mouse.None:
       case mouse.Go:
         *C = Go
       case mouse.Here:

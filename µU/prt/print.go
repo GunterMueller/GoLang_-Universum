@@ -1,6 +1,6 @@
 package prt
 
-// (c) Christian Maurer   v. 220112 - license see µU.go
+// (c) Christian Maurer   v. 220120 - license see µU.go
 
 import (
   "os/exec"
@@ -172,14 +172,7 @@ func goPrint() {
 //  pseq.Erase (texname); pseq.Erase (logname); pseq.Erase (dviname); pseq.Erase (psname) // TODO
 }
 
-func printPS (psname string) {
-  if files.IsFile (psname) {
-    exec.Command (PrintCommand, psname, "-o", "fit-to-page").Run()
-  }
+func printImage (n string) {
+  if ! files.IsFile (n) { return }
+  exec.Command (PrintCommand, n).Run()
 }
-
-// func printPPM (ppmname string, x, y int) {
-//   if files.IsFile (ppmname + ".ppm") {
-//     println ("oha: " + ppmname)
-//   }
-// }

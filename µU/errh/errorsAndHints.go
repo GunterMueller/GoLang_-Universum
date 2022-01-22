@@ -20,10 +20,15 @@ var (
 // 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
   license = []string {
   " Das Mikrouniversum µU ist nur zum Einsatz in der Lehre konstruiert  und hat deshalb einen ",
+/*/
   " rein akademischen Charakter. Es liefert u. a. etliche Beispiele und Animationen für meine ",
   " Lehrbücher  \"Nichtsequentielle Programmierung mit Go 1\"  (Springer Vieweg 2012),  \"Nicht- ",
-  " sequentielle und Verteilte Programmierung mit Go\" (Springer Vieweg 2018 und 2019) und die ",
+  " \"Nichtsequentielle Programmierung mit Go 1\"  (Springer Vieweg 2012),  \"Nicht- ",
   " neue Ausgabe  \"Nonsequential and Distributed Programming with Go\" (Springer Nature 2021). ",
+/*/
+  " rein akademischen Charakter. Es liefert u. a. eine Reihe von Beispielen für mein Lehrbuch   ",
+  " \"Nichtsequentielle und Verteilte Programmierung mit Go\" (Springer Vieweg 2019) und dessen ",
+  " Übersetzung  \"Nonsequential and Distributed Programming with Go\"  (Springer Nature 2021). ",
   " Für Zwecke der Lehre an Universitäten und in Schulen sind die Quellen des Mikrouniversums ",
   " uneingeschränkt verwendbar; jede Form weitergehender Nutzung ist jedoch strikt untersagt. ",
   "                                                                                           ",

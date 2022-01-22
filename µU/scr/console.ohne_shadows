@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220111 - license see µU.go
+// (c) Christian Maurer   v. 220119 - license see µU.go
 
 //#include <stdlib.h>
 //#include <fcntl.h>
@@ -67,7 +67,7 @@ type
           nLines,
         nColumns uint
          archive obj.Stream
-         shadows [][]obj.Stream
+          shadow []obj.Stream
             buff bool
         wd1, ht1 uint
           cF, cB,
@@ -336,19 +336,19 @@ func (X *console) Save (l, c, w, h uint) {
 
 func (X *console) SaveGr (x, y, x1, y1 int) {
   if ! X.rectangOk (&x, &y, &x1, &y1) { return }
-  shadow := make ([]obj.Stream, X.ht)
-  for i := 0; i < int(X.ht); i++ {
-    shadow[i] = make(obj.Stream, X.wd * colourdepth)
-  }
-  X.shadows = append (X.shadows, shadow)
-  n := len(X.shadows) - 1 // XXX
+
+
+
+
+
+
   w, h := x1 - x, y1 - y
   x0, y0 := X.x + x, X.y + y
   a, da := x * int(colourdepth), w * int(colourdepth)
   if X.mouseOn { X.MousePointer (false) }
   for i := 0; i < int(h); i++ {
     b := (int(width) * (y0 + i) + x0) * int(colourdepth)
-    copy (X.shadows[n][i][a:a+da], fbmem[b:b+da])
+    copy (X.shadow[i][a:a+da], fbmem[b:b+da])
   }
   if X.mouseOn { X.MousePointer (true) }
 }
@@ -364,18 +364,18 @@ func (X *console) Restore (l, c, w, h uint) {
 
 func (X *console) RestoreGr (x, y, x1, y1 int) {
   if ! X.rectangOk (&x, &y, &x1, &y1) { return }
-  n := len(X.shadows)
-  if n == 0 { return }
-  n--
+
+
+
   w, h := x1 - x, y1 - y
   x0, y0 := X.x + x, X.y + y
   a, da := x * int(colourdepth), w * int(colourdepth)
   for i := 0; i < int(h); i++ {
     b := (int(width) * (y0 + i) + x0) * int(colourdepth)
     copy (fbmem[b:b+da],
-          X.shadows[n][i][a:a+da])
+          X.shadow[i][a:a+da])
   }
-  X.shadows = X.shadows[:n]
+
 }
 
 func (X *console) Restore1() {
@@ -1955,10 +1955,10 @@ func (X *console) init_(x, y uint) {
                                            d + " + " + e + " > " + f)
   }
   X.archive = make(obj.Stream, fbmemsize)
-  X.shadows = make([][]obj.Stream, X.ht)
-
-
-
+  X.shadow = make([]obj.Stream, X.ht)
+  for i := uint(0); i < X.ht; i++ {
+    X.shadow[i] = make(obj.Stream, X.wd * 5)
+  }
   X.initMouse()
   X.SetLinewidth (linewd.Thin)
   wm, _ := MaxResC()

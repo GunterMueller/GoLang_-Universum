@@ -1,6 +1,6 @@
 package fig2
 
-// (c) Christian Maurer   v. 220111 - license see µU.go
+// (c) Christian Maurer   v. 220119 - license see µU.go
 
 import (
   . "µU/obj"
@@ -92,5 +92,17 @@ type
   Print (psp.PostscriptPage)
 }
 
-// Returns a new empty figure of undefined Type.
+// Returns a new empty figure with undefined typ.
 func New() Figure { return new_() }
+
+// Return a new empty figure with the corresponding typ.
+func NewPoints (xs, ys []int, c col.Colour) Figure { return newPoints(xs,ys,c) }
+func NewSegments (xs, ys []int, c col.Colour) Figure { return newSegments(xs,ys,c) }
+func NewPolygon (xs, ys []int, f bool, c col.Colour) Figure { return newPolygon(xs,ys,f,c) }
+func NewCurve (xs, ys []int, c col.Colour) Figure { return newCurve(xs,ys,c) }
+func NewInfLine (x, y, x1, y1 int, c col.Colour) Figure { return newInfLine(x,y,x1,y1,c) }
+func NewRectangle (x, y, x1, y1 int, f bool, c col.Colour) Figure { return newRectangle(x,y,x1,y1,f,c) }
+func NewCircle (x, y, r int, f bool, c col.Colour) Figure { return newCircle(x,y,r,f,c) }
+func NewEllipse (x, y, a, b int, f bool, c col.Colour) Figure { return newEllipse(x,y,a,b,f,c) }
+func NewText (x, y int, s string, c col.Colour) Figure { return newText(x,y,s,c) }
+func NewImage (x, y int, n string) Figure { return newImage(x,y,n) }

@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220121 - license see µU.go
+// (c) Christian Maurer   v. 211125 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -17,12 +17,13 @@ package scr
    GNo process is in the exclusive possession of the screen. */
 
 import (
-  "µU/ker"
   "µU/obj"
   "µU/col"
+  "µU/env"
   "µU/mode"
   "µU/scr/shape"
   "µU/linewd"
+  "µU/scr/ptr"
   "µU/font"
 )
 type
@@ -38,6 +39,8 @@ const (
   Walk
   Fly
 )
+func UnderS() bool { return underS() }
+
 type
   Screen interface {
 
@@ -112,9 +115,9 @@ type
 // (both including) in its backgroundcolour.
   Clr (l, c, w, h uint)
 
-// The pixels in the rectangle defined by (x, y, w, h)
-// including) have the backgroundcolour of the screen.
-  ClrGr (x, y int, w, h uint)
+// The pixels in the rectangle between (x, y) and (x1, y1)
+// (both including) have the backgroundcolour of the screen.
+  ClrGr (x, y, x1, y1 int)
 
 // The screen is cleared in its backgroundcolour.
 // The cursor has the position (0, 0) and is off. 
@@ -130,13 +133,13 @@ type
 // Returns true, iff the output goes only to the screen buffer.
   Buffered() bool
 
-// The content of the rectangle defined by (l/x, c/y, w, h)
+// The content of the screen between line l and l+h and column c and c+w
 // is copied into the archive (the former content of the archive is lost).
   Save (l, c, w, h uint)
   SaveGr (x, y, x1, y1 int)
   Save1() // full screen
 
-// The content of the rectangle defined by (l/x, c/y, w, h)
+// The content of the screen between line l and l+h and column c and c+w
 // is restored from the archive.
   Restore (l, c, w, h uint)
   RestoreGr (x, y, x1, y1 int)
@@ -181,8 +184,6 @@ type
 // n is written to the screen starting at position (line, column) == (l, c).
   WriteNat (n, l, c uint)
   WriteNatGr (n uint, x, y int)
-  WriteInt (n int, l, c uint)
-  WriteIntGr (n, x, y int)
 
 // Pre: see above.
 // As above, but with fore- and backgroundcolour reversed.
@@ -235,10 +236,6 @@ type
 // foregroundcolour resp. that pixel is inverted in its colour.
   Points (xs, ys []int)
   PointsInv (xs, ys []int)
-
-// Returns true, iff one of the points at (xs[i], ys[i]) has a distance
-// of at most d pixels from the point (a, b).
-  OnPoints (xs, ys []int, a, b int, d uint) bool
 
 // Pre: See above.
 // The part of the line segment between (x, y) and (x1, y1)
@@ -313,16 +310,17 @@ type
 // from the border of the rectangle between (x, y) and (x1, y1).
   OnRectangle (x, y, x1, y1, a, b int, d uint) bool
 
-// Returns true, iff the point (a, b) is up to distrance t
-// inside the rectangle given by (x, y) and (x1, y1).
-  InRectangle (x, y, x1, y1, a, b int, t uint) bool
+// Returns true, iff the point at (a, b) is not outside the rectangle
+// between (x, y) and (x1, y1) up to tolerance of d pixels.
+  InRectangle (x, y, x1, y1, a, b int, d uint) bool
 
-// The content of the rectangle defined by (x0, y0, x1, y1)
-// is copied to the rectangle with the upper left corner (x, y).
-  CopyRectangle (x0, y0, x1, y1, x, y int)
-
-// Pre: len(x) == len(y).
-//      PolygonFull: The polygon defined by x and y is convex (see function Convex).
+// Pre: See above. For n:= len(x) == len(y): n > 2 and
+//      PolygonFull:
+//        The calling process runs under X;
+//        the polygon defined by x and y is convex and drawn in the same colour.
+//      PolygonFull1:
+//        (x0, y0) lies in the interior of the polygon defined by x and y.
+//        The polygon is drawn in the same colour.
 // A polygon is drawn between (x[0], y[0]), (x[1], y[1]), ... (x[n-1], y[n-1), (x[0], y[0])
 // resp. all pixels on it are inverted resp. the polygon is filled.
   Polygon (x, y []int)
@@ -330,15 +328,6 @@ type
   PolygonFull (x, y []int)
   PolygonFullInv (x, y []int)
 
-// Pre: len(x) == len(y).
-//      The polygon defined by x and y is not convex (see function Convex),
-//      but its lines do not intersect.
-//      In a console: (a, b) is a point inside the polygon;
-//      under X: The values of a and b do not matter.
-  PolygonFull1 (x, y []int, a, b int)
-  PolygonFullInv1 (x, y []int, a, b int)
-
-// Pre: len(x) == len(y).
 // Returns true, iff the point at (a, b) has a distance of at most d pixels
 // from the polyon defined by x and y.
   OnPolygon (x, y []int, a, b int, d uint) bool
@@ -354,10 +343,7 @@ type
 // Returns true, iff the point at (x, y) has a distance of at most d pixels
 // from the border of the circle around (a, b) with radius r.
   OnCircle (x, y int, r uint, a, b int, d uint) bool
-
-// Returns true, iff the point at (x, y) has a distance of at most d pixels
-// from the interior of the circle around (a, b) with radius r.
-  InCircle (x, y int, r uint, a, b int, d uint) bool
+//  InCircle (x, y int, r uint, a, b int) bool // TODO
 
 // Pre: See above. r <= x, x + r < Wd, r <= y, y + r < Ht,
 //      a and b given in degrees.
@@ -381,8 +367,7 @@ type
 // Returns true, iff the point at (A, B) has a distance of at most d pixels
 // from the border of the ellipse around (x, y) with semiaxis a and b.
   OnEllipse (x, y int, a, b uint, A, B int, d uint) bool
-
-  InEllipse (x, y int, a, b uint, A, B int, d uint) bool
+// func InEllipse (x, y int, a, b uint, A, B int) bool // TODO
 
 // Pre: See above. n:= len(xs) == len(ys).
 // From (xs[0], ys[0]) to (xs[n], ys[n]) a Beziercurve of order n
@@ -399,8 +384,11 @@ type
 
 // mouse ///////////////////////////////////////////////////////////////
 
+// Returns true, iff a mouse is installed.
+  MouseEx() bool
+
 // The mousepointer is represented by p.
-  SetPointer (p uint)
+  SetPointer (p ptr.Pointer)
 
 // Returns the position of the mouse cursor.
 // For the result (l, c) holds 0 <= l < NLines and 0 <= c < NColumns.
@@ -461,13 +449,29 @@ type
 // the rest of the screen is not changed.
   Decode (s obj.Stream)
 
-// image-operations ////////////////////////////////////////////////////
+// ppm-serialisation ///////////////////////////////////////////////////
 
-  WriteImage (c [][]col.Colour, x, y int)
+// Returns a string of the form "P6 w h 255" with numbers w and m,
+// with only one space between the strings and a line feed at the end.
+  PPMHeader (w, h uint) string
 
-  GetImage (n string, x, y int, w, h uint)
+// Pre: s is a raw ppm-file generated by a call to PPMEncoder.
+// Returns the length of that file.
+  PPMCodelen (w, h uint) uint
 
-  PutImage (n string, x, y int)
+// Returns the rectangle between upper left corner (x, y) and lower right corner
+// (x+w, y+h) of the screen as raw ppm-file with the corresponding header (see above).
+  PPMEncode (x, y, w, h uint) obj.Stream
+
+// Pre: s is a raw ppm-file generated by a call to PPMEncoder.
+//      The screen used by a constructor-call is big enough.
+// This rectangle defined by s is written to the screen
+// with upper left corner (x, y).
+  PPMDecode (s obj.Stream, x, y uint)
+
+// Pre: s is a raw ppm-file generated by a call to PPMEncoder.
+// Returns width and height of the corresponding raw ppm-file.
+  PPMSize (s obj.Stream) (uint, uint)
 
 // openGL //////////////////////////////////////////////////////////////
 
@@ -478,7 +482,10 @@ type
 // Returns a new screen with the size of the physical screen.
 // The keyboard is switched to raw mode.
 func New (x, y uint, m mode.Mode) Screen {
-  if ker.UnderX() {
+  if underS() {
+    return NewS (x, y, m)
+  }
+  if env.UnderX() {
     return NewW (x, y, m)
   }
   return NewC (x, y, m)
@@ -487,7 +494,10 @@ func New (x, y uint, m mode.Mode) Screen {
 // Returns a new screen of the size given by the mode m.
 // The keyboard is switched to raw mode.
 func NewMax() Screen {
-  if ker.UnderX() {
+  if underS() {
+    return NewMaxS()
+  }
+  if env.UnderX() {
     return NewMaxW()
   }
   return NewMaxC()
@@ -498,7 +508,10 @@ func NewMax() Screen {
 // Returns a new screen with upper left corner (x, y),
 // width w and height h. The keyboard is switched to raw mode.
 func NewWH (x, y, w, h uint) Screen {
-  if ker.UnderX() {
+  if underS() {
+    return NewWHS (x, y, w, h)
+  }
+  if env.UnderX() {
     return NewWHW (x, y, w, h)
   }
   return NewWHC (x, y, w, h)
@@ -506,7 +519,10 @@ func NewWH (x, y, w, h uint) Screen {
 
 // Returns the (X, Y)-resolution of the screen in pixels.
 func MaxRes() (uint, uint) {
-  if ker.UnderX() {
+  if underS() {
+    return MaxResS()
+  }
+  if env.UnderX() {
     return MaxResW()
   }
   return MaxResC()
@@ -514,7 +530,10 @@ func MaxRes() (uint, uint) {
 
 // Returns true, iff mode.Res(m) <= MaxRes().
 func Ok (m mode.Mode) bool {
-  if ker.UnderX() {
+  if underS() {
+    return OkS (m)
+  }
+  if env.UnderX() {
     return OkW (m)
   }
   return OkC (m)
@@ -527,14 +546,26 @@ func Ok (m mode.Mode) bool {
 func Lock() { lock() }
 func Unlock() { unlock() }
 
+// Pre: s is the stream of a PPM-Header generated by a call to PPMEncoder.
+// Returns width and height of the corresponding rectangle and
+// the length of that stream encoded in the PPM-Header (see above).
+func P6HeaderData (s obj.Stream) (uint, uint, uint, int) {
+  return ppmHeaderData(s)
+/*/
+  if env.UnderX() {
+    return 
+  } else {
+    return 
+  }
+/*/
+}
+
 func Act() Screen {
-  if ker.UnderX() {
+  if underS() {
+    return actualS
+  }
+  if env.UnderX() {
     return actualW
   }
   return actualC
-}
-
-// Returns true, iff len(x) == len(y) and x, y define a convex polygon.
-func Convex (x, y []int) bool {
-  return convex (x,y)
 }
