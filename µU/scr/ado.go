@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220116 - license see µU.go
+// (c) Christian Maurer   v. 220123 - license see µU.go
 
 import (
   "µU/ker"
@@ -11,27 +11,12 @@ import (
   "µU/font"
   "µU/col"
 )
-var
-  under_C, under_X bool
-
-func init() {
-  under_C = ker.UnderC()
-  under_X = ker.UnderX()
-}
-
-func underC() bool {
-  return under_C
-}
-
-func underX() bool {
-  return under_X
-}
 
 func s() Screen {
-  if under_X {
-    return actualW
+  if ker.UnderC() {
+    return actualC
   }
-  return actualC
+  return actualW
 }
 
 func Fin() { s().Fin() }
