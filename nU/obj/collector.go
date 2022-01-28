@@ -66,9 +66,14 @@ type
   Get () Any
 
 // Pre: a has the type of the elements in x. 
-// If the actual element of x was undefined, a copy of a is appended
-// behind the end of x and is now the actual element of x.
-// Otherwise the actual element of x is replaced by a.
+// If x is not ordered:
+//   If x was empty or if the actual element of x was undefined, a copy of a
+//   is appended behind the end of x and is now the actual element of x.
+//   Otherwise the actual element of x is replaced by a.
+// Otherwise, i.e. if x is ordered:
+//   If x was empty, a copy of a is now the only element in x.
+//   Otherwise, the actual element in x is deleted and a is inserted into x
+//   where the order of x is preserved.
   Put (a Any)
 
 // Returns nil, if the actual element of x is not undefined,
@@ -83,5 +88,35 @@ type
 // otherwise, the actual element is the same as before.
   Ex (a Any) bool
 
-//  ExPred (p Pred) bool
+// Pre: If x is ordered, o is strongly monotone with respect
+//      to that order, i.e. x < y implies o(x) < o(y) 
+//      (where < denotes the order of x).
+// o was applied to all elements in x (in their order in x).
+// The actual element of x is the same as before.
+  Trav (op Op)
+
+// Pre: y is a collector of elements of the same type as x
+//      (especially contains elements of the same type as a).
+// If x == y or if x and y do not have the same type,
+// nothing has changed. Otherwise:
+// If x does not carry any order:
+//   x consists of exactly all elements in x before (in their
+//   order in x) and behind them all exactly all elements of y
+//   before (in their order in y).
+//   If the actual element of x was undefined, now the former
+//   first element in y is the actual element of x, otherwise
+//   the actual element of x is the same as before.
+//   y is empty; so its actual element is undefined.
+// Otherwise, i.e. if x is ordered w.r.t. to an order relation,
+//   Pre: r is either an order (see collector.go) or
+//        r is a strict order and x and y are strictly ordered
+//        w.r.t. r (i.e. do not contain any two elements a and b
+//        with a == b or a.Eq(b) resp.).
+//   x consists exactly of all elements in x and y before.
+//   If r is strict, then the elements, which are contained
+//   in x as well as in y, are contained in x only once,
+//   otherwise, i.e. if r is an order, in their multiplicity.
+//   x is ordered w.r.t. r and y is empty.
+//   The actual elements of x and y are undefined.
+  Join (y Collector)
 }

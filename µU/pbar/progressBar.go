@@ -1,6 +1,6 @@
 package pbar
 
-// (c) Christian Maurer   v. 220120 - license see µU.go
+// (c) Christian Maurer   v. 220124 - license see µU.go
 
 import (
   "µU/col"
@@ -40,7 +40,7 @@ func new_(h bool) ProgressBar {
 }
 
 func (B *progressBar) terminieren() {
-  scr.RestoreGr (int(B.x0), int(B.y0), int(B.x0 + B.width), int(B.y0 + B.height))
+  scr.RestoreGr (int(B.x0), int(B.y0), B.width, B.height)
 }
 
 func (B *progressBar) Locate (x, y, w, h uint) {
@@ -62,7 +62,7 @@ func (B *progressBar) Locate (x, y, w, h uint) {
     h = scr.Ht() - B.y0
   }
   B.height = h
-  scr.SaveGr (int(B.x0), int(B.y0), int(B.x0 + B.width), int(B.y0 + B.height))
+  scr.SaveGr (int(B.x0), int(B.y0), B.width, B.height)
 }
 
 func (B *progressBar) SetCap (c uint) {

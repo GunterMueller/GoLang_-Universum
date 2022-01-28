@@ -1,6 +1,6 @@
 package fig2
 
-// (c) Christian Maurer   v. 220120 - license see µU.go
+// (c) Christian Maurer   v. 220124 - license see µU.go
 
 import (
   "math"
@@ -320,13 +320,13 @@ func (f *figure) ShowPoints (v bool) {
   if x1 + d <= int(scr.Wd()) { x1 += d }
   if y1 + d <= int(scr.Ht()) { y1 += d }
   if v {
-    scr.SaveGr (x0, y0, x1, y1)
+    scr.SaveGr (x0, y0, uint(x1 - x0), uint(y1 - y0))
     a0, b0, a1, b1 = x0, y0, x1, y1
     for i := 0; i < n; i++ {
       scr.CircleFull (f.x[i], f.y[i], d)
     }
   } else {
-    scr.RestoreGr (a0, b0, a1, b1)
+    scr.RestoreGr (a0, b0, uint(a1 - a0), uint(b1 - b0))
   }
 }
 
@@ -978,17 +978,17 @@ func (f *figure) editText() {
   if x1 >= wd { x1 = wd - 1 }
   y1 := f.y[0] + int(scr.Ht1()) - 1
   if y1 >= ht { y1 = ht - 1 }
-  scr.SaveGr (f.x[0], f.y[0], x1, y1)
+  scr.SaveGr (f.x[0], f.y[0], uint(x1 - f.x[0]), uint(y1 - f.y[0]))
   bx.Transparence (false)
   bx.EditGr (&f.string, f.x[0], f.y[0])
   str.OffSpc1 (&f.string)
   k := len(f.string)
   bx.Transparence (true)
-  scr.RestoreGr (f.x[0], f.y[0], x1, y1)
+  scr.RestoreGr (f.x[0], f.y[0], uint(x1 - f.x[0]), uint(y1 - f.y[0]))
   switch c, _ := kbd.LastCommand(); c {
   case kbd.Enter:
     bx.Transparence (true)
-    scr.RestoreGr (f.x[0], f.y[0], x1, y1)
+    scr.RestoreGr (f.x[0], f.y[0], uint(x1 - f.x[0]), uint(y1 - f.y[0]))
     bx.WriteGr (f.string, f.x[0], f.y[0])
     f.x, f.y = append (f.x, f.x[0] + k * wd1), append (f.y, f.y[0] + ht1)
     f.Write()

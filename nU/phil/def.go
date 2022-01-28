@@ -1,11 +1,11 @@
 package phil
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 220124 - license see nU.go
 
-import . "nU/lockn"
+import "nU/lockn"
 
 type Philos interface {
-  LockerN
+  lockn.LockerN
 }
 
 func NewNaive() Philos { return new_() }

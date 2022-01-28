@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 220120 - license see µU.go
+// (c) Christian Maurer   v. 220124 - license see µU.go
 
 import (
   "µU/col"
@@ -24,9 +24,9 @@ func colour (x0, y0 int) (col.Colour, bool) {
   wd, ht := int(scr.Wd()), int(scr.Ht())
   w := wd / n
   if w > 24 { w = 24 }
-  if x0 + n * w >= wd { x0 = wd - n * w }
+  if x0 + n * int(w) >= wd { x0 = int(wd) - int(n * w) }
   if y0 + w >= ht { y0 = ht - w }
-  scr.SaveGr (x0, y0, x0 + n * w, y0 + w)
+  scr.SaveGr (x0, y0, uint(n * w), uint(y0 + w))
   c := scr.ScrColF()
   for i := 0; i < n; i++ {
     scr.ColourF (pattern[i])
@@ -47,10 +47,10 @@ func colour (x0, y0 int) (col.Colour, bool) {
       } else {
         break loop
       }
-      scr.RestoreGr (x0, y0, x0 + n * w, y0 + w)
+      scr.RestoreGr (x0, y0, uint(n * w), uint(w))
       return c, true
     }
   }
-  scr.RestoreGr (x0, y0, x0 + n * w, y0 + w)
+  scr.RestoreGr (x0, y0, uint(n * w), uint(w))
   return col.Black(), false
 }

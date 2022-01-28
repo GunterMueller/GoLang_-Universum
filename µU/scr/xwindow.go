@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220122 - license see µU.go
+// (c) Christian Maurer   v. 220124 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -433,12 +433,13 @@ func natord (x, y, x1, y1 *uint) {
 
 func (X *xwindow) Save (l, c, w, h uint) {
   x, y := int(X.wd1) * int(c), int(X.ht1) * int(l)
-  X.SaveGr (x, y, x + int(X.wd1 * w), y + int(X.ht1 * h))
+  X.SaveGr (x, y, X.wd1 * w, X.ht1 * h)
 }
 
-func (X *xwindow) SaveGr (x, y, x1, y1 int) {
-  intord (&x, &y, &x1, &y1)
-  w, h := x1 - x, y1 - y
+// func (X *xwindow) SaveGr (x, y, x1, y1 int) {
+func (X *xwindow) SaveGr (x, y int, w, h uint) {
+//  intord (&x, &y, &x1, &y1)
+//  w, h := x1 - x, y1 - y
   pixmap := C.XCreatePixmap (dpy, C.Drawable(X.win), C.uint(X.wd), C.uint(X.ht), planes)
   X.shadows = append (X.shadows, pixmap)
   n := len(X.shadows) - 1
@@ -447,17 +448,18 @@ func (X *xwindow) SaveGr (x, y, x1, y1 int) {
 }
 
 func (X *xwindow) Save1() {
-  X.SaveGr (0, 0, int(X.wd), int(X.ht))
+  X.SaveGr (0, 0, X.wd, X.ht)
 }
 
 func (X *xwindow) Restore (l, c, w, h uint) {
   x, y := int(X.wd1) * int(c), int(X.ht1) * int(l)
-  RestoreGr (x, y, x + int(X.wd1 * w), y + int(X.ht1 * h))
+  RestoreGr (x, y, X.wd1 * w, X.ht1 * h)
 }
 
-func (X *xwindow) RestoreGr (x, y, x1, y1 int) {
-  intord (&x, &y, &x1, &y1)
-  w, h := x1 - x, y1 - y
+// func (X *xwindow) RestoreGr (x, y, x1, y1 int) {
+func (X *xwindow) RestoreGr (x, y int, w, h uint) {
+//  intord (&x, &y, &x1, &y1)
+//  w, h := x1 - x, y1 - y
   n := len(X.shadows)
   if n == 0 { return }
   n--
@@ -470,7 +472,7 @@ func (X *xwindow) RestoreGr (x, y, x1, y1 int) {
 }
 
 func (X *xwindow) Restore1() {
-  X.RestoreGr (0, 0, int(X.wd), int(X.ht))
+  X.RestoreGr (0, 0, X.wd, X.ht)
 }
 
 // cursor //////////////////////////////////////////////////////////////
@@ -1177,11 +1179,6 @@ func (X *xwindow) clear() { // XXX
 }
 /*/
 
-func (X *xwindow) SetPointer (p uint) {
-  X.pointer = p
-  C.XDefineCursor (dpy, X.win, C.XCreateFontCursor (dpy, C.uint(p)))
-}
-
 func (X *xwindow) MousePos() (uint, uint) {
   X.xM, X.yM = xMouse, yMouse
   return uint(X.yM) / uint(X.ht1), uint(X.xM) / uint(X.wd1)
@@ -1190,6 +1187,19 @@ func (X *xwindow) MousePos() (uint, uint) {
 func (X *xwindow) MousePosGr() (int, int) {
   X.xM, X.yM = xMouse, yMouse
   return X.xM, X.yM
+}
+
+func (X *xwindow) WriteMousePos (l, c uint) {
+  x, y := int(l * X.wd1), int(c * X.ht1)
+  X.WriteMousePosGr (x, y)
+}
+
+func (X *xwindow) WriteMousePosGr (x, y int) {
+  xm, ym := X.MousePos()
+  X.Colours (X.ScrCols())
+  X.WriteGr ("        ", x, y)
+  X.WriteNatGr (uint(xm), x, y)
+  X.WriteNatGr (uint(ym), x + 5 * int(X.wd1), y)
 }
 
 func (X *xwindow) WarpMouse (l, c uint) {
@@ -1201,25 +1211,40 @@ func (X *xwindow) WarpMouseGr (x, y int) {
   C.XFlush (dpy)
 }
 
-func (X *xwindow) MousePointer (on bool) {
-  if on {
-//    C.XUndefineCursor (dpy, X.win)
-    X.SetPointer (X.pointer)
-  } else {
-    var c C.XColor; c.red, c.green, c.blue = C.ushort(0), C.ushort(0), C.ushort(0)
-    s := C.CString(string(obj.Stream{ 0, 8, 0, 0, 0, 0 })); defer C.free (unsafe.Pointer(s))
-    m := C.XCreateBitmapFromData (dpy, C.Drawable(X.win), s, C.uint(8), C.uint(8));
-    cursor := C.XCreatePixmapCursor (dpy, m, m, &c, &c, C.uint(0), C.uint(0))
-    C.XDefineCursor (dpy, X.win, cursor)
-    C.XFreeCursor (dpy, cursor)
-    C.XFreePixmap (dpy, m)
+func (X *xwindow) SetPointer (p uint) {
+  switch p {
+  case Crosshair, Gumby, Standard:
+    X.pointer = p
+    C.XDefineCursor (dpy, X.win, C.XCreateFontCursor (dpy, C.uint(p)))
   }
+}
+
+func (X *xwindow) MousePointer (on bool) {
   X.mouseOn = on
-//  X.Flush()
+  X.WriteMousePointer()
+}
+
+func (X *xwindow) mousePointerOff() {
+  var c C.XColor
+  c.red, c.green, c.blue = C.ushort(0), C.ushort(0), C.ushort(0)
+  s := C.CString(string(obj.Stream {0, 8, 0, 0, 0, 0})); defer C.free (unsafe.Pointer(s))
+  m := C.XCreateBitmapFromData (dpy, C.Drawable(X.win), s, C.uint(8), C.uint(8));
+  cursor := C.XCreatePixmapCursor (dpy, m, m, &c, &c, C.uint(0), C.uint(0))
+  C.XDefineCursor (dpy, X.win, cursor)
+  C.XFreeCursor (dpy, cursor)
+  C.XFreePixmap (dpy, m)
 }
 
 func (X *xwindow) MousePointerOn() bool {
   return X.mouseOn
+}
+
+func (X *xwindow) WriteMousePointer() {
+  if X.mouseOn {
+    X.SetPointer (X.pointer)
+  } else {
+    X.mousePointerOff()
+  }
 }
 
 func (X *xwindow) UnderMouse (l, c, w, h uint) bool {

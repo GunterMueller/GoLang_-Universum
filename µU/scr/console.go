@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220111 - license see µU.go
+// (c) Christian Maurer   v. 220124 - license see µU.go
 
 //#include <stdlib.h>
 //#include <fcntl.h>
@@ -85,14 +85,15 @@ type
         blinking bool
          mouseOn bool
          pointer uint
-  xMouse, yMouse int
+  xMouse, yMouse,
+          xa, ya int
    polygon, done [][]bool // to fill polygons
         incident bool
    xx_, yy_, tt_ int // for incidence tests
                  }
 var (
   actMutex sync.Mutex
-  actualC, mouseConsole *console
+  actualC *console
   mouseIndex int
   width, height uint
   fullScreen mode.Mode
@@ -275,7 +276,6 @@ func (X *console) Clr (l, c, w, h uint) {
 
 func (X *console) ClrGr (x, y int, w, h uint) {
   if ! visible { return }
-/*/
   x1, y1 := x + int(w), y + int(h)
   x += X.x; x1 += X.x // y's diff !
   da := uint(x1 - x) * colourdepth
@@ -291,7 +291,6 @@ func (X *console) ClrGr (x, y int, w, h uint) {
     copy (fbcop[a:a+da], emptyBackground[:da])
     a += w
   }
-/*/
 }
 
 func (X *console) Buf (on bool) {
@@ -331,21 +330,22 @@ func (X *console) Buffered () bool {
 
 func (X *console) Save (l, c, w, h uint) {
   x, y := int(X.wd1 * c), int(X.ht1 * l)
-  X.SaveGr (x, y, x + int(X.wd1 * w), y + int(X.ht1 * h))
+  X.SaveGr (x, y, X.wd1 * w, X.ht1 * h)
 }
 
-func (X *console) SaveGr (x, y, x1, y1 int) {
-  if ! X.rectangOk (&x, &y, &x1, &y1) { return }
+func (X *console) SaveGr (x, y int, w, h uint) {
+  if uint(x) >= X.wd || uint(y) >= X.ht { return }
+  if uint(x) + w >= X.wd { w = X.wd - uint(x) - 1 }
+  if uint(y) + h >= X.ht { h = X.ht - uint(y) - 1 }
+  x0, y0 := X.x + x, X.y + y
+  a, da := x * int(colourdepth), int(w * colourdepth)
+  if X.mouseOn { X.MousePointer (false) }
   shadow := make ([]obj.Stream, X.ht)
   for i := 0; i < int(X.ht); i++ {
     shadow[i] = make(obj.Stream, X.wd * colourdepth)
   }
   X.shadows = append (X.shadows, shadow)
-  n := len(X.shadows) - 1 // XXX
-  w, h := x1 - x, y1 - y
-  x0, y0 := X.x + x, X.y + y
-  a, da := x * int(colourdepth), w * int(colourdepth)
-  if X.mouseOn { X.MousePointer (false) }
+  n := len(X.shadows) - 1
   for i := 0; i < int(h); i++ {
     b := (int(width) * (y0 + i) + x0) * int(colourdepth)
     copy (X.shadows[n][i][a:a+da], fbmem[b:b+da])
@@ -354,32 +354,31 @@ func (X *console) SaveGr (x, y, x1, y1 int) {
 }
 
 func (X *console) Save1() {
-  X.SaveGr (0, 0, int(X.wd), int(X.ht))
+  X.SaveGr (0, 0, X.wd, X.ht)
 }
 
 func (X *console) Restore (l, c, w, h uint) {
   x, y := int(X.wd1 * c), int(X.ht1 * l)
-  X.RestoreGr (x, y, x + int(X.wd1 * w), y + int(X.ht1 * h))
+  X.RestoreGr (x, y, X.wd1 * w, X.ht1 * h)
 }
 
-func (X *console) RestoreGr (x, y, x1, y1 int) {
-  if ! X.rectangOk (&x, &y, &x1, &y1) { return }
+func (X *console) RestoreGr (x, y int, w, h uint) {
   n := len(X.shadows)
   if n == 0 { return }
   n--
-  w, h := x1 - x, y1 - y
+  if uint(x) >= X.wd || uint(y) >= X.ht { return }
+  if uint(x) + w >= X.wd { w = X.wd - uint(x) - 1 }
+  if uint(y) + h >= X.ht { h = X.ht - uint(y) - 1 }
   x0, y0 := X.x + x, X.y + y
-  a, da := x * int(colourdepth), w * int(colourdepth)
+  a, da := x * int(colourdepth), int(w * colourdepth)
   for i := 0; i < int(h); i++ {
     b := (int(width) * (y0 + i) + x0) * int(colourdepth)
-    copy (fbmem[b:b+da],
-          X.shadows[n][i][a:a+da])
+    copy (fbmem[b:b+da], X.shadows[n][i][a:a+da])
   }
-  X.shadows = X.shadows[:n]
 }
 
 func (X *console) Restore1() {
-  X.RestoreGr (0, 0, int(X.wd), int(X.ht))
+  X.RestoreGr (0, 0, X.wd, X.ht)
 }
 
 var
@@ -1614,7 +1613,7 @@ func (X *console) CurveInv (xs, ys []int) {
 func (X *console) OnCurve (xs, ys []int, a, b int, t uint) bool {
   var xs1, ys1 []int
   curve (xs, ys, &xs1, &ys1)
-  for i := 1; i < len (xs); i++ {
+  for i := 1; i < len(xs); i++ {
     if near (xs1[i], ys1[i], a, b, t) {
       return true
     }
@@ -1624,116 +1623,117 @@ func (X *console) OnCurve (xs, ys []int, a, b int, t uint) bool {
 
 // mouse ///////////////////////////////////////////////////////////////
 
+func (X *console) initMouse() {
+  mouse.Def (uint(0), uint(0), width, height)
+  X.xMouse, X.yMouse = int(X.wd) / 2, int(X.ht) / 2
+  mouse.Warp (uint(X.xMouse), uint(X.yMouse))
+  X.pointer = Standard
+  X.xa, X.ya = X.xMouse, X.yMouse
+  w, h := wh (X.pointer)
+  SaveGr (X.xa, X.ya, uint(w), uint(h))
+}
+
 func (X *console) MousePos() (uint, uint) {
   xm, ym := mouse.Pos()
-  return uint(ym - X.y) / X.ht1, uint(xm - X.x) / X.wd1 // Offset
+  return uint(ym - X.y) / X.ht1, uint(xm - X.x) / X.wd1
 }
 
 func (X *console) MousePosGr() (int, int) {
   xm, ym := mouse.Pos()
-  return xm - X.x, ym - X.y // Offset
+  return xm - X.x, ym - X.y
+}
+
+func (X *console) WriteMousePos (l, c uint) {
+  x, y := int(l * X.wd1), int(c * X.ht1)
+  X.WriteMousePosGr (x, y)
+}
+
+func (X *console) WriteMousePosGr (x, y int) {
+  xm, ym := X.MousePosGr()
+  X.Colours (X.ScrCols())
+  X.WriteGr ("        ", x, y)
+  X.WriteNatGr (uint(xm), x, y)
+  X.WriteNatGr (uint(ym), x + 5 * int(X.wd1), y)
 }
 
 func (X *console) SetPointer (p uint) {
   switch p {
-  case Gumby:
+  case Crosshair, Gumby, Standard:
     X.pointer = p
-  default:
-    X.pointer = Standard
+    xm, ym := MousePosGr()
+    w, h := wh(p)
+    X.SaveGr (xm, ym, uint(w), uint(h))
   }
 }
 
-func pointerHt (p uint) int {
+func wh (p uint) (int, int) {
   switch p {
-  case Standard:
-    return 19
   case Crosshair:
-    return 15
-  }
-  return 16
-}
-
-func pointerWd (p uint) int {
-  switch p {
+    return 15, 15
   case Standard:
-    return 13
-  case Crosshair:
-    return 15
+    return 13, 19
   }
-  return 16
+  return 16, 16 // Gumby
 }
 
-func (X *console) initMouse () {
-//  X.mouseOn = false
-  mouse.Def (uint(0), uint(0), width, height)
-  X.xMouse, X.yMouse = int(X.wd) / 2, int(X.ht) / 2
-  mouse.Warp (uint(X.xMouse), uint(X.yMouse))
-}
-
-func (X *console) restore (x, y int) {
-  a := (int(width) * y + x) * int(colourdepth)
-  da := pointerWd (X.pointer) * int(colourdepth)
-  w := width * colourdepth
-// TODO limit to right screen border ???
-  h1, ht := pointerHt (X.pointer), int(X.ht)
-  if y + h1 > ht { h1 = ht - y }
-  for h := 0; h < h1; h++ {
-    copy (fbmem[a:a+da], fbcop[a:a+da])
-    a += int(w)
-  }
-}
+var
+  cb, cw, cg = col.Black().EncodeInv(), col.LightWhite().EncodeInv(), col.LightGray().EncodeInv()
 
 func (X *console) writePointer (x, y int) {
-  cB := col.Black().EncodeInv()
-  cW := col.LightWhite().EncodeInv()
-  cG := col.LightGray().EncodeInv()
+  w, h := wh (X.pointer)
   var p obj.Stream
-  for h := 0; h < pointerHt (X.pointer); h++ {
-    for w := 0; w < pointerWd (X.pointer); w++ {
-      switch ptr[X.pointer][h][2 * w] {
+  for j := 0; j < h; j++ {
+    for i := 0; i < w; i++ {
+      switch ptr[X.pointer][j][2 * i] {
       case '#':
-        p = cB
+        p = cw
       case '*':
-        p = cW
+        p = cb
       case 'o':
-        p = cG
+        p = cg
       default:
         continue
       }
-      if x + w < X.x || x + w >= X.x + int(X.wd) ||
-         y + h < X.y || y + h >= X.y + int(X.ht) {
+      if x + i < X.x || x + i >= X.x + int(X.wd) || y + j < X.y || y + j >= X.y + int(X.ht) {
         continue
       }
-      a := (int(width) * (y + h) + (x + w)) * int(colourdepth)
+      a := (int(width) * (y + j) + (x + i)) * int(colourdepth)
       copy (fbmem[a:a+int(colourdepth)], p)
-//      copy (fbcop[a:a+int(colourdepth)], p) // No, we don't want that
     }
   }
 }
 
 func (X *console) MousePointer (on bool) {
   X.mouseOn = on
-  if on { X.SetPointer (Standard) }
-//  if ! mouse.Ex() || ! X.mouseOn || ! visible { return }
-  if ! X.mouseOn || ! visible {
-// println ("console.MousePointer Kacke")
-    return
-  }
-  if X.x <= X.xMouse + pointerWd (X.pointer) && X.xMouse < X.x + int(X.wd) &&
-     X.y <= X.yMouse + pointerHt (X.pointer) && X.yMouse < X.y + int(X.ht) {
-    X.restore (X.xMouse, X.yMouse)
-  }
-  if X == mouseConsole {
-    X.restore (X.xMouse, X.yMouse)
-    X.xMouse, X.yMouse = mouse.Pos()
-    X.writePointer (X.xMouse, X.yMouse)
+  X.WriteMousePointer()
+}
+
+var (
+  posX, posY []int = make([]int, 1), make([]int, 1)
+  pp int
+)
+
+func (X *console) WriteMousePointer() { // under work
+  if ! X.mouseOn { return }
+  if pp == 0 {
+    posX = append(posX, X.xa); posY = append(posY, X.ya)
   } else {
-    // TODO full screen as root window
+    X.xa, X.ya = posX[pp-1], posY[pp-1]
   }
+  w, h := wh (X.pointer)
+  X.RestoreGr (X.xa, X.ya, uint(w), uint(h))
+  X.xMouse, X.yMouse = X.MousePosGr()
+  posX = append (posX, X.xMouse); posY = append (posY, X.yMouse)
+  if X.x <= X.xMouse + w && X.xMouse < X.x + int(X.wd) &&
+     X.y <= X.yMouse + h && X.yMouse < X.y + int(X.ht) {
+    X.writePointer (X.xMouse, X.yMouse)
+  }
+  SaveGr (X.xMouse, X.yMouse, uint(w), uint(h))
+//  if pp > 1 { if posX[pp] == posX[pp-1] && posY[pp] == posY[pp-1] { X.Write ("     ", 0, 0); X.WriteInt (pp, 0, 0) } }
+  pp++
 }
 
 func (X *console) MousePointerOn() bool {
-//  if ! mouse.Ex() { return false }
   return X.mouseOn
 }
 
@@ -1942,7 +1942,6 @@ func (X *console) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
 
 func (X *console) init_(x, y uint) {
   actualC = X
-  mouseConsole = X
   X.x, X.y = int(x), int(y)
   X.cF, X.cB = col.StartCols()
   X.cFA, X.cBA = col.StartColsA()
@@ -1956,9 +1955,9 @@ func (X *console) init_(x, y uint) {
   }
   X.archive = make(obj.Stream, fbmemsize)
   X.shadows = make([][]obj.Stream, X.ht)
-
-
-
+  for i := uint(0); i < X.ht; i++ {
+    X.shadows[i] = make([]obj.Stream, X.wd * 5) // * colourdepth)
+  }
   X.initMouse()
   X.SetLinewidth (linewd.Thin)
   wm, _ := MaxResC()
@@ -2017,23 +2016,6 @@ func (X *console) init_(x, y uint) {
       "# # . . . # * * # . . . . ",
       "# . . . . # o * o . . . . ",
       ". . . . . . # o # . . . . "}
-  ptr[Gumby] = []string {
-      ". . # # # # # # . . . . . . . . ",
-      "* * o # * * * * # . . . . . . . ",
-      "# # * o # * * * * # . . . . . . ",
-      "# # # * # * . * . * # . . . . . ",
-      "# # * o # * * * * * # . . . . . ",
-      "# # * o # * . . . * # * * * . . ",
-      "# # # # # * * * * * # # # # * . ",
-      "* * # # # * * * * * # # # # # # ",
-      ". . * * # * * * * * # . * # # # ",
-      ". . . . # * * * * * # . * # # # ",
-      ". . . . # * * # * * # * # # # # ",
-      ". . . . # * * # * * # . * # # # ",
-      ". . . . # * * # * * # . . * * * ",
-      ". . . # * * * # * * * # . . . . ",
-      ". . # * * * * # * * * * # . . . ",
-      ". . # # # # # . # # # # # . . . "}
   ptr[Gumby] = []string {
       ". . # # # # # # . . . . . . . . ",
       "* * o # * * * * # . . . . . . . ",

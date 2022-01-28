@@ -1,9 +1,9 @@
 package mouse
 
-// (c) Christian Maurer   v. 220119 - license see µU.go
+// (c) Christian Maurer   v. 220123 - license see µU.go
 
-// >>> This package only serves the implementation of µU/kbd/console.go;
-//     it must not be used elsewhere.
+// >>> This package is only needed in the implementations of µU/kbd/console.go and
+//     µU/scr/console.go; it must not be used elsewhere.
 //     Pre: The mouse device is /dev/input/mice.
 //          This device is readable for the world, and a mouse is working on it.
 

@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220123 - license see µU.go
+// (c) Christian Maurer   v. 220124 - license see µU.go
 
 import (
   "µU/ker"
@@ -54,10 +54,12 @@ func Cls() { s().Cls() }
 func Buf (on bool) { s().Buf(on) }
 func Buffered() bool { return s().Buffered() }
 func Save (l, c, w, h uint) { s().Save(l,c,w,h) }
-func SaveGr (x, y, x1, y1 int) { s().SaveGr(x,y,x1,y1) }
+// func SaveGr (x, y, x1, y1 int) { s().SaveGr(x,y,x1,y1) }
+func SaveGr (x, y int, w, h uint) { s().SaveGr(x,y,w,h) }
 func Save1() { s().Save1() }
 func Restore (l, c, w, h uint) { s().Restore(l,c,w,h) }
-func RestoreGr (x, y, x1, y1 int) { s().RestoreGr(x,y,x1,y1) }
+// func RestoreGr (x, y, x1, y1 int) { s().RestoreGr(x,y,x1,y1) }
+func RestoreGr (x, y int, w, h uint) { s().RestoreGr(x,y,w,h) }
 func Restore1() { s().Restore1() }
 
 func Warp (l, c uint, h shape.Shape) { s().Warp(l,c,h) }
@@ -140,10 +142,13 @@ func OnCurve (xs, ys []int, a, b int, t uint) bool { return s().OnCurve(xs,ys,a,
 func SetPointer (p uint) { s().SetPointer(p) }
 func MousePos() (uint, uint) { return s().MousePos() }
 func MousePosGr() (int, int) { return s().MousePosGr() }
+func WriteMousePos (l, c uint) { s().WriteMousePos(l,c) }
+func WriteMousePosGr (x, y int) { s().WriteMousePosGr(x,y) }
 func WarpMouse (l, c uint) { s().WarpMouse(l,c) }
 func WarpMouseGr (x, y int) { s().WarpMouseGr(x,y) }
 func MousePointer (b bool) { s().MousePointer(b) }
 func MousePointerOn() bool { return s().MousePointerOn() }
+func WriteMousePointer() { s().WriteMousePointer() }
 func UnderMouse (l, c, w, h uint) bool { return s().UnderMouse(l,c,w,h) }
 func UnderMouseGr (x, y, x1, y1 int, d uint) bool { return s().UnderMouseGr(x,y,x1,y1,d) }
 func UnderMouse1 (x, y int, d uint) bool { return s().UnderMouse1(x,y,d) }

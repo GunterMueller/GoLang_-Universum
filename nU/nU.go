@@ -1,9 +1,9 @@
 package main
 
-/* (c) Christian Maurer   v. 210123
+/* (c) Christian Maurer   v. 220124
 
   Dieses Paket - das n(ano)Universum - enthält die Quelltexte aus meinem Lehrbuch
-  "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2018).
+  "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2019).
 
   THIS SOFTWARE  IS PROVIDED BY THE AUTHOR  "AS IS"  AND ANY EXPRESS OR IMPLIED WARRANTIES,
   INCLUDING,  BUT NOT LIMITED TO,  THE IMPLIED WARRANTIES  OF MERCHANTABILITY  AND  FITNESS
@@ -19,7 +19,7 @@ package main
   Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, z. B. zum Abfackeln von Rechnern,
   zur Entgleisung von Eisenbahnen, zum GAU in Atomkraftwerken  oder zum Absturz des Mondes.
   Deshalb wird vor der Verwendung irgendwelcher Quellen von µU in Programmen zu ernsthaften
-  Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.)
+  Zwecken ausdrücklich gewarnt! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.)
 
   Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angemommen. */
 

@@ -41,7 +41,7 @@ import (
 const (
   yy = 2022
   mm =    1
-  dd =   23
+  dd =   24
 )
 var (
   red = col.FlashRed()
@@ -59,13 +59,14 @@ func dr (x0, x1, y int, c col.Colour, f bool) {
   y1 := 0
   time.Msleep (100)
   for x := x0; x < x1; x += dx {
-    scr.SaveGr (x, y, x + car.W, y + car.H)
+    scr.SaveGr (x, y, car.W, car.H)
     car.Draw (true, c, x, y)
     time.Msleep (20)
-    scr.RestoreGr (x, y, x + car.W, y + car.H)
+    scr.RestoreGr (x, y, car.W, car.H)
     if f && x > x0 + 46 * wd1 && x % 8 == 0 && y + 2 * car.H < ht {
       y1++
       y += y1
+      if y + car.H >= ht { return }
     }
   }
 }
@@ -74,12 +75,12 @@ func moon (x int, c col.Colour) {
   const r = 40
   y, y1 := r, 0
   for y < int(scr.Ht()) - r {
-    scr.SaveGr (x - r, y - r, x + r, y + r)
+    scr.SaveGr (x - r, y - r, 2 * r, 2 * r)
     scr.ColourF (c)
     scr.CircleFull (x, y, r)
     scr.Flush()
     time.Msleep (33)
-    scr.RestoreGr (x - r, y - r, x + r, y + r)
+    scr.RestoreGr (x - r, y - r, 2 * r, 2 * r)
     y1++
     y += y1
   }
@@ -105,12 +106,12 @@ func joke (x, x1, y, imx, imy, imw int, c col.Colour, s string) {
   case "mca":
     y11 -= 7 * ht1
   }
-  scr.SaveGr (x2 - 4, y11, x + imx * wd1 + imw * wd1, y2)
+  scr.SaveGr (x2 - 4, y11, uint(x + imx * wd1 + imw * wd1 - x2 + 4), uint(y2 - y11))
   image := ppm.New()
   image.Load (s)
   scr.WriteImage (image.Colours(), x2 - 4, y11 + ht1)
   time.Sleep (uint(imw) / 6)
-  scr.RestoreGr (x2 - 4, y11, x + imx * wd1 + imw * wd1, y2)
+  scr.RestoreGr (x2 - 4, y11, uint(x + imx * wd1 + imw * wd1 - x2 + 4), uint(y2 - y11))
   dr (x2 + imw * wd1, x1, y + imy * ht1, c, false)
 }
 

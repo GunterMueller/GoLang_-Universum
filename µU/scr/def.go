@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220121 - license see µU.go
+// (c) Christian Maurer   v. 220124 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -37,6 +37,11 @@ const (
   Look = iota
   Walk
   Fly
+)
+const ( // mousepointer representations (see /usr/include/X11/cursorfont.h)
+  Crosshair =  34
+  Gumby     =  56
+  Standard  = 132 // top_left_arrow
 )
 type
   Screen interface {
@@ -118,7 +123,7 @@ type
 
 // The screen is cleared in its backgroundcolour.
 // The cursor has the position (0, 0) and is off. 
-// // If there exists a mouse, its cursor has the position (?, ?) and is off.
+// The mouse has the position (?, ?) and is off.
   Cls()
 
 // If on, then the screen buffer is cleared and
@@ -133,13 +138,15 @@ type
 // The content of the rectangle defined by (l/x, c/y, w, h)
 // is copied into the archive (the former content of the archive is lost).
   Save (l, c, w, h uint)
-  SaveGr (x, y, x1, y1 int)
+//  SaveGr (x, y, x1, y1 int)
+  SaveGr (x, y int, w, h uint)
   Save1() // full screen
 
 // The content of the rectangle defined by (l/x, c/y, w, h)
 // is restored from the archive.
   Restore (l, c, w, h uint)
-  RestoreGr (x, y, x1, y1 int)
+//  RestoreGr (x, y, x1, y1 int)
+  RestoreGr (x, y int, w, h uint)
   Restore1() // full screen
 
 // cursor //////////////////////////////////////////////////////////////
@@ -410,14 +417,20 @@ type
 // For the result (x, y) holds 0 <= x < Wd and 0 <= y < Ht.
   MousePosGr() (int, int)
 
+// The mouse position is written to the screen at position (l,c)/(x,y).
+  WriteMousePos (l, c uint)
+  WriteMousePosGr (x, y int)
+
 // Pre: The calling process does not run under X.
-// If no mouse exists, nothing has happened.
-// Otherwise, the mouse cursor is switched on, iff b (otherwise off).
+// The mouse cursor is switched on, iff b (otherwise off).
   MousePointer (b bool)
 
 // Pre: The calling process does not run under X.
 // Returns true, iff the mouse cursor is switched on.
   MousePointerOn() bool
+
+// 
+  WriteMousePointer()
 
 // Pre: l < NLines, c < NColumns.
 // The mouse cursor has the position (line, column) = (l, c).
