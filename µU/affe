@@ -1,1 +1,6 @@
-  Polygon (x, y []float64, f bool)
+  Polygon
+  Curve // Bezier curve
+  InfLine // given by two different points
+  Rectangle // borders parallel to the screen borders
+  Circle
+  Ellipse // main axes parallel to the screen borders

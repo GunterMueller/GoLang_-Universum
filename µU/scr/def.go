@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220124 - license see µU.go
+// (c) Christian Maurer   v. 220128 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -16,6 +16,10 @@ package scr
    In a console SIGUSR1 and SIGUSR2 are used internally and not any more available.
    GNo process is in the exclusive possession of the screen. */
 
+// #cgo LDFLAGS: -lX11
+// #include <X11/Xlib.h>
+import
+  "C"
 import (
   "µU/ker"
   "µU/obj"
@@ -430,7 +434,7 @@ type
   MousePointerOn() bool
 
 // 
-  WriteMousePointer()
+//  WriteMousePointer()
 
 // Pre: l < NLines, c < NColumns.
 // The mouse cursor has the position (line, column) = (l, c).
@@ -467,25 +471,31 @@ type
 // Pre: 0 < w, x + w < Wd, 0 < h, y + h < Ht.
 // Returns the byte sequence, that serialises the pixels
 // in the rectangle between (x, y) and (x + w, y + h).
-  Encode (x, y, w, h uint) obj.Stream
+  Encode (x, y int, w, h uint) obj.Stream
 
 // Pre: s is the result of a call of Encode for some rectangle.
-// The pixels of that rectangle are drawn to the screen;
+// The pixels of that rectangle are drawn to the screen with the upper left corner (x, y);
 // the rest of the screen is not changed.
-  Decode (s obj.Stream)
+  Decode (s obj.Stream, x, y int)
 
 // image-operations ////////////////////////////////////////////////////
 
   WriteImage (c [][]col.Colour, x, y int)
 
-  GetImage (n string, x, y int, w, h uint)
-
-  PutImage (n string, x, y int)
+  Screenshot (x, y int, w, h uint) obj.Stream
 
 // openGL //////////////////////////////////////////////////////////////
 
 // Pre: m <= Fly
   Go (m int, draw func(), ex, ey, ez, fx, fy, fz, nx, ny, nz float64)
+}
+
+func UnderC() bool {
+  return ker.UnderC()
+}
+
+func UnderX() bool {
+  return ker.UnderX()
 }
 
 // Returns a new screen with the size of the physical screen.

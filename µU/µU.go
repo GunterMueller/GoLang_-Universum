@@ -21,7 +21,7 @@ package main
   APART FROM THIS  THE TEXT IN GERMAN ABOVE AND BELOW  IS A MANDATORY PART  OF THE LICENSE.
 
   Die Quelltexte von µU sind äußerst sorgfältig entwickelt und werden laufend überarbeitet.
-  ABER:  Es gibt keine fehlerfreie Software - dies gilt natürlich auch für _diese_ Quellen.
+  ABER: Es gibt keine fehlerfreie Weichware - dies gilt natürlich auch für _diese_ Quellen.
   Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, z. B. zum Abfackeln von Rechnern,
   zur Entgleisung von Eisenbahnen, zum GAU in Atomkraftwerken  oder zum Absturz des Mondes.
   Deshalb wird vor der Verwendung irgendwelcher Quellen von µU in Programmen zu ernsthaften
@@ -41,7 +41,7 @@ import (
 const (
   yy = 2022
   mm =    1
-  dd =   24
+  dd =   30
 )
 var (
   red = col.FlashRed()

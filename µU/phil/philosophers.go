@@ -1,6 +1,6 @@
 package phil
 
-// (c) Christian Maurer   v. 220120 - license see µU.go
+// (c) Christian Maurer   v. 220130 - license see µU.go
 
 import (
   "sync"

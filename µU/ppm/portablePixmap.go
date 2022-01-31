@@ -1,6 +1,6 @@
 package ppm
 
-// (c) Christian Maurer   v. 220120 - license see µU.go
+// (c) Christian Maurer   v. 220130 - license see µU.go
 
 import (
  // "os/exec"
@@ -10,6 +10,7 @@ import (
   "µU/scr" // only for PPMWrite
   "µU/col"
   "µU/pseq"
+  "µU/files"
   "µU/char"
 //  "µU/prt"
 )
@@ -74,13 +75,17 @@ func ppmHeaderData (s obj.Stream) (uint, uint, uint, int) {
 }
 
 func (im *image) Load (n string) {
-  if str.Empty (n) { return }
+  if str.Empty (n) {
+    ker.Panic ("Loaded called with empty string as parameter")
+  }
   str.OffSpc (&n)
   im.string = n
   filename := n + suffix
-  l := pseq.Length (filename)
-  if l == 0 { return }
-  s := make(obj.Stream, l)
+  if ! files.IsFile (filename) {
+    ker.Panic ("file " + n + ".ppm is not in the actual directory")
+  }
+  k := pseq.Length (filename)
+  s := make(obj.Stream, k)
   file := pseq.New (s)
   file.Name (filename)
   s = file.Get().(obj.Stream)

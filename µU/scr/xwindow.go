@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220124 - license see µU.go
+// (c) Christian Maurer   v. 220129 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -68,47 +68,71 @@ void getPixelColour (Display *d, XImage *i, Colormap m, int x, int y, int16_t *r
 }
 
 Window keyWin (XEvent *e) { return (*e).xkey.window; }
+
 unsigned int keyState (XEvent *e) { return (*e).xkey.state; }
+
 unsigned int keyCode (XEvent *e) { return (*e).xkey.keycode; }
 
 Window buttonWin (XEvent *e) { return (*e).xbutton.window; }
+
 unsigned int buttonState (XEvent *e) { return (*e).xbutton.state; }
+
 unsigned int buttonButt (XEvent *e) { return (*e).xbutton.button; }
+
 int buttonX (XEvent *e) { return (*e).xbutton.x; }
+
 int buttonY (XEvent *e) { return (*e).xbutton.y; }
 
 Window motionWin (XEvent *e) { return (*e).xmotion.window; }
+
 unsigned int motionState (XEvent *e) { return (*e).xmotion.state; }
+
 unsigned int motionH (XEvent *e) { return (*e).xmotion.is_hint; }
+
 int motionX (XEvent *e) { return (*e).xmotion.x; }
+
 int motionY (XEvent *e) { return (*e).xmotion.y; }
 
 Window enterLeaveWin (XEvent *e) { return (*e).xcrossing.window; }
+
 Window focusWin (XEvent *e) { return (*e).xfocus.window; }
 
 Window exposeWin (XEvent *e) { return (*e).xexpose.window; }
+
 unsigned int exposeX (XEvent *e) { return (*e).xexpose.x; }
+
 unsigned int exposeY (XEvent *e) { return (*e).xexpose.y; }
+
 unsigned int exposeWd (XEvent *e) { return (*e).xexpose.width; }
+
 unsigned int exposeHt (XEvent *e) { return (*e).xexpose.height; }
+
 unsigned int exposeC (XEvent *e) { return (*e).xexpose.count; }
 
 Window visibilityWin (XEvent *e) { return (*e).xvisibility.window; }
 
 Window mapWin (XEvent *e) { return (*e).xmap.window; }
+
 Window unmapWin (XEvent *e) { return (*e).xunmap.window; }
 
 Window configureWin (XEvent *e) { return (*e).xconfigure.window; }
+
 int configureX (XEvent *e) { return (*e).xconfigure.x; }
+
 int configureY (XEvent *e) { return (*e).xconfigure.y; }
+
 int configureWd (XEvent *e) { return (*e).xconfigure.width; }
+
 int configureHt (XEvent *e) { return (*e).xconfigure.height; }
 
 Window resizeWin (XEvent *e) { return (*e).xresizerequest.window; }
+
 unsigned int resizeWd (XEvent *e) { return (*e).xresizerequest.width; }
+
 unsigned int resizeHt (XEvent *e) { return (*e).xresizerequest.height; }
 
 Window circulateWin (XEvent *e) { return (*e).xcirculaterequest.window; }
+
 Window mappingWin (XEvent *e) { return (*e).xmapping.window; }
 
 Atom mT (XEvent *e) { return (*e).xclient.message_type; }
@@ -116,15 +140,20 @@ Atom mT (XEvent *e) { return (*e).xclient.message_type; }
 XKeyEvent keyEvent (XEvent *e) { return (*e).xkey; }
 
 unsigned long xGetPixel (XImage *i, int x, int y) { return ((*((i)->f.get_pixel))((i), (x), (y))); }
+
 void xPutPixel (XImage *i, int x, int y, unsigned long p) { ((*((i)->f.put_pixel))((i), (x), (y), (p))); }
+
 void xDestroyImage (XImage *i) { ((*((i)->f.destroy_image))((i))); }
 
-void xfree (char* s) { Xfree (s); }
+// void xfree (char* s) { Xfree (s); }
 
 int etyp (XEvent *e) { return (*e).type; }
 
 unsigned int kState (XEvent *e) { return (*e).xkey.state; }
+
 unsigned int kCode (XEvent *e) { return (*e).xkey.keycode; }
+
+int imageErr (XImage *i) { if (i == NULL) { return 1; } else { return 0; } }
 */
 import
   "C"
@@ -1265,107 +1294,73 @@ func (X *xwindow) UnderMouse1 (x, y int, d uint) bool {
 
 // serialisation ///////////////////////////////////////////////////////
 
-// const
-//   M = C.ulong(1 << 32 - 1)
-
 func (X *xwindow) Codelen (w, h uint) uint {
-  return 2 * 4 + 3 * w * h
+  return 16 + 3 * w * h
 }
 
-func (X *xwindow) Encode (x0, y0, w, h uint) obj.Stream {
+func (X *xwindow) Encode (x, y int, w, h uint) obj.Stream {
   if w == 0 || h == 0 { ker.Panic ("xwin.Encode: w == 0 or h == 0") }
   if w > uint(X.wd) { ker.Panic ("xwin.Encode: w > X.wd") }
   if h > uint(X.ht) { ker.Panic ("xwin.Encode: h > X.ht") }
   s := make (obj.Stream, X.Codelen (w, h))
-  i := 2 * 4
-  copy (s[:i], obj.Encode4 (uint16(x0), uint16(y0), uint16(w), uint16(h)))
-  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(x0), C.int(y0),
+  n := 16
+  copy (s[:n], obj.Encode2 (int(w), int(h)))
+  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(x), C.int(y),
                        C.uint(w), C.uint(h), C.AllPlanes, C.XYPixmap)
-//                       C.uint(w), C.uint(h), M, C.XYPixmap)
   var pixel C.ulong
-  for y := 0; y < int(h); y++ {
-    for x := 0; x < int(w); x++ {
-      pixel = C.xGetPixel (ximg, C.int(x), C.int(y))
+  for j := 0; j < int(h); j++ {
+    for i := 0; i < int(w); i++ {
+      pixel = C.xGetPixel (ximg, C.int(i), C.int(j))
       e := obj.Encode(uint32(pixel))
-      copy (s[i:i+3], e)
-      s[i], s[i+2] = s[i+2], s[i]
-      i += 3
+      copy (s[n:n+3], e)
+      n += 3
     }
   }
   C.xDestroyImage (ximg)
   return s
 }
 
-func (X *xwindow) Decode (s obj.Stream) {
+func (X *xwindow) Decode (s obj.Stream, x, y int) {
   if s == nil { return }
-  n := uint32(2 * 4)
-  x0, y0, w, h := obj.Decode4 (s[:n])
-  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(x0), C.int(y0),
+  n := 16
+  w, h := obj.Decode2 (s[:n])
+  ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(x), C.int(y),
                        C.uint(w), C.uint(h), C.AllPlanes, C.XYPixmap)
-//                       C.uint(w), C.uint(h), M, C.XYPixmap)
   var pixel C.ulong
   c := col.New()
-  for j := uint16(0); j < uint16(h); j++ {
-    for i := uint16(0); i < uint16(w); i++ {
+  for j := 0; j < int(h); j++ {
+    for i := 0; i < int(w); i++ {
       c.Set (s[n+2], s[n+1], s[n+0])
       pixel = (C.ulong)(c.Code())
       C.xPutPixel (ximg, C.int(i), C.int(j), pixel)
       n += 3
     }
   }
-  C.XPutImage (dpy, C.Drawable(X.win), X.gc, ximg, 0, 0, C.int(x0), C.int(y0),
-               C.uint(w), C.uint(h))
-  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.buffer), X.gc, C.int(x0), C.int(y0),
-               C.uint(w), C.uint(h), C.int(x0), C.int(y0))
+  C.XPutImage (dpy, C.Drawable(X.win), X.gc, ximg,
+               0, 0, C.int(x), C.int(y), C.uint(w), C.uint(h))
+  C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.buffer), X.gc,
+               C.int(x), C.int(y), C.uint(w), C.uint(h), C.int(x), C.int(y))
   C.XFlush (dpy)
 }
 
 // image-operations ////////////////////////////////////////////////////
 
-func (X *xwindow) WriteImage (c [][]col.Colour, x0, y0 int) {
-  w := len(c[0])
-  h := len(c)
-  for x := 0; x < w; x++ {
-    for y := 0; y < h; y++ {
-      if x0 + x < int(X.Wd()) && y0 + y < int(X.Ht()) {
-        X.ColourF (c[y][x])
-        X.Point (x0 + x, y0 + y)
+func (X *xwindow) WriteImage (c [][]col.Colour, x, y int) {
+  w, h := len(c[0]), len(c)
+  for i := 0; i < w; i++ {
+    for j := 0; j < h; j++ {
+      if x + i < int(X.Wd()) && y + j < int(X.Ht()) {
+        X.ColourF (c[j][i])
+        X.Point (x + i, y + j)
       }
     }
   }
 }
 
-type
-  image struct {
-             xi C.XImage
-           x, y int
-           w, h uint
-                string
-                }
-var
-  images []image
-
-func (X *xwindow) GetImage (n string, x, y int, w, h uint) {
-  m := new(image)
-  m.string = n
-  m.x, m.y = x, y
-  m.w, m.h = w, h
-  m.xi = *C.XGetImage (dpy, C.Drawable(X.win),
-                       C.int(x), C.int(y), C.uint(w), C.uint(h), C.AllPlanes, C.XYPixmap)
-  images = append (images, *m)
-}
-
-func (X *xwindow) PutImage (n string, x, y int) {
-  k := len(images)
-  if k == 0 { return }
-  for i := 0; i < k; i++ {
-    if images[i].string == n {
-      e := C.XPutImage (dpy, C.Drawable(X.win), X.gc, &images[i].xi,
-                        C.int(images[i].x), C.int(images[i].y), C.int(x), C.int(y),
-                        C.uint(images[i].w), C.uint(images[i].h))
-      err (e)
-    }
-  }
+func (X *xwindow) Screenshot (x, y int, w, h uint) obj.Stream {
+  _ = C.XGetImage (dpy, C.Drawable(X.win),
+                   0, 0, C.uint(w), C.uint(h), C.AllPlanes, C.XYPixmap)
+  return X.Encode (x, y, w, h)
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -1669,8 +1664,8 @@ func NewWHW (x, y, w, h uint) Screen {
   X.scrF, X.scrB = col.StartCols()
   X.cF, X.cB = col.StartCols()
   X.cFA, X.cBA = col.StartColsA()
-  a := [11]C.int{ C.GLX_RGBA, C.GLX_DOUBLEBUFFER, C.GLX_DEPTH_SIZE, 16,
-                  C.GLX_RED_SIZE, 1, C.GLX_GREEN_SIZE, 1, C.GLX_BLUE_SIZE, 1, C.None }
+  a := [11]C.int{C.GLX_RGBA, C.GLX_DOUBLEBUFFER, C.GLX_DEPTH_SIZE, 16,
+                 C.GLX_RED_SIZE, 1, C.GLX_GREEN_SIZE, 1, C.GLX_BLUE_SIZE, 1, C.None}
   vi := C.glXChooseVisual (dpy, screen, &a[0] )
   cx := C.glXCreateContext (dpy, vi, C.GLXContext(nil), C.True)
   rootWin = C.XRootWindow (dpy, vi.screen)
@@ -1896,7 +1891,7 @@ func sendEvents() {
         W = imp (w) // w == W.win
         event.C, event.S = uint(0), uint(C.motionState (&xev))
         W.xM, W.yM = int(C.motionX (&xev)), int(C.motionY (&xev))
-xMouse, yMouse = W.xM, W.yM
+        xMouse, yMouse = W.xM, W.yM
       case C.EnterNotify, C.LeaveNotify:
         w = C.enterLeaveWin (&xev)
         W = imp (w) // w == W.win

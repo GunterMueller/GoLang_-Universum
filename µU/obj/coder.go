@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 210106 - license see µU.go
+// (c) Christian Maurer   v. 220128 - license see µU.go
 
 const
   C0 = uint(8) // == Codelen(int(0)); == Codelen(uint(0))
@@ -36,12 +36,12 @@ func Encode (a Any) Stream { return encode(a) }
 // Returns the object, that was encoded in b.
 func Decode (a Any, b Stream) Any { return decode(a,b) }
 
-// Returns a byte sequence of length 8, that encodes a, b, c, d.
-func Encode4 (a, b, c, d uint16) Stream { return encode4(a,b,c,d) }
+// Returns a stream of length 16, that encodes a, b.
+func Encode2 (a, b int) Stream { return encode2(a,b) }
 
-// Pre: len(s) == 8; s encodes 4 numbers of type uint16.
-// Returns these 4 numbers.
-func Decode4 (s Stream) (uint16, uint16, uint16, uint16) { return decode4(s) }
+// Pre: len(s) == 16; s encodes 2 numbers of type int.
+// Returns these 2 numbers.
+func Decode2 (s Stream) (int, int) { return decode2(s) }
 
 // Returns true, iff a is atomic or implements Coder.
 func AtomicOrCoder (a Any) bool { return Atomic(a) || isCoder(a) }

@@ -1,15 +1,14 @@
 package ppm
 
-// (c) Christian Maurer   v. 220120 - license see µU.go
+// (c) Christian Maurer   v. 220130 - license see µU.go
 
 import
   "µU/col"
-
 type
   Image interface {
 
 // Pre: A file with the name n.ppm containing an image
-//      in the ppm-format exists in the actual directory.
+// in the ppm-format exists in the actual directory.
 // x is the image saved in that file.
   Load (n string)
 

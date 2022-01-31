@@ -44,7 +44,7 @@ func ppmHeader (w, h uint) string {
 }
 
 func ppmHeaderData (s obj.Stream) (uint, uint, uint, int) {
-  p := string(s[:2]); if p != "P6" { ker.Panic ("wrong ppm-header: " + p) }
+  p := string(s[:2]); if p != "P6" { ker.Panic ("wrong ppm-header: " + p + "<") }
   i := 3
   if s[i] == '#' {
     for {

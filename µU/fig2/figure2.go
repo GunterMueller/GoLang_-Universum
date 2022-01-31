@@ -1,6 +1,6 @@
 package fig2
 
-// (c) Christian Maurer   v. 220124 - license see µU.go
+// (c) Christian Maurer   v. 220130 - license see µU.go
 
 import (
   "math"
@@ -15,6 +15,7 @@ import (
   "µU/sel"
   "µU/ppm"
   "µU/psp"
+  "µU/pseq"
 )
 const (
   lenName = 10
@@ -29,6 +30,8 @@ type
          filled bool
                 string
                 ppm.Image
+                Stream
+                uint "len(f.Stream)"
                 }
 var (
   wd, ht int
@@ -61,6 +64,8 @@ func new_() Figure {
   c, _ := col.StartCols()
   f.colour = c
   f.Image = ppm.New()
+  f.Stream = make([]byte, 0)
+  f.uint = 0
   return f
 }
 
@@ -173,23 +178,6 @@ func newText (x, y int, s string, c col.Colour) Figure {
   return f
 }
 
-func newImage (x, y int, n string) Figure {
-  f := new_().(*figure)
-  f.typ = Image
-  f.x, f.y = make([]int, 1), make([]int, 1)
-  f.x[0], f.y[0] = x, y
-  f.string = n
-  f.Image.Load (f.string)
-  W, H := f.Image.Size()
-  w, h := int(W) - 1, int(H) - 1
-  if f.x[0] + w <= wd && f.y[0] + h <= ht {
-    f.x, f.y = append (f.x, f.x[0] + w), append (f.y, f.y[0] + h)
-  } else {
-    f.x, f.y = nil, nil
-  }
-  return f
-}
-
 func (f *figure) imp (Y Any) *figure {
   y, ok := Y.(*figure)
   if ! ok { TypeNotEqPanic (f, Y) }
@@ -204,6 +192,10 @@ func (f *figure) Clr() {
   f.x, f.y = nil, nil
   f.marked, f.filled = false, false
   f.string = ""
+  if f.typ == Image {
+    f.uint = 0
+    f.Stream = make([]byte, 0)
+  }
 }
 
 func (f *figure) Typ() typ {
@@ -270,6 +262,8 @@ func (f *figure) Copy (Y Any) {
   f.marked = f1.marked
   f.string = f1.string
   if f.typ == Image {
+    f.uint = f1.uint
+    copy (f.Stream, f1.Stream)
     // TODO copy the image
   }
 }
@@ -398,13 +392,16 @@ func (f *figure) focus() (int, int) {
 }
 
 func (f *figure) Move (dx, dy int) {
+  if len(f.x) < 2 { return }
   f.WriteInv()
   n := len(f.x)
   for i := 0; i < n; i++ {
     f.x[i] += dx
     f.y[i] += dy
   }
-  if f.typ == Image {
+  if f.typ == Image ||
+    (f.typ == Polygon || f.typ == Rectangle ||
+     f.typ == Circle || f.typ == Ellipse) && f.filled == true {
     scr.Rectangle (f.x[0], f.y[0], f.x[1], f.y[1])
   } else {
     f.Write()
@@ -503,8 +500,22 @@ func (f *figure) writeText() {
 }
 
 func (f *figure) writeImage() {
-  f.Image.Load (f.string)
-  scr.WriteImage (f.Image.Colours(), f.x[0], f.y[0])
+  if len(f.x) < 2 { return }
+  if f.x[0] >= int(scr.Wd()) || f.x[1] < 0 || f.y[0] >= int(scr.Ht()) || f.y[1] < 0 {
+    return
+  }
+  if f.x[0] >= 0 && f.x[1] < int(scr.Wd()) && f.y[0] >= 0 && f.y[1] < int(scr.Ht()) {
+    n := pseq.Length (f.string + ".dat")
+    s := make([]byte, n)
+    file := pseq.New(s)
+    file.Name (f.string + ".dat")
+    file.Seek (0)
+    f.Stream = file.Get().(Stream)
+    scr.Decode (f.Stream, f.x[0], f.y[0])
+  } else {
+    f.Image.Load (f.string)
+    scr.WriteImage (f.Image.Colours(), f.x[0], f.y[0])
+  }
 }
 
 func (f *figure) Write() {
@@ -693,14 +704,13 @@ func (f *figure) editCurve() {
 
 func (f *figure) changeCurve() {
   xm, ym := scr.MousePosGr()
-  if f.On (xm, ym, 7) {
+  if f.On (xm, ym, 10) {
     f.ShowPoints (true)
   }
   scr.MousePointer (true)
   loop:
   for {
     i, ok := f.pointUnderMouse()
-//    scr.CircleInv (f.x[i], f.y[i], 4)
     c, _ := kbd.Command()
     switch c {
     case kbd.Drag:
@@ -1002,14 +1012,31 @@ func (f *figure) changeText() {
   f.editText()
 }
 
-func (f *figure) EditImage (n string) {
+func (f *figure) ImageEdited (n string) bool {
   f.x, f.y = make ([]int, 1), make ([]int, 1)
   f.x[0], f.y[0] = scr.MousePosGr()
   f.string = n
-  f.Image.Load (f.string)
-  w, h := f.Image.Size()
-//  f.x, f.y = append (f.x, f.x[0] + int(w) - 1), append (f.y, f.y[0] + int(h) - 1)
-  f.x, f.y = append (f.x, f.x[0] + int(w)), append (f.y, f.y[0] + int(h))
+  i := ppm.New()
+  i.Load (n)
+  w, h := i.Size()
+  x1, y1 := f.x[0] + int(w), f.y[0] + int(h)
+  if f.x[0] >= 0 && x1 < int(scr.Wd()) && f.y[0] >= 0 && y1 < int(scr.Ht()) {
+    scr.WriteImage (i.Colours(), f.x[0], f.y[0])
+    f.x, f.y = append (f.x, x1), append (f.y, y1)
+    f.x[1], f.y[1] = x1, y1
+    f.Stream = scr.Screenshot (f.x[0], f.y[0], w, h)
+    f.uint = uint(len(f.Stream))
+    file := pseq.New(byte(0))
+    file.Name (n + ".dat")
+    file.Clr()
+    for i := uint(0); i < f.uint; i++ {
+      file.Seek (uint(i))
+      file.Put (f.Stream[i])
+    }
+    file.Fin()
+    return true
+  }
+  return false
 }
 
 func (f *figure) pointUnderMouse() (uint, bool) {
@@ -1186,7 +1213,7 @@ func (f *figure) Codelen() uint {
   case Text:
     n += 2 * C0 + 1 + uint(len (f.string))
   case Image:
-    n += 4 * C0 + 1 + uint(len (f.string))
+    n += 5 * C0 + 1 + uint(len(f.string)) + f.uint
   default:
     n += 2 * uint(len (f.x)) * C0
   }
@@ -1208,19 +1235,28 @@ func (f *figure) Encode() Stream {
   copy (bs[a:a+C0], Encode (n))
   a += C0
   switch f.typ {
-  case Text, Image:
+  case Text:
     copy (bs[a:a+C0], Encode (f.x[0]))
     a += C0
     copy (bs[a:a+C0], Encode (f.y[0]))
     a += C0
-    if f.typ == Image {
-      copy (bs[a:a+C0], Encode (f.x[1]))
-      a += C0
-      copy (bs[a:a+C0], Encode (f.y[1]))
-      a += C0
-    }
     copy (bs[a:a+n], Stream(f.string))
     a += n
+  case Image:
+    copy (bs[a:a+C0], Encode (f.x[0]))
+    a += C0
+    copy (bs[a:a+C0], Encode (f.y[0]))
+    a += C0
+    copy (bs[a:a+C0], Encode (f.x[1]))
+    a += C0
+    copy (bs[a:a+C0], Encode (f.y[1]))
+    a += C0
+    copy (bs[a:a+n], Stream(f.string))
+    a += n
+    copy (bs[a:a+C0], Encode (f.uint))
+    a += C0
+    copy (bs[a:a+f.uint], f.Stream)
+    a += f.uint
   default:
     for i := uint(0); i < n; i++ {
       copy (bs[a:a+C0], Encode (f.x[i]))
@@ -1243,31 +1279,41 @@ func (f *figure) Decode (bs Stream) {
   a += f.colour.Codelen()
   n := Decode (uint(0), bs[a:a+C0]).(uint)
   a += C0
-  if f.typ < Text {
+  switch f.typ {
+  case Text:
+    f.x, f.y = make ([]int, 2), make ([]int, 2)
+    f.x[0] = Decode (f.x[0], bs[a:a+C0]).(int)
+    a += C0
+    f.y[0] = Decode (f.y[0], bs[a:a+C0]).(int)
+    a += C0
+    f.string = string(bs[a:a+n])
+    a += n
+    f.x[1] = f.x[0] + int(scr.Wd1()) * int(n) - 1
+    f.y[1] = f.y[0] + int(scr.Ht1()) - 1
+  case Image:
+    f.x, f.y = make ([]int, 2), make ([]int, 2)
+    f.x[0] = Decode (f.x[0], bs[a:a+C0]).(int)
+    a += C0
+    f.y[0] = Decode (f.y[0], bs[a:a+C0]).(int)
+    a += C0
+    f.x[1] = Decode (f.x[1], bs[a:a+C0]).(int)
+    a += C0
+    f.y[1] = Decode (f.y[1], bs[a:a+C0]).(int)
+    a += C0
+    f.string = string(bs[a:a+n])
+    a += n
+    f.uint = Decode (uint(0), bs[a:a+C0]).(uint)
+    a += C0
+    f.Stream = make(Stream, f.uint)
+    copy (f.Stream, bs[a:a+f.uint])
+    a += f.uint
+  default:
     f.x, f.y = make ([]int, n), make ([]int, n)
     for i := uint(0); i < n; i++ {
       f.x[i] = Decode (f.x[i], bs[a:a+C0]).(int)
       a += C0
       f.y[i] = Decode (f.y[i], bs[a:a+C0]).(int)
       a += C0
-    }
-  } else { // Text, Image
-    f.x, f.y = make ([]int, 2), make ([]int, 2)
-    f.x[0] = Decode (f.x[0], bs[a:a+C0]).(int)
-    a += C0
-    f.y[0] = Decode (f.y[0], bs[a:a+C0]).(int)
-    a += C0
-    if f.typ == Image {
-      f.x[1] = Decode (f.x[1], bs[a:a+C0]).(int)
-      a += C0
-      f.y[1] = Decode (f.y[1], bs[a:a+C0]).(int)
-      a += C0
-    }
-    f.string = string(bs[a:a+n])
-    a += n
-    if f.typ == Text {
-      f.x[1] = f.x[0] + int(scr.Wd1()) * int(n) - 1
-      f.y[1] = f.y[0] + int(scr.Ht1()) - 1
     }
   }
   f.filled = bs[a] % 2 == 1

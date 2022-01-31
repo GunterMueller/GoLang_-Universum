@@ -1,7 +1,11 @@
 package scr
 
-// (c) Christian Maurer   v. 220124 - license see µU.go
+// (c) Christian Maurer   v. 220128 - license see µU.go
 
+// #cgo LDFLAGS: -lX11
+// #include <X11/Xlib.h>
+import
+  "C"
 import (
   "µU/ker"
   "µU/obj"
@@ -148,15 +152,14 @@ func WarpMouse (l, c uint) { s().WarpMouse(l,c) }
 func WarpMouseGr (x, y int) { s().WarpMouseGr(x,y) }
 func MousePointer (b bool) { s().MousePointer(b) }
 func MousePointerOn() bool { return s().MousePointerOn() }
-func WriteMousePointer() { s().WriteMousePointer() }
+// func WriteMousePointer() { s().WriteMousePointer() }
 func UnderMouse (l, c, w, h uint) bool { return s().UnderMouse(l,c,w,h) }
 func UnderMouseGr (x, y, x1, y1 int, d uint) bool { return s().UnderMouseGr(x,y,x1,y1,d) }
 func UnderMouse1 (x, y int, d uint) bool { return s().UnderMouse1(x,y,d) }
 
 func Codelen (w, h uint) uint { return s().Codelen(w,h) }
-func Encode (x, y, w, h uint) obj.Stream { return s().Encode(x,y,w,h) }
-func Decode (bs obj.Stream) { s().Decode(bs) }
+func Encode (x, y int, w, h uint) obj.Stream { return s().Encode(x,y,w,h) }
+func Decode (bs obj.Stream, x, y int) { s().Decode(bs,x,y) }
 
 func WriteImage (c [][]col.Colour, x, y int) { s().WriteImage(c,x,y) }
-func GetImage (n string, x, y int, w, h uint) { s().GetImage(n,x,y,w,h) }
-func PutImage (n string, x, y int) { s().PutImage(n,x,y) }
+func Screenshot (x, y int, w, h uint) obj.Stream { return s().Screenshot(x,y,w,h) }

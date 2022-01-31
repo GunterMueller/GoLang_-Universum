@@ -435,14 +435,14 @@ func offNondigits (s *string) {
   loop: for j < l {
     if j == l { break }
     for ! digit ((*s)[j]) {
-      j ++
+      j++
       if j == l {
         break loop
       }
     }
     b[i] = (*s)[j]
-    i ++
-    j ++
+    i++
+    j++
   }
   *s = string(b[:i]) + new_(l - i)
 }
@@ -461,7 +461,7 @@ func split (s string) (uint, []string, []uint) {
       if spaceBefore {
         t = append (t, string(s[i]))
         p = append (p, i)
-        n ++
+        n++
         spaceBefore = false
       } else {
         t[n - 1] += string(s[i])
@@ -489,7 +489,7 @@ func splitLine (s *string) string {
     }
   }
   t := (*s)[:n]
-  n ++
+  n++
   *s = (*s)[n:]
   return t
 }

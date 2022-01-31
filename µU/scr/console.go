@@ -1,7 +1,8 @@
 package scr
 
-// (c) Christian Maurer   v. 220124 - license see µU.go
+// (c) Christian Maurer   v. 220130 - license see µU.go
 
+// #cgo LDFLAGS: -lX11
 //#include <stdlib.h>
 //#include <fcntl.h>
 //#include <unistd.h>
@@ -9,6 +10,9 @@ package scr
 //#include <sys/mman.h>
 //#include <linux/vt.h>
 //#include <linux/fb.h>
+//#include <linux/fb.h>
+//#include <X11/X.h>
+//#include <X11/Xlib.h>
 /*
 void * framebuffer (int *x, int *y, int *b, int *a) {
   int fd;
@@ -59,6 +63,11 @@ import (
   "µU/mouse"
   "µU/scr/shape"
 )
+const (
+  esc1 = "\x1b["
+  clearScreen = esc1 + "H" + esc1 + "J"
+  cursorBlinks = esc1 + "?25h" + esc1 + "?0c"
+)
 type
   console struct {
                  mode.Mode
@@ -66,8 +75,7 @@ type
           wd, ht uint
           nLines,
         nColumns uint
-         archive obj.Stream
-         shadows [][]obj.Stream
+          shadow [][]obj.Stream
             buff bool
         wd1, ht1 uint
           cF, cB,
@@ -98,6 +106,10 @@ var (
   width, height uint
   fullScreen mode.Mode
   ptr [133][]string
+  initialized bool
+  fbmemsize uint
+  fbmem, fbcop, emptyBackground obj.Stream
+  visible bool // only for console switching
 )
 
 func (x *console) Fin() {
@@ -108,7 +120,6 @@ func (x *console) Flush() {
 }
 
 func (x *console) Name (n string) {
-  // TODO
 }
 
 func (x *console) ActMode() mode.Mode {
@@ -276,20 +287,14 @@ func (X *console) Clr (l, c, w, h uint) {
 
 func (X *console) ClrGr (x, y int, w, h uint) {
   if ! visible { return }
-  x1, y1 := x + int(w), y + int(h)
-  x += X.x; x1 += X.x // y's diff !
-  da := uint(x1 - x) * colourdepth
-  a := uint(0)
-//  c := col.ColStream (X.ScrColB())
-//  for j := uint(0); j < da; j++ {
-//    copy (emptyBackground[a:a+colourdepth], c)
-//    a += colourdepth
-//  }
-  a = uint(X.y + y) * width * colourdepth + uint(x) * colourdepth
-  for z := 0; z <= y1 - y; z++ {
+  x += X.x
+  y += X.y
+  wd, d := int(width), int(colourdepth)
+  a, da := (y * wd + x) * d, int(w) * d
+  for z := 0; z < int(h); z++ {
     copy (fbmem[a:a+da], emptyBackground[:da])
     copy (fbcop[a:a+da], emptyBackground[:da])
-    a += w
+    a += wd * d
   }
 }
 
@@ -344,11 +349,11 @@ func (X *console) SaveGr (x, y int, w, h uint) {
   for i := 0; i < int(X.ht); i++ {
     shadow[i] = make(obj.Stream, X.wd * colourdepth)
   }
-  X.shadows = append (X.shadows, shadow)
-  n := len(X.shadows) - 1
+  X.shadow = append (X.shadow, shadow)
+  n := len(X.shadow) - 1
   for i := 0; i < int(h); i++ {
     b := (int(width) * (y0 + i) + x0) * int(colourdepth)
-    copy (X.shadows[n][i][a:a+da], fbmem[b:b+da])
+    copy (X.shadow[n][i][a:a+da], fbmem[b:b+da])
   }
   if X.mouseOn { X.MousePointer (true) }
 }
@@ -363,7 +368,7 @@ func (X *console) Restore (l, c, w, h uint) {
 }
 
 func (X *console) RestoreGr (x, y int, w, h uint) {
-  n := len(X.shadows)
+  n := len(X.shadow)
   if n == 0 { return }
   n--
   if uint(x) >= X.wd || uint(y) >= X.ht { return }
@@ -373,7 +378,7 @@ func (X *console) RestoreGr (x, y int, w, h uint) {
   a, da := x * int(colourdepth), int(w * colourdepth)
   for i := 0; i < int(h); i++ {
     b := (int(width) * (y0 + i) + x0) * int(colourdepth)
-    copy (fbmem[b:b+da], X.shadows[n][i][a:a+da])
+    copy (fbmem[b:b+da], X.shadow[n][i][a:a+da])
   }
 }
 
@@ -733,52 +738,6 @@ func (X *console) OnPoints (xs, ys []int, a, b int, d uint) bool {
   return false
 }
 
-// Pre: x <= x1 < Wd, y < Ht.
-func (X *console) horizontal (x, y, x1 int, f pointFunc) {
-  if x == x1 { f (x, y); return }
-  if x > x1 { x, x1 = x1, x }
-//  if x >= X.wd { return }
-//  if x1 >= int(X.wd) { x1 = int(X.wd) - 1 }
-  x0 := x
-  for x := x0; x <= x1; x++ {
-    f (x, y)
-  }
-/*
-  if X.lineWd > Thin && y + 1 <= int(X.ht) {
-    for x := x0; x <= x1; x++ {
-      f (x, y + 1)
-    }
-  }
-  if X.lineWd > Thick && y > 0 {
-    for x := x0; x <= x1; x++ {
-      f (x, y - 1)
-    }
-  }
-*/
-}
-
-// Pre: x < Wd, y <= y1 < Ht.
-func (X *console) vertical (x, y, y1 int, f pointFunc) {
-  if y > y1 { y, y1 = y1, y }
-//  if y1 >= int(X.ht) { y1 = int(X.ht) - 1 }
-  y0 := y
-  for y := y0; y <= y1; y++ {
-    f (x, y)
-  }
-/*
-  if X.lineWd > Thin && x + 1 < int(X.wd) {
-    for y := y0; y <= y1; y++ {
-      f (x + 1, y)
-    }
-  }
-  if X.lineWd > Thick && x > 0 {
-    for y := y0; y <= y1; y++ {
-      f (x - 1, y)
-    }
-  }
-*/
-}
-
 // Pre: 0 <= x <= x1 < NColumns, 0 <= y != y1 < NLines.
 func bresenham (x, y, x1, y1 int, f pointFunc) {
   dx := x1 - x
@@ -944,6 +903,50 @@ func (X *console) bresenhamInf (xx, yy, x, y, x1, y1 int, f pointFunc) {
 
 func nat (x, y int) bool {
   return x >= 0 && y >= 0
+}
+
+// Pre: x, x1 < Wd, y < Ht.
+func (X *console) horizontal (x, y, x1 int, f pointFunc) {
+  if x == x1 { f (x, y); return }
+  if x > x1 { x, x1 = x1, x }
+//  if x >= X.wd { return }
+//  if x1 >= int(X.wd) { x1 = int(X.wd) - 1 }
+  for i := x; i <= x1; i++ {
+    f (i, y)
+  }
+/*
+  if X.lineWd > Thin && y + 1 <= int(X.ht) {
+    for i := x; i <= x1; i++ {
+      f (i, y + 1)
+    }
+  }
+  if X.lineWd > Thick && y > 0 {
+    for i := x; i <= x1; i++ {
+      f (i, y - 1)
+    }
+  }
+*/
+}
+
+// Pre: x < Wd, y, y1 < Ht.
+func (X *console) vertical (x, y, y1 int, f pointFunc) {
+  if y > y1 { y, y1 = y1, y }
+//  if y1 >= int(X.ht) { y1 = int(X.ht) - 1 }
+  for j := y; j <= y1; j++ {
+    f (x, j)
+  }
+/*
+  if X.lineWd > Thin && x + 1 < int(X.wd) {
+    for j := y; j <= y1; j++ {
+      f (x + 1, j)
+    }
+  }
+  if X.lineWd > Thick && x > 0 {
+    for j := y; j <= y1; j++ {
+      f (x - 1, j)
+    }
+  }
+*/
 }
 
 func (X *console) line (x, y, x1, y1 int, f pointFunc) {
@@ -1629,8 +1632,6 @@ func (X *console) initMouse() {
   mouse.Warp (uint(X.xMouse), uint(X.yMouse))
   X.pointer = Standard
   X.xa, X.ya = X.xMouse, X.yMouse
-  w, h := wh (X.pointer)
-  SaveGr (X.xa, X.ya, uint(w), uint(h))
 }
 
 func (X *console) MousePos() (uint, uint) {
@@ -1682,6 +1683,7 @@ var
 func (X *console) writePointer (x, y int) {
   w, h := wh (X.pointer)
   var p obj.Stream
+  a := 0
   for j := 0; j < h; j++ {
     for i := 0; i < w; i++ {
       switch ptr[X.pointer][j][2 * i] {
@@ -1697,7 +1699,7 @@ func (X *console) writePointer (x, y int) {
       if x + i < X.x || x + i >= X.x + int(X.wd) || y + j < X.y || y + j >= X.y + int(X.ht) {
         continue
       }
-      a := (int(width) * (y + j) + (x + i)) * int(colourdepth)
+      a = (int(width) * (y + j) + (x + i)) * int(colourdepth)
       copy (fbmem[a:a+int(colourdepth)], p)
     }
   }
@@ -1705,32 +1707,31 @@ func (X *console) writePointer (x, y int) {
 
 func (X *console) MousePointer (on bool) {
   X.mouseOn = on
-  X.WriteMousePointer()
-}
-
-var (
-  posX, posY []int = make([]int, 1), make([]int, 1)
-  pp int
-)
-
-func (X *console) WriteMousePointer() { // under work
-  if ! X.mouseOn { return }
-  if pp == 0 {
-    posX = append(posX, X.xa); posY = append(posY, X.ya)
-  } else {
-    X.xa, X.ya = posX[pp-1], posY[pp-1]
-  }
+  if ! X.mouseOn || ! visible { return }
   w, h := wh (X.pointer)
-  X.RestoreGr (X.xa, X.ya, uint(w), uint(h))
-  X.xMouse, X.yMouse = X.MousePosGr()
-  posX = append (posX, X.xMouse); posY = append (posY, X.yMouse)
   if X.x <= X.xMouse + w && X.xMouse < X.x + int(X.wd) &&
      X.y <= X.yMouse + h && X.yMouse < X.y + int(X.ht) {
-    X.writePointer (X.xMouse, X.yMouse)
+    X.restore (X.xMouse, X.yMouse)
   }
-  SaveGr (X.xMouse, X.yMouse, uint(w), uint(h))
-//  if pp > 1 { if posX[pp] == posX[pp-1] && posY[pp] == posY[pp-1] { X.Write ("     ", 0, 0); X.WriteInt (pp, 0, 0) } }
-  pp++
+  X.xMouse, X.yMouse = mouse.Pos()
+  X.writePointer (X.xMouse, X.yMouse)
+}
+
+func (X *console) restore (x, y int) {
+  w, h := wh (X.pointer)
+  a := (int(width) * y + x) * int(colourdepth)
+  da := w * int(colourdepth)
+  wd, ht := int(X.wd), int(X.ht)
+  if x + w > wd { w = wd - x }
+  if y + h > ht { h = ht - y }
+  ww := width * colourdepth
+  for i := 0; i < h; i++ {
+    if a+da >= int(fbmemsize) {
+      return
+    }
+    copy (fbmem[a:a+da], fbcop[a:a+da])
+    a += int(ww)
+  }
 }
 
 func (X *console) MousePointerOn() bool {
@@ -1767,60 +1768,69 @@ func (X *console) UnderMouse1 (x, y int, d uint) bool {
 // serialisation ///////////////////////////////////////////////////////
 
 func (X *console) Codelen (w, h uint) uint {
-  return 2 * uint(4) + colourdepth * w * h
+  return uint(16) + colourdepth * w * h
 }
 
-func (X *console) Encode (x, y, w, h uint) []byte {
-  s := make (obj.Stream, X.Codelen (w, h))
-  i := 2 * uint(4)
-  copy (s[:i], obj.Encode4 (uint16(x), uint16(y), uint16(w), uint16(h)))
-  for l := X.y; l < X.y + int(h); l++ {
-    j := colourdepth * width * uint(l)
-    for c := X.x; c < X.x + int(w); c++ {
-      copy (s[i:i+3], fbmem[j:j+3])
-      i += 3
-      j += colourdepth
+func (X *console) Encode (x, y int, w, h uint) obj.Stream {
+  s := make (obj.Stream, X.Codelen (w, h)) // + 3)
+  n := uint(16)
+  copy (s[:n], obj.Encode2 (int(w), int(h)))
+  x += X.x
+  y += X.y
+  for j := y; j < y + int(h); j++ {
+    a := width * colourdepth * uint(j) + uint(x) * colourdepth
+    for i := x; i < x + int(w); i++ {
+      copy (s[n:n+3], fbmem[a:a+3])
+      n += 3
+      a += colourdepth
     }
   }
   return s
 }
 
-func (X *console) Decode (s obj.Stream) {
+func (X *console) Decode (s obj.Stream, x, y int) {
   if s == nil { return }
   if ! visible { return }
-  i := 2 * uint(4)
-  x0, y0, w, h := obj.Decode4 (s[:i])
+  n := uint(16)
+  w, h := obj.Decode2 (s[:n])
   c := col.New()
-  for y := int(y0); y < int(y0 + h); y++ {
-    for x := int(x0); x < int(x0 + w); x++ {
-      c.Set (s[i], s[i+1], s[i+2])
+  for j := y; j < y + int(h); j++ {
+    for i := x; i < x + int(w); i++ {
+      c.Set (s[n+2], s[n+1], s[n+0])
       X.cF, X.codeF = c, c.EncodeInv()
-      X.Point (x, y)
-      i += 3
+      X.Point (i, j)
+      n += 3
     }
   }
 }
 
 // image-operations ////////////////////////////////////////////////////
 
-func (X *console) WriteImage (c [][]col.Colour, x0, y0 int) {
+func (X *console) WriteImage (c [][]col.Colour, x, y int) {
   w, h := len(c[0]), len(c)
-  for x := 0; x < w; x++ {
-    for y := 0; y < h; y++ {
-      if x0 + x < int(X.Wd()) && y0 + y < int(X.Ht()) {
-        X.ColourF (c[y][x])
-        X.Point (x0 + x, y0 + y)
+  for i := 0; i < w; i++ {
+    for j := 0; j < h; j++ {
+      if x + i < int(X.Wd()) && y + j < int(X.Ht()) {
+        X.ColourF (c[j][i])
+        X.Point (x + i, y + j)
       }
     }
   }
 }
 
-func (X *console) GetImage (n string, x, y int, w, h uint) {
-// TODO
-}
-
-func (X *console) PutImage (n string, x, y int) {
-// TODO
+func (X *console) Screenshot (x, y int, w, h uint) obj.Stream {
+  x += X.x
+  y += X.y
+  s := make(obj.Stream, w * h * colourdepth)
+  wd, d := int(width), int(colourdepth)
+  a, da := (y * wd + x) * d, int(w) * d
+  b := 0
+  for z := 0; z < int(h); z++ {
+    copy (s[b:b+da], fbmem[a:a+da])
+    a += wd * int(colourdepth)
+    b += da
+  }
+  return X.Encode (x, y, w, h)
 }
 
 // cut buffer //////////////////////////////////////////////////////////
@@ -1843,18 +1853,6 @@ func (x *console) Paste() string {
 
 // framebuffer /////////////////////////////////////////////////////////
 
-const (
-  esc1 = "\x1b["
-  ClearScreen = esc1 + "H" + esc1 + "J"
-  home = esc1 + "?25h" + esc1 + "?0c"
-)
-var (
-  fbmemsize uint
-  fbmem, fbcop,
-  emptyBackground obj.Stream
-  visible bool // only for console switching
-)
-
 func consoleOn() {
   ker.ActivateConsole()
   n := width * height * uint(colourdepth)
@@ -1873,17 +1871,13 @@ func consoleOff() {
 }
 
 func consoleFin() {
-// TODO wait (blink())
-// TODO fin (blink())
   c := actualC
   finished = true
   time.Msleep (250) // provisorial
   c.cursorShape = shape.Off
-  print (ClearScreen + home)
+  print (cursorBlinks)
+  print (clearScreen)
 }
-
-var
-  initialized bool
 
 func MaxResC() (uint, uint) {
   if framebufferOk() {
@@ -1917,7 +1911,7 @@ func framebufferOk() bool {
   if mode.Wd (fullScreen) != width || mode.Ht (fullScreen) != height { ker.Panic ("fullScreen bug") }
   colourdepth = colbits / 8
   fbmemsize = width * height * colourdepth
-  if uint(len (fbmem)) != fbmemsize {
+  if uint(len(fbmem)) != fbmemsize {
     ker.Panic ("len (fbmem) == " + strconv.Itoa(len(fbmem)) +
                " != fbmemsize == " + strconv.Itoa(int(fbmemsize)))
   }
@@ -1953,10 +1947,9 @@ func (X *console) init_(x, y uint) {
     ker.Panic ("new console too large: " + a + " + " + b + " > " + c + " or " +
                                            d + " + " + e + " > " + f)
   }
-  X.archive = make(obj.Stream, fbmemsize)
-  X.shadows = make([][]obj.Stream, X.ht)
+  X.shadow = make([][]obj.Stream, X.ht)
   for i := uint(0); i < X.ht; i++ {
-    X.shadows[i] = make([]obj.Stream, X.wd * 5) // * colourdepth)
+    X.shadow[i] = make([]obj.Stream, X.wd * 5) // * colourdepth)
   }
   X.initMouse()
   X.SetLinewidth (linewd.Thin)
@@ -2059,10 +2052,6 @@ func MaxModeC() mode.Mode {
   width, height = MaxResC()
   return mode.ModeOf (width, height)
 }
-
-// func MaxResC() (uint, uint) {
-//   return mode.Res (maxMode())
-// }
 
 func OkC (m mode.Mode) bool {
   fullScreen = MaxModeC()

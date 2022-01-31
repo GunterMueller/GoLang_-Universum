@@ -1,0 +1,28 @@
+package obj
+
+// (c) Christian Maurer   v. 220126 - license see µU.go
+
+type
+  QValuator interface {
+
+// Pre: IsQValuator(x).
+// Returns the integer value of x.
+  Val() int
+//// Returns the values of the nominator and denominator of x.
+//  Val() (int, uint)
+
+// Pre: IsQValuator(x).
+// x.Val() == q.
+  SetVal (q int)
+//// x.Val() == n/d.
+//  SetVal (n int, d uint)
+}
+
+// Returns true, iff a is of type QValuatoer.
+func IsQValuator (a Any) bool { return isQValuator(a) }
+
+// Pre: IsQValuator(x).
+// Returns the integer value of a.
+func QVal (a Any) (int) { return qVal(a) }
+//// Returns the values of the nominator and denominator of a.
+//func QVal (a Any) (int,uint) { return qVal(a) }
