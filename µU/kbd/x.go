@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 211214 - license see µU.go
+// (c) Christian Maurer   v. 220206 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -256,7 +256,7 @@ loop:
       case 2:
         if mouseM {
 //          mouseM = false
-          *C = Hither
+          *C = Thither
         }
       case 3:
         if mouseR {

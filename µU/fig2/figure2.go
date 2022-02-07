@@ -1,10 +1,10 @@
 package fig2
 
-// (c) Christian Maurer   v. 220130 - license see µU.go
+// (c) Christian Maurer   v. 220203 - license see µU.go
 
 import (
   "math"
-  "µU/ker"
+  "µU/env"
   . "µU/obj"
   "µU/str"
   "µU/kbd"
@@ -750,7 +750,7 @@ func (f *figure) editPolygon() {
       xm, ym = scr.MousePosGr()
       f.x, f.y = append (f.x, xm), append (f.y, ym)
       f.filled = d > 0
-      if ker.UnderC() { // console cannot fill polygons with shape C.Complex
+      if env.UnderC() { // console cannot fill polygons with shape C.Complex
         f.filled = d > 0 && f.convex()
       }
       break loop

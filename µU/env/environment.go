@@ -7,18 +7,22 @@ import (
   "strconv"
 )
 var
-  under_X bool
+  under_C bool
 
 func init() {
-  under_X = Val ("DISPLAY") != ""
+  under_C = val ("DISPLAY") == ""
+}
+
+func underC() bool {
+  return under_C
 }
 
 func underX() bool {
-  return under_X
+  return ! under_C
 }
 
 func far() bool {
-  display := Val ("DISPLAY")
+  display := val ("DISPLAY")
   return display[0] == 'l' // 'l'ocalhost
 }
 

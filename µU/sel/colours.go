@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 220124 - license see µU.go
+// (c) Christian Maurer   v. 220205 - license see µU.go
 
 import (
   "µU/col"
@@ -9,14 +9,18 @@ import (
 )
 
 var (
-  pattern = []col.Colour {col.Black(), col.DarkRed(), col.Red(), col.FlashRed(), col.LightRed(),
-                          col.FlashOrange(), col.DarkYellow(), col.Yellow(),
-                          col.FlashGreen(), col.Green(), col.DarkGreen(),
-                          col.DarkCyan(), col.Cyan(), col.FlashCyan(),
-                          col.LightBlue(), col.FlashBlue(), col.Blue(),
-                          col.Magenta(), col.FlashMagenta(), col.LightMagenta(),
+  pattern = []col.Colour {col.Black(), col.DarkRed(), col.Red(), col.FlashRed(),
+                          col.LightRed(), col.FlashOrange(), col.DarkYellow(), col.Yellow(),
+                          col.FlashGreen(), col.Green(), col.DarkGreen(), col.DarkCyan(),
+                          col.Cyan(), col.FlashCyan(), col.LightBlue(), col.FlashBlue(),
+                          col.Blue(), col.Magenta(), col.FlashMagenta(), col.LightMagenta(),
                           col.White(), col.LightGray(), col.Gray(), col.DarkGray(),
                           col.DarkBrown(), col.Brown(), col.LightBrown(), col.LightWhite()}
+/*/
+  pattern = []col.Colour {col.Black(), col.Brown(), col.FlashRed(), col.FlashOrange(),
+                          col.Yellow(), col.Green(), col.FlashBlue(),
+                          col.FlashMagenta(), col.Gray(), col.LightWhite()}
+/*/
   n = len(pattern)
 )
 
@@ -39,6 +43,8 @@ func colour (x0, y0 int) (col.Colour, bool) {
     switch comm, _ := kbd.Command(); comm {
     case kbd.Esc, kbd.This:
       break loop
+    case kbd.Go:
+      scr.MousePointer (true)
     case kbd.Here, kbd.Drag:
       if x0 <= xm && xm < x0 + n * w && y0 <= ym && ym <= y0 + w {
         i := (xm - x0) / w

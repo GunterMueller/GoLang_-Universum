@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220128 - license see µU.go
+// (c) Christian Maurer   v. 220203 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -21,7 +21,7 @@ package scr
 import
   "C"
 import (
-  "µU/ker"
+  "µU/env"
   "µU/obj"
   "µU/col"
   "µU/mode"
@@ -491,17 +491,17 @@ type
 }
 
 func UnderC() bool {
-  return ker.UnderC()
+  return env.UnderC()
 }
 
 func UnderX() bool {
-  return ker.UnderX()
+  return env.UnderX()
 }
 
 // Returns a new screen with the size of the physical screen.
 // The keyboard is switched to raw mode.
 func New (x, y uint, m mode.Mode) Screen {
-  if ker.UnderX() {
+  if env.UnderX() {
     return NewW (x, y, m)
   }
   return NewC (x, y, m)
@@ -510,7 +510,7 @@ func New (x, y uint, m mode.Mode) Screen {
 // Returns a new screen of the size given by the mode m.
 // The keyboard is switched to raw mode.
 func NewMax() Screen {
-  if ker.UnderX() {
+  if env.UnderX() {
     return NewMaxW()
   }
   return NewMaxC()
@@ -521,7 +521,7 @@ func NewMax() Screen {
 // Returns a new screen with upper left corner (x, y),
 // width w and height h. The keyboard is switched to raw mode.
 func NewWH (x, y, w, h uint) Screen {
-  if ker.UnderX() {
+  if env.UnderX() {
     return NewWHW (x, y, w, h)
   }
   return NewWHC (x, y, w, h)
@@ -529,7 +529,7 @@ func NewWH (x, y, w, h uint) Screen {
 
 // Returns the (X, Y)-resolution of the screen in pixels.
 func MaxRes() (uint, uint) {
-  if ker.UnderX() {
+  if env.UnderX() {
     return MaxResW()
   }
   return MaxResC()
@@ -537,7 +537,7 @@ func MaxRes() (uint, uint) {
 
 // Returns true, iff mode.Res(m) <= MaxRes().
 func Ok (m mode.Mode) bool {
-  if ker.UnderX() {
+  if env.UnderX() {
     return OkW (m)
   }
   return OkC (m)
@@ -551,7 +551,7 @@ func Lock() { lock() }
 func Unlock() { unlock() }
 
 func Act() Screen {
-  if ker.UnderX() {
+  if env.UnderX() {
     return actualW
   }
   return actualC

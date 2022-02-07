@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171122 - license see µU.go
+// (c) Christian Maurer   v. 220131 - license see µU.go
 
 import (
   "sort"

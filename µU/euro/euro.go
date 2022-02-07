@@ -1,9 +1,10 @@
 package euro
 
-// (c) Christian Maurer   v. 211104 - license see µU.go
+// (c) Christian Maurer   v. 220131 - license see µU.go
 
 import (
   "math"
+  "µU/ker"
   . "µU/obj"
   "µU/str"
   "µU/col"
@@ -14,10 +15,8 @@ import (
   "µU/pbox"
 )
 const (
-  hundred = uint(100)
-  tenMillions = uint(1e7)
-  undefined = uint(tenMillions * hundred)
-  nDigits = 7 // höchstens 9.999.999 Euro
+  undefined = uint(Limit * 100)
+  nDigits = 7 // Limit - 1
   length = nDigits + 1 /* Komma */ + 2
 )
 type (
@@ -45,8 +44,11 @@ func new_() Euro {
 }
 
 func new2 (e, c uint) Euro {
-  x := new(euro)
-  x.Set2 (e,c)
+  if e >= Limit || c >= 100 {
+    ker.PrePanic()
+  }
+  x := new_()
+  x.SetVal2 (e, c)
   return x
 }
 
@@ -94,39 +96,33 @@ func (x *euro) Val() uint {
 }
 
 func (x *euro) SetVal (c uint) {
-  if c < undefined {
-    x.cent = c
-  } else {
-println ("Scheißkacke Furzkacke")
-    x.Clr()
+  if c >= undefined {
+    c = undefined
   }
-}
-
-func (x *euro) Val2() (uint, uint) {
-  return x.cent / hundred, x.cent % hundred
-}
-
-func (x *euro) Set2 (e, c uint) bool {
-  if e >= tenMillions || c >= hundred {
-    x.cent = undefined
-  } else {
-    x.cent = hundred * e
-    x.cent += c
-  }
-  return x.cent < undefined && c < hundred
+  x.cent = c
 }
 
 func (x *euro) RealVal() float64 {
-  return float64 (x.cent) / float64 (hundred)
+  return float64 (x.cent) / 100
 }
 
-func (x *euro) SetReal (r float64) bool {
-  if r >= 0. && r < float64(tenMillions) {
-    x.cent = uint(math.Trunc (float64 (hundred) * r + 0.5))
-  } else {
-    x.cent = undefined
+func (x *euro) SetRealVal (r float64) {
+  if r < 0 || r >= float64(Limit) {
+    ker.PrePanic()
   }
-  return x.cent < undefined
+  x.cent = uint(100 * r)
+}
+
+func (x *euro) Val2() (uint, uint) {
+  return x.cent / 100, x.cent % 100
+}
+
+func (x *euro) SetVal2 (e, c uint) {
+  if c >= 100 || e >= undefined {
+    ker.PrePanic()
+  }
+  x.cent = 100 * e
+  x.cent += c
 }
 
 func (x *euro) Zero() bool {
@@ -149,7 +145,7 @@ func (x *euro) Add (Y ...Adder) {
 
 func (x *euro) Sum (Y, Z Adder) {
   y, z := x.imp (Y), x.imp (Z)
-  if y.cent == undefined || z.cent == undefined {
+  if y.cent >= undefined || z.cent >= undefined {
     return
   }
   x.cent += y.cent + z.cent
@@ -185,7 +181,7 @@ func (x *euro) Operate (Faktor, Divisor uint) {
   if x.cent == undefined { return }
   if Divisor == 0 { x.cent = undefined; return }
   if Faktor == 0 { x.cent = 0; return }
-  if x.cent / Divisor < (tenMillions * hundred) / Faktor {
+  if x.cent / Divisor < undefined / Faktor {
     x.cent *= Faktor
     x.cent += Divisor / 2
     x.cent /= Divisor
@@ -203,9 +199,9 @@ func toThe (q float64, n uint) float64 {
 
 func (x *euro) ChargeInterest (p, n uint) {
   if x.cent == undefined { return }
-  f := toThe (1.0 + float64 (p) / 10000.0, n)
+  f := toThe (1.0 + float64(p) / 10000., n)
   b := float64 (x.cent) * f + 0.5
-  if b < float64 (tenMillions * hundred) {
+  if b < float64(undefined) {
     x.cent = uint(math.Trunc (b))
   } else {
     x.cent = undefined
@@ -214,14 +210,14 @@ func (x *euro) ChargeInterest (p, n uint) {
 
 func (x *euro) Round (Y Euro) {
   yc := x.imp(Y).cent
-  if x.cent == undefined || yc == undefined { return }
+  if x.cent >= undefined || yc >= undefined { return }
   x.cent = yc * (x.cent / yc)
 }
 
 func (x *euro) String() string {
   if x.Empty() { return str.New (length) }
-  return n.StringFmt (x.cent / hundred, nDigits, false) + "," +
-         n.StringFmt (x.cent % hundred, 2, true)
+  return n.StringFmt (x.cent / 100, nDigits, false) + "," +
+         n.StringFmt (x.cent % 100, 2, true)
 }
 
 func (x *euro) Defined (s string) bool {
@@ -252,7 +248,7 @@ func (x *euro) Defined (s string) bool {
     }
     if hatKomma && k >= P[0] + L[0] || ! hatKomma {
       if L[0] <= nDigits {
-        x.cent = hundred * i
+        x.cent = 100 * i
         return true
       }
     }
@@ -262,7 +258,7 @@ func (x *euro) Defined (s string) bool {
     if L[0] > nDigits {
       return false
     } else {
-      x.cent = hundred * i
+      x.cent = 100 * i
     }
     if i, ok = n.Natural (t[1]); ! ok { return false }
     switch L[1] {
@@ -315,11 +311,11 @@ func (x *euro) Codelen() uint {
 }
 
 func (x *euro) Encode() Stream {
-  bs := make (Stream, 4)
-  bs = Encode (uint32(x.cent))
-  return bs
+  s := make(Stream, 4)
+  s = Encode (uint32(x.cent))
+  return s
 }
 
-func (x *euro) Decode (bs Stream) {
-  x.cent = uint(Decode (uint32(0), bs).(uint32))
+func (x *euro) Decode (s Stream) {
+  x.cent = uint(Decode (uint32(0), s).(uint32))
 }

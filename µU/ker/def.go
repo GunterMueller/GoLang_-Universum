@@ -1,6 +1,6 @@
 package ker
 
-// (c) Christian Maurer   v. 211202 - license see µU.go
+// (c) Christian Maurer   v. 220203 - license see µU.go
 
 import (
   "os"
@@ -12,10 +12,6 @@ const (
   MaxInt = math.MaxInt64
   MinInt = math.MinInt64
 )
-
-// exactly _one_ of the two following functions returns true
-func UnderC() bool { return underC() }
-func UnderX() bool { return underX() }
 
 func Binom (n, k uint) uint { return binom(n,k) }
 func Bezier (x, y []int, m, n, i uint) (int, int) { return bezier(x,y,m,n,i) }

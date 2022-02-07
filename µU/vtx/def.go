@@ -1,14 +1,13 @@
 package vtx
 
-// (c) Christian Maurer   v. 170919 - license see µU.go
+// (c) Christian Maurer   v. 220131 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
 )
 type
-// Vertexs with objects as content and positions on the screen.
-  Vertex interface {
+  Vertex interface { // Vertices with objects as content and positions on the screen
 
   Object // Empty means content is empty
   col.Colourer

@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 211226 - license see µU.go
+// (c) Christian Maurer   v. 220206 - license see µU.go
 //
 // >>> Pre: The preconditions of mouse are met.
 
@@ -37,7 +37,7 @@ type
   Go                      // to move the mouse
   Here; This; That        // to click on objects and
   Drag; Drop; Move        // to move them around with a mouse
-  To; There; Hither       // and to drag and drop them
+  To; There; Thither      // and to drag and drop them
   ScrollUp; ScrollDown    // for the mouse wheel
 //  Nav                     // to navigate in space with a 3d-mouse
   NComms                  // number of commands
@@ -70,7 +70,7 @@ type
    - Go:                      mouse moved with no button pressed
    - Here, This, That:        left, right, middle button pressed
    - Drag, Drop, Move:        mouse moved with corresponding button pressed
-   - To, There, Hither:       corresponding button released
+   - To, There, Thither:      corresponding button released
 //   - Navigate:                3d-mouse used
 
    commands of depth > 0 by combination with metakeys:

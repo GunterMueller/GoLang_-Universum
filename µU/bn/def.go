@@ -1,6 +1,6 @@
 package bn
 
-// (c) Christian Maurer   v. 201204 - license see µU.go
+// (c) Christian Maurer   v. 220131 - license see µU.go
 
 import (
   . "µU/obj"
@@ -17,6 +17,8 @@ type
   Stringer
   Valuator
   Printer
+  Adder
+//  Multiplier ?
 
 // Returns the width of x given by New.
   Width() uint
@@ -27,8 +29,6 @@ type
 
 // Returns the binary representation of x.
   Dual() string
-
-// Adder, Multiplier, further arithmetics ?
 }
 
 // Pre: 0 < n <= M.

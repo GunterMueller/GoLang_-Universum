@@ -1,53 +1,49 @@
 package gra
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 220204 - license see µU.go
 
 import (
+  "µU/ker"
   . "µU/obj"
   "µU/str"
   "µU/pseq"
 )
 
-func (x *graph) Name (s string) {
-  x.name = s
-  str.OffSpc (&x.name)
-  if str.Empty (x.name) { x.name = "tmp" } // TODO + pid
+func (x *graph) Name (n string) {
+  if str.Empty (n) { ker.Panic ("name is empty") }
+  str.OffSpc (&n)
+  x.name = n
   x.filename = x.name + "." + suffix
-  n := pseq.Length (x.filename)
-  if n > 0 {
-    buf := make(Stream, n)
-    f := pseq.New (buf)
-    f.Name (x.filename)
-    buf = f.Get().(Stream)
-    f.Fin()
-    x.Decode (buf)
-  }
 }
 
-func (x *graph) Rename (s string) {
-  x.name = s
-  str.OffSpc (&x.name)
-  x.filename = x.name + "." + suffix
-// rest of implementation TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+func (x *graph) Rename (n string) {
+  if str.Empty (n) { return }
+  str.OffSpc (&n)
+  x.Rename (n)
+}
+
+func (x *graph) File() pseq.PersistentSequence {
+  return x.file
+}
+
+func (x *graph) Load() {
   n := pseq.Length (x.filename)
-  if n > 0 {
-    buf := make(Stream, n)
-    f := pseq.New (buf)
-    f.Rename (x.name)
-//    buf = f.Get().(Stream)
-    f.Fin()
-//    x.Decode (buf)
-  }
+  if n == 0 { return }
+  buf := make(Stream, n)
+  x.file = pseq.New (buf)
+  x.file.Name (x.filename)
+  buf = x.file.Get().(Stream)
+  x.Decode (buf)
+}
+
+func (x *graph) Store() {
+  buf := x.Encode()
+  x.file = pseq.New (buf)
+  x.file.Name (x.filename)
+  x.file.Clr()
+  x.file.Put (buf)
 }
 
 func (x *graph) Fin() {
-  if ! str.Empty (x.name) {
-    buf := x.Encode()
-    f := pseq.New (buf)
-    f.Name (x.filename)
-    f.Clr()
-    f.Put (buf)
-    f.Fin()
-  }
-//  x.Clr()
+  x.file.Fin()
 }

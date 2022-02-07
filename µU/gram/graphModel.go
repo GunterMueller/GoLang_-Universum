@@ -1,6 +1,6 @@
 package gram
 
-// (c) Christian Maurer   v. 220119 - license see µU.go
+// (c) Christian Maurer   v. 220204 - license see µU.go
 
 import (
   . "µU/obj"
@@ -13,6 +13,7 @@ import (
   "µU/gra"
   "µU/vtx"
   "µU/edg"
+  "µU/pseq"
 )
 type
   graphModel struct {
@@ -64,7 +65,17 @@ func new_(d bool, v, e Any) GraphModel {
 func (x *graphModel) Background (n string) {
   x.bool = ! str.Empty (n)
   x.string = n
-//  ppm.Get (x.string, 0, 0)
+/*/
+  image := ppm.New()
+  image.Load (x.string)
+  scr.WriteImage (image.Colours(), 0, 0)
+/*/
+  filename := n + ".dat"
+  file := pseq.New(make([]byte, pseq.Length (filename)))
+  file.Name (filename)
+  file.Seek (0)
+  s := file.Get().(Stream)
+  scr.Decode (s, 0, 0)
   scr.Save1()
 }
 
@@ -85,7 +96,8 @@ func (x *graphModel) underMouse (a Any) bool {
 }
 
 func (x *graphModel) selected (v vtx.Vertex) bool {
-  loop: for {
+  loop:
+  for {
     c, _ := kbd.Command()
     scr.MousePointer (true)
     switch c {
@@ -164,11 +176,18 @@ func (x *graphModel) Write() {
   scr.Buf (false)
 }
 
+func (x *graphModel) near (i, k int) bool {
+  if i < k { i, k = k, i }
+  return i - k <= int(x.vertex.Wd() * scr.Wd1())
+}
+
 func (x *graphModel) Edit() {
+  var xm, ym, xm1, ym1, x0, y0, x1, y1 int
   x.Write()
   errh.Hint ("Graph editieren - Hilfe: F1, fertig: Esc")
-  loop: for {
-    c, i := kbd.Command()
+  loop:
+  for {
+    c, d := kbd.Command()
     scr.MousePointer (true)
     errh.DelHint()
     switch c {
@@ -176,98 +195,87 @@ func (x *graphModel) Edit() {
       break loop
     case kbd.Help:
       errh.Help (help)
-    case kbd.Here: // new vertex or change name of existing vertex:
-      if x.ExPred (x.underMouse) {
-        if i > 0 {
-          x.vertex = x.Get().(vtx.Vertex) // local: vertex
-          x.vertex.Edit()
-          x.Put (x.vertex)
-          x.Write()
-        }
-      } else {
-        x.vertex.Clr()
-        x.vertex.Mouse()
-        x.Ins (x.vertex)
-        x.Write()
-        x.vertex.Edit()
-        x.Put (x.vertex)
-        x.Write()
-      }
     case kbd.Del: // remove vertex
       if x.ExPred (x.underMouse) {
         x.Del()
       }
       x.Write()
-    case kbd.Drag: // move vertex
-      switch i {
-      case 0:
-        if x.ExPred (x.underMouse) { // vertex local
-          loop1: for {
-            kk, _ := kbd.Command()
-            scr.MousePointer (true)
-            switch kk {
-            case kbd.Drop:
-              x.vertex = x.Get().(vtx.Vertex)
-              xu, yu := x.vertex.Pos()
-              x.vertex.Mouse()
-              x.Put (x.vertex)
-              xv, yv := x.vertex.Pos()
-              x.Graph.Trav1Loc (func (a Any) {
-                                  x0, y0 := a.(edg.Edge).Pos0()
-                                  if x0 == xu && y0 == yu {
-                                    a.(edg.Edge).SetPos0 (xv, yv)
-                                  }
-                                  x1, y1 := a.(edg.Edge).Pos1()
-                                  if x1 == xu && y1 == yu {
-                                    a.(edg.Edge).SetPos1 (xv, yv)
-                                  }
-                                })
-              x.Write()
-            case kbd.Move:
-              break loop1
-            }
-          }
-        }
-      default: // remove vertex
+    case kbd.Go:
+      xm, ym = scr.MousePosGr()
+// scr.WriteMousePosGr (0, 0)
+    case kbd.Here: // new vertex or change name of existing vertex:
+      if x.ExPred (x.underMouse) { // change name
+        x.vertex = x.Get().(vtx.Vertex) // local: vertex
+        x.vertex.Edit()
+        x.Put (x.vertex)
+        x.Write()
+      } else { // new vertex
+        x.vertex.Clr()
+        xm, ym = scr.MousePosGr()
+// scr.WriteMousePosGr (0, 0)
+        x.vertex.Set (xm, ym)
+        x.Write()
+        x.Ins (x.vertex)
+        x.vertex.Edit()
+        x.Put (x.vertex)
+        x.Write()
+      }
+    case kbd.This:
+      if d == 0 {
         if x.ExPred (x.underMouse) {
-          x.Del()
-          x.Write()
+          x.vertex = x.Get().(vtx.Vertex)
+        }
+      } else {
+        if x.ExPred (x.underMouse) {
+          x.vertex = x.Get().(vtx.Vertex) // x.vertex is local
+          xm, ym = x.vertex.Pos()
+          x.Locate (true) // x.vertex is also colocal
         }
       }
-    case kbd.To: // connect vertices / remove edge:
-      if x.ExPred (x.underMouse) {
-        x.vertex = x.Get().(vtx.Vertex) // vertex local
-        xm, ym := x.vertex.Pos()
-        xm1, ym1 := xm, ym
-        x.Locate (true) // vertex also colocal
-        loop2: for {
-          kk, _ := kbd.Command()
-          scr.MousePointer (true)
-          switch kk {
-          case kbd.There:
+    case kbd.Drop:
+      if d == 0 {
+        x0, y0 = x.vertex.Pos()
+        xm, ym = scr.MousePosGr()
+        x.vertex.Set (xm, ym)
+        x.Put (x.vertex)
+        (x.vertex).Write()
+        x.Write()
+        x.Graph.Trav1Loc (func (a Any) { x1, y1 = a.(edg.Edge).Pos0()
+                                         if x.near (x1, x0) && x.near (y1, y0) {
+                                           a.(edg.Edge).SetPos0 (xm, ym)
+                                         }
+                                         x1, y1 = a.(edg.Edge).Pos1()
+                                         if x.near (x1, x0) && x.near (y1, y0) {
+                                           a.(edg.Edge).SetPos1 (xm, ym)
+                                         }
+                                         x.vertex.Write()
+                                       })
+        x.Write()
+      } else {
+        xm1, ym1 = scr.MousePosGr()
+        scr.Line (xm, ym, xm1, ym1)
+      }
+    case kbd.There:
+      if d == 0 {
+        x.vertex.Mouse()
+        (x.vertex).Write()
+        x.Put (x.vertex)
+        x.Write()
+      } else {
+        if x.ExPred (x.underMouse) {
+          if ! x.Located() {
+            x.vertex = x.Get().(vtx.Vertex) // x.vertex is local
             scr.LineInv (xm, ym, xm1, ym1)
-            xm1, ym1 = scr.MousePosGr()
-            scr.LineInv (xm, ym, xm1, ym1)
-          case kbd.Hither:
-            scr.LineInv (xm, ym, xm1, ym1)
-            if x.ExPred (x.underMouse) {
-              if x.Located () {
-                errh.Error0("Schleife - geht nicht")
-              } else {
-                xm1, ym1 := x.vertex.Pos()
-                x.edge.SetPos0(xm, ym)
-                x.edge.SetPos1(xm1, ym1)
-                x.edge.Edit()
-                x.Edge (x.edge)
-/*
-                if x.Edge.Val() == 0 { // XXX
-                  x.Del1()
-                }
-*/
-                x.Write()
-              }
-              break loop2
-            }
+            xm1, ym1 := scr.MousePosGr()
+            scr.Line (xm, ym, xm1, ym1)
+            x.edge.SetPos0 (xm, ym)
+            x.edge.SetPos1 (xm1, ym1)
+//            x.edge.Edit()
+            x.Edge (x.edge)
+//            if x.Edge.Val() == 0 { // XXX
+//              x.Del1()
+//            }
+            x.Write()
           }
         }
       }

@@ -1,12 +1,12 @@
 package edg
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 220204 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
   "µU/scr"
-  "µU/errh"
+//  "µU/errh"
   "µU/box"
   "µU/n"
 )
@@ -28,7 +28,7 @@ func new_(d bool, a Any) Edge {
   x := new(edge)
   x.bool = d
   if a == nil {
-    x.Any = uint(1)
+    a = uint(1)
   }
   CheckUintOrValuator(a)
   x.Any = Clone(a)
@@ -101,7 +101,7 @@ func (x *edge) Clone() Any {
 }
 
 func (x *edge) Val() uint {
-  return Val(x.Any)
+  return Val (x.Any)
 }
 
 func (x *edge) SetVal (n uint) {
@@ -135,6 +135,7 @@ func (x *edge) Write1 (a bool) {
     x0, y0 := (x.x0 + 4 * x.x1) / 5, (x.y0 + 4 * x.y1) / 5
     scr.CircleFull (x0, y0, 4)
   }
+  if x.Any == uint(1) { return }
   dx := int(x.wd * scr.Wd1() - scr.Wd1() / 2)
   x0, y0 := (x.x0 + x.x1 - dx) / 2, (x.y0 + x.y1) / 2
   switch x.Any.(type) {
@@ -146,7 +147,7 @@ func (x *edge) Write1 (a bool) {
   if ! x.label { return }
   x0 -= int(scr.Wd1()) / 2; y0 -= int(scr.Ht1()) / 2
   bx.Colours (f, b)
-  s := n.String(Val(x.Any))
+  s := n.String (Val(x.Any))
   bx.Wd(x.wd)
   bx.WriteGr (s, x0, y0)
 }
@@ -161,7 +162,7 @@ func (x *edge) Edit() {
     x.Any.(EditorGr).EditGr (x0, y0)
     return
   }
-  k := Val(x.Any)
+  k := Val (x.Any)
   s := n.String(k)
   bx.Wd (x.wd)
   bx.Colours (x.cf, x.cb)
@@ -180,8 +181,9 @@ func (x *edge) Codelen() uint {
        2 * 1 +
        4 * 4 +
        4 * x.cf.Codelen()
-  if c != 35 { errh.Error("Kacke", c) }
-  return 35
+//  if c != 35 { errh.Error("Kacke", c) }
+//  return 35
+  return c
 }
 
 func (x *edge) Encode() Stream {

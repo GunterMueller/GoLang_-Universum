@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 210309 - license see µU.go
+// (c) Christian Maurer   v. 220204 - license see µU.go
 
 import (
 //  "µU/ker"
@@ -113,8 +113,12 @@ func (x *vertex) Mouse() {
   if x.y + h >= ht { x.y = ht - 1 - h }
 }
 
-func (x *vertex) UnderMouse () bool {
-  return scr.UnderMouseGr (x.x, x.y, x.x, x.y, uint(x.height) * scr.Ht1())
+func (x *vertex) UnderMouse() bool {
+  t := int(x.height * scr.Ht1())
+  xm, ym  := scr.MousePosGr()
+  dx := xm - x.x; if dx < 0 { dx = -dx }
+  dy := ym - x.y; if dy < 0 { dy = -dy }
+  return dx < t && dy < t
 }
 
 func (x *vertex) Colours (f, b col.Colour) {

@@ -1,13 +1,13 @@
 package scr
 
-// (c) Christian Maurer   v. 220128 - license see µU.go
+// (c) Christian Maurer   v. 220203 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/Xlib.h>
 import
   "C"
 import (
-  "µU/ker"
+  "µU/env"
   "µU/obj"
   "µU/mode"
   "µU/scr/shape"
@@ -17,7 +17,7 @@ import (
 )
 
 func s() Screen {
-  if ker.UnderC() {
+  if env.UnderC() {
     return actualC
   }
   return actualW

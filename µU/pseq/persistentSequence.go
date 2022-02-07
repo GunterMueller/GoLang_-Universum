@@ -1,6 +1,6 @@
 package pseq
 
-// (c) Christian Maurer   v. 210409 - license see µU.go
+// (c) Christian Maurer   v. 220204 - license see µU.go
 //
 //  >  The following problem is not yet solved: Access to psequences
 //     is only possible, if the rights are set correspondingly.
@@ -84,7 +84,7 @@ func (x *persistentSequence) Fin() {
   x.file.Fin()
 }
 
-func length (n string) uint { // <-- uint64 !
+func length (n string) uint {
   return uint(internal.DirectLength (n))
 }
 
@@ -92,21 +92,10 @@ func Erase (n string) {
   internal.Erase (n)
 }
 
-/*
-func accessible (Name string, Zugriff Zugriffe) bool {
-  return file.accessible (Name, VAL (Zugriffe, ORD (Zugriff)))
-}
-*/
-
-func (x *persistentSequence) Name (N string) {
-//  if ! files.Defined (N) { Fehler }
-  x.name = N
-//  str.OffSpc (&x.name)
-//  n := str.Len (x.name)
-//  if filenames.Ex (x.name, n) {
-//    // Fehlersituation, siehe oben Bemerkung 1.
-//    Fehler
-//  }
+func (x *persistentSequence) Name (n string) {
+  if str.Empty (n) { Panic ("name is empty") }
+  str.OffSpc (&n)
+  x.name = n
   x.file.Name (x.name)
 //    $USER 
   x.pos = 0
@@ -122,7 +111,7 @@ func (x *persistentSequence) Rename (n string) {
   f := new_(byte(0))
   f.Name (n)
   if ! f.Empty() {
-    Panic ("a file with the name " + n + " already exister")
+    Panic ("a file with the name " + n + " already exists")
     f.Fin()
   }
   x.name = n

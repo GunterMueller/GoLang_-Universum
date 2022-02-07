@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220130 - license see µU.go
+// (c) Christian Maurer   v. 220207 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 //#include <stdlib.h>
@@ -75,7 +75,7 @@ type
           wd, ht uint
           nLines,
         nColumns uint
-          shadow [][]obj.Stream
+          shadow []obj.Stream
             buff bool
         wd1, ht1 uint
           cF, cB,
@@ -345,15 +345,9 @@ func (X *console) SaveGr (x, y int, w, h uint) {
   x0, y0 := X.x + x, X.y + y
   a, da := x * int(colourdepth), int(w * colourdepth)
   if X.mouseOn { X.MousePointer (false) }
-  shadow := make ([]obj.Stream, X.ht)
-  for i := 0; i < int(X.ht); i++ {
-    shadow[i] = make(obj.Stream, X.wd * colourdepth)
-  }
-  X.shadow = append (X.shadow, shadow)
-  n := len(X.shadow) - 1
   for i := 0; i < int(h); i++ {
     b := (int(width) * (y0 + i) + x0) * int(colourdepth)
-    copy (X.shadow[n][i][a:a+da], fbmem[b:b+da])
+    copy (X.shadow[i][a:a+da], fbmem[b:b+da])
   }
   if X.mouseOn { X.MousePointer (true) }
 }
@@ -368,9 +362,6 @@ func (X *console) Restore (l, c, w, h uint) {
 }
 
 func (X *console) RestoreGr (x, y int, w, h uint) {
-  n := len(X.shadow)
-  if n == 0 { return }
-  n--
   if uint(x) >= X.wd || uint(y) >= X.ht { return }
   if uint(x) + w >= X.wd { w = X.wd - uint(x) - 1 }
   if uint(y) + h >= X.ht { h = X.ht - uint(y) - 1 }
@@ -378,7 +369,7 @@ func (X *console) RestoreGr (x, y int, w, h uint) {
   a, da := x * int(colourdepth), int(w * colourdepth)
   for i := 0; i < int(h); i++ {
     b := (int(width) * (y0 + i) + x0) * int(colourdepth)
-    copy (fbmem[b:b+da], X.shadow[n][i][a:a+da])
+    copy (fbmem[b:b+da], X.shadow[i][a:a+da])
   }
 }
 
@@ -1947,9 +1938,9 @@ func (X *console) init_(x, y uint) {
     ker.Panic ("new console too large: " + a + " + " + b + " > " + c + " or " +
                                            d + " + " + e + " > " + f)
   }
-  X.shadow = make([][]obj.Stream, X.ht)
+  X.shadow = make([]obj.Stream, X.ht)
   for i := uint(0); i < X.ht; i++ {
-    X.shadow[i] = make([]obj.Stream, X.wd * 5) // * colourdepth)
+    X.shadow[i] = make(obj.Stream, X.wd * 5) // * colourdepth)
   }
   X.initMouse()
   X.SetLinewidth (linewd.Thin)

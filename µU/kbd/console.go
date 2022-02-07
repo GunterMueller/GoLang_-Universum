@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 211226 - license see µU.go
+// (c) Christian Maurer   v. 220206 - license see µU.go
 
 import (
   "os"
@@ -99,8 +99,8 @@ func inputC (B *byte, C *Comm, D *uint) {
         *C = That
       case mouse.Move:
         *C = Move
-      case mouse.Hither:
-        *C = Hither
+      case mouse.Thither:
+        *C = Thither
       }
       if shift || ctrl {
         *D = 1

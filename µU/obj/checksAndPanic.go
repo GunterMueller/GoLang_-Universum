@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 210225 - license see µU.go
+// (c) Christian Maurer   v. 220131 - license see µU.go
 
 import (
   "reflect"
@@ -10,11 +10,9 @@ import (
 
 func TypeEq (a, b Any) bool {
   x, y := reflect.TypeOf(a), reflect.TypeOf(b)
-/*
   if x != y {
     TypeNotEqPanic (a, b)
   }
-*/
   return x == y
 }
 

@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 210228 - license see µU.go
+// (c) Christian Maurer   v. 220203 - license see µU.go
 //
 // >>>  References:
 // >>>  CLR  = Cormen, Leiserson, Rivest        (1990)
@@ -11,6 +11,7 @@ import (
   "µU/ker"
   . "µU/obj"
   "µU/kbd"
+  "µU/pseq"
 )
 
 /*    vertex           neighbour                        neighbour            vertex
@@ -107,6 +108,7 @@ type (
   graph struct {
           name,
       filename string
+          file pseq.PersistentSequence
           bool "directed"
      nVertices,
         nEdges uint32

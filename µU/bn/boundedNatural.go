@@ -1,8 +1,9 @@
 package bn
 
-// (c) Christian Maurer   v. 210509 - license see µU.go
+// (c) Christian Maurer   v. 220131 - license see µU.go
 
 import (
+  "math"
   "µU/ker"
   . "µU/obj"
   "µU/col"
@@ -201,4 +202,112 @@ func (x *natural) Decimal (s string) {
     n = 2 * n + k
   }
   x.uint = n
+}
+
+func (x *natural) Zero() bool {
+  return x.uint == 0
+}
+
+func (x *natural) Add (Y ...Adder) {
+  n := len(Y)
+  y := make([]*natural, n)
+  for i:= 0; i < n; i++ {
+    y[i] = x.imp(Y[i])
+    x.uint += y[i].uint
+  }
+}
+
+func (x *natural) Sum (Y, Z Adder) {
+  y, z := x.imp(Y), x.imp(Z)
+println ("y =", y.uint)
+println ("z =", z.uint)
+  x.Copy (y)
+println ("x =", x.uint)
+  x.Add (z)
+println ("x =", x.uint)
+}
+
+func (x *natural) Sub (Y ...Adder) {
+  n := len(Y)
+  y := make([]*natural, n)
+  for i:= 0; i < n; i++ {
+    y[i] = x.imp(Y[i])
+    x.uint -= y[i].uint
+  }
+}
+
+func (x *natural) Diff (Y, Z Adder) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.Sub (z)
+}
+
+func (x *natural) One() bool {
+  return x.uint == 1
+}
+
+func (x *natural) Mul (Y ...Multiplier) {
+  n := len(Y)
+  y := make([]*natural, n)
+  for i:= 0; i < n; i++ {
+    y[i] = x.imp(Y[i])
+    x.uint*= y[i].uint
+  }
+}
+
+func (x *natural) Prod (Y, Z Multiplier) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.Mul (z)
+}
+
+func (x *natural) Quot (Y, Z Multiplier) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.DivBy (z)
+}
+
+func (x *natural) Sqr() {
+  q := x.uint * x.uint
+  x.uint = q
+}
+
+func (x *natural) Power (n uint) {
+  switch n {
+  case 0:
+    x.uint = 1
+  case 1:
+    return
+  default:
+    q := x.uint
+    for i := uint(1); i < n; i++ {
+      q *= x.uint
+    }
+    x.uint = q
+  }
+}
+
+func (x *natural) Invertible() bool {
+  return x.One()
+}
+
+func (x *natural) Invert() {
+  if x.uint != 1 {
+    ker.Panic ("cannot invert")
+  }
+}
+
+func (x *natural) DivBy (Y Multiplier) {
+  y := x.imp(Y)
+  q := float64(x.uint) / float64(y.uint)
+  if q == math.Trunc (q) {
+    x.uint = uint(q)
+  } else {
+    x.uint = invalid
+  }
+/*/
+  y := x.imp(Y)
+  if ! y.Invertible() { DivBy0Panic() }
+  x.uint /= y.uint
+/*/
 }

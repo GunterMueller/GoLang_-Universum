@@ -1,10 +1,11 @@
 package gra
 
-// (c) Christian Maurer   v. 200714 - license see µU.go
+// (c) Christian Maurer   v. 220204 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/adj"
+  "µU/pseq"
 )
 type
   Demo byte // for demonstration purposes
@@ -471,6 +472,18 @@ type
   Write()
 
   ExVtx (a Any) Any
+
+// Pre: x.Name was called.
+// Returns the corresponding file.
+  File() pseq.PersistentSequence
+
+// Pre: x.Name was called.
+// x is loaded from the corresponding file.
+  Load()
+
+// Pre: x.Name was called.
+// x is stored in the corresponding file.
+  Store()
 }
 
 // Pre: v is atomic or imlements Object.

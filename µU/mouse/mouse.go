@@ -1,6 +1,6 @@
 package mouse
 
-// (c) Christian Maurer   v. 220119 - license see µU.go
+// (c) Christian Maurer   v. 220206 - license see µU.go
 
 import (
   "os"
@@ -120,13 +120,13 @@ func catch() {
       case This, Drop:
         cmd = There
       case That, Move:
-        cmd = Hither
-      case To, There, Hither:
+        cmd = Thither
+      case To, There, Thither:
         cmd = Go
       }
     case leftButton:
       switch lastCommand {
-      case Go, To, There, Hither:
+      case Go, To, There, Thither:
         cmd = Here
       case Here, Drag:
         if moved {
@@ -140,7 +140,7 @@ func catch() {
       }
     case rightButton:
       switch lastCommand {
-      case Go, To, There, Hither:
+      case Go, To, There, Thither:
         cmd = This
       case This, Drop:
         if moved {
@@ -154,7 +154,7 @@ func catch() {
       }
     case middleButton:
       switch lastCommand {
-      case Go, To, There, Hither:
+      case Go, To, There, Thither:
       cmd = That
       case That, Move:
         if moved {

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 221206 - license see µU.go
+// (c) Christian Maurer   v. 211206 - license see µU.go
 
 type
   Multiplier interface {

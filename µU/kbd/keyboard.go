@@ -1,10 +1,9 @@
 package kbd
 
-// (c) Christian Maurer   v. 211226 - license see µU.go
-
-// >>> under development
+// (c) Christian Maurer   v. 220203 - license see µU.go
 
 import (
+  "µU/env"
   "µU/ker"
   . "µU/obj"
   "µU/char"
@@ -196,7 +195,7 @@ func init() {
 //  kK[lower]  = Lower
 //  kK[louder] = Louder
   lastbyte, lastcommand, lastdepth = 0, None, 0
-  under_C, under_X = ker.UnderC(), ker.UnderX()
+  under_C, under_X = env.UnderC(), env.UnderX()
   if under_X {
     xpipe = make(chan scr.Event)
     go catchX()

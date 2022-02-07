@@ -1,12 +1,15 @@
 package env
 
-// (c) Christian Maurer   v. 210314 - license see µU.go
+// (c) Christian Maurer   v. 220203 - license see µU.go
 
 // Returns true, iff the calling process runs under X.
 func UnderX() bool { return underX() }
 
+// Returns true, iff the calling process runs on a tty-console.
+func UnderC() bool { return underC() }
+
 // Returns true, iff 
-func Far() bool { return far() }
+// func Far() bool { return far() }
 
 // Pre: v does not contain characters, that must not be contained
 //      in an environment variable, as e.g. ' ' or '='.

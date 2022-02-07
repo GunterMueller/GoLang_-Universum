@@ -1,19 +1,19 @@
 package mouse
 
-// (c) Christian Maurer   v. 220123 - license see µU.go
+// (c) Christian Maurer   v. 220205 - license see µU.go
 
-// >>> This package is only needed in the implementations of µU/kbd/console.go and
-//     µU/scr/console.go; it must not be used elsewhere.
+// >>> This package is only needed in the implementations of
+//     µU/kbd/console.go and µU/scr/console.go; it must not be used elsewhere.
 //     Pre: The mouse device is /dev/input/mice.
 //          This device is readable for the world, and a mouse is working on it.
 
 type
   Command = byte; const (
   None = byte(iota)
-  Go                // mouse move without any button pressed
-  Here; This; That  // left, right, middle button pressed
-  Drag; Drop; Move  // move with left, right, middle button
-  To; There; Hither // left, right, middle button released
+  Go                 // mouse move without any button pressed
+  Here; This; That   // left, right, middle button pressed
+  Drag; Drop; Move   // move with left, right, middle button
+  To; There; Thither // left, right, middle button released
   nCommands
 )
 var

@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 210513 - license see µU.go
+// (c) Christian Maurer   v. 220207 - license see µU.go
 
 import (
   "µU/rand"
@@ -293,5 +293,5 @@ func (t *text) EditGr (x, y int) {
   bx.Wd (t.uint)
   bx.Colours (t.cF, t.cB)
   bx.EditGr (&t.string, x, y)
-  str.Move (&t.string, false)
+  str.Move (&t.string, true)
 }

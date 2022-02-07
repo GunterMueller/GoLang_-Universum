@@ -1,6 +1,6 @@
 package edg
 
-// (c) Christian Maurer   v. 170424 - license see µU.go
+// (c) Christian Maurer   v. 220131 - license see µU.go
 
 import (
   . "µU/obj"

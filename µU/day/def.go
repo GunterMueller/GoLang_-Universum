@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 210723 - license see µU.go
+// (c) Christian Maurer   v. 220131 - license see µU.go
 
 import (
   . "µU/obj"
