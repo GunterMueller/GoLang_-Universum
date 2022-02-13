@@ -145,15 +145,11 @@ void xPutPixel (XImage *i, int x, int y, unsigned long p) { ((*((i)->f.put_pixel
 
 void xDestroyImage (XImage *i) { ((*((i)->f.destroy_image))((i))); }
 
-// void xfree (char* s) { Xfree (s); }
-
 int etyp (XEvent *e) { return (*e).type; }
 
 unsigned int kState (XEvent *e) { return (*e).xkey.state; }
 
 unsigned int kCode (XEvent *e) { return (*e).xkey.keycode; }
-
-int imageErr (XImage *i) { if (i == NULL) { return 1; } else { return 0; } }
 */
 import
   "C"
@@ -469,7 +465,6 @@ func (X *xwindow) SaveGr (x, y int, w, h uint) {
   pixmap := C.XCreatePixmap (dpy, C.Drawable(X.win), C.uint(X.wd), C.uint(X.ht), planes)
   X.shadows = append (X.shadows, pixmap)
   n := len(X.shadows) - 1
-n = 0
   C.XCopyArea (dpy, C.Drawable(X.buffer), C.Drawable(X.shadows[n]), X.gc,
                C.int(x), C.int(y), C.uint(w), C.uint(h), C.int(x), C.int(y))
 }
@@ -487,7 +482,6 @@ func (X *xwindow) RestoreGr (x, y int, w, h uint) {
   n := len(X.shadows)
   if n == 0 { return }
   n--
-n = 0
   C.XCopyArea (dpy, C.Drawable(X.shadows[n]), C.Drawable(X.win),
                X.gc, C.int(x), C.int(y), C.uint(w), C.uint(h), C.int(x), C.int(y))
   C.XCopyArea (dpy, C.Drawable(X.win), C.Drawable(X.buffer),
@@ -799,8 +793,7 @@ func (X *xwindow) lines (xs, ys, xs1, ys1 []int, n bool) {
   l := len (xs); if len (ys) != l { return }
   s := make ([]C.XSegment, l)
   for i := 0; i < l; i++ {
-    s[i].x1, s[i].y1 = C.short(xs[i]), C.short(ys[i])
-    s[i].x2, s[i].y2 = C.short(xs1[i]), C.short(ys1[i])
+    s[i].x1, s[i].y1, s[i].x2, s[i].y2 = C.short(xs[i]), C.short(ys[i]), C.short(xs1[i]), C.short(ys1[i])
   }
   if ! n { C.XSetFunction (dpy, X.gc, C.GXinvert) }
   if ! X.buff { C.XDrawSegments (dpy, C.Drawable(X.win), X.gc, &s[0], C.int(l)) }
@@ -934,15 +927,11 @@ func (X *xwindow) rectangle (x, y, x1, y1 int, n, f bool) {
   w, h := x1 - x, y1 - y
   if f {
     if ! n { C.XSetFunction (dpy, X.gc, C.GXinvert) } // C.GXcopyInverted ? 
-    if ! X.buff {
-      C.XFillRectangle (dpy, C.Drawable(X.win), X.gc, C.int(x), C.int(y), C.uint(w), C.uint(h))
-    }
+    if ! X.buff { C.XFillRectangle (dpy, C.Drawable(X.win), X.gc, C.int(x), C.int(y), C.uint(w), C.uint(h)) }
     C.XFillRectangle (dpy, C.Drawable(X.buffer), X.gc, C.int(x), C.int(y), C.uint(w), C.uint(h))
   } else {
     if ! n { C.XSetFunction (dpy, X.gc, C.GXinvert) }
-    if ! X.buff {
-      C.XDrawRectangle (dpy, C.Drawable(X.win), X.gc, C.int(x), C.int(y), C.uint(w), C.uint(h))
-    }
+    if ! X.buff { C.XDrawRectangle (dpy, C.Drawable(X.win), X.gc, C.int(x), C.int(y), C.uint(w), C.uint(h)) }
     C.XDrawRectangle (dpy, C.Drawable(X.buffer), X.gc, C.int(x), C.int(y), C.uint(w), C.uint(h))
   }
   if ! n { C.XSetFunction (dpy, X.gc, C.GXcopy) }
@@ -1011,9 +1000,7 @@ func (X *xwindow) polygonFull (xs, ys []int, shape int, n bool) {
     p[i].x, p[i].y = C.short(xs[i]), C.short(ys[i])
   }
   if ! n { C.XSetFunction (dpy, X.gc, C.GXcopyInverted) }
-  if ! X.buff {
-    C.XFillPolygon (dpy, C.Drawable(X.win), X.gc, &p[0], C.int(l), C.int(shape), C.CoordModeOrigin)
-  }
+  if ! X.buff { C.XFillPolygon (dpy, C.Drawable(X.win), X.gc, &p[0], C.int(l), C.int(shape), C.CoordModeOrigin) }
   C.XFillPolygon (dpy, C.Drawable(X.buffer), X.gc, &p[0], C.int(l), C.int(shape), C.CoordModeOrigin)
   if ! n { C.XSetFunction (dpy, X.gc, C.GXcopy) }
   C.XFlush (dpy)

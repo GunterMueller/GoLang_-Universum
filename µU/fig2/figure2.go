@@ -1,10 +1,9 @@
 package fig2
 
-// (c) Christian Maurer   v. 220203 - license see µU.go
+// (c) Christian Maurer   v. 220210 - license see µU.go
 
 import (
   "math"
-  "µU/env"
   . "µU/obj"
   "µU/str"
   "µU/kbd"
@@ -210,7 +209,7 @@ func (f *figure) SetTyp (t typ) {
 func (f *figure) Select() {
   f.Clr()
   scr.SetFontsize (font.Normal)
-  n := uint(Rectangle)
+  n := uint(Points)
   y, x := scr.MousePos()
   sel.Select1 (name, Ntypes, lenName, &n, y, x, col.LightWhite(), col.Blue())
   if n < Ntypes {
@@ -364,16 +363,6 @@ func angle (x, y, x1, y1 int) float64 {
   return math.Acos ((a * c + b * d) / math.Sqrt ((a * a + b * b) * (c * c + d * d)))
 }
 
-func (f *figure) convex() bool {
-  switch f.typ {
-  case Rectangle, Circle, Ellipse, Image:
-    return true
-  case Polygon:
-    return scr.Convex (f.x, f.y)
-  }
-  return false
-}
-
 func (f *figure) UnderMouse (t uint) bool {
   a, b := scr.MousePosGr()
   return f.On (a, b, t)
@@ -393,17 +382,25 @@ func (f *figure) focus() (int, int) {
 
 func (f *figure) Move (dx, dy int) {
   if len(f.x) < 2 { return }
-  f.WriteInv()
   n := len(f.x)
   for i := 0; i < n; i++ {
     f.x[i] += dx
     f.y[i] += dy
   }
-  if f.typ == Image ||
-    (f.typ == Polygon || f.typ == Rectangle ||
-     f.typ == Circle || f.typ == Ellipse) && f.filled == true {
+  scr.ColourF (f.colour)
+  switch f.typ {
+  case Polygon:
+    scr.Polygon (f.x, f.y)
+  case Rectangle:
     scr.Rectangle (f.x[0], f.y[0], f.x[1], f.y[1])
-  } else {
+  case Circle:
+    scr.Circle (f.x[0], f.y[0], uint(f.x[1] - f.x[0]))
+  case Ellipse:
+    scr.Ellipse (f.x[0], f.y[0], uint(f.x[1] - f.x[0]), uint(f.y[0] - f.y[2]))
+  case Image:
+    scr.ColourF (col.White())
+    scr.Rectangle (f.x[0], f.y[0], f.x[1], f.y[1])
+  default:
     f.Write()
   }
 }
@@ -418,7 +415,8 @@ func (f *figure) Mark (m bool) {
 
 func (f *figure) SetColour (c col.Colour) {
   if f.typ != Image {
-    f.colour.Copy (c)
+    f.colour = c
+//    f.colour.Copy (c)
   }
 }
 
@@ -455,9 +453,11 @@ func (f *figure) writeSegments() {
 }
 
 func (f *figure) writePolygon() {
-  scr.Polygon (f.x, f.y)
   if f.filled {
     scr.PolygonFull (f.x, f.y)
+    scr.Polygon (f.x, f.y)
+  } else {
+    scr.Polygon (f.x, f.y)
   }
 }
 
@@ -554,9 +554,10 @@ func (f *figure) writeSegmentsInv() {
 }
 
 func (f *figure) writePolygonInv() {
-  scr.PolygonInv (f.x, f.y)
   if f.filled {
     scr.PolygonFullInv (f.x, f.y)
+  } else {
+    scr.PolygonInv (f.x, f.y)
   }
 }
 
@@ -726,11 +727,21 @@ func (f *figure) changeCurve() {
   }
 }
 
+func (f *figure) convex() bool {
+  switch f.typ {
+  case Rectangle, Circle, Ellipse, Image:
+    return true
+  case Polygon:
+    return scr.Convex (f.x, f.y)
+  }
+  return false
+}
+
 func (f *figure) editPolygon() {
   scr.ColourF (f.colour)
   xm, ym, n := f.x[0], f.y[0], 0
   loop:
-    for {
+  for {
     c, d := kbd.Command()
     scr.MousePointer (true)
     switch c {
@@ -749,10 +760,7 @@ func (f *figure) editPolygon() {
     case kbd.This:
       xm, ym = scr.MousePosGr()
       f.x, f.y = append (f.x, xm), append (f.y, ym)
-      f.filled = d > 0
-      if env.UnderC() { // console cannot fill polygons with shape C.Complex
-        f.filled = d > 0 && f.convex()
-      }
+      f.filled = d > 0 // && f.convex()
       break loop
     }
   }

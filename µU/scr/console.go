@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220207 - license see µU.go
+// (c) Christian Maurer   v. 220130 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 //#include <stdlib.h>
@@ -75,7 +75,7 @@ type
           wd, ht uint
           nLines,
         nColumns uint
-          shadow []obj.Stream
+          shadow [][]obj.Stream
             buff bool
         wd1, ht1 uint
           cF, cB,
@@ -110,6 +110,7 @@ var (
   fbmemsize uint
   fbmem, fbcop, emptyBackground obj.Stream
   visible bool // only for console switching
+  aa [][]uint8
 )
 
 func (x *console) Fin() {
@@ -345,9 +346,15 @@ func (X *console) SaveGr (x, y int, w, h uint) {
   x0, y0 := X.x + x, X.y + y
   a, da := x * int(colourdepth), int(w * colourdepth)
   if X.mouseOn { X.MousePointer (false) }
+  shadow := make ([]obj.Stream, X.ht)
+  for i := 0; i < int(X.ht); i++ {
+    shadow[i] = make(obj.Stream, X.wd * colourdepth)
+  }
+  X.shadow = append (X.shadow, shadow)
+  n := len(X.shadow) - 1
   for i := 0; i < int(h); i++ {
     b := (int(width) * (y0 + i) + x0) * int(colourdepth)
-    copy (X.shadow[i][a:a+da], fbmem[b:b+da])
+    copy (X.shadow[n][i][a:a+da], fbmem[b:b+da])
   }
   if X.mouseOn { X.MousePointer (true) }
 }
@@ -362,6 +369,9 @@ func (X *console) Restore (l, c, w, h uint) {
 }
 
 func (X *console) RestoreGr (x, y int, w, h uint) {
+  n := len(X.shadow)
+  if n == 0 { return }
+  n--
   if uint(x) >= X.wd || uint(y) >= X.ht { return }
   if uint(x) + w >= X.wd { w = X.wd - uint(x) - 1 }
   if uint(y) + h >= X.ht { h = X.ht - uint(y) - 1 }
@@ -369,7 +379,7 @@ func (X *console) RestoreGr (x, y int, w, h uint) {
   a, da := x * int(colourdepth), int(w * colourdepth)
   for i := 0; i < int(h); i++ {
     b := (int(width) * (y0 + i) + x0) * int(colourdepth)
-    copy (fbmem[b:b+da], X.shadow[i][a:a+da])
+    copy (fbmem[b:b+da], X.shadow[n][i][a:a+da])
   }
 }
 
@@ -1229,23 +1239,83 @@ func convex (x, y []int) bool {
   return math.Abs (s / math.Pi - float64(n - 2)) < epsilon
 }
 
+func check (x, y, x1, y1 int) {
+  if x > x1 { x, x1 = x1, x; y, y1 = y1, y }
+  X, X1 := float64(x), float64(x1)
+  Y, Y1 := float64(y), float64(y1)
+  if y1 > y {
+    m := (X1 - X) / (Y1 - Y)
+    for j := y; j <= y1; j++ {
+      k := float64(j - y)
+      for i := x; i <= x1; i++ {
+        if float64(i) - 0.5 <= X + k * m && X + k * m < float64(i) + 0.5 {
+          aa[i][j] += 1
+        }
+      }
+    }
+  }
+  if y1 < y {
+    m := (X1 - X) / (Y - Y1)
+    for j := y1; j <= y; j++ {
+      k := float64(y - j)
+      for i := x; i <= x1; i++ {
+        if float64(i) - 0.5 <= X + k * m && X + k * m < float64(i) + 0.5 {
+          aa[i][j] += 1
+        }
+      }
+    }
+  }
+}
+
+func contained (a, b int, as, bs []int) bool {
+  for i := 0; i < len(as); i++ {
+    if a == as[i] && b == bs[i] { return true }
+  }
+  return false
+}
+
 func (X *console) polygonFull (xs, ys []int, f pointFunc) {
   if ! ok2 (xs, ys) { return }
-  if ! convex (xs, ys) { return }
-  n := len(xs)
-  if n <= 2 { return }
-  x, y := 0, 0
-  for i := 0; i < n; i++ {
-    x += xs[i]
-    y += ys[i]
+  if convex (xs, ys) {
+    n := len(xs)
+    if n <= 2 { return }
+    x, y := 0, 0
+    for i := 0; i < n; i++ {
+      x += xs[i]
+      y += ys[i]
+    }
+    x /= n
+    y /= n
+    X.line (xs[0], ys[0], xs[n-1], ys[n-1], X.setPol)
+    for i := 1; i < n; i++ {
+      X.line (xs[i-1], ys[i-1], xs[i], ys[i], X.setPol)
+    }
+    X.st (x, y, f)
+  } else {
+    xmin, xmax, ymin, ymax := xs[0], xs[0], ys[0], ys[0]
+    for i := 1; i < len(xs); i++ {
+      if xs[i] < xmin { xmin = xs[i] }; if xs[i] > xmax { xmax = xs[i] }
+    }
+    for i := 1; i < len(ys); i++ {
+      if ys[i] < ymin { ymin = ys[i] }; if ys[i] > ymax { ymax = ys[i] }
+    }
+    n := len(xs)
+    for i := 0; i < n; i++ {
+      check (xs[i], ys[i], xs[(i+1)%n], ys[(i+1)%n])
+    }
+    for y := ymin; y <= ymax; y++ {
+      innen := false
+      for x := xmin; x <= xmax; x++ {
+        if aa[x][y] == 1 && ! contained (x, y, xs, ys) {
+          innen = ! innen
+        }
+        if innen {
+          X.Point (x, y)
+        }
+      }
+    }
+    X.Polygon (xs, ys)
   }
-  x /= n
-  y /= n
-  X.line (xs[0], ys[0], xs[n-1], ys[n-1], X.setPol)
-  for i := 1; i < n; i++ {
-    X.line (xs[i-1], ys[i-1], xs[i], ys[i], X.setPol)
-  }
-  X.st (x, y, f)
 }
 
 func (X *console) PolygonFull (xs, ys []int) {
@@ -1938,9 +2008,13 @@ func (X *console) init_(x, y uint) {
     ker.Panic ("new console too large: " + a + " + " + b + " > " + c + " or " +
                                            d + " + " + e + " > " + f)
   }
-  X.shadow = make([]obj.Stream, X.ht)
+  X.shadow = make([][]obj.Stream, X.ht)
   for i := uint(0); i < X.ht; i++ {
-    X.shadow[i] = make(obj.Stream, X.wd * 5) // * colourdepth)
+    X.shadow[i] = make([]obj.Stream, X.wd * 5) // * colourdepth)
+  }
+  aa = make([][]uint8, Wd())
+  for x := 0; x < int(Wd()); x++ {
+    aa[x] = make([]uint8, Ht())
   }
   X.initMouse()
   X.SetLinewidth (linewd.Thin)

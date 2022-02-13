@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 220108 - license see µU.go
+// (c) Christian Maurer   v. 220211 - license see µU.go
 
 import (
   "µU/ker"
@@ -128,7 +128,7 @@ func select1 (s []string, h, w uint, n *uint, l, c uint, f, b col.Colour) {
   ls := uint(len(s))
 //  if ls + 1 < h { h = ls + 1 }
   bx.Wd (w)
-  Select (func (k, l, c uint, f, b col.Colour) {
+  select_(func (k, l, c uint, f, b col.Colour) {
             if k < ls { bx.Colours (f, b); bx.Write (s[k], l, c) }
           }, h, h, w, n, l, c, f, b)
 }
