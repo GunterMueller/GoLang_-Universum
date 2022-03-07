@@ -1,6 +1,6 @@
 package field
 
-// (c) Christian Maurer   v. 211212 - license see µU.go
+// (c) Christian Maurer   v. 220228 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,76 +9,91 @@ import (
   "µU/errh"
   "µU/text"
 )
-const (
-  undef = iota
-  Prosa
-  Klassik
-  Roman
-  HistoRoman
-  RomRoman
-  ItalienRoman
-  Krimi
-  RomKrimi
-  ItalienKrimi
-  Kunst
-  Ägypten
-  Etrurien
-  Sachbuch
-  Theater
-  Kinderbuch
-  ScienceFiction
-  Märchen
-  nFields
+const
+  l = 20
+var (
+  lx = []string {"                      ", // W l   W r  P    G r   G l
+                 "Ägypten             äg", // 6 h
+                 "Antike Biographie   ab", // 6 v
+                 "Griechischer Text   gt", // 5 h
+                 "Lateinischer Text   lt", // 5 h
+                 "Rom-Roman           rr", // 5 v        5
+                 "Rom-Krimi           rk", //            5 6
+                 "Historischer Roman  hr", // 4 hv 
+//                                         // 3 h
+                 "Italien-Roman       ir", // 3 v
+                 "Klassische Literaturkl", //       8 h
+                 "Neuere Literatur    nl", //       8 v
+                 "Theaterstück(e)     th", //       7 hv
+                 "Science Fiction     sf", //       7 v
+                 "Italien-Krimi       ik", //       6 hv  4
+//                                         //       5 hv  3
+                 "Horror              ho", //       5 v
+                 "Krimi               KR", //       4 hv
+                 "Jugendbuch          ju", //       3 hv
+                 "Englisch            en", // 2 
+                 "Französisch         fr", // 2 
+                 "Italienisch         it", // 2 
+                 "Griechisch          gr", // 2 
+                 "Lateinisch          la", // 2 
+                 "Sachbuch            sb", // 
+                 "Pflanzen            pf", // 
+                }
+/*/
+  lx = []string {"                      ", // W l   W r  P    G r   G l
+                 "Ägypten             äg", // 6 h
+                 "Antike Biographie   ab", // 6 v
+                 "Griechischer Text   gt", // 5 h
+                 "Lateinischer Text   lt", // 5 h
+                 "Rom-Roman           rr", // 5 v        5
+                 "Rom-Krimi           rk", //            5 6
+                 "Historischer Roman  hr", // 4 hv 
+//                                         // 3 h
+                 "Italien-Roman       ir", // 3 v
+                 "Klassische Literaturkl", //                 4 hv
+                 "Neuere Literatur    nl", //       8 hv
+                 "Theaterstück(e)     th", //       7 hv
+                 "Science Fiction     sf", //       7 v
+                 "Italien-Krimi       ik", //       6 hv  4
+//                                         //       5 hv  3
+                 "Horror              ho", //       5 v
+                 "Krimi               KR", //       4 hv
+                 "Jugendbuch          ju", //       3 hv
+                 "Englisch            en", // 2 
+                 "Französisch         fr", // 2 
+                 "Italienisch         it", // 2 
+                 "Griechisch          gr", // 2 
+                 "Lateinisch          la", // 2 
+                 "Sachbuch            sb", // 
+                 "Pflanzen            pf", // 
+                }
+/*/
+  n = len(lx)
+  tx = make([]string, n)
+  cx = make([]Stream, n)
 )
-var tx = [nFields]string {"                  ",
-                          "Prosa             ",
-                          "Klassik           ",
-                          "Roman             ",
-                          "Historischer Roman",
-                          "Rom-Roman         ",
-                          "Italien-Roman     ",
-                          "Krimi             ",
-                          "Rom-Krimi         ",
-                          "Italien-Krimi     ",
-                          "Kunst             ",
-                          "Ägypten           ",
-                          "Etrurien          ",
-                          "Sachbuch          ",
-                          "Theaterstück(e)   ",
-                          "Science Fiction   ",
-                          "Kinderbuch        ",
-                          "Märchenbuch       "}
-var kx = [nFields]string {"  ",
-                          "p ",
-                          "kl",
-                          "r ",
-                          "h ",
-                          "rr",
-                          "ir",
-                          "k ",
-                          "rk",
-                          "ik",
-                          "ku",
-                          "ä ",
-                          "e ",
-                          "s ",
-                          "t ",
-                          "sf",
-                          "ki",
-                          "m "}
 type
   field struct {
-                int "ordinal of the constant"
                 text.Text
-                }
+               }
 var
   cF, cB = col.LightWhite(), col.Blue()
 
+func init() {
+  for i := 0; i < n; i++ {
+    lx[i] = str.Lat1 (lx[i])
+  }
+  tx = make([]string, n)
+  for i := 0; i < n; i++ {
+    tx[i] = lx[i][0:l]
+    cx[i] = Stream(lx[i][l:l+2])
+  }
+}
+
 func new_() Field {
   x := new(field)
-  x.int = undef
-  x.Text = text.New (18)
-  x.Text.Defined (tx[undef])
+  x.Text = text.New (l)
+  x.Text.Defined (tx[0])
   return x
 }
 
@@ -88,23 +103,35 @@ func (x *field) imp (Y Any) *field {
 }
 
 func (x *field) Empty() bool {
-  return x.int == undef
+  return x.Text.Empty()
 }
 
 func (x *field) Clr() {
-  x.int = undef
+  x.Text.Clr()
 }
 
 func (x *field) Eq (Y Any) bool {
-  return x.int == x.imp(Y).int
+  return x.Text.Eq (x.imp(Y).Text)
+}
+
+func (x* field) pos() int {
+  if x.Text.String()[0] == 'Ä' {
+    return 1
+  }
+  for i := 0; i < n; i++ {
+    if x.Text.String() == tx[i] {
+      return i
+    }
+  }
+  return l
 }
 
 func (x *field) Less (Y Any) bool {
-  return x.int < x.imp(Y).int
+  return x.pos() < x.imp(Y).pos()
 }
 
 func (x *field) Copy (Y Any) {
-  x.int = x.imp(Y).int
+  x.Text.Copy (x.imp(Y).Text)
 }
 
 func (x *field) Clone() Any {
@@ -115,21 +142,23 @@ func (x *field) Clone() Any {
 
 func (x *field) Write (l, c uint) {
   x.Text.Colours (cF, cB)
-  x.Text.Defined (tx[x.int])
   x.Text.Write (l, c)
 }
 
 func (x *field) Edit (l, c uint) {
   x.Write (l, c)
-  errh.Hint ("p kl r h rr ir k rk ik k ä e s t sf ki m")
+  h := ""
+  for i := 1; i < n; i++ {
+    h += string(cx[i]) + " "
+  }
+  errh.Hint (h)
   loop:
   for {
     x.Text.Colours (cF, cB)
     x.Text.Edit (l, c)
-    for i := 0; i < nFields; i++ {
-      s := x.Text.String()
-      if s[0:2] == kx[i] || str.Sub0 (s, tx[i]) {
-        x.int = i
+    s := x.Text.String()
+    for i := 0; i < n; i++ {
+      if s[0:2] == string(cx[i]) || str.Sub0 (s, tx[i]) {
         x.Text.Defined (tx[i])
         x.Write (l, c)
         break loop
@@ -141,23 +170,19 @@ func (x *field) Edit (l, c uint) {
 }
 
 func (x *field) String() string {
-  x.Text.Defined (tx[x.int])
-  t := x.Text.String()
-  str.OffSpc1 (&t)
-  return t
+  return x.Text.String()
 }
 
 func (x *field) TeX() string {
-  x.Text.Defined (tx[x.int])
   return x.Text.TeX()
 }
 
 func (x *field) Defined (s string) bool {
-  for i := 0; i < nFields; i++ {
+  s = str.Lat1 (s)
+  for i := 0; i < n; i++ {
     t := tx[i]
     str.OffSpc1 (&t)
-	  if s == t || s == kx[i] {
-      x.int = i
+	  if s == t || s == string(cx[i]) {
       x.Text.Defined (tx[i])
       return true
     }
@@ -166,16 +191,24 @@ func (x *field) Defined (s string) bool {
 }
 
 func (x *field) Codelen() uint {
-  return 1
+  return 2
 }
 
 func (x* field) Encode() Stream {
-  s := make(Stream, 1)
-  s[0] = byte(x.int)
-  return s
+  s := x.Text.String()
+  for i := 0; i < n; i++ {
+    if s == tx[i] {
+      return cx[i]
+    }
+  }
+  return Stream("xx")
 }
 
 func (x* field) Decode (s Stream) {
-  x.int = int(s[0])
-  x.Text.Defined (tx[x.int])
+  x.Text.Clr()
+  for i := 0; i < n; i++ {
+    if string(s) == string(cx[i]) {
+      x.Text.Defined (tx[i])
+    }
+  }
 }

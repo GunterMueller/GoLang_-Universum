@@ -1,0 +1,197 @@
+package field
+
+// (c) Christian Maurer   v. 220221 - license see µU.go
+
+import (
+  . "µU/obj"
+  "µU/col"
+  "µU/str"
+  "µU/errh"
+  "µU/text"
+)
+const (
+  undef = iota
+  Prosa
+  Klassik
+  Roman
+  HistoRoman
+  RomRoman
+  ItalienRoman
+  Krimi
+  RomKrimi
+  ItalienKrimi
+  Kunst
+  Ägypten
+  Etrurien
+  Sachbuch
+  Theater
+  Kinderbuch
+  ScienceFiction
+  Märchen
+/*/
+  Griechischer Text
+  Lateinischer Text
+  Römische Personen
+/*/
+  nFields
+)
+var (
+  tx = [nFields]string {"                  ",
+                        "Prosa             ",
+                        "Klassik           ",
+                        "Roman             ",
+                        "Historischer Roman",
+                        "Rom-Roman         ",
+                        "Italien-Roman     ",
+                        "Krimi             ",
+                        "Rom-Krimi         ",
+                        "Italien-Krimi     ",
+                        "Kunst             ",
+                        "Ägypten           ",
+                        "Etrurien          ",
+                        "Sachbuch          ",
+                        "Theaterstück(e)   ",
+                        "Science Fiction   ",
+                        "Kinderbuch        ",
+                        "Märchenbuch       "}
+  code = [nFields]string {"  ",
+                          "p ",
+                          "kl",
+                          "r ",
+                          "h ",
+                          "rr",
+                          "ir",
+                          "k ",
+                          "rk",
+                          "ik",
+                          "ku",
+                          "ä ",
+                          "e ",
+                          "s ",
+                          "t ",
+                          "sf",
+                          "ki",
+                          "m "}
+)
+type
+  field struct {
+                string // len 2
+                text.Text
+                }
+var
+  cF, cB = col.LightWhite(), col.Blue()
+
+func new_() Field {
+  x := new(field)
+  x.string = code[0]
+  x.Text = text.New (18)
+  x.Text.Defined (tx[undef])
+  return x
+}
+
+func (x *field) imp (Y Any) *field {
+  y := Y.(*field)
+  return y
+}
+
+func (x *field) Empty() bool {
+  return x.string == code[0]
+}
+
+func (x *field) Clr() {
+  x.string = code[0]
+}
+
+func (x *field) Eq (Y Any) bool {
+  return x.string == x.imp(Y).string
+}
+
+func (x *field) Less (Y Any) bool {
+  return x.string < x.imp(Y).string
+}
+
+func (x *field) Copy (Y Any) {
+  x.string = x.imp(Y).string
+}
+
+func (x *field) Clone() Any {
+  y := new_()
+  y.Copy (x)
+  return y
+}
+
+func (x *field) Write (l, c uint) {
+  x.Text.Colours (cF, cB)
+  x.Text.Defined (x.string)
+  x.Text.Write (l, c)
+}
+
+func (x *field) lookup (c string) string {
+  if len (c) == 1 {
+    c += " "
+  }
+  for i := 0; i < nFields; i++ {
+	  if c == code[i] {
+      return tx[i]
+    }
+  }
+  return "bluse"
+}
+
+func (x *field) Edit (l, c uint) {
+  x.Write (l, c)
+  errh.Hint ("p kl r h rr ir k rk ik k ä e s t sf ki m")
+  loop:
+  for {
+    x.Text.Colours (cF, cB)
+    x.Text.Edit (l, c)
+    for i := 0; i < nFields; i++ {
+      s := x.Text.String()
+      if s[0:2] == code[i] || str.Sub0 (s, tx[i]) {
+        x.Text.Defined (tx[i])
+        x.Write (l, c)
+        break loop
+      }
+    }
+    errh.Error0 ("falsche Eingabe")
+  }
+  errh.DelHint()
+}
+
+func (x *field) String() string {
+  return x.lookup (x.string)
+}
+
+func (x *field) TeX() string {
+  x.Text.Defined (x.lookup (x.string))
+  return x.Text.TeX()
+}
+
+func (x *field) Defined (s string) bool {
+  if len(s) == 1 {
+    s += " "
+  }
+  for i := 0; i < nFields; i++ {
+    t := tx[i]
+    str.OffSpc1 (&t)
+	  if s == t || s == code[i] {
+      x.string = code[i]
+      x.Text.Defined (tx[i])
+      return true
+    }
+  }
+  return false
+}
+
+func (x *field) Codelen() uint {
+  return 2
+}
+
+func (x* field) Encode() Stream {
+  return Stream(x.string)
+}
+
+func (x* field) Decode (s Stream) {
+  x.string = string(s)
+  x.Text.Defined (x.lookup (x.string))
+}

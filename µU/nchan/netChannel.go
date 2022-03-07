@@ -1,10 +1,11 @@
 package nchan
 
-// (c) Christian Maurer   v. 210228 - license see µU.go
+// (c) Christian Maurer   v. 220214 - license see µU.go
 
 import (
+  "errors"
   "net"
-  . "µU/ker"
+  "µU/ker"
   "µU/time"
   . "µU/obj"
   "µU/errh"
@@ -32,17 +33,17 @@ type
 
 func (x *netChannel) panicIfErr() {
   if x.error != nil {
-    Panic (x.error.Error())
+    ker.Panic (x.error.Error())
   }
 }
 
 func new_(a Any, me, i uint, n string, p uint16) NetChannel {
-  if me == i { Panic("me == i") }
+  if me == i { ker.Panic ("me == i") }
   x := new(netChannel)
   if a == nil {
     x.Any, x.uint = nil, maxWidth
   } else {
-    x.Any, x.uint = Clone(a), Codelen(a)
+    x.Any, x.uint = Clone (a), Codelen (a)
   }
   x.in, x.out = make(chan Any), make(chan Any)
   x.Stream = make(Stream, x.uint)
@@ -59,41 +60,46 @@ func new_(a Any, me, i uint, n string, p uint16) NetChannel {
       if x.Conn, x.error = net.Dial (network, dialaddr); x.error == nil {
         break
       }
-      errh.Hint(x.error.Error())
+      errh.Hint (x.error.Error())
       time.Msleep (500)
     }
   }
   return x
 }
 
-func (x *netChannel) Send (a Any) {
-  if x.Conn == nil { Panic ("no Conn") }
+func (x *netChannel) Send (a Any) error {
+  if x.Conn == nil {
+    return errors.New ("no Connection:")
+  }
   if x.Any == nil {
     bs := Encode(a)
     bs = append (Encode(Codelen(a)), bs...)
     _, x.error = x.Conn.Write (bs)
   } else {
     CheckTypeEq (x.Any, a)
-    _, x.error = x.Conn.Write(Encode(a))
+    _, x.error = x.Conn.Write (Encode(a))
   }
+  return x.error
 }
 
 func (x *netChannel) Recv() Any {
-  if x.Conn == nil { Panic ("no Conn") }
+  if x.Conn == nil {
+    ker.Panic ("no Conn")
+  }
   if x.Any == nil {
     _, x.error = x.Conn.Read (x.Stream[:C0])
     if x.error == nil {
-      return Clone(x.Any)
+      return Clone (x.Any)
     }
     x.uint = Decode (uint(0), x.Stream[:C0]).(uint)
     _, x.error = x.Conn.Read (x.Stream[C0:C0+x.uint])
     if x.error != nil {
-      return Clone(x.Any)
+      return Clone (x.Any)
     }
     return x.Stream[C0:C0+x.uint]
   }
   _, x.error = x.Conn.Read (x.Stream)
-  return Decode(Clone(x.Any), x.Stream)
+  return Decode (Clone(x.Any), x.Stream)
 }
 
 func (x *netChannel) Fin() {

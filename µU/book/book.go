@@ -1,6 +1,6 @@
 package book
 
-// (c) Christian Maurer   v. 211213 - license see µU.go
+// (c) Christian Maurer   v. 220228 - license see µU.go
 
 import (
   . "µU/obj"
@@ -216,7 +216,9 @@ func (x *book) Write (l, c uint) {
   x.Field.Write (l + lg, c + cg)
   x.author.Write (l + la, c + ca)
   x.coauthor.Write (l + lk, c + ck)
-  x.Natural.Write (l + ln, c + cn)
+  if x.Natural.Val() != 0 {
+    x.Natural.Write (l + ln, c + cn)
+  }
   x.title.Write (l + lt, c + ct)
   x.location.Write (l + lf, c + cf)
 }
@@ -302,11 +304,11 @@ func (x *book) TeX() string {
     lastField.Copy (x.Field)
     s += "\\bigskip\\line{\\bfbig\\hfil " + x.Field.TeX() + "\\hfil}\\medskip\\nopagebreak\n"
   }
-  s += "{\\bi " + x.author.TeX()
+  s += "\\vskip-5pt\n{\\bi " + x.author.TeX()
   if ! x.coauthor.Empty() {
     s += "/" + x.coauthor.TeX()
   }
-  s += "}\n\\newline"
+  s += "}\\newline\\nopagebreak\n"
   sn := x.Natural.String()
   if sn == "0" { sn = "" }
   s += "\\hbox to 16pt{\\hfil"
@@ -315,7 +317,7 @@ func (x *book) TeX() string {
   if ! x.location.Empty() {
     s += " (" + x.location.TeX() + ")"
   }
-  s += "\n\\par\\smallpagebreak\n"
+  s += "\n\\par\\smallpagebreak"
   return s
 }
 

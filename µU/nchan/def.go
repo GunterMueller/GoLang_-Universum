@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 180812 - license see µU.go
+// (c) Christian Maurer   v. 220214 - license see µU.go
 
 import
   . "µU/obj"
@@ -17,7 +17,7 @@ type
 // the calling process is a server, on the actual subchannel of x)
 // to the communication partner of the calling process.
 // Returns otherwise an appropriate error.
-  Send (a Any)
+  Send (a Any) error
 
 // Returns a slice of bytes, if x was created by New with nil as first argument.
 // In this case, the client is responsible for decoding that slice,
