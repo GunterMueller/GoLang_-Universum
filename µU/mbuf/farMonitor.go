@@ -1,6 +1,6 @@
 package mbuf
 
-// (c) Christian Maurer   v. 201101 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -13,23 +13,23 @@ const (
 )
 type
   farMonitor struct {
-                    Any "pattern object"
+                    any "pattern object"
                     buf.Buffer
                     fmon.FarMonitor
                     }
 
-func newfm (a Any, h string, p uint16, s bool) MBuffer {
+func newfm (a any, h string, p uint16, s bool) MBuffer {
   CheckAtomicOrObject(a)
   x := new(farMonitor)
-  x.Any = Clone (a)
+  x.any = Clone (a)
   x.Buffer = buf.New (a)
-  ps := func (a Any, i uint) bool {
+  ps := func (a any, i uint) bool {
           if i == get {
             return x.Buffer.Num() > 0
           }
           return true // ins
         }
-  fs := func (a Any, i uint) Any {
+  fs := func (a any, i uint) any {
           if i == get {
             return x.Buffer.Get()
           }
@@ -44,10 +44,10 @@ func (x *farMonitor) Fin() {
   x.Fin()
 }
 
-func (x *farMonitor) Ins (a Any) {
+func (x *farMonitor) Ins (a any) {
   x.F (a, ins)
 }
 
-func (x *farMonitor) Get() Any {
-  return x.F (x.Any, get)
+func (x *farMonitor) Get() any {
+  return x.F (x.any, get)
 }

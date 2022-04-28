@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 200928 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   "runtime"
@@ -15,20 +15,20 @@ type (
   NFunc func() uint
   NFuncSpectrum func (uint) uint
 // operations
-  Op func (Any)
-  OpSpectrum func (Any, uint)
+  Op func (any)
+  OpSpectrum func (any, uint)
 // functions
-  Func func (Any) Any
-  FuncSpectrum func (Any, uint) Any
+  Func func (any) any
+  FuncSpectrum func (any, uint) any
 // predicates
-  Pred func (Any) bool
-  PredSpectrum func (Any, uint) bool
+  Pred func (any) bool
+  PredSpectrum func (any, uint) bool
 // conditioned operations
-  CondOp func (Any, bool)
-  CondOpSpectrum func (Any, bool, uint)
+  CondOp func (any, bool)
+  CondOpSpectrum func (any, bool, uint)
 // relations
-  Rel func (Any, Any) bool
-  RelSpectrum func (Any, Any, uint) bool
+  Rel func (any, any) bool
+  RelSpectrum func (any, any, uint) bool
 )
 
 // Stmt[Spectrum]
@@ -36,8 +36,8 @@ func Nothing() { runtime.Gosched() }
 func NothingSp (i uint) { Nothing() }
 
 // Op[Spectrum]
-func Ignore (a Any) { }
-func IgnoreSp (a Any, i uint) { }
+func Ignore (a any) { }
+func IgnoreSp (a any, i uint) { }
 
 // NFunc[Spectrum]
 func Null() uint { return 0 }
@@ -48,26 +48,26 @@ func True() bool { return true }
 func TrueSp (i uint) bool { return true }
 
 // Func[Spectrum]
-func Id (a Any) Any { return a }
-func IdSp (a Any, i uint) Any { return a }
-func Nil (a Any) Any { return nil }
-func NilSp (a Any, i uint) Any { return nil }
+func Id (a any) any { return a }
+func IdSp (a any, i uint) any { return a }
+func Nil (a any) any { return nil }
+func NilSp (a any, i uint) any { return nil }
 
 // Pred[Spectrum]
-func AllTrue (a Any) bool { return true }
-func AllTrueSp (a Any, i uint) bool { return true }
+func AllTrue (a any) bool { return true }
+func AllTrueSp (a any, i uint) bool { return true }
 
 // CondOp[Spectrum]
-func CondIgnore (a Any, b bool) { }
-func CondIgnoreSp (a Any, b bool, i uint) { }
+func CondIgnore (a any, b bool) { }
+func CondIgnoreSp (a any, b bool, i uint) { }
 
 // we get rid of TravPred by:
 func PredOp2Op (p Pred, o Op) Op {
-  return func (a Any) { if p(a) { o(a) } }
+  return func (a any) { if p(a) { o(a) } }
 }
 
 // we get rid of TravCond by:
 func PredCondOp2Op (p Pred, o CondOp) Op {
-  return func (a Any) { if p(a) { o(a, true) } else { o(a, false) } }
-  return func (a Any) { o (a, p(a)) }
+  return func (a any) { if p(a) { o(a, true) } else { o(a, false) } }
+  return func (a any) { o (a, p(a)) }
 }

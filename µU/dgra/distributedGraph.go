@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "µU/ker"
@@ -64,7 +64,7 @@ const (
 var
   done = make(chan int, 1)
 
-func value (a Any) uint {
+func value (a any) uint {
   return a.(vtx.Vertex).Content().(Valuator).Val()
 }
 
@@ -144,7 +144,7 @@ func (x *distributedGraph) setSize (n uint) {
   }
 }
 
-func (x *distributedGraph) connect (a Any) {
+func (x *distributedGraph) connect (a any) {
   for i := uint(0); i < x.n; i++ {
     x.ch[i] = nchan.New (a, x.me, x.nr[i], x.host[i], x.port[i])
   }
@@ -179,7 +179,7 @@ func point (x0, y0, x1, y1 int, t float64) (int, int) {
   return int(x + 0.5), int(y + 0.5)
 }
 
-func (x *distributedGraph) send (i uint, a Any) {
+func (x *distributedGraph) send (i uint, a any) {
   if x.blink {
     scr.Save1()
     x0, y0 := x.actVertex.Pos()
@@ -237,7 +237,7 @@ func nrLocal (g gra.Graph) uint {
 
 func valueMax (g gra.Graph) uint {
   m := uint(0)
-  g.Trav (func (a Any) {
+  g.Trav (func (a any) {
     v := value (a.(vtx.Vertex))
     if v > m { m = v }
   })
@@ -247,7 +247,7 @@ func valueMax (g gra.Graph) uint {
 func vertexMax (g gra.Graph) vtx.Vertex {
   m := uint(0)
   var vt vtx.Vertex
-  g.Trav (func (a Any) {
+  g.Trav (func (a any) {
     v := value (a.(vtx.Vertex))
     if v > m {
       m = v
@@ -258,7 +258,7 @@ func vertexMax (g gra.Graph) vtx.Vertex {
 }
 
 func exValue (g gra.Graph, v uint) bool {
-  return g.ExPred (func (a Any) bool { return a.(vtx.Vertex).Val() == v })
+  return g.ExPred (func (a any) bool { return a.(vtx.Vertex).Val() == v })
 }
 
 func (x *distributedGraph) next (i uint) uint {

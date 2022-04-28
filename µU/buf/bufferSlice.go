@@ -1,20 +1,20 @@
 package buf
 
-// (c) Christian Maurer   v. 171106 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
 type
   buffer struct {
-                Any "pattern object"
-              s []Any
+                any "pattern object"
+              s []any
                 }
 
-func new_(a Any) Buffer {
+func new_(a any) Buffer {
   if a == nil { return nil }
   x := new(buffer)
-  x.Any = Clone(a)
-  x.s = make([]Any, 0)
+  x.any = Clone(a)
+  x.s = make([]any, 0)
   return x
 }
 
@@ -26,14 +26,14 @@ func (x *buffer) Num() uint {
   return uint(len(x.s))
 }
 
-func (x *buffer) Ins (a Any) {
-  CheckTypeEq (a, x.Any)
+func (x *buffer) Ins (a any) {
+  CheckTypeEq (a, x.any)
   x.s = append (x.s, a)
 }
 
-func (x *buffer) Get() Any {
+func (x *buffer) Get() any {
   if x.Empty() {
-    return x.Any
+    return x.any
   }
   a := x.s[0]
   x.s = x.s[1:]

@@ -1,6 +1,6 @@
 package phone
 
-// (c) Christian Maurer   v. 210511 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -32,7 +32,7 @@ func new_() PhoneNumber {
   return x
 }
 
-func (x *phonenumber) imp (Y Any) *phonenumber {
+func (x *phonenumber) imp (Y any) *phonenumber {
   y, ok := Y.(*phonenumber)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -46,23 +46,23 @@ func (x *phonenumber) Clr() {
   x.uint16, x.uint32 = 0, 0
 }
 
-func (x *phonenumber) Copy (Y Any) {
+func (x *phonenumber) Copy (Y any) {
   y := x.imp (Y)
   x.uint16, x.uint32 = y.uint16, y.uint32
 }
 
-func (x *phonenumber) Clone() Any {
+func (x *phonenumber) Clone() any {
   y := new_()
   y.Copy(x)
   return y
 }
 
-func (x *phonenumber) Eq (Y Any) bool {
+func (x *phonenumber) Eq (Y any) bool {
   y := x.imp (Y)
   return x.uint16 == y.uint16 && x.uint32 == y.uint32
 }
 
-func (x *phonenumber) Less (Y Any) bool {
+func (x *phonenumber) Less (Y any) bool {
   y := x.imp (Y)
   if x.uint16 < y.uint16 { return true }
   if x.uint16 == y.uint16 { return x.uint32 < y.uint32 }

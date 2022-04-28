@@ -8,26 +8,26 @@ import (
 )
 type
   bufferSeq struct {
-                   Any
+                   any
                    seq.Sequence
                    }
 
-func newS (a Any) Buffer {
+func newS (a any) Buffer {
   CheckAtomicOrObject (a)
   x := new(bufferSeq)
-  x.Any = Clone (a)
+  x.any = Clone (a)
   x.Sequence = seq.New(a)
   return x
 }
 
-func (x *bufferSeq) Ins (a Any) {
+func (x *bufferSeq) Ins (a any) {
   x.Seek(x.Num())
   x.Sequence.Ins(a)
 }
 
-func (x *bufferSeq) Get() Any {
+func (x *bufferSeq) Get() any {
   if x.Empty() {
-    return x.Any
+    return x.any
   }
   x.Seek (0)
   defer x.Sequence.Del()

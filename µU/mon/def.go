@@ -1,6 +1,6 @@
 package mon
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
@@ -18,7 +18,7 @@ type
 
   Awaited (i uint) bool
 
-  F (a Any, i uint) Any
+  F (a any, i uint) any
 }
 
 // Returns a new Monitor with FuncSpectrum f

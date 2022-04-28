@@ -1,6 +1,6 @@
 package medium
 
-// (c) Christian Maurer   v. 210514 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -40,7 +40,7 @@ func new_() Medium {
   return x
 }
 
-func (x *medium) imp (Y Any) *medium {
+func (x *medium) imp (Y any) *medium {
   y := Y.(*medium)
   return y
 }
@@ -53,19 +53,19 @@ func (x *medium) Clr() {
   x.int = Undef
 }
 
-func (x *medium) Eq (Y Any) bool {
+func (x *medium) Eq (Y any) bool {
   return x.int == x.imp(Y).int
 }
 
-func (x *medium) Less (Y Any) bool {
+func (x *medium) Less (Y any) bool {
   return x.int < x.imp(Y).int
 }
 
-func (x *medium) Copy (Y Any) {
+func (x *medium) Copy (Y any) {
   x.int = x.imp(Y).int
 }
 
-func (x *medium) Clone() Any {
+func (x *medium) Clone() any {
   y := new_()
   y.Copy (x)
   return y

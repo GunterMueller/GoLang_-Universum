@@ -1,13 +1,13 @@
 package gra
 
-// (c) Christian Maurer   v. 171122 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
 
 func (x *graph) True (p Pred) bool {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    if ! p (v.Any) {
+    if ! p (v.any) {
       return false
     }
   }
@@ -17,7 +17,7 @@ func (x *graph) True (p Pred) bool {
 func (x *graph) TrueMarked (p Pred) bool {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     if v.bool {
-      if ! p (v.Any) {
+      if ! p (v.any) {
         return false
       }
     }
@@ -27,36 +27,36 @@ func (x *graph) TrueMarked (p Pred) bool {
 
 func (x *graph) Trav (o Op) {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    o (v.Any)
+    o (v.any)
   }
 }
 
 func (x *graph) TravCond (o CondOp) {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    o (v.Any, v.bool)
+    o (v.any, v.bool)
   }
 }
 
 func (x *graph) Trav1 (o Op) {
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    o (e.Any)
+    o (e.any)
   }
 }
 
 func (x *graph) Trav1Cond (o CondOp) {
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    o (e.Any, e.bool)
+    o (e.any, e.bool)
   }
 }
 
 func (x *graph) Trav1Loc (o Op) {
   for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
-    o (n.edgePtr.Any)
+    o (n.edgePtr.any)
   }
 }
 
 func (x *graph) Trav1Coloc (o Op) {
   for n := x.colocal.nbPtr.nextNb; n != x.colocal.nbPtr; n = n.nextNb {
-    o (n.edgePtr.Any)
+    o (n.edgePtr.any)
   }
 }

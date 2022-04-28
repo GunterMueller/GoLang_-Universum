@@ -1,6 +1,6 @@
 package set
 
-// (c) Christian Maurer  v. 210321 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
@@ -12,14 +12,14 @@ type
 )
 type
   node struct {
-          Any "content of the node"
+          any "content of the node"
          left,
         right *node
               balance
               }
 type
   set struct {
-             Any "pattern object"
+             any "pattern object"
       anchor,
       actual *node
              uint "number of objects in the set"
@@ -27,18 +27,18 @@ type
 var
   tmp *node
 
-func new_(a Any) Set {
+func new_(a any) Set {
   CheckEqualerAndComparer (a)
   x := new (set)
-  x.Any = Clone(a)
+  x.any = Clone(a)
   x.anchor, x.actual = nil, nil
   return x
 }
 
-func (x *set) imp (Y Any) *set {
+func (x *set) imp (Y any) *set {
   y, ok := Y.(*set)
   if ! ok { TypeNotEqPanic (x, Y) }
-  CheckTypeEq (x.Any, y.Any)
+  CheckTypeEq (x.any, y.any)
   return y
 }
 
@@ -61,8 +61,8 @@ func (x *set) Num() uint {
   return n
 }
 
-func (x *set) Ex (a Any) bool {
-  CheckTypeEq (x.Any, a)
+func (x *set) Ex (a any) bool {
+  CheckTypeEq (x.any, a)
   if n, ok := ex (&(x.anchor), a); ok {
     x.actual = n
     return true
@@ -75,9 +75,9 @@ func (x *set) Step (forward bool) {
     return
   }
   if forward {
-    x.actual = next (x.anchor, x.actual.Any)
+    x.actual = next (x.anchor, x.actual.any)
   } else {
-    x.actual = prev (x.anchor, x.actual.Any)
+    x.actual = prev (x.anchor, x.actual.any)
   }
 }
 
@@ -118,21 +118,21 @@ func (x *set) Eoc (forward bool) bool {
   return false
 }
 
-func (x *set) Get() Any {
+func (x *set) Get() any {
   if x.anchor == nil || x.actual == nil {
     return nil
   }
-  return Clone (x.actual.Any)
+  return Clone (x.actual.any)
 }
 
-func (x *set) Put (a Any) {
-  CheckTypeEq (x.Any, a)
+func (x *set) Put (a any) {
+  CheckTypeEq (x.any, a)
   x.Del()
   x.Ins (a)
 }
 
-func (x *set) Ins (a Any) {
-  CheckTypeEq (x.Any, a)
+func (x *set) Ins (a any) {
+  CheckTypeEq (x.any, a)
   if x.anchor == nil {
     x.anchor = newNode (a)
     x.actual = x.anchor
@@ -147,15 +147,15 @@ func (x *set) Ins (a Any) {
   }
 }
 
-func (x *set) Del() Any {
+func (x *set) Del() any {
   if x.anchor == nil {
     return nil
   }
   act := x.actual
-  toDelete := x.actual.Any
+  toDelete := x.actual.any
   x.Step (true) // to set "actual" to the node containing
                 // the next largest object, iff such exists
-  var a Any
+  var a any
   if act == x.actual { // the node to delete is the node with
     a = nil            // the largest object in x, so "actual"
                        // must be set to the node containing
@@ -182,10 +182,10 @@ func (x *set) Del() Any {
     }
     x.uint--
   }
-  return Clone (act.Any)
+  return Clone (act.any)
 }
 
-func (x *set) ExGeq (a Any) bool {
+func (x *set) ExGeq (a any) bool {
   tmp = nil
   n := minGeq (&(x.anchor), a)
   if n == nil {
@@ -201,7 +201,7 @@ func (x *set) Trav (op Op) {
 
 func (x *set) Join (Y Collector) {
   y := x.imp (Y)
-  y.Trav (func (a Any) { x.Ins (a) })
+  y.Trav (func (a any) { x.Ins (a) })
   y.Clr()
   x.Jump (false)
 }
@@ -209,8 +209,8 @@ func (x *set) Join (Y Collector) {
 func (x *set) Ordered() bool {
   if x.uint <= 1 { return true }
   x.Jump (false)
-  result, first, o := true, true, x.actual.Any
-  x.Trav (func (a Any) {
+  result, first, o := true, true, x.actual.any
+  x.Trav (func (a any) {
             if first {
               first = false
             } else {
@@ -225,8 +225,8 @@ func (x *set) Ordered() bool {
 
 func (x *set) Sort() {
   if x.Num() <= 1 { return }
-  y := new_(x.Any).(*set)
-  x.Trav (func (a Any) { y.Ins (a) } )
+  y := new_(x.any).(*set)
+  x.Trav (func (a any) { y.Ins (a) } )
   x.anchor, x.uint = y.anchor, y.uint
   x.Jump (false)
 }

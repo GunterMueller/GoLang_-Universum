@@ -1,6 +1,6 @@
 package field
 
-// (c) Christian Maurer   v. 210517 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -54,7 +54,7 @@ func new_() Field {
   return x
 }
 
-func (x *field) imp (Y Any) *field {
+func (x *field) imp (Y any) *field {
   y, ok := Y.(*field)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -68,19 +68,19 @@ func (x *field) Clr() {
   x.byte = undef
 }
 
-func (x *field) Eq (Y Any) bool {
+func (x *field) Eq (Y any) bool {
   return x.byte == x.imp(Y).byte
 }
 
-func (x *field) Less (Y Any) bool {
+func (x *field) Less (Y any) bool {
   return x.byte < x.imp(Y).byte
 }
 
-func (x *field) Copy (Y Any) {
+func (x *field) Copy (Y any) {
   x.byte = x.imp(Y).byte
 }
 
-func (x *field) Clone() Any {
+func (x *field) Clone() any {
   y := new_()
   y.Copy (x)
   return y

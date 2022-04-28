@@ -1,6 +1,6 @@
 package rpc
 
-// (c) Christian Maurer   v. 190821 - license see nU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
@@ -11,7 +11,7 @@ type
 // The value of a is sent to the server with this call;
 // the function f(_, i) of x is executed on the server.
 // F returns the value computed by the remote server.
-  F (a Any, i uint) Any
+  F (a any, i uint) any
 
 // All net channels used by x are closed.
   Fin()
@@ -30,6 +30,6 @@ type
 // used by the TCP-IP connection between the RPC server and the clients;
 // the needed net channels are opened.
 // The rpc runs as server, iff s == true; otherwise as client.
-func New (a, b Any, n uint, h string, p uint16, s bool, f FuncSpectrum) RPC {
+func New (a, b any, n uint, h string, p uint16, s bool, f FuncSpectrum) RPC {
   return new_(a, b, n, h, p, s, f)
 }

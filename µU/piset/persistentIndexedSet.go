@@ -1,6 +1,6 @@
 package piset
 
-// (c) Christian Maurer   v. 210525 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "µU/ker"
@@ -14,7 +14,7 @@ import (
 type
   persistentIndexedSet struct {
                               Object "pattern object"
-                              Any "index of Object"
+                              any "index of Object"
                               pseq.PersistentSequence "file"
                               Func "index function"
                               set.Set "pairs of index and position in the file"
@@ -26,23 +26,23 @@ func new_(o Indexer) PersistentIndexedSet {
   x := new (persistentIndexedSet)
   x.Object = o.Clone().(Object)
   x.Func = o.Index()
-  x.Any = x.Func (o)
+  x.any = x.Func (o)
   x.PersistentSequence = pseq.New (x.Object)
-  x.Set = set.New (pair.New (x.Any, 0))
+  x.Set = set.New (pair.New (x.any, 0))
   x.Buffer = buf.New (uint(0))
   return x
 }
 
-func (x *persistentIndexedSet) imp (Y Any) *persistentIndexedSet {
+func (x *persistentIndexedSet) imp (Y any) *persistentIndexedSet {
   y, ok := Y.(*persistentIndexedSet)
   if ! ok { TypeNotEqPanic (x, Y) }
   CheckTypeEq (x.Object, y.Object)
   return y
 }
 
-func (x *persistentIndexedSet) check (a Any) {
+func (x *persistentIndexedSet) check (a any) {
   CheckTypeEq (a, x.Object)
-  CheckTypeEq (x.Any, x.Func (x.Object))
+  CheckTypeEq (x.any, x.Func (x.Object))
 }
 
 func (x *persistentIndexedSet) Fin() {
@@ -91,7 +91,7 @@ func (x *persistentIndexedSet) Num() uint {
   return x.Set.Num()
 }
 
-func (x *persistentIndexedSet) Ex (a Any) bool {
+func (x *persistentIndexedSet) Ex (a any) bool {
   return x.Set.Ex (pair.New (x.Func (a), 0))
 }
 
@@ -110,7 +110,7 @@ func (x *persistentIndexedSet) ExPred (p Pred) bool {
   return false
 }
 
-func (x *persistentIndexedSet) Ins (a Any) {
+func (x *persistentIndexedSet) Ins (a any) {
   x.check (a)
   if x.Ex (a) || a.(Object).Empty() { return }
   var n uint
@@ -137,7 +137,7 @@ func (x *persistentIndexedSet) Eoc (atEnd bool) bool {
   return x.Set.Eoc (atEnd)
 }
 
-func (x *persistentIndexedSet) Get() Any {
+func (x *persistentIndexedSet) Get() any {
   if x.Set.Empty() {
     x.Object.Clr()
     return x.Object
@@ -148,7 +148,7 @@ func (x *persistentIndexedSet) Get() Any {
   return x.PersistentSequence.Get().(Object)
 }
 
-func (x *persistentIndexedSet) Put (a Any) {
+func (x *persistentIndexedSet) Put (a any) {
   if x.Set.Empty() {
     return
   }
@@ -158,7 +158,7 @@ func (x *persistentIndexedSet) Put (a Any) {
   x.PersistentSequence.Put (a)
 }
 
-func (x *persistentIndexedSet) Del() Any {
+func (x *persistentIndexedSet) Del() any {
   if x.Set.Empty() {
     x.Object.Clr()
     return x.Object
@@ -177,14 +177,14 @@ func (x *persistentIndexedSet) Del() Any {
   return x.Object.Clone()
 }
 
-func (x *persistentIndexedSet) ExGeq (a Any) bool {
+func (x *persistentIndexedSet) ExGeq (a any) bool {
   return x.Set.ExGeq (pair.New (x.Func (a), 0))
 }
 
 func (x *persistentIndexedSet) Trav (op Op) {
   if x.Set.Empty() { return }
   x.PersistentSequence.Jump (false)
-  x.Set.Trav (func (a Any) {
+  x.Set.Trav (func (a any) {
     p := a.(pair.Pair).Pos()
     x.PersistentSequence.Seek (p)
     x.Object = x.PersistentSequence.Get().(Object)
@@ -226,7 +226,7 @@ func texClr() {
   tex = ""
 }
 
-func teX (a Any) {
+func teX (a any) {
   tex += a.(TeXer).TeX()
 }
 

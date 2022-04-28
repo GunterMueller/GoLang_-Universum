@@ -1,6 +1,6 @@
 package n
 
-// (c) Christian Maurer   v. 210405 - license see µU.go
+// (c) Christian Maurer   v. 220418 - license see µU.go
 
 import
   "µU/col"
@@ -30,6 +30,7 @@ func Colours (f, b col.Colour) { colours(f,b) }
 // Pre: l < scr.NLines(); c + Len(n) < scr.NColumns().
 // n is written to the screen starting at (line, column) = (l, c).
 func Write (n, l, c uint) { write(n,l,c) }
+func WriteGr (n uint, x, y int) { writeGr(n,x,y) }
 
 // TODO Spec
 func SetWd (w uint) { setWd(w) }
@@ -37,6 +38,7 @@ func SetWd (w uint) { setWd(w) }
 // Pre: s. Write.
 // n is the natural number that was edited at (line, column) = (l, c).
 func Edit (n *uint, l, c uint) { edit(n,l,c) }
+func EditGr (n *uint, x, y int) { editGr(n,x,y) }
 
 // Returns the sum of the digits of n.
 func SumDigits (n uint) uint { return sumDigits(n) }

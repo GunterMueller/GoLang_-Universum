@@ -1,6 +1,6 @@
 package q
 
-// (c) Christian Maurer   v. 211119 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "math"
@@ -41,7 +41,7 @@ func new_() Rational {
   return x
 }
 
-func (x *rational) imp (Y Any) *rational {
+func (x *rational) imp (Y any) *rational {
   y, ok := Y.(*rational)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -60,19 +60,19 @@ func (x *rational) Clr() {
   x.geq0 = true
 }
 
-func (x *rational) Copy (Y Any) {
+func (x *rational) Copy (Y any) {
   y := x.imp (Y)
   x.num, x.denom = y.num, y.denom
   x.geq0 = y.geq0
 }
 
-func (x *rational) Clone() Any {
+func (x *rational) Clone() any {
   y := new_()
   y.Copy (x)
   return y
 }
 
-func (x *rational) Eq (Y Any) bool {
+func (x *rational) Eq (Y any) bool {
   y := x.imp (Y)
   if y.denom == 0 {
     return x.denom == 0
@@ -85,7 +85,7 @@ func (x *rational) Eq (Y Any) bool {
   return uint64 (x.num) * uint64 (y.denom) == uint64 (y.num) * uint64 (x.denom)
 }
 
-func (x *rational) Less (Y Any) bool {
+func (x *rational) Less (Y any) bool {
   y := x.imp (Y)
   if y.denom == 0 {
     return x.denom == 0

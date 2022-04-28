@@ -1,6 +1,6 @@
 package lr
 
-// (c) Christian Maurer   v. 171101 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> bounded left/right problem
 
@@ -8,14 +8,14 @@ import
   . "µU/obj"
 type
   channelBounded struct {
-   inL, outL, inR, outR chan Any
+   inL, outL, inR, outR chan any
                    done chan int
                         }
 
 func newChB (mL, mR uint) LeftRight {
   x := new(channelBounded)
-  x.inL, x.outL = make(chan Any), make(chan Any)
-  x.inR, x.outR = make(chan Any), make(chan Any)
+  x.inL, x.outL = make(chan any), make(chan any)
+  x.inR, x.outR = make(chan any), make(chan any)
   x.done = make(chan int)
   go func() {
     var (

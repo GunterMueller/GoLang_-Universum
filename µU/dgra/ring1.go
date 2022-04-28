@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 201204 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 //
 // >>> Construction of a directed ring using the idea of Awerbuch's algorithm
 
@@ -57,7 +57,7 @@ func (x *distributedGraph) ring1() {
   }
 }
 
-func (x *distributedGraph) r1 (a Any, i uint) Any {
+func (x *distributedGraph) r1 (a any, i uint) any {
   x.awaitAllMonitors()
   bs := a.(Stream)
   s := Decode(uint(0), bs[:C0]).(uint)

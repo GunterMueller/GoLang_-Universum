@@ -1,15 +1,15 @@
 package set
 
-// (c) Christian Maurer  v. 210408 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
 type
   pointer = *node
 
-func newNode (a Any) pointer {
+func newNode (a any) pointer {
   x := new (node)
-  x.Any = Clone (a)
+  x.any = Clone (a)
   x.left, x.right = nil, nil
   x.balance = balanced
   return x
@@ -22,94 +22,94 @@ func num (x *node) uint {
   return num (x.left) + 1 + num (x.right)
 }
 
-func ex (x *pointer, a Any) (*node, bool) {
+func ex (x *pointer, a any) (*node, bool) {
   if *x == nil {
     return nil, false
   }
-  if Eq (a, (*x).Any) {
+  if Eq (a, (*x).any) {
     return *x, true
   }
-  if Less (a, (*x).Any) {
+  if Less (a, (*x).any) {
     return ex (&(*x).left, a)
   }
-  return ex (&(*x).right, a) // Less ((*x).Any, a)
+  return ex (&(*x).right, a) // Less ((*x).any, a)
 }
 
-func minGeq (x *pointer, a Any) *node {
+func minGeq (x *pointer, a any) *node {
   if *x == nil {
     return nil
   }
-  if Eq (a, (*x).Any) {
+  if Eq (a, (*x).any) {
     return *x
   }
-  if Less (a, (*x).Any) {
+  if Less (a, (*x).any) {
     if (*x).left == nil {
       return *x
     }
     tmp = *x
     return minGeq (&((*x).left), a)
   }
-// Less ((*x).Any, a):
+// Less ((*x).any, a):
   if (*x).right == nil {
     return tmp
   }
   return minGeq (&((*x).right), a)
 }
 
-func next (x pointer, a Any) pointer {
+func next (x pointer, a any) pointer {
   if x == nil {
     return nil
   }
-  if Eq (a, x.Any) {
+  if Eq (a, x.any) {
     if x.right == nil {
       if tmp == nil {
         return x
       }
-      if Less (a, tmp.Any) {
+      if Less (a, tmp.any) {
         return tmp
       }
       return x
     }
     return next (x.right, a)
   }
-  if Less (a, x.Any) {
+  if Less (a, x.any) {
     if x.left == nil {
       return x
     }
     tmp = x
     return next (x.left, a)
   }
-  // Less (x.Any, a):
+  // Less (x.any, a):
   if x.right == nil {
     return tmp
   }
   return next (x.right, a)
 }
 
-func prev (x pointer, a Any) pointer {
+func prev (x pointer, a any) pointer {
   if x == nil {
     return nil
   }
-  if Eq (a, x.Any) {
+  if Eq (a, x.any) {
     if x.left == nil {
       if tmp == nil {
         return x
       }
-      if Less (tmp.Any, a) {
+      if Less (tmp.any, a) {
         return tmp
       }
       return x
     }
     return prev (x.left, a)
   }
-  if Less (x.Any, a) {
+  if Less (x.any, a) {
     if x.right == nil {
       return x
     }
     tmp = x
     return prev (x.right, a)
   }
-  // Less (a, x.Any):
+  // Less (a, x.any):
   if x.left == nil {
     return tmp
   }
@@ -204,14 +204,14 @@ func rotRL (x *pointer) {
   (*x).balance = balanced
 }
 
-func ins (x *pointer, a Any, increased *bool) pointer {
+func ins (x *pointer, a any, increased *bool) pointer {
   if *x == nil {
     *x = newNode (a)
     *increased = true
     return *x
   }
   var inserted pointer
-  if Less (a, (*x).Any) {
+  if Less (a, (*x).any) {
     inserted = ins (&((*x).left), a, increased)
     if *increased {
       switch (*x).balance {
@@ -232,7 +232,7 @@ func ins (x *pointer, a Any, increased *bool) pointer {
         *increased = false
       }
     }
-  } else if Less ((*x).Any, a) {
+  } else if Less ((*x).any, a) {
     inserted = ins (&((*x).right), a, increased)
     if *increased {
       switch (*x).balance {
@@ -253,7 +253,7 @@ func ins (x *pointer, a Any, increased *bool) pointer {
         *increased = false
       }
     }
-  } else { // Eq (a, (*x).Any), i.e., a is already there
+  } else { // Eq (a, (*x).any), i.e., a is already there
     *increased = false
   }
   return inserted
@@ -303,7 +303,7 @@ func rebalR (x *pointer, decreased *bool) {
 
 func liftL (x *pointer, y pointer, decreased, oneLess *bool) {
   if (*x).right == nil {
-    y.Any = Clone ((*x).Any)
+    y.any = Clone ((*x).any)
     *decreased, *oneLess = true, true
     *x = (*x).left
   } else {
@@ -314,7 +314,7 @@ func liftL (x *pointer, y pointer, decreased, oneLess *bool) {
 
 func liftR (x *pointer, y pointer, decreased, oneLess *bool) {
   if (*x).left == nil {
-    y.Any = Clone ((*x).Any)
+    y.any = Clone ((*x).any)
     *decreased, *oneLess = true, true
     *x = (*x).right
   } else {
@@ -323,15 +323,15 @@ func liftR (x *pointer, y pointer, decreased, oneLess *bool) {
   }
 }
 
-func del (x *pointer, a Any, decreased *bool) bool {
+func del (x *pointer, a any, decreased *bool) bool {
   oneLess := false
   if *x == nil {
     return oneLess
   }
-  if Less (a, (*x).Any) {
+  if Less (a, (*x).any) {
     oneLess = del (&((*x).left), a, decreased)
     rebalL (x, decreased)
-  } else if Less ((*x).Any, a) {
+  } else if Less ((*x).any, a) {
     oneLess = del (&((*x).right), a, decreased)
     rebalR (x, decreased)
   } else { // found node to remove
@@ -355,7 +355,7 @@ func del (x *pointer, a Any, decreased *bool) bool {
 func trav (x *node, op Op) {
   if x != nil {
     trav (x.left, op)
-    op (x.Any)
+    op (x.any)
     trav (x.right, op)
   }
 }

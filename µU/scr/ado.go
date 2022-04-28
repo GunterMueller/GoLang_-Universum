@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220203 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/Xlib.h>
@@ -82,6 +82,8 @@ func WriteIntGr (n, x, y int) { s().WriteIntGr(n,x,y) }
 func Transparent() bool { return s().Transparent() }
 func Transparence (t bool) { s().Transparence(t) }
 
+func ActFont() font.Font { return s().ActFont() }
+func SetFont (f font.Font) { s().SetFont(f) }
 func ActFontsize() font.Size { return s().ActFontsize() }
 func SetFontsize (f font.Size) { s().SetFontsize(f) }
 

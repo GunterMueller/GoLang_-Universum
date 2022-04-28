@@ -1,6 +1,6 @@
 package br
 
-// (c) Christian Maurer   v. 211406 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -35,7 +35,7 @@ func new_(d uint) Real {
   return x
 }
 
-func (x *breal) imp (Y Any) *breal {
+func (x *breal) imp (Y any) *breal {
   y, ok := Y.(*breal)
   if ! ok || x.wd != y.wd { TypeNotEqPanic (x, Y) }
   return y
@@ -54,21 +54,21 @@ func (x *breal) Clr() {
   x.float64 = x.invalid
 }
 
-func (x *breal) Copy (Y Any) {
+func (x *breal) Copy (Y any) {
   x.float64 = x.imp (Y).float64
 }
 
-func (x *breal) Clone() Any {
+func (x *breal) Clone() any {
   y := new_(x.pre)
   y.Copy(x)
   return y
 }
 
-func (x *breal) Eq (Y Any) bool {
+func (x *breal) Eq (Y any) bool {
   return x.float64 == x.imp (Y).float64
 }
 
-func (x *breal) Less (Y Any) bool {
+func (x *breal) Less (Y any) bool {
   y := x.imp (Y)
   if x.float64 == x.invalid || y.float64 == y.invalid {
     return false

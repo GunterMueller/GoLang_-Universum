@@ -1,11 +1,10 @@
 package barr
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> implementation with a monitor
 
 import (
-  . "µU/obj"
   "µU/mon"
 )
 type
@@ -17,7 +16,7 @@ func newMon (n uint) Barrier {
   involved, waiting := n, uint(0)
   x := new(monitor)
   if n < 2 { return nil }
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          waiting++
          if waiting < involved {
            x.Monitor.Wait(0)

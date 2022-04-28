@@ -1,6 +1,6 @@
 package book
 
-// (c) Christian Maurer   v. 220228 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -14,8 +14,8 @@ import (
   "µU/book/field"
 )
 const (
-  len0 = 30
-  len1 = 63
+  lena = 30
+  lent = 63
   sep = ';'
   seps = ";"
   nosep = " darf kein " + seps + " enthalten"
@@ -31,12 +31,13 @@ type
       coauthor text.Text
                bn.Natural
          title,
-      location text.Text
+      cupboard,
+         floor text.Text
               }
 var
   actOrder = fieldOrder
 
-func (x *book) imp (Y Any) *book {
+func (x *book) imp (Y any) *book {
   y, ok := Y.(*book)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -45,16 +46,18 @@ func (x *book) imp (Y Any) *book {
 func new_() Book {
   x := new (book)
   x.Field = field.New()
-  x.author = text.New (len0)
-  x.coauthor = text.New (len0)
+  x.author = text.New (lena)
+  x.coauthor = text.New (lena)
   x.Natural = bn.New (2)
-  x.title = text.New (len1)
-  x.location = text.New (len0)
+  x.title = text.New (lent)
+  x.cupboard = text.New (3)
+  x.floor = text.New (3)
   x.Natural.Colours (col.LightWhite(), col.DarkCyan())
   x.author.Colours (col.Yellow(), col.Red())
   x.coauthor.Colours (col.Yellow(), col.Red())
   x.title.Colours (col.LightWhite(), col.DarkGreen())
-  x.location.Colours (col.LightWhite(), col.DarkGray())
+  x.cupboard.Colours (col.LightWhite(), col.DarkGray())
+  x.floor.Colours (col.LightWhite(), col.DarkGray())
   return x
 }
 
@@ -63,7 +66,8 @@ func (x *book) Empty() bool {
          x.author.Empty() && x.coauthor.Empty() &&
          x.Natural.Empty() &&
          x.title.Empty() &&
-         x.location.Empty()
+         x.cupboard.Empty() &&
+         x.floor.Empty()
 }
 
 func (x *book) Clr() {
@@ -72,35 +76,38 @@ func (x *book) Clr() {
   x.coauthor.Clr()
   x.Natural.Clr()
   x.title.Clr()
-  x.location.Clr()
+  x.cupboard.Clr()
+  x.floor.Clr()
 }
 
-func (x *book) Eq (Y Any) bool {
+func (x *book) Eq (Y any) bool {
   y := x.imp(Y)
   return x.Field.Eq (y.Field) &&
          x.author.Eq (y.author) && x.coauthor.Eq (y.coauthor) &&
          x.Natural.Eq (y.Natural) &&
          x.title.Eq (y.title) &&
-         x.location.Eq (y.location)
+         x.cupboard.Eq (y.cupboard) &&
+         x.floor.Eq (y.floor)
 }
 
-func (x *book) Copy (Y Any) {
+func (x *book) Copy (Y any) {
   y := x.imp(Y)
   x.Field.Copy (y.Field)
   x.author.Copy (y.author)
   x.coauthor.Copy (y.coauthor)
   x.Natural.Copy (y.Natural)
   x.title.Copy (y.title)
-  x.location.Copy (y.location)
+  x.cupboard.Copy (y.cupboard)
+  x.floor.Copy (y.floor)
 }
 
-func (x *book) Clone() Any {
+func (x *book) Clone() any {
   y := new_()
   y.Copy (x)
   return y
 }
 
-func (x *book) Less (Y Any) bool {
+func (x *book) Less (Y any) bool {
   y := x.imp(Y)
   switch actOrder {
   case fieldOrder:
@@ -139,7 +146,10 @@ func (x *book) String() string {
   t = x.title.String()
   str.OffSpc1 (&t)
   s += t + seps
-  t = x.location.String()
+  t = x.cupboard.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.floor.String()
   str.OffSpc1 (&t)
   s += t + seps
   return s
@@ -147,17 +157,18 @@ func (x *book) String() string {
 
 func (x *book) Defined (s string) bool {
   ss, n := str.SplitByte (s, sep)
-  if n != 6 { return false }
+  if n != 7 { return false }
   if ! x.Field.Defined (ss[0]) { return false }
   if ! x.author.Defined (ss[1]) { return false }
   if ! x.coauthor.Defined (ss[2]) { return false }
   if ! x.Natural.Defined (ss[3]) { return false }
   if ! x.title.Defined (ss[4]) { return false }
-  if ! x.location.Defined (ss[5]) { return false }
+  if ! x.cupboard.Defined (ss[5]) { return false }
+  if ! x.floor.Defined (ss[6]) { return false }
   return true
 }
 
-func (x *book) Sub (Y Any) bool {
+func (x *book) Sub (Y any) bool {
   y := x.imp(Y)
   s := false
   if ! x.Field.Empty() {
@@ -169,8 +180,8 @@ func (x *book) Sub (Y Any) bool {
   if ! x.title.Empty() {
     s = s || x.title.Sub (y.title)
   }
-  if ! x.location.Empty() {
-    s = s || x.location.Sub (y.location)
+  if ! x.cupboard.Empty() {
+    s = s || x.cupboard.Sub (y.cupboard)
   }
   return s
 }
@@ -181,7 +192,8 @@ const (
   lk = 3; ck = 49
   ln = 5; cn =  7
   lt = 5; ct = 16
-  lf = 7; cf = 49
+  lc = 7; cc = 49
+  lf = 7; cf = 71
 )
 
 /*        1         2         3         4         5         6         7
@@ -193,7 +205,8 @@ Gebiet __________________
 
     Nr __ Titel _______________________________________________________________
 
-                                         Fundort ______________________________ */
+                                 Schrank / Regal ___________________ / ________ */
+//                                               Papas Zimmer rechts   6 hinten
 
 func writeMask (l, c uint) {
   scr.Colours (col.LightGray(), col.Black())
@@ -202,10 +215,52 @@ func writeMask (l, c uint) {
   scr.Write ("Koautor", l + 3, c + 41)
   scr.Write ("Nr",      l + 5, c +  4)
   scr.Write ("Titel",   l + 5, c + 10)
-  scr.Write ("Fundort", l + 7, c + 41)
+  scr.Write ("Schrank / Regal", l + 7, c + 33)
+  scr.Write ("/", l + 7, c + 69)
 }
 
 var maskWritten = false
+
+func (x *book) longC() string {
+  n := x.cupboard.ProperLen()
+  s := ""
+  if n == 0 { return s }
+  switch x.cupboard.Byte(0) {
+  case 'w':
+    s = "Wohnzimmer"
+  case 'p':
+    s = "Papas Zimmer"
+  case 'g':
+    s = str.Lat1("Gästezimmer")
+  }
+  if n == 3 {
+    s += " "
+    switch x.cupboard.Byte(2) {
+    case 'l':
+      s += "links"
+    case 'r':
+      s += "rechts"
+    }
+  }
+  return s
+}
+
+func (x *book) longF() string {
+  n := x.floor.ProperLen()
+  s := ""
+  if n == 0 { return s }
+  s += string(x.floor.Byte(0))
+  if n == 3 {
+    s += " "
+    switch x.floor.Byte(2) {
+    case 'h':
+      s += "hinten"
+    case 'v':
+      s += "vorne"
+    }
+  }
+  return s
+}
 
 func (x *book) Write (l, c uint) {
   if ! maskWritten {
@@ -220,7 +275,14 @@ func (x *book) Write (l, c uint) {
     x.Natural.Write (l + ln, c + cn)
   }
   x.title.Write (l + lt, c + ct)
-  x.location.Write (l + lf, c + cf)
+/*/
+  x.cupboard.Write (l + lc, c + cc)
+  x.floor.Write (l + lf, c + cf)
+/*/
+  scr.Write (str.New(19), l + lc, c + cc)
+  scr.Write (x.longC(), l + lc, c + cc)
+  scr.Write (str.New(8), l + lf, c + cf)
+  scr.Write (x.longF(), l + lf, c + cf)
 }
 
 func containsSep (t text.Text) bool {
@@ -250,6 +312,7 @@ func (x *book) Edit (l, c uint) {
       x.Field.Edit (l + lg, c + cg)
     case 1:
       edit (x.author, "Autor", l + la, c + ca)
+/*/
       if k, _ := kbd.LastCommand(); k == kbd.Tab {
         for i := 0; i < len(a); i++ {
           if x.author.Sub0 (author[i]) {
@@ -259,8 +322,10 @@ func (x *book) Edit (l, c uint) {
           }
         }
       }
+/*/
     case 2:
       edit (x.coauthor, "Koautor", l + lk, c + ck)
+/*/
       if k, _ := kbd.LastCommand(); k == kbd.Tab {
         if ! x.coauthor.Empty() {
           for i := 0; i < len(a); i++ {
@@ -272,18 +337,21 @@ func (x *book) Edit (l, c uint) {
           }
         }
       }
+/*/
     case 3:
       x.Natural.Edit (l + ln, c + cn)
     case 4:
       edit (x.title, "Titel", l + lt, c + ct)
     case 5:
-      edit (x.location, "Fundort", l + lf, c + cf)
+      edit (x.cupboard, "Schrank", l + lc, c + cc)
+    case 6:
+      edit (x.floor, "Regal", l + lf, c + cf)
     }
     switch k, _ := kbd.LastCommand(); k {
     case kbd.Esc:
       break loop
     case kbd.Enter, kbd.Down:
-      if i < 5 {
+      if i < 6 {
         i++
       } else {
         break loop
@@ -302,9 +370,10 @@ func (x *book) TeX() string {
   s := ""
   if ! x.Field.Eq (lastField) {
     lastField.Copy (x.Field)
-    s += "\\bigskip\\line{\\bfbig\\hfil " + x.Field.TeX() + "\\hfil}\\medskip\\nopagebreak\n"
+    s += "\\bigskip\n"
+    s += "\\line{\\bfbig\\hfil " + x.Field.TeX() + "\\hfil}\\medskip\\nopagebreak\n"
   }
-  s += "\\vskip-5pt\n{\\bi " + x.author.TeX()
+  s += "\\vskip-6pt\n{\\bi " + x.author.TeX()
   if ! x.coauthor.Empty() {
     s += "/" + x.coauthor.TeX()
   }
@@ -314,8 +383,13 @@ func (x *book) TeX() string {
   s += "\\hbox to 16pt{\\hfil"
   s += sn
   s += "}\\quad " + x.title.TeX()
-  if ! x.location.Empty() {
-    s += " (" + x.location.TeX() + ")"
+  if ! x.cupboard.Empty() {
+    s += " (" + x.cupboard.TeX()
+  }
+  if x.floor.Empty() {
+    s += ")"
+  } else {
+    s += " " + x.floor.TeX() + ")"
   }
   s += "\n\\par\\smallpagebreak"
   return s
@@ -323,9 +397,9 @@ func (x *book) TeX() string {
 
 func (x *book) Codelen() uint {
   return x.Field.Codelen() +
-       2 * len0 +
+       2 * lena +
        x.Natural.Codelen() +
-       len1 + len0
+       2 * 3
 }
 
 func (x *book) Encode() Stream {
@@ -333,7 +407,7 @@ func (x *book) Encode() Stream {
   i, a := uint(0), x.Field.Codelen()
   copy (s[i:i+a], x.Field.Encode())
   i += a
-  a = len0
+  a = lena
   copy (s[i:i+a], x.author.Encode())
   i += a
   copy (s[i:i+a], x.coauthor.Encode())
@@ -341,11 +415,13 @@ func (x *book) Encode() Stream {
   a = x.Natural.Codelen()
   copy (s[i:i+a], x.Natural.Encode())
   i += a
-  a = len1
+  a = lent
   copy (s[i:i+a], x.title.Encode())
   i += a
-  a = len0
-  copy (s[i:i+a], x.location.Encode())
+  a = 3
+  copy (s[i:i+a], x.cupboard.Encode())
+  i += a
+  copy (s[i:i+a], x.floor.Encode())
   return s
 }
 
@@ -353,7 +429,7 @@ func (x *book) Decode (s Stream) {
   i, a := uint(0), x.Field.Codelen()
   x.Field.Decode (s[i:i+a])
   i += a
-  a = len0
+  a = lena
   x.author.Decode (s[i:i+a])
   i += a
   x.coauthor.Decode (s[i:i+a])
@@ -361,11 +437,13 @@ func (x *book) Decode (s Stream) {
   a = x.Natural.Codelen()
   x.Natural.Decode (s[i:i+a])
   i += a
-  a = len1
+  a = lent
   x.title.Decode (s[i:i+a])
   i += a
-  a = len0
-  x.location.Decode (s[i:i+a])
+  a = 3
+  x.cupboard.Decode (s[i:i+a])
+  i += a
+  x.floor.Decode (s[i:i+a])
 }
 
 func (x *book) Rotate() {

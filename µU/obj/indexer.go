@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 type
   Indexer interface {
@@ -11,7 +11,7 @@ type
   Index() Func
 }
 
-func IsIndexer (a Any) bool {
+func IsIndexer (a any) bool {
   if a == nil { return false }
   _, ok := a.(Indexer)
   return ok

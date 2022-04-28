@@ -1,6 +1,6 @@
 package sem
 
-// (c) Christian Maurer   v. 170121 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> Implementation with guarded select
 
@@ -8,12 +8,12 @@ import
   . "µU/obj"
 type
   guardedSelect struct {
-                  p, v chan Any
+                  p, v chan any
                        }
 
 func newGS (n uint) Semaphore {
   x := new(guardedSelect)
-  x.p, x.v = make(chan Any), make(chan Any)
+  x.p, x.v = make(chan any), make(chan any)
   go func() {
     val := n
     for {

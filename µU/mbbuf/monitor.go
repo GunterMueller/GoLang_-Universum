@@ -1,9 +1,8 @@
 package mbbuf
 
-// (c) Christian Maurer   v. 171106 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
-  . "µU/obj"
   "µU/bbuf"
   "µU/mon"
 )
@@ -12,11 +11,11 @@ type
                mon.Monitor
                }
 
-func newM (a Any, n uint) MBoundedBuffer {
+func newM (a any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }
   buffer := bbuf.New (a, n)
   x := new(mbufM)
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          if i == ins {
            buffer.Ins (a)
            x.Monitor.Signal (ins)
@@ -31,10 +30,10 @@ func newM (a Any, n uint) MBoundedBuffer {
   return x
 }
 
-func (x *mbufM) Ins (a Any) {
+func (x *mbufM) Ins (a any) {
   x.Monitor.F (a, ins)
 }
 
-func (x *mbufM) Get() Any {
+func (x *mbufM) Get() any {
   return x.Monitor.F (nil, get)
 }

@@ -1,6 +1,6 @@
 package gram
 
-// (c) Christian Maurer   v. 220204 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,11 +9,10 @@ import (
   "µU/col"
   "µU/scr"
   "µU/errh"
-//  "µU/ppm"
   "µU/gra"
   "µU/vtx"
   "µU/edg"
-  "µU/pseq"
+  "µU/showppm"
 )
 type
   graphModel struct {
@@ -45,7 +44,7 @@ func init() {
   for i, l := range (h) { help[i] = str.Lat1(l) }
 }
 
-func new_(d bool, v, e Any) GraphModel {
+func new_(d bool, v, e any) GraphModel {
   x := new(graphModel)
 // TODO  checkType vertex
   x.vertex = Clone(v).(vtx.Vertex)
@@ -65,17 +64,7 @@ func new_(d bool, v, e Any) GraphModel {
 func (x *graphModel) Background (n string) {
   x.bool = ! str.Empty (n)
   x.string = n
-/*/
-  image := ppm.New()
-  image.Load (x.string)
-  scr.WriteImage (image.Colours(), 0, 0)
-/*/
-  filename := n + ".dat"
-  file := pseq.New(make([]byte, pseq.Length (filename)))
-  file.Name (filename)
-  file.Seek (0)
-  s := file.Get().(Stream)
-  scr.Decode (s, 0, 0)
+  showppm.ShowImage (x.string, 0, 0)
   scr.Save1()
 }
 
@@ -91,7 +80,7 @@ func (x *graphModel) ColoursA (f, b col.Colour) {
   x.vertex.ColoursA (f, b)
 }
 
-func (x *graphModel) underMouse (a Any) bool {
+func (x *graphModel) underMouse (a any) bool {
   return a.(vtx.Vertex).UnderMouse()
 }
 
@@ -158,20 +147,22 @@ func (x *graphModel) VertexSelected() bool {
   return s
 }
 
-func (x *graphModel) write (v Any, a bool) {
+func (x *graphModel) write (v any, a bool) {
   v.(vtx.Vertex).Colours (x.f, x.b)
   v.(vtx.Vertex).ColoursA (x.fa, x.ba)
   v.(vtx.Vertex).Write1 (a)
 }
 
-func (x *graphModel) write1 (e Any, a bool) {
+func (x *graphModel) write1 (e any, a bool) {
   e.(edg.Edge).Colours (x.f, x.b)
   e.(edg.Edge).Write1 (a)
 }
 
 func (x *graphModel) Write() {
   scr.Buf (true)
-  if x.bool { scr.Restore1() }
+  if x.bool {
+    scr.Restore1()
+  }
   x.Graph.Write()
   scr.Buf (false)
 }
@@ -240,7 +231,7 @@ func (x *graphModel) Edit() {
         x.Put (x.vertex)
         (x.vertex).Write()
         x.Write()
-        x.Graph.Trav1Loc (func (a Any) { x1, y1 = a.(edg.Edge).Pos0()
+        x.Graph.Trav1Loc (func (a any) { x1, y1 = a.(edg.Edge).Pos0()
                                          if x.near (x1, x0) && x.near (y1, y0) {
                                            a.(edg.Edge).SetPos0 (xm, ym)
                                          }

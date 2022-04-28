@@ -1,6 +1,6 @@
 package pos
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "math"
@@ -28,7 +28,7 @@ func new_(w, h uint) Position {
   return x
 }
 
-func (x *position) imp (Y Any) *position {
+func (x *position) imp (Y any) *position {
   y, ok := Y.(*position)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -56,20 +56,20 @@ func (x *position) Clr() {
   x.x, x.y = inf, inf
 }
 
-func (x *position) Eq (Y Any) bool {
+func (x *position) Eq (Y any) bool {
   y := x.imp(Y)
   return x.x == y.x &&
          x.y == y.y
 }
 
-func (x *position) Copy (Y Any) {
+func (x *position) Copy (Y any) {
   y := x.imp (Y)
   x.x, x.y = y.x, y.y
   x.w, x.h = y.w, y.h
   x.f, x.b = y.f, y.b
 }
 
-func (x *position) Less (Y Any) bool {
+func (x *position) Less (Y any) bool {
   y := x.imp (Y)
   if x.y < y.y {
     return true
@@ -80,7 +80,7 @@ func (x *position) Less (Y Any) bool {
   return false
 }
 
-func (x *position) Clone() Any {
+func (x *position) Clone() any {
   y := new_(uint(x.w), uint(x.h))
   y.Copy (x)
   return y

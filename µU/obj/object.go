@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 201101 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 type
   Object interface {
@@ -24,7 +24,7 @@ type
 
 // Returns true, iff the type of a is bool,
 // [u]int{8|16|32}, float[32|64], complex[64|128] or string.
-func Atomic (a Any) bool {
+func Atomic (a any) bool {
   if a == nil {
     return false
   }
@@ -40,7 +40,7 @@ func Atomic (a Any) bool {
 }
 
 // Returns true, iff the type of a implements Object.
-func IsObject (a Any) bool {
+func IsObject (a any) bool {
   if a == nil {
     return false
   }
@@ -51,12 +51,12 @@ func IsObject (a Any) bool {
 
 // Returns true, iff a is atomic or implements Object
 // (the types that are particularly supported by µU).
-func AtomicOrObject (a Any) bool {
+func AtomicOrObject (a any) bool {
   return Atomic (a) || IsObject (a)
 }
 
 // Returns true, iff a is atomic, streamic or implements Object
 // (the types that are particularly supported by µU).
-func AtomicOrStreamicOrObject (a Any) bool {
+func AtomicOrStreamicOrObject (a any) bool {
   return Atomic (a) || Streamic(a) || IsObject (a)
 }

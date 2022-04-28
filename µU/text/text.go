@@ -1,11 +1,12 @@
 package text
 
-// (c) Christian Maurer   v. 220207 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "µU/rand"
   . "µU/obj"
   "µU/char"
+  "µU/scr"
   "µU/str"
   "µU/col"
   "µU/box"
@@ -38,7 +39,7 @@ func new_(n uint) Text {
   return x
 }
 
-func (x *text) imp(Y Any) *text {
+func (x *text) imp(Y any) *text {
   y, ok := Y.(*text)
   if ! ok || x.uint != y.uint { TypeNotEqPanic (x, Y) }
   return y
@@ -98,27 +99,27 @@ func (x *text) Clr() {
   x.string = str.New (x.uint)
 }
 
-func (x *text) Copy (Y Any) {
+func (x *text) Copy (Y any) {
   y := x.imp (Y)
   x.string = y.string
   x.cF, x.cB = y.cF, y.cB
 }
 
-func (x *text) Clone() Any {
+func (x *text) Clone() any {
   y := new_(x.uint)
   y.Copy (x)
   return y
 }
 
-func (x *text) Eq (Y Any) bool {
+func (x *text) Eq (Y any) bool {
   return x.string == x.imp (Y).string
 }
 
-func (x *text) Less (Y Any) bool {
+func (x *text) Less (Y any) bool {
   return str.Less (x.string, x.imp (Y).string)
 }
 
-func (x *text) Leq (Y Any) bool {
+func (x *text) Leq (Y any) bool {
   return x.Eq(Y) || x.Less(Y)
 }
 
@@ -151,6 +152,7 @@ func (x *text) Colours (f, b col.Colour) {
 }
 
 func (x *text) Write (l, c uint) {
+  scr.SetFont (x.Font)
   bx.Wd (x.uint)
   bx.Colours (x.cF, x.cB)
   bx.Write (x.string, l, c)
@@ -180,12 +182,12 @@ func (x *text) Codelen() uint {
 }
 
 func (x *text) Encode() Stream {
-  return (Stream)(x.string)
+  return Stream(x.string)
 }
 
-func (x *text) Decode (b Stream) {
-  if uint(len (b)) == x.uint {
-    x.string = string(b)
+func (x *text) Decode (s Stream) {
+  if uint(len (s)) == x.uint {
+    x.string = string(s)
 //    str.Lat1 (&x.string)
   } else {
     x.string = str.New (x.uint)
@@ -213,8 +215,6 @@ func (x *text) Byte (n uint) byte {
   }
   return 0
 }
-
-/////////////////////////////////////////////////////
 
 func (x *text) Sub (Y Text) bool {
   _, ok := str.Sub (x.string, x.imp(Y).string)
@@ -286,12 +286,13 @@ func (x *text) ToLower0() {
 func (t *text) WriteGr (x, y int) {
   bx.Wd (t.uint)
   bx.Colours (t.cF, t.cB)
+//  bx.SetFont (t.Font)
+  scr.SetFont (t.Font)
   bx.WriteGr (t.string, x, y)
 }
 
 func (t *text) EditGr (x, y int) {
-  bx.Wd (t.uint)
-  bx.Colours (t.cF, t.cB)
+  t.WriteGr (x, y)
   bx.EditGr (&t.string, x, y)
   str.Move (&t.string, true)
 }

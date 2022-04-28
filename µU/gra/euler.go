@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171122 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "µU/ker"
@@ -26,7 +26,7 @@ func notTraversedNeighbour (v *vertex) *neighbour {
   return nil
 }
 
-func notTraversed (a Any) bool {
+func notTraversed (a any) bool {
   return notTraversedNeighbour (a.(*neighbour).from) != nil
 }
 
@@ -120,14 +120,14 @@ func (x *graph) Euler() bool {
   x.colocal.bool = true
   v := x.colocal
   v.bool = true
-//  for j := 0; j <= 9; j** { for a := false TO true { writeE (E.Any, a); ker.Msleep (100) } }
+//  for j := 0; j <= 9; j** { for a := false TO true { writeE (E.any, a); ker.Msleep (100) } }
 // attempt, to find an Euler path/cycle "by good luck":
   var nb *neighbour
   for {
     nb = notTraversedNeighbour (v)
     if nb == nil { ker.Oops() }
-    // writeE (N.edgePtr.Any, true)
-    //  for j := 0; j <= 9; j++ { for a := false; a <= true; a++ { writVe (N.to.Any, a); ker.Msleep (100) } } };
+    // writeE (N.edgePtr.any, true)
+    //  for j := 0; j <= 9; j++ { for a := false; a <= true; a++ { writVe (N.to.any, a); ker.Msleep (100) } } };
     nb.edgePtr.bool = true
     v = nb.to
     v.bool = true
@@ -142,14 +142,14 @@ func (x *graph) Euler() bool {
     nb, ok := existsnb (x.eulerPath, notTraversed)
     if ! ok { break }
     // for j := 0; j <= 9; j++ { for a := false; a <= true; a++ { // nonsense
-    //   x.writeE (nb.edgePtr.Any, a); ker.Msleep (100) } }
+    //   x.writeE (nb.edgePtr.any, a); ker.Msleep (100) } }
     v = nb.from
     v1 := v
     for {
       nb = notTraversedNeighbour (v)
       if nb == nil { ker.Oops() }
-    // writeE (N.edgePtr.Any, true)
-    // for j := 0 TO 9 { for a := false TO true { writeV (N.to.Any, a); ker.Msleep (100) } }
+    // writeE (N.edgePtr.any, true)
+    // for j := 0 TO 9 { for a := false TO true { writeV (N.to.any, a); ker.Msleep (100) } }
       nb.edgePtr.bool = true
       v = nb.to
       v.bool = true
@@ -159,15 +159,15 @@ func (x *graph) Euler() bool {
     }
   }
   if x.demo [Euler] {
-    x.writeV (x.colocal.Any, true)
+    x.writeV (x.colocal.any, true)
     wait()
     for i := uint(0); i < uint(len (x.eulerPath)); i++ {
       nb = x.eulerPath[i]
-      x.writeE (nb.edgePtr.Any, true)
+      x.writeE (nb.edgePtr.any, true)
       if nb.edgePtr.nbPtr0 == nb {
-        x.writeV (nb.edgePtr.nbPtr1.from.Any, true)
+        x.writeV (nb.edgePtr.nbPtr1.from.any, true)
       } else {
-        x.writeV (nb.edgePtr.nbPtr0.from.Any, true)
+        x.writeV (nb.edgePtr.nbPtr0.from.any, true)
       }
       if i + 1 < uint(len (x.eulerPath)) {
         wait()

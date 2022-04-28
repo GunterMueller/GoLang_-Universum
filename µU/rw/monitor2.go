@@ -1,11 +1,10 @@
 package rw
 
-// (c) Christian Maurer   v. 171101 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> 2nd readers/writers problem
 
 import (
-  . "µU/obj"
   "µU/mon"
 )
 type
@@ -16,7 +15,7 @@ type
 func newM2() ReaderWriter {
   var nR, nW uint
   x := new(monitor2)
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          switch i {
          case readerIn:
            if nW > 0 || x.Awaited (writerIn) && nR > 0 {

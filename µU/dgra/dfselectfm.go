@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // Find the leader by depth-first-search:
 // Compare the own identity with the received value and return the appropriate value.
@@ -46,7 +46,7 @@ func (x *distributedGraph) dfselectfm() {
   }
 }
 
-func (x *distributedGraph) s (a Any, i uint) Any {
+func (x *distributedGraph) s (a any, i uint) any {
   x.awaitAllMonitors()
   s, v := a.(uint) % inf, a.(uint) / inf
   j := x.channel(s)

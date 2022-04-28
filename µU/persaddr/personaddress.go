@@ -1,6 +1,6 @@
 package persaddr
 
-// (c) Christian Maurer   v. 210511 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -26,7 +26,7 @@ func new_() PersonAddress {
   return x
 }
 
-func (x *personAddress) imp (Y Any) *personAddress {
+func (x *personAddress) imp (Y any) *personAddress {
   y, ok := Y.(*personAddress)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -41,30 +41,30 @@ func (x *personAddress) Clr() {
   x.Address.Clr()
 }
 
-func (x *personAddress) Copy (Y Any) {
+func (x *personAddress) Copy (Y any) {
   y := x.imp (Y)
   x.Person.Copy (y.Person)
   x.Address.Copy (y.Address)
 }
 
-func (x *personAddress) Clone() Any {
+func (x *personAddress) Clone() any {
   y := new_()
   y.Copy (x)
   return y
 }
 
-func (x *personAddress) Eq (Y Any) bool {
+func (x *personAddress) Eq (Y any) bool {
   y := x.imp (Y)
   return x.Person.Eq (y.Person) &&
          x.Address.Eq (y.Address)
 }
 
-func (x *personAddress) Less (Y Any) bool {
+func (x *personAddress) Less (Y any) bool {
   y := x.imp (Y)
   return x.Person.Less (y.Person)
 }
 
-func (x *personAddress) Sub (Y Any) bool {
+func (x *personAddress) Sub (Y any) bool {
   y := x.imp (Y)
   return x.Person.Sub (y.Person)
 }
@@ -120,7 +120,7 @@ func (x *personAddress) Decode (s Stream) {
 }
 
 func (x *personAddress) Index() Func {
-  return func (a Any) Any {
+  return func (a any) any {
     x, ok := a.(*personAddress)
     if ! ok { TypeNotEqPanic (x, a) }
     return x.Person

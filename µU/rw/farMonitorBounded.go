@@ -1,11 +1,10 @@
 package rw
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> bounded readers/writers problem
 
 import (
-  . "µU/obj"
   "µU/fmon"
 )
 type
@@ -18,7 +17,7 @@ func newFMB (m uint, h string, port uint16, s bool) ReaderWriter {
   var nR, nW uint
   var tR uint // number of active readers within one turn
   x := new(farMonitorBounded)
-  p := func (a Any, i uint) bool {
+  p := func (a any, i uint) bool {
          switch i {
          case readerIn:
            return nW == 0 && tR < m
@@ -27,7 +26,7 @@ func newFMB (m uint, h string, port uint16, s bool) ReaderWriter {
          }
          return true // readerOut, writerOut
        }
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          switch i {
          case readerIn:
            nR++

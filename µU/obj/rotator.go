@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 210308 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 type
   Rotator interface { // XXX >>>> rotator
@@ -9,4 +9,4 @@ type
   Rotate()
 }
 
-// func IsRotator (a Any) bool { return isRotator(a) }
+// func IsRotator (a any) bool { return isRotator(a) }

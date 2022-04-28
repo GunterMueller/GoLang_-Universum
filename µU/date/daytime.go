@@ -1,6 +1,6 @@
 package date
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -33,7 +33,7 @@ func new_() DayTime {
   return &daytime { day.New(), clk.New() }
 }
 
-func (x *daytime) imp (Y Any) *daytime {
+func (x *daytime) imp (Y any) *daytime {
   y, ok := Y.(*daytime)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -79,12 +79,12 @@ func (x *daytime) Clr() {
   x.Clocktime.Clr()
 }
 
-func (x *daytime) Eq (Y Any) bool {
+func (x *daytime) Eq (Y any) bool {
   y := x.imp (Y)
   return x.Calendarday.Eq (y.Calendarday) && x.Clocktime.Eq (y.Clocktime)
 }
 
-func (x *daytime) Less (Y Any) bool {
+func (x *daytime) Less (Y any) bool {
   return false
 }
 
@@ -144,13 +144,13 @@ func (x *daytime) Defined (s string) bool {
   return false
 }
 
-func (x *daytime) Copy (Y Any) {
+func (x *daytime) Copy (Y any) {
   y := x.imp (Y)
   x.Calendarday.Copy (y.Calendarday)
   x.Clocktime.Copy (y.Clocktime)
 }
 
-func (x *daytime) Clone() Any {
+func (x *daytime) Clone() any {
   y := new_()
   y.Copy (x)
   return y

@@ -1,11 +1,10 @@
 package lr
 
-// (c) Christian Maurer   v. 171101 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> 1st left/right problem
 
 import (
-  . "µU/obj"
   "µU/mon"
 )
 type
@@ -16,7 +15,7 @@ type
 func newM1() LeftRight {
   x := new(monitor1)
   var nL, nR uint
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          switch i {
          case leftIn:
            if nR > 0 {

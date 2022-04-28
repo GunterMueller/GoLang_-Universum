@@ -1,23 +1,21 @@
 package nchan
 
-// (c) Christian Maurer   v. 220214 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
-import
-  . "µU/obj"
 const
 //  Port0 = uint16(1<<16 - 1<<14) // == 49152 (first private port)
   Port0 = uint16(50000)
 type
   NetChannel interface { // Channels for passing objects over the net
 
-  Chan() (chan Any, chan Any)
+  Chan() (chan any, chan any)
 
 // Pre: a is of the type of x.
 // Returns nil, if a is sent on x (resp. if x is a 1:n channel and
 // the calling process is a server, on the actual subchannel of x)
 // to the communication partner of the calling process.
 // Returns otherwise an appropriate error.
-  Send (a Any) error
+  Send (a any) error
 
 // Returns a slice of bytes, if x was created by New with nil as first argument.
 // In this case, the client is responsible for decoding that slice,
@@ -28,7 +26,7 @@ type
 // subchannel of x) from the communication partner, if that was received;
 // returns an empty object otherwise.
 // The calling process was blocked, until an object was received.
-  Recv() Any
+  Recv() any
 
 // The port used by x is not used by a network service on the calling host.
   Fin()
@@ -52,11 +50,11 @@ type
 // Returns a asynchronous 1:1 channel for messages of the type of a
 // between h0 and h over port p.
 // p is now used on h0 and h by a network service.
-func New (a Any, me, i uint, h string, p uint16) NetChannel { return new_(a,me,i,h,p) }
+func New (a any, me, i uint, h string, p uint16) NetChannel { return new_(a,me,i,h,p) }
 
 // See above function. To be called in the constructor of a far monitor.
 // h is the server (s = true), if the calling process is the serving monitor.
-func NewN (a Any, h string, p uint16, s bool) NetChannel { return newn(a,h,p,s) }
+func NewN (a any, h string, p uint16, s bool) NetChannel { return newn(a,h,p,s) }
 
 // Note: In case of consecutive calls of New you have to keep
 //       the correct pairing in both programs to avoid deadlocks!

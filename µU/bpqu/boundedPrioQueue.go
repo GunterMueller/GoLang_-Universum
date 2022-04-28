@@ -1,6 +1,6 @@
 package bpqu
 
-// (c) Christian Maurer   v. 171104 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "sync"
@@ -8,17 +8,17 @@ import (
 )
 type
   boundedPrioQueue struct {
-                     heap []Any // heap[0] to save the type
+                     heap []any // heap[0] to save the type
                  cap, num uint
                           }
 var
   mutex sync.Mutex
 
-func new_(a Any, m uint) BoundedPrioQueue {
+func new_(a any, m uint) BoundedPrioQueue {
   CheckAtomicOrObject (a)
   if m == 0 { return nil }
   x := new(boundedPrioQueue)
-  x.heap = make([]Any, m + 1)
+  x.heap = make([]any, m + 1)
   x.heap[0] = Clone(a)
   x.cap = m
   return x
@@ -60,7 +60,7 @@ func (x *boundedPrioQueue) lift() {
   mutex.Unlock()
 }
 
-func (x *boundedPrioQueue) Ins (a Any) {
+func (x *boundedPrioQueue) Ins (a any) {
   if x.num == x.cap { return } // x full
   CheckTypeEq (a, x.heap[0])
   x.num++
@@ -90,12 +90,12 @@ func (x *boundedPrioQueue) sift() {
   mutex.Unlock()
 }
 
-func (x *boundedPrioQueue) Get() Any {
+func (x *boundedPrioQueue) Get() any {
   if x.num == 0 { return nil }
   return x.heap[1]
 }
 
-func (x *boundedPrioQueue) Del() Any {
+func (x *boundedPrioQueue) Del() any {
   if x.num == 0 { return nil }
   a := x.heap[1]
   x.heap[1] = x.heap[x.num]

@@ -1,6 +1,6 @@
 package bn
 
-// (c) Christian Maurer   v. 220131 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"

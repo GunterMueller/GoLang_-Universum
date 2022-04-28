@@ -1,6 +1,6 @@
 package pair
 
-// (c) Christian Maurer   v. 210323 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
@@ -11,8 +11,8 @@ type
   Comparer
 
   Pos() uint
-  Index() Any
+  Index() any
   TeX() string
 }
 
-func New (a Any, n uint) Pair { return new_(a,n) }
+func New (a any, n uint) Pair { return new_(a,n) }

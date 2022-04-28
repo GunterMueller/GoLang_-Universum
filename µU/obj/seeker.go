@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 210212 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 type
   Seeker interface {
@@ -16,7 +16,7 @@ type
   Seek (p uint)
 }
 
-func IsSeeker (a Any) bool {
+func IsSeeker (a any) bool {
   if a == nil { return false }
   _, ok := a.(Seeker)
   return ok

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 220131 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "reflect"
@@ -8,7 +8,7 @@ import (
   "µU/ker"
 )
 
-func TypeEq (a, b Any) bool {
+func TypeEq (a, b any) bool {
   x, y := reflect.TypeOf(a), reflect.TypeOf(b)
   if x != y {
     TypeNotEqPanic (a, b)
@@ -16,7 +16,7 @@ func TypeEq (a, b Any) bool {
   return x == y
 }
 
-func CheckTypeEq (a, b Any) {
+func CheckTypeEq (a, b any) {
   if a == nil && b == nil { return }
   if a == nil && b != nil || b == nil && a != nil {
     TypeNotEqPanic (a, b)
@@ -30,25 +30,25 @@ func CheckTypeEq (a, b Any) {
   }
 }
 
-func CheckEqualerAndComparer (a Any) {
+func CheckEqualerAndComparer (a any) {
   if ! isEqualer(a) && isComparer(a) {
     PanicNotEqualerAndNotComparer(a)
   }
 }
 
-func CheckAtomicOrEqualer (a Any) {
+func CheckAtomicOrEqualer (a any) {
   if ! AtomicOrEqualer(a) {
     PanicNotAtomicOrEqualer(a)
   }
 }
 
-func CheckAtomicOrObject (a Any) {
+func CheckAtomicOrObject (a any) {
   if ! AtomicOrObject(a) {
     PanicNotAtomicOrObject(a)
   }
 }
 
-func UintOrValuator (a Any) bool {
+func UintOrValuator (a any) bool {
   switch a.(type) {
   case byte, uint16, uint32, uint, uint64, Valuator:
     return true
@@ -56,7 +56,7 @@ func UintOrValuator (a Any) bool {
   return false
 }
 
-func CheckUintOrValuator (a Any) {
+func CheckUintOrValuator (a any) {
   if ! UintOrValuator(a) {
     PanicNotUintOrValuator(a)
   }
@@ -66,7 +66,7 @@ func DivBy0Panic() {
   ker.Panic ("division by 0")
 }
 
-func text (a Any) string {
+func text (a any) string {
   t := "nil"
   if a != nil {
     t = reflect.TypeOf(a).String()
@@ -74,27 +74,27 @@ func text (a Any) string {
   return t
 }
 
-func TypeNotEqPanic (a, b Any) {
+func TypeNotEqPanic (a, b any) {
   ker.Panic ("the types " + text(a) + " and " + text(b) + " are not equal")
 }
 
-func WrongUintParameterPanic (s string, a Any, n uint) {
+func WrongUintParameterPanic (s string, a any, n uint) {
   ker.Panic ("method " + s + " for object of type " + text(a) +
              " got wrong value for " + strconv.FormatUint(uint64(n), 10))
 }
 
-func PanicNotAtomicOrEqualer (a Any) {
+func PanicNotAtomicOrEqualer (a any) {
   ker.Panic ("the type " + text(a) + " is neither Atomic nor implements Equaler")
 }
 
-func PanicNotEqualerAndNotComparer (a Any) {
+func PanicNotEqualerAndNotComparer (a any) {
   ker.Panic ("the type " + text(a) + " does not implement Equaler and Comparer")
 }
 
-func PanicNotAtomicOrObject (a Any) {
+func PanicNotAtomicOrObject (a any) {
   ker.Panic ("the type " + text(a) + " is neither Atomic nor implements Object")
 }
 
-func PanicNotUintOrValuator (a Any) {
+func PanicNotUintOrValuator (a any) {
   ker.Panic ("the type " + text(a) + " is neither uint nor implements Valuator")
 }

@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 220131 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -58,4 +58,4 @@ type
 // of size (width, height) = (w, h) (in colums, lines).
 func New (e EditorGr, w, h uint) Vertex { return new_(e,w,h) }
 
-func W (v Any, a bool) { v.(Vertex).Write1(a) }
+func W (v any, a bool) { v.(Vertex).Write1(a) }

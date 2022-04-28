@@ -1,9 +1,8 @@
 package bpqu
 
-// (c) Christian Maurer   v. 210316 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
-  . "µU/obj"
   "µU/pqu"
 )
 type
@@ -18,4 +17,4 @@ type
 // Pre: a is atomic or of a type implementing Object; m > 0.
 // Returns a new empty priority queue for objects of type a
 // with maximal capacity m.
-func New (a Any, m uint) BoundedPrioQueue { return new_(a,m) }
+func New (a any, m uint) BoundedPrioQueue { return new_(a,m) }

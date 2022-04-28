@@ -1,6 +1,6 @@
 package texts
 
-// (c) Christian Maurer   v. 201204 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -25,7 +25,7 @@ func new_(n []uint) Texts {
   return x
 }
 
-func (x *texts) imp(Y Any) *texts {
+func (x *texts) imp(Y any) *texts {
   y, ok := Y.(*texts)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -50,7 +50,7 @@ func (x *texts) Clr() {
   }
 }
 
-func (x *texts) Copy (Y Any) {
+func (x *texts) Copy (Y any) {
   y := x.imp (Y)
   for i := uint(0); i < x.uint; i++ {
     x.n[i] = y.n[i]
@@ -58,13 +58,13 @@ func (x *texts) Copy (Y Any) {
   }
 }
 
-func (x *texts) Clone() Any {
+func (x *texts) Clone() any {
   y := new_(x.n)
   y.Copy (x)
   return y
 }
 
-func (x *texts) Eq (Y Any) bool {
+func (x *texts) Eq (Y any) bool {
   y := x.imp (Y)
   for i := uint(0); i < x.uint; i++ {
     if ! x.t[i].Eq (y.t[i]) {
@@ -74,7 +74,7 @@ func (x *texts) Eq (Y Any) bool {
   return true
 }
 
-func (x *texts) Less (Y Any) bool {
+func (x *texts) Less (Y any) bool {
   y := x.imp (Y)
   for i := uint(0); i < x.uint; i++ {
     if ! x.t[i].Less (y.t[i]) {
@@ -84,7 +84,7 @@ func (x *texts) Less (Y Any) bool {
   return true
 }
 
-func (x *texts) Leq (Y Any) bool {
+func (x *texts) Leq (Y any) bool {
   y := x.imp (Y)
   return x.Eq(y) || x.Less(y)
 }
@@ -100,12 +100,6 @@ func (x *texts) SetFont (f font.Font) {
     x.t[i].SetFont (f)
   }
 }
-
-// func (x *texts) SetFontsize (s font.Size) {
-//   for i := uint(0); i < x.uint; i++ {
-//     x.t[i].SetFontsize (s)
-//   }
-// }
 
 func (x *texts) Print (l, c uint) {
   for i := uint(0); i < x.uint; i++ {

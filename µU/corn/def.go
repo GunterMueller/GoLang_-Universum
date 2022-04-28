@@ -1,9 +1,8 @@
 package corn
 
-// (c) Christian Maurer   v. 200120 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
-  . "µU/obj"
   "µU/buf"
 )
 type
@@ -14,4 +13,4 @@ type
 
 // Pre: a is atomic or of a type implementing Object.
 // Returns a new cornet for elements of the type of a.
-func New (a Any) Cornet { return new_(a) }
+func New (a any) Cornet { return new_(a) }

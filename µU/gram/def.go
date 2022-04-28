@@ -1,6 +1,6 @@
 package gram
 
-// (c) Christian Maurer   v. 170121 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -51,4 +51,4 @@ type
 // Returns a new empty GraphModel for vertices and edges
 // of type n and e resp., that is directed, iff d == true.
 // (See also Spec of Graph in µU/gra.)
-func New (d bool, n, e Any) GraphModel { return new_(d,n,e) }
+func New (d bool, n, e any) GraphModel { return new_(d,n,e) }

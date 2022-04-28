@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220130 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 //#include <stdlib.h>
@@ -83,7 +83,8 @@ type
     codeF, codeB obj.Stream
       scrF, scrB col.Colour
           lineWd linewd.Linewidth
-        fontsize font.Size
+                 font.Font
+                 font.Size
      transparent bool
      cursorShape,
     consoleShape,
@@ -456,7 +457,7 @@ func (X *console) Write1 (b byte, l, c uint) {
 //  X.lineWd = linewd.Thin
   for i := uint(0); i < X.ht1; i++ {
     for j := uint(0); j < X.wd1; j++ {
-      if X.pointed (X.fontsize, b, i, j) {
+      if X.pointed (X.Size, b, i, j) {
         X.codeF = f
       } else {
         X.codeF = X.codeB
@@ -513,7 +514,7 @@ func (X *console) Write1Gr (b byte, x, y int) {
 //  X.lineWd = linewd.Thin
   for i := uint(0); i < X.ht1; i++ {
     for j := uint(0); j < X.wd1; j++ {
-      if X.pointed (X.fontsize, b, i, j) {
+      if X.pointed (X.Size, b, i, j) {
         X.codeF = f
         X.Point (x + int(j), y + int(i))
       } else if ! X.transparent {
@@ -541,7 +542,7 @@ func (X *console) Write1InvGr (b byte, x, y int) {
   if x < X.x || x >= X.x + int(X.wd - X.wd1) || y < X.y || y >= X.y + int(X.ht - X.ht1) { return }
   for i := uint(0); i < X.ht1; i++ {
     for j := uint(0); j < X.wd1; j++ {
-      if X.pointed (X.fontsize, b, i, j) {
+      if X.pointed (X.Size, b, i, j) {
         X.PointInv (x + int(j), y + int(i))
       } else if ! X.transparent {
         X.PointInv (x + int(j), y + int(i))
@@ -561,13 +562,21 @@ func (X *console) WriteInvGr (s string, x, y int) {
 
 // font ////////////////////////////////////////////////////////////////
 
-func (X *console) ActFontsize() font.Size {
-  return X.fontsize
+func (X *console) ActFont() font.Font {
+  return X.Font
 }
 
-func (X *console) SetFontsize (f font.Size) {
-  X.fontsize = f
-  X.ht1, X.wd1 = font.Ht (X.fontsize), font.Wd (X.fontsize)
+func (X *console) SetFont (f font.Font) {
+  X.Font = f
+}
+
+func (X *console) ActFontsize() font.Size {
+  return X.Size
+}
+
+func (X *console) SetFontsize (s font.Size) {
+  X.Size = s
+  X.ht1, X.wd1 = font.Ht (X.Size), font.Wd (X.Size)
   X.nLines, X.nColumns = X.ht / X.ht1, X.wd / X.wd1
 }
 

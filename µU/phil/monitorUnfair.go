@@ -1,11 +1,10 @@
 package phil
 
-// (c) Christian Maurer   v. 171127 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> Unfair monitor solution due to Dijkstra
 
 import (
-  . "µU/obj"
   "µU/mon"
 )
 type
@@ -15,7 +14,7 @@ type
 
 func newMU() Philos {
   var m mon.Monitor
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          p := a.(uint)
          if i == lock {
            changeStatus (p, starving)

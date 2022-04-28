@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 210316 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 type
   Persistor interface {
@@ -22,7 +22,7 @@ type
   Fin()
 }
 
-func IsPersistor (a Any) bool {
+func IsPersistor (a any) bool {
   if a == nil { return false }
   _, ok := a.(Persistor)
   return ok

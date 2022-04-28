@@ -1,6 +1,6 @@
 package tval
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -44,7 +44,7 @@ func new_() TruthValue {
   return x
 }
 
-func (x *truthValue) imp (Y Any) *truthValue {
+func (x *truthValue) imp (Y any) *truthValue {
   y, ok := Y.(*truthValue)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -66,23 +66,23 @@ func (x *truthValue) Clr() {
   x.value = indetermined
 }
 
-func (x *truthValue) Copy (Y Any) {
+func (x *truthValue) Copy (Y any) {
   y := x.imp(Y)
   x.value = y.value
   x.cF, x.cB = y.cF, y.cB
 }
 
-func (x *truthValue) Clone() Any {
+func (x *truthValue) Clone() any {
   y := new_()
   y.Copy(x)
   return y
 }
 
-func (x *truthValue) Eq (Y Any) bool {
+func (x *truthValue) Eq (Y any) bool {
   return x.value == x.imp(Y).value
 }
 
-func (x *truthValue) Less (Y Any) bool {
+func (x *truthValue) Less (Y any) bool {
   return x.value < x.imp(Y).value
 }
 

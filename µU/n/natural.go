@@ -1,6 +1,6 @@
 package n
 
-// (c) Christian Maurer   v. 210405 - license see µU.go
+// (c) Christian Maurer   v. 2r0418 - license see µU.go
 
 import (
   "µU/ker"
@@ -125,6 +125,15 @@ func write (n uint, l, c uint) {
   bx.Write (string_(n), l, c)
 }
 
+func writeGr (n uint, x, y int) {
+  w := wd (n)
+  if width > w { w = width }
+//  if w > c + 1 { return } // TODO
+  bx.Wd (w)
+  bx.WriteGr (str.New(w), x, y)
+  bx.WriteGr (string_(n), x, y)
+}
+
 func setWd (w uint) {
   if w == 0 {
     width = 1
@@ -150,4 +159,21 @@ func edit (n *uint, l, c uint) {
   }
 //  scr.Write ("            ", scr.NLines() - 1, 0) // provisorial
 //  bx.Write (string_(*n), l, c)
+}
+
+func editGr (n *uint, x, y int) {
+  w := wd (*n)
+  if width > w { w = width }
+  bx.Wd (w)
+  s := string_(*n)
+  for {
+    bx.EditGr (&s, x, y)
+    if defined (n, s) {
+      break
+    } else {
+//      scr.Write (" keine Zahl ", scr.NLines() - 1, 0) // provisorial
+    }
+  }
+//  scr.Write ("            ", scr.NLines() - 1, 0) // provisorial
+//  bx.WriteGr (string_(*n), x, y)
 }

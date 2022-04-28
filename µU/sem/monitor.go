@@ -1,11 +1,10 @@
 package sem
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> Implementation with a universal monitor
 
 import (
-  . "µU/obj"
   "µU/mon"
 )
 type
@@ -16,7 +15,7 @@ type
 func newM (n uint) Semaphore {
   val := n
   x := new(monitor)
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          if i == p {
            if val == 0 {
              x.Monitor.Wait (v)

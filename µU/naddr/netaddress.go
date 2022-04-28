@@ -1,6 +1,6 @@
 package naddr
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -26,7 +26,7 @@ func new2 (h host.Host, p uint16) NetAddress {
   return x
 }
 
-func (x *netAddress) imp (Y Any) *netAddress {
+func (x *netAddress) imp (Y any) *netAddress {
   y, ok := Y.(*netAddress)
   if ! ok { TypeNotEqPanic(x, Y) }
   return y
@@ -41,13 +41,13 @@ func (x *netAddress) Clr() {
   x.uint16 = 0
 }
 
-func (x *netAddress) Eq (Y Any) bool {
+func (x *netAddress) Eq (Y any) bool {
   y := x.imp(Y)
   return x.Host.Eq(y.Host) &&
          x.uint16 == y.uint16
 }
 
-func (x *netAddress) Less (Y Any) bool {
+func (x *netAddress) Less (Y any) bool {
   y := x.imp(Y)
   if x.Host.Eq(y.Host) {
     return x.uint16 < y.uint16
@@ -55,13 +55,13 @@ func (x *netAddress) Less (Y Any) bool {
   return x.Host.Less(y.Host)
 }
 
-func (x *netAddress) Copy (Y Any) {
+func (x *netAddress) Copy (Y any) {
   y := x.imp(Y)
   x.Host.Copy(y.Host)
   x.uint16 = y.uint16
 }
 
-func (x *netAddress) Clone() Any {
+func (x *netAddress) Clone() any {
   y := new_(x.uint16).(*netAddress)
   y.Host.Copy(x.Host)
   return y

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 type
   Clearer interface {
@@ -17,7 +17,7 @@ type
 }
 
 // Returns true, iff a implements Clearer.
-func IsClearer (a Any) bool { return isClearer(a) }
+func IsClearer (a any) bool { return isClearer(a) }
 
 // a is empty.
-func Clear (a Any) Any { return clear(a) }
+func Clear (a any) any { return clear(a) }

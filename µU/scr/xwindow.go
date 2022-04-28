@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220129 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -197,7 +197,8 @@ type
       scrF, scrB col.Colour
           lineWd linewd.Linewidth
              fsp *C.XFontStruct
-        fontsize font.Size
+                 font.Font
+                 font.Size
    wd1, ht1, bl1 uint // font baseline
      transparent bool
          pointer uint
@@ -629,12 +630,20 @@ func (X *xwindow) Transparence (t bool) {
 
 // font ////////////////////////////////////////////////////////////////
 
+func (X *xwindow) ActFont() font.Font {
+  return X.Font
+}
+
+func (X *xwindow) SetFont (f font.Font) {
+ X.Font = f
+}
+
 func (X *xwindow) ActFontsize() font.Size {
-  return X.fontsize
+  return X.Size
 }
 
 func (X *xwindow) SetFontsize (s font.Size) {
-  X.fontsize = s
+  X.Size = s
   name := "-xos4-terminus-bold"
   h := int(font.Ht (s))
   if s < font.Normal {

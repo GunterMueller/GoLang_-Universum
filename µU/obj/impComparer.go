@@ -1,14 +1,14 @@
 package obj
 
-// (c) Christian Maurer   v. 190805 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
-func isComparer (a Any) bool {
+func isComparer (a any) bool {
   if a == nil { return false }
   _, ok := a.(Comparer)
   return ok
 }
 
-func less (a, b Any) bool {
+func less (a, b any) bool {
   switch a.(type) {
   case bool:
     return ! a.(bool) && b.(bool)

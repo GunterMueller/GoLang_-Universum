@@ -1,6 +1,6 @@
 package fmon
 
-// (c) Christian Maurer   v. 190822 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/ker"
@@ -10,19 +10,19 @@ import (
 )
 type
   farMonitor struct {
-      input, output Any "pattern objects"
+      input, output any "pattern objects"
                     uint "number of monitor functions"
                  ch []nchan.NetChannel
                     FuncSpectrum; PredSpectrum
                     bool "true iff the monitor is a server"
                     }
 
-func new_(a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
+func new_(a any, n uint, fs FuncSpectrum, ps PredSpectrum,
           h string, p uint16, s bool) FarMonitor {
   return new1 (a, n, fs, ps, h, p, s, Nothing)
 }
 
-func new1 (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
+func new1 (a any, n uint, fs FuncSpectrum, ps PredSpectrum,
            h string, p uint16, s bool, stmt Stmt) FarMonitor {
   if n == 0 { Panic ("fmon.New must be called with 2nd arg > 0") }
   x := new(farMonitor)
@@ -36,7 +36,7 @@ func new1 (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
   return x.common (fs, ps, stmt)
 }
 
-func new2 (a, b Any, n uint, fs FuncSpectrum, ps PredSpectrum,
+func new2 (a, b any, n uint, fs FuncSpectrum, ps PredSpectrum,
            h string, p uint16, s bool) FarMonitor {
   if n == 0 { Panic ("fmon.New2 must be called with 2nd arg > 0") }
   x := new(farMonitor)
@@ -52,7 +52,7 @@ func new2 (a, b Any, n uint, fs FuncSpectrum, ps PredSpectrum,
 }
 
 func (x *farMonitor) common (fs FuncSpectrum, ps PredSpectrum, stmt Stmt) FarMonitor {
-  in, out := make([]chan Any, x.uint), make([]chan Any, x.uint)
+  in, out := make([]chan any, x.uint), make([]chan any, x.uint)
   for i := uint(0); i < x.uint; i++ {
     in[i], out[i] = x.ch[i].Chan()
   }
@@ -61,7 +61,7 @@ func (x *farMonitor) common (fs FuncSpectrum, ps PredSpectrum, stmt Stmt) FarMon
   }
   x.FuncSpectrum, x.PredSpectrum = fs, ps
   stmt()
-  any := make([]Any, x.uint)
+  any := make([]any, x.uint)
   for i := uint(0); i < x.uint; i++ {
     go func (j uint) {
       for {
@@ -81,7 +81,7 @@ func (x *farMonitor) common (fs FuncSpectrum, ps PredSpectrum, stmt Stmt) FarMon
   return x
 }
 
-func (x *farMonitor) F (a Any, i uint) Any {
+func (x *farMonitor) F (a any, i uint) any {
   if x.ch[i] == nil { panic("no comm-channel") }
   x.ch[i].Send (a)
   return x.ch[i].Recv()

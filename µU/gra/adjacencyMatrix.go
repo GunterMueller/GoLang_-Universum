@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171112 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "µU/ker"
@@ -10,15 +10,15 @@ import (
 
 func (x *graph) Matrix() adj.AdjacencyMatrix {
   n := x.Num()
-  matrix := adj.New (n, x.vAnchor.Any, x.eAnchor.Any)
+  matrix := adj.New (n, x.vAnchor.any, x.eAnchor.any)
   for v, i := x.vAnchor.nextV, uint(0); v != x.vAnchor; v, i = v.nextV, i + 1 {
     v.time0 = uint32(i) // i.e. v is the i-th vertex of x
   }
   for v, i := x.vAnchor.nextV, uint(0); v != x.vAnchor; v, i = v.nextV, i + 1 {
-    matrix.Set (i, i, Clone(v.Any), x.eAnchor.Any)
+    matrix.Set (i, i, Clone(v.any), x.eAnchor.any)
     for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
       if n.outgoing {
-        matrix.Set (i, uint(n.to.time0), x.vAnchor.Any, n.edgePtr.Any)
+        matrix.Set (i, uint(n.to.time0), x.vAnchor.any, n.edgePtr.any)
       }
     }
   }
@@ -35,8 +35,8 @@ func (x *graph) SetMatrix (matrix adj.AdjacencyMatrix) {
     for k := uint(0); k < m; k++ {
       if k != i {
         val := matrix.Val (i, k)
-        if val > 0 && x.ExPred2 (func (a Any) bool { return Eq (a, matrix.Vertex (i)) },
-                                 func (a Any) bool { return Eq (a, matrix.Vertex (k)) }) {
+        if val > 0 && x.ExPred2 (func (a any) bool { return Eq (a, matrix.Vertex (i)) },
+                                 func (a any) bool { return Eq (a, matrix.Vertex (k)) }) {
           x.Edge (val)
         }
       }

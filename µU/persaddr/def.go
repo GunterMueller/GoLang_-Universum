@@ -1,6 +1,6 @@
 package persaddr
 
-// (c) Christian Maurer   v. 210601 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
@@ -11,7 +11,7 @@ type
   Indexer
   Rotator
 
-  Sub (y Any) bool
+  Sub (y any) bool
 }
 
 // Returns a new empty pair of Person and Address.

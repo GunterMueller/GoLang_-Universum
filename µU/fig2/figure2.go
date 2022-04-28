@@ -177,7 +177,7 @@ func newText (x, y int, s string, c col.Colour) Figure {
   return f
 }
 
-func (f *figure) imp (Y Any) *figure {
+func (f *figure) imp (Y any) *figure {
   y, ok := Y.(*figure)
   if ! ok { TypeNotEqPanic (f, Y) }
   return y
@@ -217,7 +217,7 @@ func (f *figure) Select() {
   }
 }
 
-func (f *figure) Eq (Y Any) bool {
+func (f *figure) Eq (Y any) bool {
   f1 := f.imp (Y)
   n, n1 := uint(len (f.x)), uint(len (f1.x))
   if f.typ != f1.typ || n != n1 || f.filled != f1.filled {
@@ -243,11 +243,11 @@ func (f *figure) Eq (Y Any) bool {
   return true
 }
 
-func (x *figure) Less (Y Any) bool {
+func (x *figure) Less (Y any) bool {
   return false
 }
 
-func (f *figure) Copy (Y Any) {
+func (f *figure) Copy (Y any) {
   f1 := f.imp (Y)
   f.typ = f1.typ
   f.colour.Copy (f1.colour)
@@ -267,7 +267,7 @@ func (f *figure) Copy (Y Any) {
   }
 }
 
-func (x *figure) Clone() Any {
+func (x *figure) Clone() any {
   y := new_()
   y.Copy (x)
   return y

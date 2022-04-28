@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 type
   Format byte
@@ -15,7 +15,7 @@ type
   GetFormat() Format
 }
 
-func IsFormatter (a Any) bool {
+func IsFormatter (a any) bool {
   if a == nil { return false }
   _, ok := a.(Formatter)
   return ok

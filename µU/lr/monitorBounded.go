@@ -1,11 +1,10 @@
 package lr
 
-// (c) Christian Maurer   v. 171101 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> bounded left/right problem
 
 import (
-  . "µU/obj"
   "µU/mon"
 )
 type
@@ -17,7 +16,7 @@ func newMB (mL, mR uint) LeftRight {
   var nL, nR uint
   var tL, tR uint // number of actives within one turn
   x := new(monitorBounded)
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          switch i {
          case leftIn:
            if nR > 0 || x.Awaited (rightIn) && tL >= mL {

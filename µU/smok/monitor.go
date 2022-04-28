@@ -1,11 +1,10 @@
 package smok
 
-// (c) Christian Maurer   v. 171102 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> Solution with a universal monitor
 
 import (
-  . "µU/obj"
   "µU/mon"
 )
 type
@@ -17,7 +16,7 @@ func newM() Smokers {
   var avail [3]bool
   smoking := false
   x := new(monitor)
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          u := a.(uint)
          u1, u2 := others (u)
          switch i {

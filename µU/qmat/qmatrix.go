@@ -1,6 +1,6 @@
 package qmat
 
-// (c) Christian Maurer   v. 211118 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> matrices with rational fractions as entries
 
@@ -48,7 +48,7 @@ func unit (m, n uint) QMatrix {
   return u
 }
 
-func (x *qmatrix) imp (Y Any) *qmatrix {
+func (x *qmatrix) imp (Y any) *qmatrix {
   y, ok := Y.(*qmatrix)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -89,7 +89,7 @@ func (x *qmatrix) Zero() bool {
   return true
 }
 
-func (x *qmatrix) Eq (Y Any) bool {
+func (x *qmatrix) Eq (Y any) bool {
   y := x.imp (Y)
   if y.nl != x.nl || y.nc != x.nc { // || y.d != x.d {
     return false
@@ -104,7 +104,7 @@ func (x *qmatrix) Eq (Y Any) bool {
   return true
 }
 
-func (x *qmatrix) Copy (Y Any) {
+func (x *qmatrix) Copy (Y any) {
   y := x.imp (Y)
   if y.nl != x.nl || y.nc != x.nc { nofit() }
   for l := uint(0); l < x.nl; l++ {
@@ -114,13 +114,13 @@ func (x *qmatrix) Copy (Y Any) {
   }
 }
 
-func (x *qmatrix) Clone () Any {
+func (x *qmatrix) Clone () any {
   y := new_(x.nl, x.nc)
   y.Copy (x)
   return y
 }
 
-func (x *qmatrix) Less (Y Any) bool {
+func (x *qmatrix) Less (Y any) bool {
   return false
 }
 

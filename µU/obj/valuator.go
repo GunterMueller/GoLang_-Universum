@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 220131 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 type
   Valuator interface {
@@ -15,12 +15,12 @@ type
 }
 
 // Returns true, iff a implements Valuator or has an uint-type.
-func IsValuator (a Any) bool { return isValuator(a) }
+func IsValuator (a any) bool { return isValuator(a) }
 
 // Pre: IsValuator (a).
 // Returns the value of a.
-func Val (a Any) uint { return val(a) }
+func Val (a any) uint { return val(a) }
 
 // Pre: IsValuator (a).
 // x.Val() == n (% 1 << a, if a has the type uint<a>).
-func SetVal (a *Any, n uint) { setVal(a,n) }
+func SetVal (a *any, n uint) { setVal(a,n) }

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 220128 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "math"
@@ -8,17 +8,17 @@ import (
   "µU/ker"
 )
 
-func isCoder (a Any) bool {
+func isCoder (a any) bool {
   if a == nil { return false }
   _, ok := a.(Coder)
   return ok
 }
 
-func fail (a Any) {
+func fail (a any) {
   ker.Panic ("µU only [en|de]codes atomic types and objects of type string, ..Stream or Coder !")
 }
 
-func codelen (a Any) uint {
+func codelen (a any) uint {
   if a == nil { return 0 }
   switch a.(type) {
   case bool, int8, uint8:
@@ -56,7 +56,7 @@ func codelen (a Any) uint {
   panic("shut up, compiler")
 }
 
-func encode (a Any) Stream {
+func encode (a any) Stream {
   if a == nil {
     return nil
   }
@@ -220,7 +220,7 @@ func encode (a Any) Stream {
 }
 
 /*/
-func gödel (a Any) byte {
+func gödel (a any) byte {
   if a == nil { return 0 }
   switch a.(type) {
   case bool:
@@ -271,7 +271,7 @@ func gödel (a Any) byte {
   return 255
 }
 
-func degödel (b byte) Any {
+func degödel (b byte) any {
   switch b {
   case 0:
     return nil
@@ -330,7 +330,7 @@ func chk (b Stream, n int) {
   }
 }
 
-func decode (a Any, bs Stream) Any {
+func decode (a any, bs Stream) any {
   if a == nil { return nil }
   switch a.(type) {
   case bool:

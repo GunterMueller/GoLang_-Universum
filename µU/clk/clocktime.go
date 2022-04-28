@@ -1,6 +1,6 @@
 package clk
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/ker"
@@ -55,7 +55,7 @@ func new_() Clocktime {
   return x
 }
 
-func (x *clocktime) imp(Y Any) *clocktime {
+func (x *clocktime) imp(Y any) *clocktime {
   y, ok := Y.(*clocktime)
   if ! ok { TypeNotEqPanic(x, Y) }
   return y
@@ -74,12 +74,12 @@ func (x *clocktime) Clr() {
   x.minute, x.second = 0, 0
 }
 
-func (x *clocktime) Copy (Y Any) {
+func (x *clocktime) Copy (Y any) {
   y := x.imp(Y)
   x.hour, x.minute, x.second = y.hour, y.minute, y.second
 }
 
-func (x *clocktime) Clone() Any {
+func (x *clocktime) Clone() any {
   y := new_()
   y.Copy(x)
   return y
@@ -89,7 +89,7 @@ func (x *clocktime) internalCode() uint {
   return (ms * x.hour + x.minute) * ms + x.second
 }
 
-func (x *clocktime) Eq (Y Any) bool {
+func (x *clocktime) Eq (Y any) bool {
   return x.internalCode() == x.imp(Y).internalCode()
 }
 
@@ -102,7 +102,7 @@ func less (C, C1 uint) bool {
   return C < C1
 }
 
-func (x *clocktime) Less (Y Any) bool {
+func (x *clocktime) Less (Y any) bool {
   return x.internalCode() < x.imp(Y).internalCode()
 }
 

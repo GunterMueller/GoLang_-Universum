@@ -1,10 +1,11 @@
 package box
 
-// (c) Christian Maurer   v. 210315 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
+  "µU/font"
 )
 type
   Box interface { // Boxes within one line of the screen to write and edit strings.
@@ -35,6 +36,12 @@ type
 
 // x is filled with an empty string.
   Clr (l, c uint)
+
+// Returns the actual font, initially font.Roman..
+  ActFont() font.Font
+
+// f is the actual font.
+  SetFont (f font.Font)
 
 // Pre: l < scr.NLines,
 //      c + width of x <= scr.NColumns,

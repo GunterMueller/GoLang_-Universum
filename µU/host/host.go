@@ -1,6 +1,6 @@
 package host
 
-// (c) Christian Maurer   v. 210311 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "os"; "net"
@@ -49,7 +49,7 @@ func news (s string) Host {
   return x
 }
 
-func (x *host) imp (Y Any) *host {
+func (x *host) imp (Y any) *host {
   y, ok := Y.(*host)
   if ! ok { TypeNotEqPanic(x, Y) }
   return y
@@ -64,7 +64,7 @@ func (x *host) Clr() {
   x.ip = nullIP
 }
 
-func (x *host) Eq (Y Any) bool {
+func (x *host) Eq (Y any) bool {
   y := x.imp(Y)
   if x.Empty() { return y.Empty() }
   if y.Empty() { return x.Empty() }
@@ -78,7 +78,7 @@ func (x *host) Eq (Y Any) bool {
   return e
 }
 
-func (x *host) Less (Y Any) bool {
+func (x *host) Less (Y any) bool {
   y := x.imp(Y)
   if len(x.ip) != len(y.ip) {
     println("Less: len(x.ip) =", len(x.ip), "but len(y.ip) =", len(y.ip)) // XXX
@@ -93,7 +93,7 @@ func (x *host) Less (Y Any) bool {
   return false
 }
 
-func (x *host) Copy (Y Any) {
+func (x *host) Copy (Y any) {
   y := x.imp(Y)
   if y.Empty() {
     x.Clr()
@@ -113,7 +113,7 @@ func (x *host) Copy (Y Any) {
   }
 }
 
-func (x *host) Clone() Any {
+func (x *host) Clone() any {
   y := new_()
 // println("Clone: len(x.name) ==", len(x.name))
   y.Copy(x)

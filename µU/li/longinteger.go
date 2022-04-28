@@ -1,6 +1,6 @@
 package li
 
-// (c) Christian Maurer   v. 211106 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 
@@ -54,7 +54,7 @@ func newNat (n uint) LongInteger {
 }
 */
 
-func (x *longInteger) imp (Y Any) *Int {
+func (x *longInteger) imp (Y any) *Int {
   x, ok := Y.(*longInteger)
   if ! ok { TypeNotEqPanic (x, Y) }
   return x.n
@@ -70,21 +70,21 @@ func (x *longInteger) Clr() {
 //  x.nan = true
 }
 
-func (x *longInteger) Eq (Y Any) bool {
+func (x *longInteger) Eq (Y any) bool {
   return x.n.Cmp (x.imp (Y)) == 0
 }
 
-func (x *longInteger) Copy (Y Any) {
+func (x *longInteger) Copy (Y any) {
   x.n.Set (x.imp (Y))
 }
 
-func (x *longInteger) Clone() Any {
+func (x *longInteger) Clone() any {
   y := New (0)
   y.Copy (x)
   return y
 }
 
-func (x *longInteger) Less (Y Any) bool {
+func (x *longInteger) Less (Y any) bool {
   return x.n.Cmp (x.imp (Y)) == -1
 }
 

@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 210601 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -29,7 +29,7 @@ type (
                 tval.TruthValue "female/indetermined/male"
                 day.Calendarday "birthday"
           title text.Text
-          field []Any // to [En|De]code
+          field []any // to [En|De]code
              cl []uint
                 Format
                 }
@@ -49,14 +49,14 @@ func new_() Person {
   x.TruthValue.SetFormat (" ", "m", "w")
   x.Calendarday = day.New()
   x.title = text.New (lenName)
-  x.field = []Any { x.surname, x.firstName, x.Calendarday, x.TruthValue, x.title }
+  x.field = []any { x.surname, x.firstName, x.Calendarday, x.TruthValue, x.title }
   x.cl = []uint {lenName, lenFirstName, x.Calendarday.Codelen(),
                  x.TruthValue.Codelen(), x.title.Codelen()}
   x.Format = LongB
   return x
 }
 
-func (x *person) imp(Y Any) *person {
+func (x *person) imp(Y any) *person {
   y, ok := Y.(*person)
   if ! ok { TypeNotEqPanic(x, Y) }
   return y
@@ -104,7 +104,7 @@ func (x *person) Age() uint {
   return a - 1
 }
 
-func (x *person) Copy (Y Any) {
+func (x *person) Copy (Y any) {
   y := x.imp (Y)
   x.surname.Copy (y.surname)
   x.firstName.Copy (y.firstName)
@@ -114,13 +114,13 @@ func (x *person) Copy (Y Any) {
   x.Format = y.Format
 }
 
-func (x *person) Clone() Any {
+func (x *person) Clone() any {
   y := new_()
   y.Copy (x)
   return y
 }
 
-func (x *person) Eq (Y Any) bool {
+func (x *person) Eq (Y any) bool {
   y := x.imp (Y)
   g := x.surname.Eq (y.surname) &&
        x.firstName.Eq (y.firstName)
@@ -146,7 +146,7 @@ func (x *person) Equiv (Y Person) bool {
   return x.Calendarday.Eq (y.Calendarday)
 }
 
-func (x *person) Less (Y Any) bool {
+func (x *person) Less (Y any) bool {
   y := x.imp (Y)
   if actualOrder == nameOrder {
     if x.surname.Eq (y.surname) {
@@ -166,7 +166,7 @@ func (x *person) Less (Y Any) bool {
   return x.Calendarday.Less (x.imp (Y).Calendarday)
 }
 
-func (x *person) Sub (Y Any) bool {
+func (x *person) Sub (Y any) bool {
   y := x.imp (Y)
   if ! x.surname.Sub (y.surname) {
     return false

@@ -1,9 +1,8 @@
 package pqu
 
-// (c) Christian Maurer   v. 210320 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
-  . "µU/obj"
   "µU/buf"
 )
 type
@@ -15,4 +14,4 @@ type
 }
 
 // Pre: a is atomic or of a type implementing Object.
-func New (a Any) PrioQueue { return new_(a) }
+func New (a any) PrioQueue { return new_(a) }

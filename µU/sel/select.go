@@ -1,10 +1,9 @@
 package sel
 
-// (c) Christian Maurer   v. 220211 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "µU/ker"
-  . "µU/obj"
   "µU/env"
   "µU/str"
   "µU/kbd"
@@ -136,7 +135,7 @@ func select1 (s []string, h, w uint, n *uint, l, c uint, f, b col.Colour) {
 var
   ptSuffix string
 
-func hasSuffix (a Any) bool {
+func hasSuffix (a any) bool {
   p, ok := str.Sub (ptSuffix, a.(string))
   return ok && p == str.ProperLen (a.(string)) - uint(len (ptSuffix))
 }

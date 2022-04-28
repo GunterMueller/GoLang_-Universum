@@ -1,11 +1,10 @@
 package rw
 
-// (c) Christian Maurer   v. 171107 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> 1st readers/writers problem
 
 import (
-  . "µU/obj"
   "µU/fmon"
 )
 type
@@ -16,7 +15,7 @@ type
 func newFM (h string, p uint16, s bool) ReaderWriter {
   var nR, nW uint
   x := new(farMonitor)
-  ps := func (a Any, i uint) bool {
+  ps := func (a any, i uint) bool {
           switch i {
           case readerIn:
             return nW == 0
@@ -25,7 +24,7 @@ func newFM (h string, p uint16, s bool) ReaderWriter {
           }
           return true // readerOut, writerOut
         }
-  fs := func (a Any, i uint) Any {
+  fs := func (a any, i uint) any {
           switch i {
           case readerIn:
             nR++

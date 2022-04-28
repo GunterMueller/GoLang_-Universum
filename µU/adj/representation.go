@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 220131 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "µU/ker"
@@ -10,18 +10,18 @@ import (
 type (
   pair struct {
        vertex,
-         edge Any
+         edge any
               }
   adjacencyMatrix struct {
                          uint "number of rows/columns"
                        v,    // pattern vertex
-                       e Any // pattern edge
+                       e any // pattern edge
                    entry [][]pair
                   cF, cB col.Colour
                          }
 )
 
-func new_(n uint, v, e Any) AdjacencyMatrix {
+func new_(n uint, v, e any) AdjacencyMatrix {
   if n == 0 || e == nil { ker.Oops() }
   CheckAtomicOrObject (v)
   CheckUintOrValuator (e)

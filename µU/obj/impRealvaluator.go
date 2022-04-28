@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 220131 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "math"
@@ -8,13 +8,13 @@ import (
   "µU/ker"
 )
 
-func isRealValuator (a Any) bool {
+func isRealValuator (a any) bool {
   if a == nil { return false }
   _, ok := a.(RealValuator)
   return ok
 }
 
-func realVal (a Any) float64 {
+func realVal (a any) float64 {
   r := 1.
   switch a.(type) {
   case RealValuator:
@@ -43,7 +43,7 @@ func realVal (a Any) float64 {
   return r
 }
 
-func setRealVal (a *Any, r float64) {
+func setRealVal (a *any, r float64) {
   switch (*a).(type) {
   case int8:
     *a = int8(r)

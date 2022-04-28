@@ -1,6 +1,6 @@
 package vnset
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -28,7 +28,7 @@ func emptySet() VonNeumannSet {
   return x
 }
 
-func (x *set) imp (Y Any) *set {
+func (x *set) imp (Y any) *set {
   y, ok := Y.(*set)
   if ! ok { TypeNotEqPanic(x, Y) }
   return y
@@ -43,18 +43,18 @@ func (x *set) Subset (Y VonNeumannSet) bool {
   return true
 }
 
-func (x *set) Eq (Y Any) bool {
+func (x *set) Eq (Y any) bool {
   y := x.imp(Y)
   return x.Subset(y) && y.Subset(x)
 }
 
-func (x *set) Less (Y Any) bool {
+func (x *set) Less (Y any) bool {
   y := x.imp(Y)
   if x.Num() == y.Num() { return false }
   return x.Subset (y)
 }
 
-func (x *set) Copy (Y Any) {
+func (x *set) Copy (Y any) {
   y := x.imp(Y)
   n := len(y.elem)
   x.elem = make([]*set, n)
@@ -63,7 +63,7 @@ func (x *set) Copy (Y Any) {
   }
 }
 
-func (x *set) Clone() Any {
+func (x *set) Clone() any {
   y := EmptySet()
   y.Copy(x)
   return y

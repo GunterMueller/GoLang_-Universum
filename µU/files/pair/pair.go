@@ -1,6 +1,6 @@
 package pair
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -18,7 +18,7 @@ func new_() Pair {
   return new(pair)
 }
 
-func (x *pair) imp (Y Any) *pair {
+func (x *pair) imp (Y any) *pair {
   y, ok := Y.(*pair)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -28,21 +28,21 @@ func (x *pair) Variabel() bool {
   return false
 }
 
-func (x *pair) Eq (Y Any) bool {
+func (x *pair) Eq (Y any) bool {
   y := x.imp (Y)
   return x.name == y.name && x.typ == y.typ
 }
 
-func (x *pair) Less (Y Any) bool {
+func (x *pair) Less (Y any) bool {
   return false
 }
 
-func (x *pair) Copy (Y Any) {
+func (x *pair) Copy (Y any) {
   y := x.imp (Y)
   x.name, x.typ = y.name, y.typ
 }
 
-func (x *pair) Clone() Any {
+func (x *pair) Clone() any {
   y := New()
   y.Copy (x)
   return y

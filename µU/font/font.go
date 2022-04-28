@@ -1,6 +1,6 @@
 package font
 
-// (c) Christian Maurer   v. 220110 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 var (
   sign = []string {"r", "b", "i"}

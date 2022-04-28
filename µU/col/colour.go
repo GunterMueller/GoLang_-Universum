@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 220111 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -46,7 +46,7 @@ func new3n (n string, r, g, b byte) Colour {
   return c
 }
 
-func (c *colour) imp (Y Any) *colour {
+func (c *colour) imp (Y any) *colour {
   y, ok := Y.(*colour)
   if ! ok { TypeNotEqPanic(c, Y) }
   return y
@@ -106,23 +106,23 @@ func (c *colour) Clr() {
   c.r, c.g, c.b = 0, 0, 0
 }
 
-func (c *colour) Eq (Y Any) bool {
+func (c *colour) Eq (Y any) bool {
   y := c.imp(Y)
   return c.r == y.r &&
          c.g == y.g &&
          c.b == y.b
 }
 
-func (c *colour) Less (Y Any) bool {
+func (c *colour) Less (Y any) bool {
   return false
 }
 
-func (c *colour) Copy (Y Any) {
+func (c *colour) Copy (Y any) {
   y := c.imp(Y)
   c.r, c.g, c.b = y.r, y.g, y.b
 }
 
-func (c *colour) Clone() Any {
+func (c *colour) Clone() any {
   y := new_()
   y.Copy (c)
   return y

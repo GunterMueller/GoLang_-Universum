@@ -1,6 +1,6 @@
 package f
 
-// (c) Christian Maurer   v. 190820 - license see nU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
@@ -10,7 +10,7 @@ func pow (a, b uint) uint {
   return a * pow (a, b - 1)
 }
 
-func f (a Any, i uint) Any {
+func f (a any, i uint) any {
   p := Decode(UintStream{0, 0}, a.(Stream)).(UintStream)
   switch i {
   case Plus:

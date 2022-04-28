@@ -1,39 +1,38 @@
 package achan
 
-// (c) Christian Maurer   v. 171106 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> simulation of asynchronous message passing sich synchronous message passing
 
 import (
   "sync"
-  . "µU/obj"
   "µU/buf"
 )
 type
   asynchronousChannel struct {
-                             Any
+                             any
                              buf.Buffer
-                          ch chan Any
+                          ch chan any
                              sync.Mutex
                              }
 
-func new_(a Any) AsynchronousChannel {
+func new_(a any) AsynchronousChannel {
   x := new(asynchronousChannel)
   x.Buffer = buf.New(a)
-  x.ch = make(chan Any) // synchronous !
+  x.ch = make(chan any) // synchronous !
   return x
 }
 
-func (x *asynchronousChannel) Send (a Any) {
+func (x *asynchronousChannel) Send (a any) {
   x.Mutex.Lock()
   x.Buffer.Ins (a)
   x.Mutex.Unlock()
 }
 
-func (x *asynchronousChannel) Recv() Any {
+func (x *asynchronousChannel) Recv() any {
   x.Mutex.Lock()
   defer x.Mutex.Unlock()
   a := x.Buffer.Get()
-  if a == x.Any { panic("fatal error: alle goroutines are asleep - deadlock!") }
+  if a == x.any { panic("fatal error: alle goroutines are asleep - deadlock!") }
   return a
 }

@@ -1,6 +1,6 @@
 package seq
 
-// (c) Christian Maurer   v. 210321 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
@@ -27,4 +27,4 @@ type
 // If x contains at most one element, nothing has happened.
 // Returns otherwise a new empty sequence with pattern object a,
 // i.e., for objects of the type of a.
-func New (a Any) Sequence { return new_(a) }
+func New (a any) Sequence { return new_(a) }

@@ -1,6 +1,6 @@
 package field
 
-// (c) Christian Maurer   v. 220228 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -12,62 +12,34 @@ import (
 const
   l = 20
 var (
-  lx = []string {"                      ", // W l   W r  P    G r   G l
-                 "Ägypten             äg", // 6 h
-                 "Antike Biographie   ab", // 6 v
-                 "Griechischer Text   gt", // 5 h
-                 "Lateinischer Text   lt", // 5 h
-                 "Rom-Roman           rr", // 5 v        5
-                 "Rom-Krimi           rk", //            5 6
-                 "Historischer Roman  hr", // 4 hv 
-//                                         // 3 h
-                 "Italien-Roman       ir", // 3 v
-                 "Klassische Literaturkl", //       8 h
-                 "Neuere Literatur    nl", //       8 v
-                 "Theaterstück(e)     th", //       7 hv
-                 "Science Fiction     sf", //       7 v
-                 "Italien-Krimi       ik", //       6 hv  4
-//                                         //       5 hv  3
-                 "Horror              ho", //       5 v
-                 "Krimi               KR", //       4 hv
-                 "Jugendbuch          ju", //       3 hv
-                 "Englisch            en", // 2 
-                 "Französisch         fr", // 2 
-                 "Italienisch         it", // 2 
-                 "Griechisch          gr", // 2 
-                 "Lateinisch          la", // 2 
-                 "Sachbuch            sb", // 
-                 "Pflanzen            pf", // 
+  lx = []string {"                      ",
+                 "Ägypten             äg", // w l 6 h
+                 "Antike Biographie   ab", // w l 6 v
+                 "Griechischer Text   gt", // w l 5 h
+                 "Lateinischer Text   lt", // w l 5 h
+                 "Rom-Roman           rr", // w l 5 v    p 5
+                 "Rom-Krimi           rk", //            p 5 6
+                 "Neuere Literatur    nl", // w r 8 h
+                 "Italien-Roman       ir", // w r 8 v
+//                                         // w r 7 h
+                 "Theaterstück(e)     th", // w r 7 hv
+                 "Italien-Krimi       ik", // w r 6 hv   p 4
+//                                         // w r 5 hv   p 3
+                 "Horror              ho", // w r 5 v
+                 "Krimi               kr", // w r 4 hv
+                 "Jugendbuch          ju", // w r 3 hv
+                 "Englisch            en", // w r 2 h
+                 "Französisch         fr", // w r 2 h
+                 "Italienisch         it", // w r 2 h
+                 "Griechisch          gr", // w r 2 h
+                 "Lateinisch          la", // w r 2 h
+                 "Sachbuch            sb", // w r 2 h
+                 "Pflanzen            pf", // w r 2 v
+                 "Science Fiction     sf", // w r 2 v
+                 "Klassische Literaturkl", // g r 4 hv
+                 "Historischer Roman  hr", // g 5 3 hv 
+//                                         // g r 2 h
                 }
-/*/
-  lx = []string {"                      ", // W l   W r  P    G r   G l
-                 "Ägypten             äg", // 6 h
-                 "Antike Biographie   ab", // 6 v
-                 "Griechischer Text   gt", // 5 h
-                 "Lateinischer Text   lt", // 5 h
-                 "Rom-Roman           rr", // 5 v        5
-                 "Rom-Krimi           rk", //            5 6
-                 "Historischer Roman  hr", // 4 hv 
-//                                         // 3 h
-                 "Italien-Roman       ir", // 3 v
-                 "Klassische Literaturkl", //                 4 hv
-                 "Neuere Literatur    nl", //       8 hv
-                 "Theaterstück(e)     th", //       7 hv
-                 "Science Fiction     sf", //       7 v
-                 "Italien-Krimi       ik", //       6 hv  4
-//                                         //       5 hv  3
-                 "Horror              ho", //       5 v
-                 "Krimi               KR", //       4 hv
-                 "Jugendbuch          ju", //       3 hv
-                 "Englisch            en", // 2 
-                 "Französisch         fr", // 2 
-                 "Italienisch         it", // 2 
-                 "Griechisch          gr", // 2 
-                 "Lateinisch          la", // 2 
-                 "Sachbuch            sb", // 
-                 "Pflanzen            pf", // 
-                }
-/*/
   n = len(lx)
   tx = make([]string, n)
   cx = make([]Stream, n)
@@ -97,7 +69,7 @@ func new_() Field {
   return x
 }
 
-func (x *field) imp (Y Any) *field {
+func (x *field) imp (Y any) *field {
   y := Y.(*field)
   return y
 }
@@ -110,7 +82,7 @@ func (x *field) Clr() {
   x.Text.Clr()
 }
 
-func (x *field) Eq (Y Any) bool {
+func (x *field) Eq (Y any) bool {
   return x.Text.Eq (x.imp(Y).Text)
 }
 
@@ -126,15 +98,15 @@ func (x* field) pos() int {
   return l
 }
 
-func (x *field) Less (Y Any) bool {
+func (x *field) Less (Y any) bool {
   return x.pos() < x.imp(Y).pos()
 }
 
-func (x *field) Copy (Y Any) {
+func (x *field) Copy (Y any) {
   x.Text.Copy (x.imp(Y).Text)
 }
 
-func (x *field) Clone() Any {
+func (x *field) Clone() any {
   y := new_()
   y.Copy (x)
   return y

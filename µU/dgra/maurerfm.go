@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171203 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -39,7 +39,7 @@ func (x *distributedGraph) maurerfm() {
   x.cycle.Write()
 }
 
-func (x *distributedGraph) m (a Any, i uint) Any {
+func (x *distributedGraph) m (a any, i uint) any {
   x.awaitAllMonitors()
   bs := a.(Stream)
   x.cycle = x.decodedGraph(bs)

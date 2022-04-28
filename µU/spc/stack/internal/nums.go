@@ -1,6 +1,6 @@
 package nums
 
-// (c) Christian Maurer   v. 201101 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
@@ -19,13 +19,13 @@ func new_(n uint) Numbers {
   return x
 }
 
-func (s *numbers) imp (y Any) *numbers {
+func (s *numbers) imp (y any) *numbers {
   t, ok := y.(*numbers)
   if ! ok { TypeNotEqPanic (s, y) }
   return t
 }
 
-func (x *numbers) Eq (Y Any) bool {
+func (x *numbers) Eq (Y any) bool {
   y := x.imp(Y)
   for i := uint(0); i < x.uint; i++ {
     if x.s[i] != y.s[i] {
@@ -35,20 +35,20 @@ func (x *numbers) Eq (Y Any) bool {
   return true
 }
 
-func (x *numbers) Copy (Y Any) {
+func (x *numbers) Copy (Y any) {
   y := x.imp(Y)
   for i := uint(0); i < x.uint; i++ {
     x.s[i] = y.s[i]
   }
 }
 
-func (x *numbers) Clone() Any {
+func (x *numbers) Clone() any {
   y := new_(x.uint).(*numbers)
   y.Copy (x)
   return y
 }
 
-func (x *numbers) Less (Y Any) bool {
+func (x *numbers) Less (Y any) bool {
   return false
 }
 

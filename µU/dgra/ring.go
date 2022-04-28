@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171203 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 //
 // >>> Construction of a directed ring using the idea pf Awerbuch's DFS-algorithm
 //     The sequence of the vertices in the ring is given by the discover-times x.time.
@@ -37,7 +37,7 @@ func (x *distributedGraph) ring() {
   }
 }
 
-func (x *distributedGraph) r (a Any, i uint) Any {
+func (x *distributedGraph) r (a any, i uint) any {
   x.awaitAllMonitors()
   s := a.(uint) % inf
   j := x.channel(s)

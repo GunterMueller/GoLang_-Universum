@@ -1,6 +1,6 @@
 package rw
 
-// (c) Christian Maurer   v. 171101 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> 1st readers/writers problem with guarded select
 
@@ -8,14 +8,14 @@ import
   . "µU/obj"
 type
   guardedSelect struct {
-  inR, outR, inW, outW chan Any
+  inR, outR, inW, outW chan any
                   done chan int
                        }
 
 func newGS() ReaderWriter {
   x := new(guardedSelect)
-  x.inR, x.outR = make(chan Any), make(chan Any)
-  x.inW, x.outW = make(chan Any), make(chan Any)
+  x.inR, x.outR = make(chan any), make(chan any)
+  x.inW, x.outW = make(chan any), make(chan any)
   x.done = make(chan int)
   go func() {
     var nR, nW uint // active readers, writers

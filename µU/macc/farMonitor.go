@@ -1,9 +1,8 @@
 package macc
 
-// (c) Christian Maurer   v. 190823 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
-  . "µU/obj"
   "µU/fmon"
 )
 type
@@ -14,13 +13,13 @@ type
 func newFMon (h string, p uint16, s bool) MAccount {
   balance := uint(0)
   x := new (farMonitor)
-  ps := func (a Any, i uint) bool {
+  ps := func (a any, i uint) bool {
           if i == deposit {
             return true
           }
           return balance >= a.(uint) // draw
         }
-  fs := func (a Any, i uint) Any {
+  fs := func (a any, i uint) any {
           if i == deposit {
             balance += a.(uint)
           } else { // draw

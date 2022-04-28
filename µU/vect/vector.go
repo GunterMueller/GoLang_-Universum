@@ -1,6 +1,6 @@
 package vect
 
-// (c) Christian Maurer   v. 211104 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "math"
@@ -27,7 +27,7 @@ func new_() Vector {
   return new(vector)
 }
 
-func (x *vector) imp (Y Any) *vector {
+func (x *vector) imp (Y any) *vector {
   y, ok := Y.(*vector)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -79,20 +79,20 @@ func (v *vector) Clr() {
   v.Set3 (null, null, null)
 }
 
-func (v *vector) Copy (Y Any) {
+func (v *vector) Copy (Y any) {
   y := v.imp(Y)
   for d := 0; d < 3; d++ {
     v.x[d] = y.x[d]
   }
 }
 
-func (v *vector) Clone() Any {
+func (v *vector) Clone() any {
   y := New().(*vector)
   y.Copy (v)
   return y
 }
 
-func (x *vector) Eq (Y Any) bool {
+func (x *vector) Eq (Y any) bool {
   y, a := x.imp (Y), null
   for d := 0; d < 3; d++ {
     a += math.Abs (x.x[d] - y.x[d])
@@ -100,7 +100,7 @@ func (x *vector) Eq (Y Any) bool {
   return a < epsilon
 }
 
-func (x *vector) Less (Y Any) bool {
+func (x *vector) Less (Y any) bool {
   return false
 }
 

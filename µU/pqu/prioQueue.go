@@ -1,19 +1,19 @@
 package pqu
 
-// (c) Christian Maurer   v. 210320 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
 type
   prioQueue struct {
-              heap []Any // heap[0] = pattern object
+              heap []any // heap[0] = pattern object
                    }
 
-func new_(a Any) PrioQueue {
+func new_(a any) PrioQueue {
   if a == nil { return nil }
   CheckAtomicOrObject (a)
   x := new(prioQueue)
-  x.heap = make([]Any, 1)
+  x.heap = make([]any, 1)
   x.heap[0] = Clone(a)
   return x
 }
@@ -40,7 +40,7 @@ func (x *prioQueue) sift (i uint) {
   }
 }
 
-func (x *prioQueue) Ins (a Any) {
+func (x *prioQueue) Ins (a any) {
   CheckTypeEq (a, x.heap[0])
   x.heap = append (x.heap, Clone(a))
   n := uint(len(x.heap))
@@ -52,7 +52,7 @@ func (x *prioQueue) Ins (a Any) {
   x.heap[i] = Clone(a)
 }
 
-func (x *prioQueue) Get() Any {
+func (x *prioQueue) Get() any {
   if x.Empty() { return nil }
   a := x.heap[1] // 22
   if x.Num() == 1 {

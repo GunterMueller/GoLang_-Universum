@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171211 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -46,7 +46,7 @@ func (x *distributedGraph) bfsfm (o Op) {
   }
 }
 
-func (x *distributedGraph) b (a Any, i uint) Any {
+func (x *distributedGraph) b (a any, i uint) any {
   x.awaitAllMonitors()
   s := a.(uint) % inf
   j := x.channel(s)

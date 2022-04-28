@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 210315 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 type
   Editor interface { // Objects, that can be written to a particular
@@ -29,7 +29,7 @@ type
   Edit (l, c uint)
 }
 
-func IsEditor (a Any) bool {
+func IsEditor (a any) bool {
   if a == nil { return false }
   _, ok := a.(Editor)
   return ok
@@ -45,7 +45,7 @@ type
   EditGr (x, y int)
 }
 
-func IsEditorGr (a Any) bool {
+func IsEditorGr (a any) bool {
   if a == nil { return false }
   _, ok := a.(EditorGr)
   return ok

@@ -1,19 +1,19 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import(
   "reflect"
   "µU/ker"
 )
 
-func isEqualer (a Any) bool {
+func isEqualer (a any) bool {
   if a == nil { return false }
   _, ok := a.(Equaler)
   return ok
 }
 
-func eq (a, b Any) bool {
+func eq (a, b any) bool {
   if a == nil { return b == nil }
   if b == nil { return a == nil }
   if ! TypeEq (a, b) {
@@ -70,13 +70,13 @@ func eq (a, b Any) bool {
       }
       return true
     }
-  case *Any:
+  case *any:
     return eq (a, b)
   }
   return reflect.DeepEqual (a, b)
 }
 
-func clone (a Any) Any {
+func clone (a any) any {
   if a == nil {
     return nil
   }

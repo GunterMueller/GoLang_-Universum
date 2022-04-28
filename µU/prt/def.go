@@ -1,6 +1,6 @@
 package prt
 
-// (c) Christian Maurer   v. 220120 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> Pre: TeX is installed.
 

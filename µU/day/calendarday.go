@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 211226 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/ker"
@@ -93,7 +93,7 @@ func init() {
 //  carnival = new_()
 }
 
-func (x *calendarday) imp (Y Any) *calendarday {
+func (x *calendarday) imp (Y any) *calendarday {
   y, ok := Y.(*calendarday)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -147,27 +147,27 @@ func (x *calendarday) Set (d, m, y uint) bool {
   return false
 }
 
-func (x *calendarday) Copy (Y Any) {
+func (x *calendarday) Copy (Y any) {
   y := x.imp (Y)
   x.day, x.month, x.year = y.day, y.month, y.year
   x.Format = y.Format
   x.cF, x.cB = y.cF, y.cB
 }
 
-func (x *calendarday) Clone() Any {
+func (x *calendarday) Clone() any {
   y := new_().(*calendarday)
   y.Copy (x)
   return y
 }
 
-func (x *calendarday) Eq (Y Any) bool {
+func (x *calendarday) Eq (Y any) bool {
   y := x.imp (Y)
   if x.year == emptyYear { return y.year == emptyYear }
   if y.year == emptyYear { return false }
   return x.day == y.day && x.month == y.month && x.year == y.year
 }
 
-func (x *calendarday) Less (Y Any) bool {
+func (x *calendarday) Less (Y any) bool {
   y := x.imp (Y)
   if x.year == emptyYear {
     return y.year != emptyYear

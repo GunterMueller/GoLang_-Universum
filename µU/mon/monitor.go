@@ -1,6 +1,6 @@
 package mon
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "sync"
@@ -80,7 +80,7 @@ func (x *monitor) SignalAll (i uint) {
   }
 }
 
-func (x *monitor) F (a Any, i uint) Any {
+func (x *monitor) F (a any, i uint) any {
   x.chk ("F", i)
   x.Mutex.Lock()
   y := x.FuncSpectrum (a, i)

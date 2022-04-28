@@ -1,6 +1,6 @@
 package pstk
 
-// (c) Christian Maurer   v. 210109 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -14,4 +14,4 @@ type
 }
 
 // Returns a new empty persistent stack for objects of type a.
-func New (a Any) PersistentStack { return new_(a) }
+func New (a any) PersistentStack { return new_(a) }

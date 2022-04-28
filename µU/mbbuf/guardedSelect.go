@@ -1,6 +1,6 @@
 package mbbuf
 
-// (c) Christian Maurer   v. 171106 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> implementation with synchronous message passing and guarded selective waiting
 
@@ -8,15 +8,15 @@ import
   . "µU/obj"
 type
   guardedSelect struct {
-            cIns, cGet chan Any
+            cIns, cGet chan any
                        }
 
-func newgs (a Any, n uint) MBoundedBuffer {
+func newgs (a any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }
   x := new (guardedSelect)
-  x.cIns, x.cGet = make (chan Any), make (chan Any)
+  x.cIns, x.cGet = make (chan any), make (chan any)
   go func() {
-    buffer:= make ([]Any, n)
+    buffer:= make ([]any, n)
     var in, out, num uint
     for {
       select {
@@ -32,10 +32,10 @@ func newgs (a Any, n uint) MBoundedBuffer {
   return x
 }
 
-func (x *guardedSelect) Ins (a Any) {
+func (x *guardedSelect) Ins (a any) {
   x.cIns <- a
 }
 
-func (x *guardedSelect) Get() Any {
+func (x *guardedSelect) Get() any {
   return Clone (<-x.cGet)
 }

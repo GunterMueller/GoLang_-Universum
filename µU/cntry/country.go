@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 210511 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -90,7 +90,7 @@ func new_() Country {
   return x
 }
 
-func (x *country) imp (Y Any) *country {
+func (x *country) imp (Y any) *country {
   y, ok := Y.(*country)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -127,7 +127,7 @@ func (x *country) Clr() {
   x.attribut.fifa = "   "
 }
 
-func (x *country) Copy (Y Any) {
+func (x *country) Copy (Y any) {
   y := x.imp (Y)
   x.id = y.id
   x.attribut.iso = y.attribut.iso
@@ -142,17 +142,17 @@ func (x *country) Copy (Y Any) {
   x.cB = y.cB
 }
 
-func (x *country) Clone() Any {
+func (x *country) Clone() any {
   y := new_()
   y.Copy(x)
   return y
 }
 
-func (x *country) Eq (Y Any) bool {
+func (x *country) Eq (Y any) bool {
   return x.id == x.imp (Y).id
 }
 
-func (x *country) Less (Y Any) bool {
+func (x *country) Less (Y any) bool {
   return str.Less (x.attribut.name, x.imp (Y).attribut.name)
 }
 

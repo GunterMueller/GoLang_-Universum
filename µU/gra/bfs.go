@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 220131 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "sort"
@@ -37,11 +37,11 @@ func (x *graph) searchShortestPath (p Pred) {
     }
     var d uint32
     for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
-      if n.outgoing && n.to != v.predecessor && p (n.to.Any) {
+      if n.outgoing && n.to != v.predecessor && p (n.to.any) {
         if v.dist == inf {
           d = inf
         } else {
-          d = v.dist + uint32(Val(n.edgePtr.Any))
+          d = v.dist + uint32(Val(n.edgePtr.any))
         }
         if d < n.to.dist {
           if x.demo [Breadth] {
@@ -51,11 +51,11 @@ func (x *graph) searchShortestPath (p Pred) {
                 n1 = n1.nextNb
                 if n1.nextNb == n1 { ker.Oops() }
               }
-              x.writeE (n1.edgePtr.Any, false)
-              x.writeV (n.to.Any, false)
+              x.writeE (n1.edgePtr.any, false)
+              x.writeV (n.to.any, false)
             }
-            x.writeE (n.edgePtr.Any, true)
-            x.writeV (n.to.Any, true)
+            x.writeE (n.edgePtr.any, true)
+            x.writeV (n.to.any, true)
             wait()
           }
           n.to.dist, n.to.predecessor = d, v
@@ -97,11 +97,11 @@ func (x *graph) defineMarked (v *vertex) {
 func (x *graph) ActPred (p Pred) {
   v := x.vAnchor.nextV
   if v == x.vAnchor { return }
-  if ! p (x.local.Any) { return }
+  if ! p (x.local.any) { return }
   x.ClrMarked()
   if ! x.ConnCond (p) { return }
   x.preBreadth()
-  if x.eAnchor.Any == nil {
+  if x.eAnchor.any == nil {
     x.bfs (p)
   } else {
     x.searchShortestPath (p)
@@ -130,7 +130,7 @@ func (x *graph) bfs (p Pred) {
       qu = qu [1:]
     }
     for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
-      if n.outgoing && n.to.dist == inf && p (n.to.Any) {
+      if n.outgoing && n.to.dist == inf && p (n.to.any) {
         if x.demo [Breadth] {
           var n1 *neighbour
           if n.to.predecessor == nil {
@@ -141,8 +141,8 @@ func (x *graph) bfs (p Pred) {
               n1 = n1.nextNb
               if n1.nextNb == n1 { ker.Oops() }
             }
-            x.writeE (n1.edgePtr.Any, false)
-            x.writeV (n1.from.Any, true)
+            x.writeE (n1.edgePtr.any, false)
+            x.writeV (n1.from.any, true)
             wait()
           }
         }

@@ -1,6 +1,6 @@
 package edg
 
-// (c) Christian Maurer   v. 220204 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -13,7 +13,7 @@ import (
 type
   edge struct {
               bool "directed"
-              Any "value" // uint[8,16,32,64] or Valuator
+              any "value" // uint[8,16,32,64] or Valuator
        x0, y0,
        x1, y1 int
            wd uint
@@ -24,14 +24,14 @@ type
 var
   bx = box.New()
 
-func new_(d bool, a Any) Edge {
+func new_(d bool, a any) Edge {
   x := new(edge)
   x.bool = d
   if a == nil {
     a = uint(1)
   }
   CheckUintOrValuator(a)
-  x.Any = Clone(a)
+  x.any = Clone(a)
   x.wd = n.Wd(Val(a))
   x.label = true
   x.cf, x.cb = col.StartCols()
@@ -39,7 +39,7 @@ func new_(d bool, a Any) Edge {
   return x
 }
 
-func (x *edge) imp (Y Any) *edge {
+func (x *edge) imp (Y any) *edge {
   y, ok := Y.(*edge)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -70,42 +70,42 @@ func (x *edge) Pos1() (int, int) {
 }
 
 func (x *edge) Empty() bool {
-  return Val(x.Any) == 1
+  return Val(x.any) == 1
 }
 
 func (x *edge) Clr() {
-  SetVal (&x.Any, 1)
+  SetVal (&x.any, 1)
 }
 
-func (x *edge) Eq (Y Any) bool {
-  return Eq (x.Any, x.imp(Y).Any)
+func (x *edge) Eq (Y any) bool {
+  return Eq (x.any, x.imp(Y).any)
 }
 
-func (x *edge) Less (Y Any) bool {
-  return Less (x.Any, x.imp(Y).Any)
+func (x *edge) Less (Y any) bool {
+  return Less (x.any, x.imp(Y).any)
 }
 
-func (x *edge) Copy (Y Any) {
+func (x *edge) Copy (Y any) {
   y := x.imp (Y)
   x.bool = y.bool
-  x.Any = Clone(y.Any)
+  x.any = Clone(y.any)
   x.wd, x.label = y.wd, y.label
   x.x0, x.y0, x.x1, x.y1 = y.x0, y.y0, y.x1, y.y1
   x.cf, x.cb, x.fa, x.ba = y.cf, y.cb, y.fa, y.ba
 }
 
-func (x *edge) Clone() Any {
-  y := new_ (x.bool, x.Any)
+func (x *edge) Clone() any {
+  y := new_ (x.bool, x.any)
   y.Copy (x)
   return y
 }
 
 func (x *edge) Val() uint {
-  return Val (x.Any)
+  return Val (x.any)
 }
 
 func (x *edge) SetVal (n uint) {
-  SetVal (&x.Any, n)
+  SetVal (&x.any, n)
 }
 
 func (x *edge) Colours (f, b col.Colour) {
@@ -135,19 +135,19 @@ func (x *edge) Write1 (a bool) {
     x0, y0 := (x.x0 + 4 * x.x1) / 5, (x.y0 + 4 * x.y1) / 5
     scr.CircleFull (x0, y0, 4)
   }
-  if x.Any == uint(1) { return }
+  if x.any == uint(1) { return }
   dx := int(x.wd * scr.Wd1() - scr.Wd1() / 2)
   x0, y0 := (x.x0 + x.x1 - dx) / 2, (x.y0 + x.y1) / 2
-  switch x.Any.(type) {
+  switch x.any.(type) {
   case EditorGr:
-    x.Any.(EditorGr).WriteGr (x0, y0)
+    x.any.(EditorGr).WriteGr (x0, y0)
     return
   }
   if x.Empty() { return }
   if ! x.label { return }
   x0 -= int(scr.Wd1()) / 2; y0 -= int(scr.Ht1()) / 2
   bx.Colours (f, b)
-  s := n.String (Val(x.Any))
+  s := n.String (Val(x.any))
   bx.Wd(x.wd)
   bx.WriteGr (s, x0, y0)
 }
@@ -157,19 +157,19 @@ func (x *edge) Edit() {
   x0, y0 := (x.x0 + x.x1 - dx) / 2, (x.y0 + x.y1) / 2
   x0 -= int(scr.Wd1()) / 2; y0 -= int(scr.Ht1()) / 2
 //  x.Write1 (false) // XXX false ?
-  switch x.Any.(type) {
+  switch x.any.(type) {
   case EditorGr:
-    x.Any.(EditorGr).EditGr (x0, y0)
+    x.any.(EditorGr).EditGr (x0, y0)
     return
   }
-  k := Val (x.Any)
+  k := Val (x.any)
   s := n.String(k)
   bx.Wd (x.wd)
   bx.Colours (x.cf, x.cb)
   for {
     bx.EditGr (&s, x0, y0)
     if i, ok := n.Natural(s); ok {
-      SetVal (&x.Any, i)
+      SetVal (&x.any, i)
       break
     }
   }
@@ -177,7 +177,7 @@ func (x *edge) Edit() {
 
 func (x *edge) Codelen() uint {
   c := 1 +
-       Codelen (x.Any) +
+       Codelen (x.any) +
        2 * 1 +
        4 * 4 +
        4 * x.cf.Codelen()
@@ -189,8 +189,8 @@ func (x *edge) Codelen() uint {
 func (x *edge) Encode() Stream {
   bs := make (Stream, x.Codelen())
   bs[0] = 0; if x.bool { bs[0] = 1 }
-  i, a := uint(1), Codelen(x.Any)
-  copy (bs[i:i+a], Encode(x.Any))
+  i, a := uint(1), Codelen(x.any)
+  copy (bs[i:i+a], Encode(x.any))
   i += a
   bs[i] = byte(x.wd)
   i++
@@ -218,8 +218,8 @@ func (x *edge) Encode() Stream {
 
 func (x *edge) Decode (bs Stream) {
   x.bool = bs[0] == 1
-  i, a := uint(1), Codelen(x.Any)
-  x.Any = Decode (x.Any, bs[i:i+a])
+  i, a := uint(1), Codelen(x.any)
+  x.any = Decode (x.any, bs[i:i+a])
   i += a
   x.wd = uint(bs[i])
   i++

@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 171111 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -12,7 +12,7 @@ type
 // where v is atomic or implements Object and
 // and e has a uint-type or implements Valuator.
 // The entry of a matrix x in row i and column k is called x(i,k).
-// Any such matrix defines a graph in the following way:
+// any such matrix defines a graph in the following way:
 // x(i,k) = (e, v) means
 // for i == k:
 //     v is a vertex in the graph (in this case e is the pattern edge of x.
@@ -38,10 +38,10 @@ type
 // Otherwise: x(i,k) is the pair (v, e) with v = pattern vertex of x,
 // i.e. in the corresponding graph there is an edge with the value of e
 // from its i-th vertex to its k-th vertex, iff e is not equal to the pattern edge of x.
-  Edge (i, k uint, e Any)
+  Edge (i, k uint, e any)
 
 // Returns the first element in the pair x(i,i), i.e. a vertex.
-  Vertex (i uint) Any
+  Vertex (i uint) any
 
 // Pre: i, k < x.Num().
 // Returns 0, iff for x(i,k) = (v, e) e is the pattern edge of x,
@@ -52,7 +52,7 @@ type
 //      e has the type of the pattern edge of x.
 // If i or k >= x.Num(), nothing has happened.
 // Otherwise: x(i,k) == (v, e).
-  Set (i, k uint, v, e Any)
+  Set (i, k uint, v, e any)
 
 // Returns true, iff x(i,k) == x(k,i) for all i, k < x.Num(),
 // i.e. the corresponding graph is undirected.
@@ -82,4 +82,4 @@ type
 // Returns an n*n-matrix with the pattern vertex v
 // and the pattern edge e. All it's entries have the value
 // (v, e).
-func New (n uint, v, e Any) AdjacencyMatrix { return new_(n,v,e) }
+func New (n uint, v, e any) AdjacencyMatrix { return new_(n,v,e) }

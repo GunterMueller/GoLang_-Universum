@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220203 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -25,9 +25,9 @@ import (
   "µU/obj"
   "µU/col"
   "µU/mode"
+  "µU/font"
   "µU/scr/shape"
   "µU/linewd"
-  "µU/font"
 )
 type
   Event struct {
@@ -209,12 +209,17 @@ type
 
 // font ////////////////////////////////////////////////////////////////
 
-// Returns the actual fontsize; at the beginning normal.
+// Returns the actual font; at the beginning Roman.
+  ActFont() font.Font
+
+// f is the actual font.
+  SetFont (f font.Font)
+
+// Returns the actual fontsize; at the beginning Normal.
   ActFontsize() font.Size
 
-// f is the actual fontsize.
-// NColumns and NLines are changed accordingly.
-  SetFontsize (f font.Size)
+// s is the actual fontsize. NColumns and NLines are changed accordingly.
+  SetFontsize (s font.Size)
 
 // graphics ////////////////////////////////////////////////////////////
 

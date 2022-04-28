@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171203 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -54,7 +54,7 @@ func (x *distributedGraph) awerbuch1 (o Op) {
   }
 }
 
-func (x *distributedGraph) a1 (a Any, i uint) Any {
+func (x *distributedGraph) a1 (a any, i uint) any {
   x.awaitAllMonitors()
   bs := a.(Stream)
   x.tree = x.decodedGraph(bs)

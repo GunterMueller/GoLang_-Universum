@@ -1,6 +1,6 @@
 package addr
 
-// (c) Christian Maurer   v. 211126 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -49,7 +49,7 @@ func new_() Address {
   return x
 }
 
-func (x *address) imp(Y Any) *address {
+func (x *address) imp(Y any) *address {
   y, ok := Y.(*address)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -69,13 +69,13 @@ func (x *address) Clr() {
   x.Country.Clr()
 }
 
-func (x *address) Clone() Any {
+func (x *address) Clone() any {
   y := new_()
   y.Copy (x)
   return y
 }
 
-func (x *address) Copy (Y Any) {
+func (x *address) Copy (Y any) {
   y := x.imp (Y)
   x.street.Copy (y.street)
   x.Natural.Copy (y.Natural)
@@ -87,7 +87,7 @@ func (x *address) Copy (Y Any) {
   x.Country.Copy (y.Country)
 }
 
-func (x *address) Eq (Y Any) bool {
+func (x *address) Eq (Y any) bool {
   y := x.imp (Y)
   return x.street.Eq (y.street) && x.Natural.Eq (y.Natural) && x.city.Eq (y.city) &&
          x.phonenumber.Eq (y.phonenumber) && x.cellnumber.Eq (y.cellnumber) &&
@@ -96,14 +96,14 @@ func (x *address) Eq (Y Any) bool {
          x.Country.Eq (y.Country)
 }
 
-func (x *address) Equiv (Y Any) bool {
+func (x *address) Equiv (Y any) bool {
   if x.Natural.Eq (x.imp (Y).Natural) {
     return true
   }
   return false
 }
 
-func (x *address) Less (Y Any) bool {
+func (x *address) Less (Y any) bool {
   y := x.imp (Y)
   if x.Natural.Eq (y.Natural) {
     if x.city.Eq (y.city) {

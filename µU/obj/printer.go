@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 210308 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/font"
@@ -15,7 +15,7 @@ type
   Print (l, c uint)
 }
 
-func IsPrinter (a Any) bool {
+func IsPrinter (a any) bool {
   if a == nil { return false }
   _, ok := a.(Printer)
   return ok

@@ -1,6 +1,6 @@
 package font
 
-// (c) Christian Maurer   v. 200904 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 type
   Font byte; const (

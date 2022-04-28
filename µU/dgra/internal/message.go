@@ -1,6 +1,6 @@
 package internal
 
-// (c) Christian Maurer   v. 201204 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
@@ -17,27 +17,27 @@ func new_() Message {
   return &message{ Candidate, 0, 0, 0, false }
 }
 
-func (x *message) imp(Y Any) *message {
+func (x *message) imp(Y any) *message {
   y, ok := Y.(*message)
   if ! ok { TypeNotEqPanic(x, Y) }
   return y
 }
 
-func (x *message) Eq (Y Any) bool {
+func (x *message) Eq (Y any) bool {
   y := x.imp(Y)
   return x.byte == y.byte && x.uint == y.uint &&
          x.num == y.num && x.maxnum == y.maxnum &&
          x.bool == y.bool
 }
 
-func (x *message) Copy (Y Any) {
+func (x *message) Copy (Y any) {
   y := x.imp(Y)
   x.byte, x.uint = y.byte, y.uint
   x.num, x.maxnum = y.num, y.maxnum
   x.bool = y.bool
 }
 
-func (x *message) Clone() Any {
+func (x *message) Clone() any {
   y := new_()
   y.Copy(x)
   return y

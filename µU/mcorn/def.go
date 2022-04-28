@@ -1,9 +1,8 @@
 package mcorn
 
-// (c) Christian Maurer   v. 200120 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
-  . "µU/obj"
   "µU/corn"
 )
 type
@@ -15,4 +14,4 @@ type
 // Pre: a is atomic or of a type implementing Object.
 // Returns a new cornet for elements of the type of a
 // to be used by concurrent processes.
-func New (a Any) MCornet { return new_(a) }
+func New (a any) MCornet { return new_(a) }

@@ -1,6 +1,6 @@
 package lr
 
-// (c) Christian Maurer   v. 171015 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> 1st left/right problem with guarded select
 
@@ -8,14 +8,14 @@ import
   . "µU/obj"
 type
   guardedSelect struct {
-  inL, outL, inR, outR chan Any
+  inL, outL, inR, outR chan any
                   done chan int
                        }
 
 func newGS() LeftRight {
   x := new(guardedSelect)
-  x.inL, x.outL = make(chan Any), make(chan Any)
-  x.inR, x.outR = make(chan Any), make(chan Any)
+  x.inL, x.outL = make(chan any), make(chan any)
+  x.inR, x.outR = make(chan any), make(chan any)
   x.done = make(chan int)
   go func() {
     var nL, nR uint // active lefties, righties

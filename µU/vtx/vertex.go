@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 220204 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
 //  "µU/ker"
@@ -34,7 +34,7 @@ func new_(e EditorGr, w, h uint) Vertex {
   return x
 }
 
-func (x *vertex) imp (Y Any) *vertex {
+func (x *vertex) imp (Y any) *vertex {
   y, ok := Y.(*vertex)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -76,17 +76,17 @@ func (x *vertex) Clr() {
   x.EditorGr.(Object).Clr()
 }
 
-func (x *vertex) Eq (Y Any) bool {
+func (x *vertex) Eq (Y any) bool {
   y := x.imp(Y)
   return x.EditorGr.(Object).Eq (y.EditorGr) &&
          x.x == y.x && x.y == y.y
 }
 
-func (x *vertex) Less (Y Any) bool {
+func (x *vertex) Less (Y any) bool {
   return x.EditorGr.(Object).Less (x.imp(Y).EditorGr)
 }
 
-func (x *vertex) Copy (Y Any) {
+func (x *vertex) Copy (Y any) {
   y := x.imp(Y)
   x.EditorGr.(Object).Copy (y.EditorGr.(Object))
   x.width, x.height = y.width, y.height
@@ -95,7 +95,7 @@ func (x *vertex) Copy (Y Any) {
   x.fa, x.ba = y.fa, y.ba
 }
 
-func (x *vertex) Clone() Any {
+func (x *vertex) Clone() any {
   y  := new_(x.EditorGr, x.width, x.height).(*vertex)
   y.Copy (x)
   return y
@@ -106,6 +106,7 @@ func (x *vertex) Mouse() {
   x.x, x.y = xm, ym
   wd, ht  := int(scr.Wd()), int(scr.Ht())
   w1, h1  := int(scr.Wd1()), int(scr.Ht1())
+w1, h1 = 6, 10
   w, h  := int(x.width) * w1, int(x.height) * h1
   if x.x < w { x.x = w }
   if x.x + w >= wd { x.x = wd - 1 - w }
@@ -154,7 +155,7 @@ func (x *vertex) Write1 (a bool) {
   if a {
     f, b = x.fa, x.ba
   }
-  w1, h1  := scr.Wd1() * x.width, scr.Ht1() * x.height
+  w1, h1 := scr.Wd1() * x.width, scr.Ht1() * x.height
   if x.width * x.height > 0 {
     const r0 = 3
     scr.Colours (f, b)

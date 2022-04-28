@@ -1,6 +1,6 @@
 package euro
 
-// (c) Christian Maurer   v. 220131 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "math"
@@ -52,7 +52,7 @@ func new2 (e, c uint) Euro {
   return x
 }
 
-func (x *euro) imp (Y Any) *euro {
+func (x *euro) imp (Y any) *euro {
   y, ok := Y.(*euro)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -66,21 +66,21 @@ func (x *euro) Clr() {
   x.cent = undefined
 }
 
-func (x *euro) Copy (Y Any) {
+func (x *euro) Copy (Y any) {
   x.cent = x.imp(Y).cent
 }
 
-func (x *euro) Clone() Any {
+func (x *euro) Clone() any {
   y := new_()
   y.Copy (x)
   return y
 }
 
-func (x *euro) Eq (Y Any) bool {
+func (x *euro) Eq (Y any) bool {
   return x.cent == x.imp(Y).cent
 }
 
-func (x *euro) Less (Y Any) bool {
+func (x *euro) Less (Y any) bool {
   y := x.imp(Y)
   if y.cent == undefined {
     return false

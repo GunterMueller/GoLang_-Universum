@@ -1,9 +1,8 @@
 package corn
 
-// (c) Christian Maurer   v. 200120 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
-  . "µU/obj"
 	"µU/rand"
 	"µU/seq"
 )
@@ -12,16 +11,16 @@ type
                 seq.Sequence
                 }
 
-func new_(a Any) Cornet {
+func new_(a any) Cornet {
   return &cornet { seq.New(a) }
 }
 
-func (x *cornet) Ins (a Any) {
+func (x *cornet) Ins (a any) {
   x.Seek (x.Num())
 	x.Sequence.Ins (a)
 }
 
-func (x *cornet) Get() Any {
+func (x *cornet) Get() any {
   n := x.Num()
   switch n {
   case 0:

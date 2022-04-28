@@ -1,12 +1,12 @@
 package internal
 
-// (c) Christian Maurer   v. 210316 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   . "µU/obj"
 type
   heap struct {
-              Any "pattern object"
+              any "pattern object"
   left, right *heap
               }
 
@@ -41,10 +41,10 @@ func f (n uint) (bool, uint) {
   return left, b
 }
 
-func (x *heap) Ins (a Any, n uint) Heap {
+func (x *heap) Ins (a any, n uint) Heap {
   if n == 1 {
     x = new (heap)
-    x.Any = Clone (a)
+    x.any = Clone (a)
     x.left, x.right = nil, nil
   } else {
     left, k := f (n)
@@ -60,13 +60,13 @@ func (x *heap) Ins (a Any, n uint) Heap {
 func (x *heap) swap (l bool) {
   if l {
     if x.left != nil {
-      if Less (x.left.Any, x.Any) {
-        x.Any, x.left.Any = x.left.Any, x.Any
+      if Less (x.left.any, x.any) {
+        x.any, x.left.any = x.left.any, x.any
       }
     }
   } else if x.right != nil {
-    if Less (x.right.Any, x.Any) {
-      x.Any, x.right.Any = x.right.Any, x.Any
+    if Less (x.right.any, x.any) {
+      x.any, x.right.any = x.right.any, x.any
     }
   }
 }
@@ -106,7 +106,7 @@ func (x *heap) last (n uint) *heap {
   return x.right.last (k)
 }
 
-func (x *heap) Del (n uint) (Heap, Any) {
+func (x *heap) Del (n uint) (Heap, any) {
   y := x.last (n)
   switch n {
   case 1:
@@ -119,20 +119,20 @@ func (x *heap) Del (n uint) (Heap, Any) {
     y.left = x.left
     y.right = x.right
   }
-  return y, x.Any
+  return y, x.any
 }
 
 func (x *heap) Sift (n uint) {
   if x.left != nil {
     if x.right == nil {
-      if Less (x.left.Any, x.Any) {
+      if Less (x.left.any, x.any) {
         x.swap (true)
       }
     } else { // x.left != nil && x.right != nil
-      if Less (x.Any, x.left.Any) && Less (x.Any, x.right.Any) {
+      if Less (x.any, x.left.any) && Less (x.any, x.right.any) {
         return
       }
-      if Less (x.left.Any, x.right.Any) {
+      if Less (x.left.any, x.right.any) {
         x.swap (true)
         x.left.Sift (n)
       } else {
@@ -143,9 +143,9 @@ func (x *heap) Sift (n uint) {
   }
 }
 
-func (x *heap) Get() Any {
+func (x *heap) Get() any {
   if x == nil {
     return nil
   }
-  return Clone (x.Any)
+  return Clone (x.any)
 }

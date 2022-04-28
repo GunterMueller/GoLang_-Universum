@@ -1,6 +1,6 @@
 package pstk
 
-// (c) Christian Maurer   v. 210109 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,7 +11,7 @@ type
                 pseq.PersistentSequence
                 }
 
-func new_(a Any) PersistentStack {
+func new_(a any) PersistentStack {
   CheckAtomicOrObject (a)
   return &pstack { pseq.New(a) }
 }
@@ -24,12 +24,12 @@ func (x *pstack) Rename (n string) {
   x.PersistentSequence.Rename (n)
 }
 
-func (x *pstack) Push (a Any) {
+func (x *pstack) Push (a any) {
   x.PersistentSequence.Seek (0)
   x.PersistentSequence.Ins (a)
 }
 
-func (x *pstack) Pop() Any {
+func (x *pstack) Pop() any {
   if x.PersistentSequence.Empty() { return nil }
   x.PersistentSequence.Seek (0)
   defer x.PersistentSequence.Del()

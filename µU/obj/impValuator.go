@@ -1,13 +1,13 @@
 package obj
 
-// (c) Christian Maurer   v. 220131 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "reflect"
   "µU/ker"
 )
 
-func isValuator (a Any) bool {
+func isValuator (a any) bool {
   if a == nil { return false }
   switch a.(type) {
   case Valuator:
@@ -18,7 +18,7 @@ func isValuator (a Any) bool {
   return false
 }
 
-func val (a Any) uint {
+func val (a any) uint {
   n := uint(1)
   switch a.(type) {
   case Valuator:
@@ -80,7 +80,7 @@ func val (a Any) uint {
   return n
 }
 
-func setVal (a *Any, n uint) {
+func setVal (a *any, n uint) {
   switch (*a).(type) {
   case int8:
     *a = uint(n % 1<<8)

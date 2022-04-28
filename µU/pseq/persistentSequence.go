@@ -1,6 +1,6 @@
 package pseq
 
-// (c) Christian Maurer   v. 220204 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 //
 //  >  The following problem is not yet solved: Access to psequences
 //     is only possible, if the rights are set correspondingly.
@@ -21,8 +21,8 @@ type
   persistentSequence struct {
        name, tmpName string
              ordered bool
-                     Any "pattern object"
-              object Any
+                     any "pattern object"
+              object any
                 file internal.File
         owner, group uint
       size, pos, num uint64
@@ -47,7 +47,7 @@ func (x *persistentSequence) write (bs Stream) {
   }
 }
 
-func new_(a Any) PersistentSequence {
+func new_(a any) PersistentSequence {
   switch a.(type) {
   case Equaler, Coder:
     // ok
@@ -59,7 +59,7 @@ func new_(a Any) PersistentSequence {
     }
   }
   x := new(persistentSequence)
-  x.Any = Clone(a)
+  x.any = Clone(a)
   x.object = Clone(a)
   x.num = null
   x.size = uint64(Codelen(a))
@@ -69,9 +69,9 @@ func new_(a Any) PersistentSequence {
   return x
 }
 
-func (x *persistentSequence) imp (a Any) *persistentSequence {
+func (x *persistentSequence) imp (a any) *persistentSequence {
   y, ok := a.(*persistentSequence)
-  CheckTypeEq (x.Any, y.Any)
+  CheckTypeEq (x.any, y.any)
   if ! ok || x.size != y.size {
     TypeNotEqPanic (x, a)
   }
@@ -158,8 +158,8 @@ func (x *persistentSequence) NumPred (p Pred) uint {
 }
 /*/
 
-func (x *persistentSequence) Ex (a Any) bool {
-  CheckTypeEq (x.Any, a)
+func (x *persistentSequence) Ex (a any) bool {
+  CheckTypeEq (x.any, a)
   if x.num == 0 { return false }
   x.file.Seek (0)
   for i := null; i < x.num; i++ {
@@ -209,20 +209,20 @@ func (x *persistentSequence) Pos() uint {
   return uint(x.pos)
 }
 
-func (x *persistentSequence) Get() Any {
+func (x *persistentSequence) Get() any {
   x.file.Seek (x.pos * x.size)
   x.read (x.buf)
   return Clone (Decode (x.object, x.buf))
 }
 
-func (x *persistentSequence) Put (a Any) {
-  CheckTypeEq (x.Any, a)
+func (x *persistentSequence) Put (a any) {
+  CheckTypeEq (x.any, a)
   x.file.Seek (x.pos * x.size)
   x.write (Encode (a))
   x.num = x.file.Length() / x.size
 }
 
-func (x *persistentSequence) ins (a Any) {
+func (x *persistentSequence) ins (a any) {
   n, p := x.Num(), x.Pos()
   if p >= n {
     p = n
@@ -239,7 +239,7 @@ func (x *persistentSequence) ins (a Any) {
   x.Seek (p + 1)
 }
 
-func (x *persistentSequence) insOrd (a Any) {
+func (x *persistentSequence) insOrd (a any) {
   inserted := false
   n := x.Num()
   for i := uint(0); i < n; i++ {
@@ -267,8 +267,8 @@ func (x *persistentSequence) insOrd (a Any) {
   }
 }
 
-func (x *persistentSequence) Ins (a Any) {
-  CheckTypeEq (x.Any, a)
+func (x *persistentSequence) Ins (a any) {
+  CheckTypeEq (x.any, a)
   if x.ordered {
     x.insOrd (a)
   } else {
@@ -276,16 +276,16 @@ func (x *persistentSequence) Ins (a Any) {
   }
 }
 
-func (x *persistentSequence) Del() Any {
+func (x *persistentSequence) Del() any {
   if x.num == 0 || x.pos >= x.num {
     return nil
   }
   n := x.num
-  y := new_(x.Any).(*persistentSequence)
+  y := new_(x.any).(*persistentSequence)
   y.Name (x.tmpName)
   y.Clr()
   x.file.Seek (0)
-  var a Any
+  var a any
   for i := null; i < x.num; i++ {
     x.read (x.buf)
     if i == x.pos {
@@ -330,7 +330,7 @@ func (x *persistentSequence) Sort() {
   if x.ordered { return }
   n := x.Num()
   if n <= 1 { return }
-  s := make([]Any, 0)
+  s := make([]any, 0)
   for i := uint(0); i < n; i++ {
     x.Seek(i)
     s = append (s, x.Get())
@@ -343,14 +343,14 @@ func (x *persistentSequence) Sort() {
   x.ordered = true
 }
 
-func (x *persistentSequence) ExGeq (a Any) bool {
+func (x *persistentSequence) ExGeq (a any) bool {
   if ! x.ordered { Panic ("x is not ordered") }
   n := x.Num()
   if n == 0 { return false }
 // XXX not efficient TODO binary search
 /*/
   x.Seek (n/2)
-  b := x.Get().(Any)
+  b := x.Get().(any)
   if a < b {
     search first half
   } else if Eq (a, b) {
@@ -376,9 +376,9 @@ func (x *persistentSequence) Trav (op Op) {
   for i := null; i < x.num; i++ {
     x.read (x.buf)
     if uint64(wasRead) < x.size {
-      copy (x.buf, Encode (x.Any)) // provisorial
+      copy (x.buf, Encode (x.any)) // provisorial
     }
-    x.object = Decode (Clone (x.Any), x.buf)
+    x.object = Decode (Clone (x.any), x.buf)
     op (x.object)
     if ! equal (x.buf, Encode (x.object)) {
       copy (x.buf, Encode (x.object))
@@ -400,7 +400,7 @@ func (x *persistentSequence) Filter (Y Collector, p Pred) {
   y.pos = 0
   for i := null; i < x.num; i++ {
     x.read (x.buf)
-    if p (Decode (Clone (x.Any), x.buf)) {
+    if p (Decode (Clone (x.any), x.buf)) {
       y.write (x.buf)
       y.pos++
     }
@@ -415,14 +415,14 @@ func (x *persistentSequence) Cut (Y Collector, p Pred) {
   if y == nil { return }
   y.Clr()
   if x.name == y.name { return }
-  x1 := new_(x.Any).(*persistentSequence)
+  x1 := new_(x.any).(*persistentSequence)
   x1.Name (x.tmpName)
   x1.Clr()
   x.file.Seek (0)
   x.pos = 0
   for i := null; i < x.num; i++ {
     x.read (x.buf)
-    if p (Decode (Clone (x.Any), x.buf)) {
+    if p (Decode (Clone (x.any), x.buf)) {
       y.write (x.buf)
       y.pos++
     } else {
@@ -470,7 +470,7 @@ func (x *persistentSequence) join (Y PersistentSequence) {
     more effective: see concatenate
   }
 */
-  ps := new_(x.Any).(*persistentSequence)
+  ps := new_(x.any).(*persistentSequence)
   ps.Name (x.tmpName)
   ps.Clr()
   x.file.Seek (0)

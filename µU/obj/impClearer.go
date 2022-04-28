@@ -1,17 +1,17 @@
 package obj
 
-// (c) Christian Maurer   v. 210820 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import
   "math"
 
-func isClearer (a Any) bool {
+func isClearer (a any) bool {
   if a == nil { return false }
   _, ok := a.(Clearer)
   return ok
 }
 
-func clear (a Any) Any {
+func clear (a any) any {
   switch a.(type) {
   case bool:
     return false

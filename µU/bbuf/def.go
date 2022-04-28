@@ -1,9 +1,8 @@
 package bbuf
 
-// (c) Christian Maurer   v. 171106 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
-  . "µU/obj"
   "µU/buf"
 )
 type
@@ -18,4 +17,4 @@ type
 
 // Pre: a is atomic or of a type implementing Object. 
 // Returns an empty buffer of capacity n for objects of the type of a.
-func New (a Any, n uint) BoundedBuffer { return new_(a,n) }
+func New (a any, n uint) BoundedBuffer { return new_(a,n) }

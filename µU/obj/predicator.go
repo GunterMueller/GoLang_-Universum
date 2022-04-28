@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 210314 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 type
   Predicator interface {
@@ -43,7 +43,7 @@ type
   ClrPred (p Pred)
 }
 
-func IsPredicator (a Any) bool {
+func IsPredicator (a any) bool {
   if a == nil { return false }
   _, ok := a.(Predicator)
   return ok

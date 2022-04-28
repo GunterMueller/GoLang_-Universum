@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 201204 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -60,7 +60,7 @@ func (x *distributedGraph) bfsfm1 (o Op) {
   }
 }
 
-func (x *distributedGraph) b1 (a Any, i uint) Any {
+func (x *distributedGraph) b1 (a any, i uint) any {
   x.awaitAllMonitors()
   bs := a.(Stream)
   x.distance = Decode(uint(0), bs[:C0]).(uint)

@@ -1,6 +1,6 @@
 package phil
 
-// (c) Christian Maurer   v. 171127 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> Implementation with a universal guardedSelect
 //
@@ -12,18 +12,18 @@ import (
 )
 type
   guardedSelect struct {
-          lock, unlock []chan Any
+          lock, unlock []chan any
                        }
 
 func newGS() Philos {
   x := new(guardedSelect)
   nForks := make([]uint, NPhilos)
-  x.lock = make([]chan Any, NPhilos)
-  x.unlock = make([]chan Any, NPhilos)
+  x.lock = make([]chan any, NPhilos)
+  x.unlock = make([]chan any, NPhilos)
   for p := uint(0); p < NPhilos; p++ {
     nForks[p] = 2
-    x.lock[p] = make(chan Any)
-    x.unlock[p] = make(chan Any)
+    x.lock[p] = make(chan any)
+    x.unlock[p] = make(chan any)
   }
   for p := uint(0); p < NPhilos; p++ {
     go func (i uint) {

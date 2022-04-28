@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171122 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -14,27 +14,27 @@ func (x *graph) search (v0, v *vertex, p Pred) {
   v.time0 = x.vAnchor.time0
   v.repr = v0
   if x.demo [Depth] {
-    x.writeV (v.Any, true)
+    x.writeV (v.any, true)
     wait()
   }
   for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
-    if n.outgoing && n.to != v.predecessor && p (n.to.Any) {
+    if n.outgoing && n.to != v.predecessor && p (n.to.any) {
       if n.to.time0 == 0 {
         if x.demo [Depth] {
-          x.writeE (n.edgePtr.Any, true)
+          x.writeE (n.edgePtr.any, true)
         }
         n.to.predecessor = v
         x.search (v0, n.to, p)
         if x.demo [Depth] {
-          x.writeE (n.edgePtr.Any, false)
+          x.writeE (n.edgePtr.any, false)
           wait()
         }
       } else if n.to.time1 == 0 {
         x.vAnchor.acyclic = false // found cycle
         if x.demo [Cycle] { // also x.demo [Depth], see Set
-          x.writeE (n.edgePtr.Any, true)
+          x.writeE (n.edgePtr.any, true)
 //          errh.Error0("Kreis gefunden")
-          x.writeE (n.edgePtr.Any, false)
+          x.writeE (n.edgePtr.any, false)
           wait()
         }
       }
@@ -43,7 +43,7 @@ func (x *graph) search (v0, v *vertex, p Pred) {
   x.vAnchor.time0++
   v.time1 = x.vAnchor.time0
   if x.demo [Depth] {
-    x.writeV (v.Any, false)
+    x.writeV (v.any, false)
   }
 }
 

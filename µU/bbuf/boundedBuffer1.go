@@ -1,6 +1,6 @@
 package bbuf
 
-// (c) Christian Maurer   v. 210314 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,14 +9,14 @@ import (
 
 type
   boundedBuffer1 struct {
-                        Any "pattern object"
+                        any "pattern object"
                         cap uint
                         buf.Buffer
 }
 
-func new1 (a Any, n uint) BoundedBuffer {
+func new1 (a any, n uint) BoundedBuffer {
   x := new(boundedBuffer1)
-  x.Any = Clone(a)
+  x.any = Clone(a)
   x.cap = n
   x.Buffer = buf.New (a)
   return x

@@ -1,18 +1,16 @@
 package achan
 
-// (c) Christian Maurer   v. 171104 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
-import
-  . "µU/obj"
 type
   AsynchronousChannel interface {
 
 // a is contained in x.
-  Send (a Any)
+  Send (a any)
 
 // Returns the message, that was sent to x; the message is removed from x.
-  Recv() Any
+  Recv() any
 }
 
 // Returns an new empty asynchronous channel.
-func New (a Any) AsynchronousChannel { return new_(a) }
+func New (a any) AsynchronousChannel { return new_(a) }

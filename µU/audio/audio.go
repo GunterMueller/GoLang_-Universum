@@ -1,6 +1,6 @@
 package audio
 
-// (c) Christian Maurer   v. 210526 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
@@ -38,7 +38,7 @@ type
 var
   actOrder = fieldOrder
 
-func (x *audio) imp (Y Any) *audio {
+func (x *audio) imp (Y any) *audio {
   y, ok := Y.(*audio)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -82,7 +82,7 @@ func (x *audio) Clr() {
   x.soloist.Clr()
 }
 
-func (x *audio) Eq (Y Any) bool {
+func (x *audio) Eq (Y any) bool {
   y := x.imp(Y)
   return x.Field.Eq (y.Field) &&
          x.Medium.Eq (y.Medium) &&
@@ -93,7 +93,7 @@ func (x *audio) Eq (Y Any) bool {
          x.soloist.Eq (y.soloist)
 }
 
-func (x *audio) Copy (Y Any) {
+func (x *audio) Copy (Y any) {
   y := x.imp(Y)
   x.Field.Copy (y.Field)
   x.Medium.Copy (y.Medium)
@@ -106,13 +106,13 @@ func (x *audio) Copy (Y Any) {
   x.soloist.Copy (y.soloist)
 }
 
-func (x *audio) Clone() Any {
+func (x *audio) Clone() any {
   y := new_()
   y.Copy (x)
   return y
 }
 
-func (x *audio) Less (Y Any) bool {
+func (x *audio) Less (Y any) bool {
   y := x.imp(Y)
   switch actOrder {
   case fieldOrder:
@@ -141,7 +141,7 @@ func (x *audio) Less (Y Any) bool {
   panic ("")
 }
 
-func (x *audio) Sub (Y Any) bool {
+func (x *audio) Sub (Y any) bool {
   y := x.imp(Y)
   if ! x.Field.Empty() {
     return x.Field.Eq (y.Field)

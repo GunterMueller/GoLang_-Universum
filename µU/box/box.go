@@ -1,6 +1,6 @@
 package box
 
-// (c) Christian Maurer   v. 210315 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "µU/char"
@@ -10,6 +10,7 @@ import (
   "µU/kbd"
   "µU/col"
   "µU/scr"
+  "µU/font"
 )
 const
   space = byte(' ')
@@ -23,6 +24,7 @@ overwritable,
    graphical,
  transparent,
    numerical bool
+             font.Font
        index uint
              kbd.Comm
        depth uint
@@ -34,6 +36,7 @@ func new_() Box {
   x := new (box)
   x.width = 0
   x.cF, x.cB = col.StartCols()
+  x.Font = font.Roman
   x.Comm = kbd.None
   return x
 }
@@ -74,13 +77,21 @@ func (b *box) Defined (s string) bool {
   return uint(len(b.string)) < b.width
 }
 
+func (b *box) ActFont() font.Font {
+  return b.Font
+}
+
+func (b *box) SetFont (f font.Font) {
+  b.Font = f
+}
+
 func (x *box) Write (s string, l, c uint) {
   nl, nc := scr.NLines(), scr.NColumns()
   if l >= nl { ker.Panic2 ("box.Write: l ==", l, ">= NLines ==", nl) }
   if c >= nc { ker.Panic2 ("box.Write: c ==", c, ">= NColumns ==", nc) }
   char.ToHellWithUTF8 (&s)
-  n, b := uint(len (s)), x.width
-  if c + b > nc { x.width = nc - c }
+  n, w := uint(len (s)), x.width
+  if c + w > nc { x.width = nc - c }
   if x.width == 0 { x.width = n }
   if x.width > n { x.width = n }
   if x.width < n { str.Norm (&s, x.width) }
@@ -88,31 +99,33 @@ func (x *box) Write (s string, l, c uint) {
   scr.Lock()
   scr.Colours (x.cF, x.cB)
   if x.transparent { scr.Transparence (true) }
+  scr.SetFont (x.Font)
   scr.Write (s, l, c)
   if x.transparent { scr.Transparence (false) }
   scr.Unlock()
-  x.width = b
+  x.width = w
 }
 
-func (B *box) WriteGr (s string, x, y int) {
+func (b *box) WriteGr (s string, x, y int) {
   if uint(y) >= scr.Ht() { return }
   if uint(x) >= scr.Wd() - scr.Wd1() { return }
   char.ToHellWithUTF8 (&s)
-  n, b := uint(len (s)), B.width
-  if B.width == 0 { B.width = n }
-  if uint(x) + B.width * scr.Wd1() > scr.Wd() {
-    B.width = (scr.Wd() - uint(x)) / scr.Wd1()
+  n, w := uint(len (s)), b.width
+  if b.width == 0 { b.width = n }
+  if uint(x) + b.width * scr.Wd1() > scr.Wd() {
+    b.width = (scr.Wd() - uint(x)) / scr.Wd1()
   }
-  if B.width > n { B.width = n }
-  if B.width < n { str.Norm (&s, B.width) }
-  if B.numerical { str.Move (&s, false) }
+  if b.width > n { b.width = n }
+  if b.width < n { str.Norm (&s, b.width) }
+  if b.numerical { str.Move (&s, false) }
   scr.Lock()
-  scr.Colours (B.cF, B.cB)
-  if B.transparent { scr.Transparence (true) }
+  scr.Colours (b.cF, b.cB)
+  if b.transparent { scr.Transparence (true) }
+  scr.SetFont (b.Font)
   scr.WriteGr (s, x, y)
-  if B.transparent { scr.Transparence (false) }
+  if b.transparent { scr.Transparence (false) }
   scr.Unlock()
-  B.width = b
+  b.width = w
 }
 
 func (x *box) Clr (l, c uint) {

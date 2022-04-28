@@ -1,6 +1,6 @@
 package bn
 
-// (c) Christian Maurer   v. 220131 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "math"
@@ -33,10 +33,11 @@ func new_(n uint) Natural {
   x.uint = invalid
   x.wd = n
   x.f, x.b = col.StartCols()
+  x.Font = font.Roman
   return x
 }
 
-func (x *natural) imp (Y Any) *natural {
+func (x *natural) imp (Y any) *natural {
   y, ok := Y.(*natural)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y
@@ -54,25 +55,25 @@ func (x *natural) Clr() {
   x.uint = invalid
 }
 
-func (x *natural) Copy (Y Any) {
+func (x *natural) Copy (Y any) {
   y := x.imp (Y)
   x.uint = y.uint
   x.wd = y.wd
   x.f, x.b = y.f, y.b
 }
 
-func (x *natural) Clone() Any {
+func (x *natural) Clone() any {
   y := new_(x.wd)
   y.Copy (x)
   return y
 }
 
-func (x *natural) Eq (Y Any) bool {
+func (x *natural) Eq (Y any) bool {
   return x.uint == x.imp(Y).uint
 }
 
 // non-empty Less than Empty
-func (x *natural) Less (Y Any) bool {
+func (x *natural) Less (Y any) bool {
   return x.uint < x.imp(Y).uint
 }
 
@@ -117,29 +118,39 @@ func st (n uint) string {
   return st (n / 10) + st (n % 10)
 }
 
-func (x *natural) String() string {
-  if x.uint == invalid {
+func (n *natural) String() string {
+  if n.uint == invalid {
     return str.New (M)
   }
-  return st (x.uint)
+  return st (n.uint)
 }
 
 func (n *natural) Colours (f, b col.Colour) {
   n.f, n.b = f, b
 }
 
+func (n *natural) ActFont() font.Font {
+  return n.Font
+}
+
+func (n *natural) SetFont (f font.Font) {
+  n.Font = f
+}
+
 func (n *natural) Write (l, c uint) {
+//  bx.SetFont (n.Font)
   bx.Wd (n.wd)
   bx.Colours (n.f, n.b)
-  bx.Write (str.New(n.wd), l, c)
+  bx.Write (str.New (n.wd), l, c)
   bx.Write (n.String(), l, c)
 }
 
-func (x *natural) Edit (l, c uint) {
-  x.EditGr (8 * int(c), 16 * int(l))
+func (n *natural) Edit (l, c uint) {
+  n.EditGr (8 * int(c), 16 * int(l))
 }
 
 func (n *natural) WriteGr (x, y int) {
+//  bx.SetFont (n.Font)
   bx.Wd (n.wd)
   bx.Colours (n.f, n.b)
   bx.WriteGr (str.New(n.wd), x, y)
@@ -162,10 +173,6 @@ func (n *natural) EditGr (x, y int) {
     }
   }
   n.WriteGr (x, y)
-}
-
-func (x *natural) SetFont (f font.Font) {
-  x.Font = f
 }
 
 func (x *natural) Print (l, c uint) {
@@ -219,12 +226,8 @@ func (x *natural) Add (Y ...Adder) {
 
 func (x *natural) Sum (Y, Z Adder) {
   y, z := x.imp(Y), x.imp(Z)
-println ("y =", y.uint)
-println ("z =", z.uint)
   x.Copy (y)
-println ("x =", x.uint)
   x.Add (z)
-println ("x =", x.uint)
 }
 
 func (x *natural) Sub (Y ...Adder) {

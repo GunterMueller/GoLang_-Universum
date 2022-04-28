@@ -1,12 +1,11 @@
 package mbbuf
 
-// (c) Christian Maurer   v. 171106 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // >>> Implementation with a Go-Monitor
 
 import (
   "sync"
-  . "µU/obj"
   "µU/bbuf"
 )
 type
@@ -16,7 +15,7 @@ type
                    sync.Mutex
                    }
 
-func newgo (a Any, n uint) MBoundedBuffer {
+func newgo (a any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }
   x := new (condition)
   x.BoundedBuffer = bbuf.New (a, n)
@@ -25,7 +24,7 @@ func newgo (a Any, n uint) MBoundedBuffer {
   return x
 }
 
-func (x *condition) Ins (a Any) {
+func (x *condition) Ins (a any) {
   x.Mutex.Lock()
   for x.BoundedBuffer.Full() {
     x.notFull.Wait()
@@ -35,7 +34,7 @@ func (x *condition) Ins (a Any) {
   x.Mutex.Unlock()
 }
 
-func (x *condition) Get() Any {
+func (x *condition) Get() any {
   x.Mutex.Lock()
   for x.BoundedBuffer.Num() == 0 {
     x.notEmpty.Wait()

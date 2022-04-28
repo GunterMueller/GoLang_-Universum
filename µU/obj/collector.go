@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 210305 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 // Collections of elements of type object or of variables of
 // an atomic type (bool, [u]int.., float.., string, ...)
@@ -43,7 +43,7 @@ type
 //   in x with r(b,a); so x is now still ordered w.r.t. r.
 // In both cases all other elements and their order in x
 // and the actual element in x are not influenced.
-  Ins (a Any)
+  Ins (a any)
 
 // If f and if the actual element of x was defined, then
 // the actual element is now the element behind the former actual
@@ -63,7 +63,7 @@ type
   Eoc (f bool) bool
 
 // Returns a copy of the actual element of x, if that is defined; nil otherwise.
-  Get() Any
+  Get() any
 
 // Pre: a has the type of the elements in x. 
 // If x is not ordered:
@@ -74,25 +74,25 @@ type
 //   If x was empty, a copy of a is now the only element in x.
 //   Otherwise, the actual element in x is deleted and a is inserted into x
 //   where the order of x is preserved.
-  Put (a Any)
+  Put (a any)
 
 // Returns nil, if the actual element of x is undefined.
 // Otherwise, the actual element was removed from x,
 // and now the actual element is the element after it,
 // if the former actual element was not the last element of x.
 // In that case the actual element of x now is undefined.
-  Del() Any
+  Del() any
 
 // Returns true, iff a is contained in x. In that case
 // the first such element is the actual element of x;
 // otherwise, the actual element is the same as before.
-  Ex (a Any) bool
+  Ex (a any) bool
 
 // Pre: x is ordered.
 // Returns true, iff x contains objects b with Leq (a, b).
 // In this case, the actual element is the smallest such object,
 // otherwise the actual element is the same as before.
-  ExGeq (a Any) bool
+  ExGeq (a any) bool
 
 // op was applied to all elements in x (in their order in x).
 // The actual element of x is the same as before.
@@ -132,7 +132,7 @@ type
   Sort()
 }
 
-func IsCollector (a Any) bool {
+func IsCollector (a any) bool {
   if a == nil { return false }
   _, ok := a.(Collector)
   return ok

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 220128 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 const
   C0 = uint(8) // == Codelen(int(0)); == Codelen(uint(0))
@@ -21,20 +21,20 @@ type
 }
 
 // Returns true, iff a implements Coder.
-func IsCoder (a Any) bool { return isCoder(a) }
+func IsCoder (a any) bool { return isCoder(a) }
 
 // Pre: a is atomic or implements Object.
 // Returns the codelength of a.
-func Codelen (a Any) uint { return codelen(a) }
+func Codelen (a any) uint { return codelen(a) }
 
 // Pre: a is atomic or implements Object.
 // Returns a as encoded byte sequence.
-func Encode (a Any) Stream { return encode(a) }
+func Encode (a any) Stream { return encode(a) }
 
 // Pre: a is atomic or streamic or implements Object.
 //      b is a encoded byte sequence.
 // Returns the object, that was encoded in b.
-func Decode (a Any, b Stream) Any { return decode(a,b) }
+func Decode (a any, b Stream) any { return decode(a,b) }
 
 // Returns a stream of length 16, that encodes a, b.
 func Encode2 (a, b int) Stream { return encode2(a,b) }
@@ -44,7 +44,7 @@ func Encode2 (a, b int) Stream { return encode2(a,b) }
 func Decode2 (s Stream) (int, int) { return decode2(s) }
 
 // Returns true, iff a is atomic or implements Coder.
-func AtomicOrCoder (a Any) bool { return Atomic(a) || isCoder(a) }
+func AtomicOrCoder (a any) bool { return Atomic(a) || isCoder(a) }
 
 // Pre: For each i < len(a): c[i] == Codelen(a[i]).
 // Returns a encoded as Stream.

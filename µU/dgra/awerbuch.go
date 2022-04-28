@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171130 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 //
 // >>> simplified version of the algorithm of B. Awerbuch:
 //     A New Distributed Depth-First-Search Algorithm, Inf. Proc. Letters 28 (1985) 147-160 
@@ -48,7 +48,7 @@ func (x *distributedGraph) awerbuch (o Op) {
   }
 }
 
-func (x *distributedGraph) a (a Any, i uint) Any {
+func (x *distributedGraph) a (a any, i uint) any {
   x.awaitAllMonitors()
   s := a.(uint)
   j := x.channel(s)

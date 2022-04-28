@@ -1,9 +1,8 @@
 package barb
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
-  . "µU/obj"
   "µU/mon"
 )
 type
@@ -15,7 +14,7 @@ func newM() Barber {
   var n uint
   var m mon.Monitor
 //  barberFree := true
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          if i == customer {
 //           if ! barberFree {
 //             m.Wait (barber)

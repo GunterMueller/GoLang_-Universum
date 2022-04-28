@@ -1,10 +1,11 @@
 package text
 
-// (c) Christian Maurer   v. 210511 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
+  "µU/font"
 )
 type
   Text interface { // strings of fixed length
@@ -15,6 +16,9 @@ type
   Stringer
   TeXer
   Printer
+
+  SetFont (f font.Font)
+  SetFontsize (s font.Size)
 
 // Specs see str/def.go.
   Equiv (Y Text) bool
