@@ -1,6 +1,6 @@
 package gram
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220426 - license see µU.go
 
 import (
   . "µU/obj"
@@ -22,8 +22,7 @@ type
               nWays uint
                     string "name"
                     bool "has background"
-               f, b,
-             fa, ba col.Colour
+       f, b, fa, ba col.Colour
                     }
 var (
   h = [...]string { "        neue Ecke: linke Maustaste              ",
@@ -52,14 +51,32 @@ func new_(d bool, v, e any) GraphModel {
     e = edg.New(d, uint(1))
   }
   x.edge = edg.New (d, e)
-  x.f, x.b = col.StartCols()
+  x.f, x.b = scr.ColF(), scr.ColB()
   x.Colours (x.f, x.b)
-  x.fa, x.ba = col.StartColsA()
+  x.fa, x.ba = scr.ColB(), scr.ColF()
   x.ColoursA (x.fa, x.ba)
   x.Graph = gra.New (d, x.vertex, x.edge)
   x.Graph.SetWrite (vtx.W, edg.W)
   return x
 }
+
+/*/ I have to think about the following, but,
+    the problem is, where do the positions come from?
+    Traverse x.Graph by giving each vertex its position?
+
+func newG (g gra.Graph) GraphModel {
+  x := new(graphModel)
+  if g.Num() * g.Num1() == 0 { panic ("does not make sense") }
+  x.Graph = g.Clone().(gra.Graph)
+  x.vertex = g.Get().(vtx.Vertex).Clone().(vtx.Vertex)
+  x.edge = g.Get1().(edg.Edge).Clone().(edg.Edge)
+  x.f, x.b = scr.ColF(), scr.ColB()
+  x.Colours (x.f, x.b)
+  x.fa, x.ba = scr.ColB(), scr.ColF()
+  x.ColoursA (x.fa, x.ba)
+  return x
+}
+/*/
 
 func (x *graphModel) Background (n string) {
   x.bool = ! str.Empty (n)
@@ -194,7 +211,8 @@ func (x *graphModel) Edit() {
     case kbd.Go:
       xm, ym = scr.MousePosGr()
 // scr.WriteMousePosGr (0, 0)
-    case kbd.Here: // new vertex or change name of existing vertex:
+    case kbd.Here: // left button pressed
+                   // new vertex or change name of existing vertex:
       if x.ExPred (x.underMouse) { // change name
         x.vertex = x.Get().(vtx.Vertex) // local: vertex
         x.vertex.Edit()
@@ -211,7 +229,7 @@ func (x *graphModel) Edit() {
         x.Put (x.vertex)
         x.Write()
       }
-    case kbd.This:
+    case kbd.This: // right button pressed
       if d == 0 {
         if x.ExPred (x.underMouse) {
           x.vertex = x.Get().(vtx.Vertex)
@@ -223,7 +241,7 @@ func (x *graphModel) Edit() {
           x.Locate (true) // x.vertex is also colocal
         }
       }
-    case kbd.Drop:
+    case kbd.Drop: // move with pressed right button
       if d == 0 {
         x0, y0 = x.vertex.Pos()
         xm, ym = scr.MousePosGr()
@@ -246,7 +264,7 @@ func (x *graphModel) Edit() {
         xm1, ym1 = scr.MousePosGr()
         scr.Line (xm, ym, xm1, ym1)
       }
-    case kbd.There:
+    case kbd.There: // right button released
       if d == 0 {
         x.vertex.Mouse()
         (x.vertex).Write()
@@ -270,11 +288,6 @@ func (x *graphModel) Edit() {
           }
         }
       }
-    case kbd.Print:
-      errh.DelHint()
-//      ppm.Put ("tmp.g")
-//      ppm.Print ("graph")
-      errh.Hint ("Graph editieren - Hilfe: F1, fertig: Esc")
     }
   }
   errh.DelHint()
@@ -294,7 +307,6 @@ func wait (w *bool) {
 
 func (x *graphModel) DFS (all bool) {
   x.Mark (true)
-////////////////////////////////////////////////////////////////////
   x.Write()
 //  kbd.Wait (true)
   n := x.NumNeighboursOut()
@@ -302,12 +314,10 @@ func (x *graphModel) DFS (all bool) {
     for i := uint(0); i < n; i++ {
       x.Step (i, true)
       if false { // x.Marked() {
-////////////////////////////////////////////////////////////////////
         x.Step (0, false)
       } else {
         x.DFS (all)
         if all { x.Mark (false) } // for _all_ ways
-////////////////////////////////////////////////////////////////////
         x.Step (0, false)
         x.Write()
 //        kbd.Wait (true)
@@ -341,7 +351,6 @@ func (x *graphModel) BFS (all bool) {
 
 func (x *graphModel) Hamilton (ready, ok Cond, w *bool) {
   x.Mark (true)
-////////////////////////////////////////////////////////////////////
   if ready() {
     x.nWays++
     x.Graph.Write()
@@ -351,13 +360,11 @@ func (x *graphModel) Hamilton (ready, ok Cond, w *bool) {
     for i := uint(0); i < n; i++ {
       x.Step (i, true)
       if false { // x.Marked() || ! ok() {
-////////////////////////////////////////////////////////////////////
         x.Step (0, false)
       } else {
         x.Graph.Write(); wait (w)
         x.Hamilton (ready, ok, w)
         x.Mark (false)
-////////////////////////////////////////////////////////////////////
         x.Step (0, false)
         x.Graph.Write(); wait (w)
       }

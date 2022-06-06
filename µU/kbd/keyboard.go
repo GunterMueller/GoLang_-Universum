@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 220203 - license see µU.go
+// (c) Christian Maurer   v. 220530 - license see µU.go
 
 import (
   "µU/env"
@@ -99,9 +99,7 @@ const (
   mu         = char.Mu
   paragraph  = char.Paragraph
   registered = char.Registered
-  female     = char.Female
   copyright  = char.Copyright
-  male       = char.Male
   division   = char.Division
 
 //  toolbox   = 501 // 501 % 256 = 245, % 128 = 117

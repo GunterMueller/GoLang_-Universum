@@ -1,6 +1,6 @@
 package audio
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220510 - license see µU.go
 
 import (
   . "µU/obj"
@@ -316,6 +316,10 @@ func (x *audio) Edit (l, c uint) {
 
 var lastField = field.New()
 
+func texdef() string {
+  return "\\def\\n{\\newline} \\def\\p{\\par\\smallpagebreak}\n"
+}
+
 func (x *audio) TeX() string {
   s := ""
   if ! x.Field.Eq (lastField) {
@@ -329,22 +333,22 @@ func (x *audio) TeX() string {
     s += "{\\bi " + x.composer.TeX() + "}"
   }
   if ! x.work.Empty() {
-    s += "\\newline\n" + x.work.TeX() + ""
+    s += "\\n\n" + x.work.TeX() + ""
   }
   if ! x.composer1.Empty() {
-    s += "\\newline\n{\\bi " + x.composer1.TeX() + "}"
+    s += "\\n\n{\\bi " + x.composer1.TeX() + "}"
   }
   if ! x.work1.Empty() {
-    s += "\\newline\n" + x.work1.TeX() + ""
+    s += "\\n\n" + x.work1.TeX() + ""
   }
   if ! x.orchestra.Empty() {
-    s += "\\newline\n" + x.orchestra.TeX()
+    s += "\\n\n" + x.orchestra.TeX()
     if ! x.conductor.Empty() {s += " (" + x.conductor.TeX() + ") "}
   }
   if ! x.soloist.Empty() {
-    s += "\\newline\n{\\bi " + x.soloist.TeX() + "}"
+    s += "\\n\n{\\bi " + x.soloist.TeX() + "}"
   }
-  s += "\n\\par\\smallpagebreak\n"
+  s += "\n\\p\n"
   return s
 }
 

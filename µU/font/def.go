@@ -1,9 +1,9 @@
 package font
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220524 - license see µU.go
 
 type
-  Font byte; const (
+  Font byte; const ( // only for prt
   Roman = Font(iota)
   Bold
   Italic

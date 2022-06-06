@@ -2,9 +2,8 @@ package mcorn
 
 // (c) Christian Maurer   v. 220420 - license see µU.go
 
-import (
+import
   "µU/corn"
-)
 type
   MCornet interface { // Do not call Empty or Num, as their values are not reliable !
                       // A process calling Get is blocked, until x is not empty.

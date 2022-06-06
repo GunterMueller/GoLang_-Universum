@@ -1,6 +1,6 @@
 package box
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220524 - license see µU.go
 
 import (
   "µU/char"
@@ -10,7 +10,6 @@ import (
   "µU/kbd"
   "µU/col"
   "µU/scr"
-  "µU/font"
 )
 const
   space = byte(' ')
@@ -24,7 +23,6 @@ overwritable,
    graphical,
  transparent,
    numerical bool
-             font.Font
        index uint
              kbd.Comm
        depth uint
@@ -36,7 +34,6 @@ func new_() Box {
   x := new (box)
   x.width = 0
   x.cF, x.cB = col.StartCols()
-  x.Font = font.Roman
   x.Comm = kbd.None
   return x
 }
@@ -77,14 +74,6 @@ func (b *box) Defined (s string) bool {
   return uint(len(b.string)) < b.width
 }
 
-func (b *box) ActFont() font.Font {
-  return b.Font
-}
-
-func (b *box) SetFont (f font.Font) {
-  b.Font = f
-}
-
 func (x *box) Write (s string, l, c uint) {
   nl, nc := scr.NLines(), scr.NColumns()
   if l >= nl { ker.Panic2 ("box.Write: l ==", l, ">= NLines ==", nl) }
@@ -99,7 +88,6 @@ func (x *box) Write (s string, l, c uint) {
   scr.Lock()
   scr.Colours (x.cF, x.cB)
   if x.transparent { scr.Transparence (true) }
-  scr.SetFont (x.Font)
   scr.Write (s, l, c)
   if x.transparent { scr.Transparence (false) }
   scr.Unlock()
@@ -121,7 +109,6 @@ func (b *box) WriteGr (s string, x, y int) {
   scr.Lock()
   scr.Colours (b.cF, b.cB)
   if b.transparent { scr.Transparence (true) }
-  scr.SetFont (b.Font)
   scr.WriteGr (s, x, y)
   if b.transparent { scr.Transparence (false) }
   scr.Unlock()

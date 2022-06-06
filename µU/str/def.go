@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 210212 - license see µU.go
+// (c) Christian Maurer   v. 220530 - license see µU.go
 
 //     latin-1-strings (without any UTF-8-stuff)
 
@@ -14,7 +14,7 @@ func New (n uint) string { return new_(n) }
 func Clr (s *string) { clr(s) }
 
 // Returns a string, then coincides with s up to certain UTF-8-runes
-// (see constants in z.go), that are changed to latin1-bytes.
+// (see constants in char.go), that are changed to latin1-bytes.
 func Lat1 (s string) string { return lat1(s) }
 
 // Invers to Lat1.
@@ -195,3 +195,6 @@ func RightBr (s string) uint { return rightBr (s) }
 
 // TODO Spec
 func StartsWithVar (s string) (string, uint, bool) { return startsWithVar(s) }
+
+// TODO Spec
+func TeX (s string) string { return tex(s) }

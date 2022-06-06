@@ -1,13 +1,13 @@
 package char
 
-// (c) Christian Maurer   v. 210228 - license see µU.go
+// (c) Christian Maurer   v. 220530 - license see µU.go
 
 const
   delta = 'a' - 'A'
 
 func init() {
   ord := []byte (" 0123456789Aa  BbCcDdEeFfGgHhIiJjKkLlMmNnOo  PpQqRrSs TtUu  VvWwXxYyZz")
-//                            Ää                            Öö        ß    Üü
+//                             Ää                            Öö        ß    Üü
 //               0         1         2         3         4         5         6
 //               0123456789012345678901234567890123456789012345678901234567890123456789
   ord[13] = Ä
@@ -25,9 +25,9 @@ func init() {
 
 func isLatin1 (b byte) bool {
   switch b {
-  case Ä, Ö, Ü, Ae, Oe, Ue, Sz, Cent, Pound, Euro, Yen, BrokenBar, Paragraph, Copyright, Female,
-       LeftDoubleAngle, Not, Registered, Degree, PlusMinus, ToThe2, ToThe3, Mu, Pilcrow, Dot,
-       ToThe1, Male, RightDoubleAngle, Quarter, Half, ThreeQuarters, Times, EmptySet, Division:
+  case Ä, Ö, Ü, Ae, Oe, Ue, Sz, Cent, Pound, Euro, Yen, Paragraph, Copyright,
+       Not, Registered, Degree, PlusMinus, ToThe2, ToThe3,
+       Mu, Pilcrow, Dot, Times, EmptySet, Division:
     return true
   }
   return false
@@ -41,7 +41,7 @@ func str (b byte) string {
 
 func isLowerUmlaut (b byte) bool {
   switch b {
-  case Ae, Oe, Ue, Sz:
+  case Ae, Oe, Ue:
     return true
   }
   return false
@@ -146,7 +146,7 @@ func isUppercaseLetter (b byte) bool {
 }
 
 func isLowercaseLetter (b byte) bool {
-  return 'a' <= b && b <= 'z' || isLowerUmlaut(b)
+  return 'a' <= b && b <= 'z' || isLowerUmlaut(b) || b == Sz
 }
 
 func isLetter (b byte) bool {
@@ -202,6 +202,62 @@ func isConsonant (b byte) bool {
   return false
 }
 
+func tex (b byte) string {
+  switch b {
+  case Ä:
+    return "\\\"A"
+  case Ö:
+    return "\\\"O"
+  case Ü:
+    return "\\\"U"
+  case Ae:
+    return "\\\"a"
+  case Oe:
+    return "\\\"o"
+  case Ue:
+    return "\\\"u"
+  case Sz:
+    return "\\ss"
+  case Cent:
+    return ""
+  case Pound:
+    return "\\it\\S "
+  case Euro:
+    return ""
+  case Yen:
+    return "\\yen "
+  case Paragraph:
+    return "\\S "
+  case Copyright:
+    return "\\copyright "
+  case Not:
+    return "\\lnot "
+  case Registered:
+    return "\\textregistered "
+  case Degree:
+    return "^\\circ "
+  case PlusMinus:
+    return "\\pm "
+  case ToThe2:
+    return "^2"
+  case ToThe3:
+    return "^3"
+  case Mu:
+    return "\\mu "
+  case Pilcrow:
+    return "\\P "
+  case Dot:
+    return "\\cdot "
+  case Times:
+    return "\\times "
+  case EmptySet:
+    return "\\emptyset "
+  case Division:
+    return "\\div "
+  }
+  return string(b)
+}
+
 func postscript (b byte) string {
   switch b {
   case Ä:
@@ -226,16 +282,10 @@ func postscript (b byte) string {
     return "euro"
   case Yen:
     return "yen"
-  case BrokenBar:
-    return "brokenbar"
   case Paragraph:
     return "section"
   case Copyright:
     return "copyright"
-  case Female:
-    return "ordfeminine"
-  case LeftDoubleAngle:
-    return "quotedblleft"
   case Not:
     return "logicalnot"
   case Registered:
@@ -254,18 +304,6 @@ func postscript (b byte) string {
     return "paragraph"
   case Dot:
     return "periodcentered"
-  case ToThe1:
-    return "onesuperior"
-  case Male:
-    return "ordmasculine"
-  case RightDoubleAngle:
-    return "quotedblright"
-  case Quarter:
-    return "onequarter"
-  case Half:
-    return "onehalf"
-  case ThreeQuarters:
-    return "threequarters"
   case Times:
     return "multiply"
   case EmptySet:
@@ -300,17 +338,11 @@ func Latin1Byte (r rune) byte {
     return Euro
   case '¥': // C2 A5
     return Yen
-  case '¦': // C2 A6
-    return BrokenBar
   case '§': // C2 A7
     return Paragraph
   case '©': // C2 A9
     return Copyright
   case 'ª': // C2 AA
-    return Female
-  case '«': // C2 AB
-    return LeftDoubleAngle
-  case '¬': // C2 AC
     return Not
   case '®': // C2 AE
     return Registered
@@ -328,18 +360,6 @@ func Latin1Byte (r rune) byte {
     return Pilcrow
   case '·': // C2 B7
     return Dot
-  case '¹': // C2 B9
-    return ToThe1
-  case 'º': // C2 BA
-    return Male
-  case '»': // C2 BB
-    return RightDoubleAngle
-  case '¼': // C2 BC
-    return Quarter
-  case '½': // C2 BD
-    return Half
-  case '¾': // C2 BE
-    return ThreeQuarters
   case '×': // C3 97
     return Times
   case 'Ø': // C2 98

@@ -2,9 +2,8 @@ package bbuf
 
 // (c) Christian Maurer   v. 220420 - license see µU.go
 
-import (
+import
   "µU/buf"
-)
 type
   BoundedBuffer interface {
 

@@ -2,9 +2,8 @@ package bpqu
 
 // (c) Christian Maurer   v. 220420 - license see µU.go
 
-import (
+import
   "µU/pqu"
-)
 type
   BoundedPrioQueue interface {
 

@@ -2,9 +2,8 @@ package mstk
 
 // (c) Christian Maurer   v. 220420 - license see µU.go
 
-import (
+import
   "µU/stk"
-)
 type
   MStack interface { // To be used by concurrent processes, but:
                      // do not call Empty as it's value is not reliable !

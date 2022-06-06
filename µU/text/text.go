@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220524 - license see µU.go
 
 import (
   "µU/rand"
@@ -89,6 +89,10 @@ func (x *text) Generate() {
 //    B[i] = 0C
   }
 */
+}
+
+func (x *text) Transparence (t bool) {
+  bx.Transparence (t)
 }
 
 func (x *text) Empty() bool {
@@ -286,8 +290,6 @@ func (x *text) ToLower0() {
 func (t *text) WriteGr (x, y int) {
   bx.Wd (t.uint)
   bx.Colours (t.cF, t.cB)
-//  bx.SetFont (t.Font)
-  scr.SetFont (t.Font)
   bx.WriteGr (t.string, x, y)
 }
 

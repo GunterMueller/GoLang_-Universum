@@ -15,8 +15,7 @@ type
           width,
          height uint
            x, y int
-           f, b,
-         fa, ba col.Colour
+   f, b, fa, ba col.Colour
                 }
 
 func new_(e EditorGr, w, h uint) Vertex {
@@ -96,7 +95,7 @@ func (x *vertex) Copy (Y any) {
 }
 
 func (x *vertex) Clone() any {
-  y  := new_(x.EditorGr, x.width, x.height).(*vertex)
+  y := new_(x.EditorGr, x.width, x.height).(*vertex)
   y.Copy (x)
   return y
 }
@@ -106,7 +105,6 @@ func (x *vertex) Mouse() {
   x.x, x.y = xm, ym
   wd, ht  := int(scr.Wd()), int(scr.Ht())
   w1, h1  := int(scr.Wd1()), int(scr.Ht1())
-w1, h1 = 6, 10
   w, h  := int(x.width) * w1, int(x.height) * h1
   if x.x < w { x.x = w }
   if x.x + w >= wd { x.x = wd - 1 - w }
@@ -169,19 +167,19 @@ func (x *vertex) Write1 (a bool) {
     }
   }
   x.EditorGr.(col.Colourer).Colours (f, b)
-  x.EditorGr.WriteGr (x.x - int(w1) / 2 + 1, x.y - int(h1) / 2)
+  x.EditorGr.WriteGr (x.x - int(w1) / 2 - int(scr.Wd1()), x.y - int(h1) / 2)
 }
 
 func (x *vertex) Edit() {
   x.Write()
   w1, h1  := scr.Wd1() * x.width, scr.Ht1() * x.height
-  x.EditorGr.EditGr (x.x - int(w1) / 2 + 1, x.y - int(h1) / 2)
+  x.EditorGr.EditGr (x.x - int(w1) / 2 - int(scr.Wd1()), x.y - int(h1) / 2)
 }
 
 func (x *vertex) Codelen() uint {
   return x.EditorGr.(Object).Codelen() +
-         2 +                  // width, height
-         2 * C0 +             // x, y
+         2 +               // width, height
+         2 * C0 +          // x, y
          4 * x.f.Codelen()
 }
 

@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 220206 - license see µU.go
+// (c) Christian Maurer   v. 220530 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -131,8 +131,6 @@ loop:
                 *B = registered
               case 27: // +
                 *B = '~'
-              case 33: // F
-                *B = female
               case 41:
                 *B = degree
               case 46: // C

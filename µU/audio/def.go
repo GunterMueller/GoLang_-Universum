@@ -14,3 +14,5 @@ type
 }
 
 func New() Audio { return new_() }
+
+func Texdef() string { return texdef() }

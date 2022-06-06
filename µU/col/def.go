@@ -4,7 +4,6 @@ package col
 
 import
  . "µU/obj"
-
 const
   NColours = 1 << 24
 type

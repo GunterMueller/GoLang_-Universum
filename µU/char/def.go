@@ -1,6 +1,6 @@
 package char
 
-// (c) Christian Maurer   v. 201128 - license see µU.go
+// (c) Christian Maurer   v. 220530 - license see µU.go
 
 const (
   Ä                = byte(0xc4) // 'Ä'  196
@@ -10,38 +10,21 @@ const (
   Oe               = byte(0xf6) // 'ö'  246
   Ue               = byte(0xfc) // 'ü'  252
   Sz               = byte(0xdf) // 'ß'  223
-//NoBreakSpace     = byte(0xa0) // ' '
-//InvExclamation   = byte(0xa1) // '¡'  161
   Cent             = byte(0xa2) // '¢'  162
   Pound            = byte(0xa3) // '£'  163
   Euro             = byte(0xa4) // '€'  164
   Yen              = byte(0xa5) // '¥'  165
-  BrokenBar        = byte(0xa6) // '¦'  166
   Paragraph        = byte(0xa7) // '§'  167
-//Diaeresis        = byte(0xa8) // '¨'  168
   Copyright        = byte(0xa9) // '©'  169
-  Female           = byte(0xaa) // 'ª'  170
-  LeftDoubleAngle  = byte(0xab) // '«'  171
   Not              = byte(0xac) // '¬'  172
-//SoftHyphen       = byte(0xad)
   Registered       = byte(0xae) // '®'  174
-//Macron           = byte(0xaf) // '¯'  175
   Degree           = byte(0xb0) // '°'  176
   PlusMinus        = byte(0xb1) // '±'  177
   ToThe2           = byte(0xb2) // '²'  178
   ToThe3           = byte(0xb3) // '³'  179
-//Acute            = byte(0xb4) // '´'  180
   Mu               = byte(0xb5) // 'µ'  181
   Pilcrow          = byte(0xb6) // '¶'  182
-  Dot              = byte(0xb7) // '·`  183
-//Cedilla          = byte(0xb8) // '·'  184
-  ToThe1           = byte(0xb9) // '¹'  185
-  Male             = byte(0xba) // 'º'  186
-  RightDoubleAngle = byte(0xbb) // '»'  187
-  Quarter          = byte(0xbc) // '¼'  188
-  Half             = byte(0xbd) // '½'  189
-  ThreeQuarters    = byte(0xbe) // '¾'  190
-//InvQuestionMark  = byte(0xbf) // '¿'  191
+  Dot              = byte(0xb7) // '·'  183
   Times            = byte(0xd7) // '×'  215
   EmptySet         = byte(0xd8) // 'Ø'  216
   Division         = byte(0xf7) // '÷'  247
@@ -103,6 +86,9 @@ func IsDigit (b byte) bool { return isDigit(b) }
 
 // Returns true, iff b is a letter or a digit.
 func IsLetterOrDigit (b byte) bool { return isLetterOrDigit(b) }
+
+// Returns the postscript name of b.
+func TeX (b byte) string { return tex(b) }
 
 // Returns the postscript name of b.
 func Postscript (b byte) string { return postscript(b) }

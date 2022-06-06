@@ -1,12 +1,11 @@
 package edg
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220528 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
   "µU/scr"
-//  "µU/errh"
   "µU/box"
   "µU/n"
 )
@@ -18,8 +17,7 @@ type
        x1, y1 int
            wd uint
         label bool
-       cf, cb,
-       fa, ba col.Colour
+ f, b, fa, ba col.Colour
               }
 var
   bx = box.New()
@@ -34,7 +32,7 @@ func new_(d bool, a any) Edge {
   x.any = Clone(a)
   x.wd = n.Wd(Val(a))
   x.label = true
-  x.cf, x.cb = col.StartCols()
+  x.f, x.b = col.StartCols()
   x.fa, x.ba = col.StartColsA()
   return x
 }
@@ -91,7 +89,7 @@ func (x *edge) Copy (Y any) {
   x.any = Clone(y.any)
   x.wd, x.label = y.wd, y.label
   x.x0, x.y0, x.x1, x.y1 = y.x0, y.y0, y.x1, y.y1
-  x.cf, x.cb, x.fa, x.ba = y.cf, y.cb, y.fa, y.ba
+  x.f, x.b, x.fa, x.ba = y.f, y.b, y.fa, y.ba
 }
 
 func (x *edge) Clone() any {
@@ -109,7 +107,7 @@ func (x *edge) SetVal (n uint) {
 }
 
 func (x *edge) Colours (f, b col.Colour) {
-  x.cf, x.cb = f, b
+  x.f, x.b = f, b
 }
 
 func (x *edge) ColoursA (f, b col.Colour) {
@@ -125,7 +123,7 @@ func (x *edge) Write () {
 }
 
 func (x *edge) Write1 (a bool) {
-  f, b := x.cf, x.cb
+  f, b := x.f, x.b
   if a {
     f, b = x.fa, x.ba
   }
@@ -165,7 +163,7 @@ func (x *edge) Edit() {
   k := Val (x.any)
   s := n.String(k)
   bx.Wd (x.wd)
-  bx.Colours (x.cf, x.cb)
+  bx.Colours (x.f, x.b)
   for {
     bx.EditGr (&s, x0, y0)
     if i, ok := n.Natural(s); ok {
@@ -180,9 +178,7 @@ func (x *edge) Codelen() uint {
        Codelen (x.any) +
        2 * 1 +
        4 * 4 +
-       4 * x.cf.Codelen()
-//  if c != 35 { errh.Error("Kacke", c) }
-//  return 35
+       4 * x.f.Codelen()
   return c
 }
 
@@ -205,10 +201,10 @@ func (x *edge) Encode() Stream {
   i += a
   copy (bs[i:i+a], Encode(int32(x.y1)))
   i += a
-  a = x.cf.Codelen()
-  copy (bs[i:i+a], x.cf.Encode())
+  a = x.f.Codelen()
+  copy (bs[i:i+a], x.f.Encode())
   i += a
-  copy (bs[i:i+a], x.cb.Encode())
+  copy (bs[i:i+a], x.b.Encode())
   i += a
   copy (bs[i:i+a], x.fa.Encode())
   i += a
@@ -234,10 +230,10 @@ func (x *edge) Decode (bs Stream) {
   i += a
   x.y1 = int(Decode(int32(0), bs[i:i+a]).(int32))
   i += a
-  a = x.cf.Codelen()
-  x.cf.Decode (bs[i:i+a])
+  a = x.f.Codelen()
+  x.f.Decode (bs[i:i+a])
   i += a
-  x.cb.Decode (bs[i:i+a])
+  x.b.Decode (bs[i:i+a])
   i += a
   x.fa.Decode (bs[i:i+a])
   i += a

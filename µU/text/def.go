@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220524 - license see µU.go
 
 import (
   . "µU/obj"
@@ -17,7 +17,8 @@ type
   TeXer
   Printer
 
-  SetFont (f font.Font)
+  Transparence (t bool)
+  SetFont (f font.Font) // only to print
   SetFontsize (s font.Size)
 
 // Specs see str/def.go.
@@ -33,7 +34,8 @@ type
   Pos (b byte) (uint, bool)
   Replace1 (p uint, b byte)
 
-// starting with position p in x, n bytes are removed; tail filled with spaces up to the original length
+// starting with position p in x, n bytes are removed;
+// tail filled with spaces up to the original length
   Rem (p, n uint)
 
   IsUpper0() bool

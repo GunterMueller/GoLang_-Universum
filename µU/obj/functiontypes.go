@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220521 - license see µU.go
 
 import
   "runtime"
@@ -50,7 +50,6 @@ func TrueSp (i uint) bool { return true }
 // Func[Spectrum]
 func Id (a any) any { return a }
 func IdSp (a any, i uint) any { return a }
-func Nil (a any) any { return nil }
 func NilSp (a any, i uint) any { return nil }
 
 // Pred[Spectrum]

@@ -621,3 +621,16 @@ func startsWithVar (s string) (string, uint, bool) {
   }
   return "", 0, false
 }
+
+func tex (s string) string {
+  if char.DevilsDung (s) {
+    char.ToHellWithUTF8 (&s)
+  }
+  n, t := uint(len(s)), ""
+  var b byte
+  for i := uint(0); i < n; i++ {
+    b = s[i]
+    t += char.TeX (b)
+  }
+  return t
+}

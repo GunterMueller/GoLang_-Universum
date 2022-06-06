@@ -40,7 +40,7 @@ type
 
   Editor
 
-// see above. x, y are pixel coordinates.
+// Pre: see above. x, y are pixel coordinates.
   WriteGr (x, y int)
   EditGr (x, y int)
 }
