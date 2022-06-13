@@ -1,13 +1,14 @@
 package gra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220609 - license see µU.go
 
 import (
+//  "µU/bn"
   . "µU/obj"
   "µU/errh"
 )
 
-// For all vertices n, that are accessible from n0 by a path, n.repr == n0.
+// For all vertices v, that are accessible from v0 by a path, v.repr == v0.
 // vAnchor.acyclic == true, if x has no cycles.
 func (x *graph) search (v0, v *vertex, p Pred) {
   x.vAnchor.time0++
@@ -18,7 +19,7 @@ func (x *graph) search (v0, v *vertex, p Pred) {
     wait()
   }
   for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
-    if n.outgoing && n.to != v.predecessor && p (n.to.any) {
+    if n.outgoing && n.to != v.predecessor && p ((n.to).any) {
       if n.to.time0 == 0 {
         if x.demo [Depth] {
           x.writeE (n.edgePtr.any, true)
@@ -30,7 +31,7 @@ func (x *graph) search (v0, v *vertex, p Pred) {
           wait()
         }
       } else if n.to.time1 == 0 {
-        x.vAnchor.acyclic = false // found cycle
+        x.vAnchor.acyclic = false // a cycle was found
         if x.demo [Cycle] { // also x.demo [Depth], see Set
           x.writeE (n.edgePtr.any, true)
 //          errh.Error0("Kreis gefunden")
@@ -56,24 +57,41 @@ func (x *graph) preDfs() {
 }
 
 // CLR 23.3, CLRS 22.3
-func (x *graph) dfs() {
+func (x *graph) Dfs1 (p Pred) {
   x.preDfs()
   if x.demo [Depth] {
     errh.Hint ("weiter mit Eingabetaste")
   }
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    if v.time0 == 0 {
-      x.search (v, v, AllTrue)
-    }
+    if v.time0 == 0 { x.search (v, v, p) }
   }
   if x.demo [Depth] {
     errh.DelHint()
   }
 }
 
+func (x *graph) search1 (v *vertex, o Op, p Pred, s Stmt) {
+  (*v).bool = true
+  o ((*v).any)
+  if p ((*v).any) { s() }
+  for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
+    if ! (n.to).bool {
+      x.search1 (n.to, o, p, s)
+    }
+  }
+}
+
+func (x *graph) Dfs (o Op, p Pred, s Stmt) {
+//  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
+//    if v.time0 == 0 { x.search1 (v, o, p, s) }
+//    return
+//  }
+  x.search1 (x.local, o, p, s)
+}
+
 func (x *graph) Acyclic() bool {
   if x.Empty() { return true }
   x.vAnchor.acyclic = true
-  x.dfs()
+  x.Dfs1 (AllTrue)
   return x.vAnchor.acyclic
 }

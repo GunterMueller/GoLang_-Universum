@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220609 - license see µU.go
 
 import (
   . "µU/obj"
@@ -484,6 +484,10 @@ type
 // Pre: x.Name was called.
 // x is stored in the corresponding file.
   Store()
+
+// TODO Spec
+  Dfs1 (p Pred)
+  Dfs (o Op, p Pred, f Stmt)
 }
 
 // Pre: v is atomic or imlements Object.

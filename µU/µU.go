@@ -40,8 +40,8 @@ import (
 )
 const (
   yy = 2022
-  mm =    5
-  dd =   30
+  mm =    6
+  dd =    9
 )
 var (
   red, green = col.FlashRed(), col.FlashGreen()

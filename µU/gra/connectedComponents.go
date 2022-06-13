@@ -1,12 +1,15 @@
 package gra
 
-// (c) Christian Maurer   v. 171122 - license see µU.go
+// (c) Christian Maurer   v. 220609 - license see µU.go
+
+import
+  . "µU/obj"
 
 // topological Sort, CLR 23.4, CLRS 22.4
 // TODO spec
 func (x *graph) Sort() {
   if x.nVertices < 2 || ! x.bool { return }
-  x.dfs()
+  x.Dfs1 (AllTrue)
 // sort list of vertices due to decrementing times, for which we supply a slice von *vertex:
   f := make ([]*vertex, 2 * x.nVertices)
   for i := uint32(0); i < 2 * x.nVertices; i++ {
@@ -43,7 +46,7 @@ func (x *graph) Isolate() {
   x.Inv()
 // and now once more depth first search,
 // starting with the highest time of the first depth first search:
-  x.dfs()
+  x.Dfs1 (AllTrue)
 // the depth first search trees are now the strongly connected components with common repr
 // finally again invert the directions of all edges
   x.Inv()
@@ -87,7 +90,7 @@ func (x *graph) totallyConnected() bool {
   if x.bool {
     x.Isolate()
   } else {
-    x.dfs()
+    x.Dfs1 (AllTrue)
   }
   v := x.vAnchor.nextV
   e0 := v.repr
