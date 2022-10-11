@@ -1,21 +1,21 @@
 package mbbuf
 
-// (c) Christian Maurer   v. 171106 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
 type channel1 struct {
-  Any
-  cIns, cGet chan Any
+  any
+  cIns, cGet chan any
 }
 
-func newCh1 (a Any, n uint) MBoundedBuffer {
+func newCh1 (a any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }
   x := new(channel1)
-  x.Any = Clone (a)
-  x.cIns, x.cGet = make(chan Any), make(chan Any)
+  x.any = Clone (a)
+  x.cIns, x.cGet = make(chan any), make(chan any)
   go func() {
-    buffer := make([]Any, n)
+    buffer := make([]any, n)
     var count, in, out uint
     for {
       if count == 0 {
@@ -37,5 +37,5 @@ func newCh1 (a Any, n uint) MBoundedBuffer {
   return x
 }
 
-func (x *channel1) Ins (a Any) { x.cIns <- a }
-func (x *channel1) Get() Any { return <-x.cGet }
+func (x *channel1) Ins (a any) { x.cIns <- a }
+func (x *channel1) Get() any { return <-x.cGet }

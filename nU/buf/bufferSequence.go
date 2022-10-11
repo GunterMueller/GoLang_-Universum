@@ -1,28 +1,28 @@
 package buf
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import (. "nU/obj"; "nU/seq")
 
 type bufferSeq struct {
-  Any "Musterobjekt"
+  any "Musterobjekt"
   seq.Sequence
 }
 
-func newS (a Any) Buffer {
+func newS (a any) Buffer {
   x := new(bufferSeq)
-  x.Any = Clone(a)
+  x.any = Clone(a)
   x.Sequence = seq.New(a)
   return x
 }
 
-func (x *bufferSeq) Ins (a Any) {
+func (x *bufferSeq) Ins (a any) {
   x.InsLast (a)
 }
 
-func (x *bufferSeq) Get() Any {
+func (x *bufferSeq) Get() any {
   if x.Empty() {
-    return x.Any
+    return x.any
   }
   defer x.DelFirst()
   return x.GetFirst()

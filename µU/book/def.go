@@ -9,7 +9,6 @@ type
 
   Stringer
   TeXer
-  Indexer
   Rotator
 
 // Pre: y is of type Book.

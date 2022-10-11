@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180813 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import "reflect"
 
@@ -8,35 +8,35 @@ type Equaler interface {
 
 // Returns true, iff the x has the same type as y
 // and coincides with it in all its value[s].
-  Eq (y Any) bool
+  Eq (y any) bool
 
 // If y has the same type as x, then x.Eq(y) (y is unchanged).
-  Copy (y Any)
+  Copy (y any)
 
 // Returns a clone of x, i.e. x.Eq(x.Clone()).
-  Clone() Any
+  Clone() any
 }
 
 // Pre: a and b are atomic or implement Equaler.
 // Returns true, if a and b are equal.
-func Eq (a, b Any) bool { return eq(a,b) }
+func Eq (a, b any) bool { return eq(a,b) }
 
 // Pre: a is atomic or implements Equaler.
 // Returns a clone of a.
-func Clone (a Any) Any { return clone(a) }
+func Clone (a any) any { return clone(a) }
 
 // Returns true, iff a is atomic or implements Equaler.
-func IsEqualer (a Any) bool { return isEqualer(a) }
+func IsEqualer (a any) bool { return isEqualer(a) }
 
 // Returns true, iff a is atomic or implements Equaler.
-func AtomicOrEqualer (a Any) bool { return Atomic(a) || isEqualer(a) }
+func AtomicOrEqualer (a any) bool { return Atomic(a) || isEqualer(a) }
 
-func isEqualer (a Any) bool {
+func isEqualer (a any) bool {
   _, e := a.(Equaler)
   return e
 }
 
-func eq (a, b Any) bool {
+func eq (a, b any) bool {
   if a == nil { return b == nil }
   if b == nil { return a == nil }
   if ! TypeEq (a, b) {
@@ -93,13 +93,13 @@ func eq (a, b Any) bool {
       }
       return true
     }
-  case *Any:
+  case *any:
     return eq (a, b)
   }
   return reflect.DeepEqual (a, b)
 }
 
-func clone (a Any) Any {
+func clone (a any) any {
   if a == nil {
     return nil
   }

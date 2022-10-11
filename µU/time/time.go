@@ -1,6 +1,6 @@
 package time
 
-// (c) Christian Maurer   v. 171217 - license see µU.go
+// (c) Christian Maurer   v. 220713 - license see µU.go
 
 import
   "time"
@@ -59,8 +59,8 @@ func uDate() (uint, uint, uint) {
   return uint(t.Day()), uint(t.Month()), uint(t.Year())
 }
 
-func sSU() (s uint, us uint64) {
+func sSU() (s, us uint) {
   t := time.Now()
-  s, us = uint(t.Unix()), uint64(t.UnixNano())
+  s, us = uint(t.Unix()), uint(t.UnixNano())
   return
 }

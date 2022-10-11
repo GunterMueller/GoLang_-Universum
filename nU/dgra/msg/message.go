@@ -1,6 +1,6 @@
 package msg
 
-// (c) Christian Maurer   v. 190402 - license see µU.go
+// (c) Christian Maurer   v. 220801 - license see µU.go
 
 import (
   . "nU/obj"
@@ -19,7 +19,7 @@ func new_() Message {
   return x
 }
 
-func (x *message) imp (Y Any) *message {
+func (x *message) imp (Y any) *message {
   y, _ := Y.(*message)
   return y
 }
@@ -48,18 +48,18 @@ func (x *message) String() string {
   return "NTypes"
 }
 
-func (x *message) Eq (Y Any) bool {
+func (x *message) Eq (Y any) bool {
   y := x.imp(Y)
   return x.byte == y.byte && x.s.Eq (y.s)
 }
 
-func (x *message) Copy (Y Any) {
+func (x *message) Copy (Y any) {
   y := x.imp(Y)
   x.byte = y.byte
   x.s.Copy (y.s)
 }
 
-func (x *message) Clone() Any {
+func (x *message) Clone() any {
   y := new_()
   y.Set (x.byte, x.s)
   return y

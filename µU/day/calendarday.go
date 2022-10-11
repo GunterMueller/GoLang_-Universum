@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220804 - license see µU.go
 
 import (
   . "µU/ker"
@@ -918,6 +918,10 @@ func (x *calendarday) SetFormat (f Format) {
 
 func (x *calendarday) Colours (f, b col.Colour) {
   x.cF, x.cB = f, b
+}
+
+func (x *calendarday) Cols() (col.Colour, col.Colour) {
+  return x.cF, x.cB
 }
 
 func (x *calendarday) Weeknumber() uint {

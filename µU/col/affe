@@ -1,1 +1,9 @@
-func MiddleRed() Colour        { return new3n ("MiddleRed",       153,   0,   0) }
+
+func headF() Colour            { return LightWhite() }
+func headB() Colour            { return Blue() }
+func hintF() Colour            { return LightWhite() }
+func hintB() Colour            { return Magenta() }
+func errorF() Colour           { return FlashYellow() }
+func errorB() Colour           { return Red() }
+func menuF() Colour            { return LightWhite() }
+func menuB() Colour            { return Red() }

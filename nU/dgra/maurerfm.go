@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171127 - license see nsp.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import (. "nU/obj"; "nU/vtx"; "nU/fmon")
 
@@ -35,7 +35,7 @@ func (x *distributedGraph) fmMaurer() {
   x.cycle.Write()
 }
 
-func (x *distributedGraph) addMeVertex (a Any, i uint) Any {
+func (x *distributedGraph) addMeVertex (a any, i uint) any {
   x.awaitAllMonitors()
   bs := a.(Stream)
   x.cycle = x.decodedGraph(bs)

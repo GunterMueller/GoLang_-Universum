@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 211216 - license see µU.go
+// (c) Christian Maurer   v. 220828 - license see µU.go
 
 import
   . "µU/obj"
@@ -45,7 +45,7 @@ const (// Types of entries in the file system tree:
 func ActualPath() string { return actualPath() }
 
 // Returns the actual directory.
-func ActualDir () string { return actualDir() }
+func ActualDir() string { return actualDir() }
 
 // Returns the string denoting the type t
 // (e.g. "dir" for DIR, "files" for File etc.)
@@ -80,7 +80,7 @@ func Cds() { cds() }
 
 // Pre: d is a name of a directory entry.
 //      The calling process has the necessary access rights.
-// d ist now contained as subdirectory of the actual directory
+// d is now contained as subdirectory of the actual directory
 // in the file system tree.
 func Sub (d string) { sub(d) }
 
@@ -101,7 +101,7 @@ func Ins (p, d string) bool { return ins(p,d) }
 // The actual path of the calling process is not changed.
 func Del (p, n string) bool { return del(p,n) }
 
-// Pre: f is a file and d a subdirectory in the actual directory.
+// Pre: f is an existing file and d is an existing directory.
 // f is moved into d.
 func Move (f, d string) { move(f,d) }
 

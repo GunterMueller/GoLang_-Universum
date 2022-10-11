@@ -1,6 +1,6 @@
 package addr
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221003 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,10 +9,9 @@ import (
 type
   Address interface {
 
-  Object
-  col.Colourer
   TeXer
   Editor
+  col.Colourer
   Printer
 
 // Pre: y is of type Address.

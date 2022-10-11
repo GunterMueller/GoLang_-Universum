@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 210123 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
@@ -29,9 +29,9 @@ func New (n uint) Vertex { return new_(n) }
 // Vor.: v implementiert Vertex.
 // v ist an seiner Position ausgegeben,
 // für a == true in Rot, sonst in Weiß.
-func W (v Any, a bool) { w(v,a) }
+func W (v any, a bool) { w(v,a) }
 
 // Vor.: v und v0 implementieren Vertex.
 // Die Positionen von v und v0 sind durch eine Linie
 // verbunden, für a == true in Rot, sonst in Weiß.
-func W2 (v, v1 Any, a bool) { w2(v,v1,a) }
+func W2 (v, v1 any, a bool) { w2(v,v1,a) }

@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 220524 - license see µU.go
+// (c) Christian Maurer   v. 221003 - license see µU.go
 
 import (
   "µU/rand"
@@ -17,7 +17,7 @@ type
   text struct {
               uint "length of string"
               string
-       cF, cB col.Colour
+         f, b col.Colour
               font.Font
               font.Size
               }
@@ -29,11 +29,10 @@ var (
 )
 
 func new_(n uint) Text {
-  if n == 0 { return nil }
   x := new (text)
   x.uint = n
   x.string = str.New (n)
-  x.cF, x.cB = col.StartCols()
+  x.f, x.b = col.StartCols()
   x.Font = font.Roman
   x.Size = font.Normal
   return x
@@ -105,8 +104,12 @@ func (x *text) Clr() {
 
 func (x *text) Copy (Y any) {
   y := x.imp (Y)
+  x.uint = y.uint
   x.string = y.string
-  x.cF, x.cB = y.cF, y.cB
+  x.f.Copy (y.f)
+  x.b.Copy (y.b)
+  x.Font = y.Font
+  x.Size = y.Size
 }
 
 func (x *text) Clone() any {
@@ -143,22 +146,22 @@ func (x *text) String() string {
 }
 
 func (x *text) TeX() string {
-  t := x.string
-  if ! str.DevilsDung (t) {
-    t = str.UTF8 (t)
-  }
-  str.OffSpc1 (&t)
-  return t
+  return str.TeX (x.string)
 }
 
 func (x *text) Colours (f, b col.Colour) {
-  x.cF, x.cB = f, b
+  x.f.Copy (f)
+  x.b.Copy (b)
+}
+
+func (x *text) Cols() (col.Colour, col.Colour) {
+  return x.f, x.b
 }
 
 func (x *text) Write (l, c uint) {
   scr.SetFont (x.Font)
   bx.Wd (x.uint)
-  bx.Colours (x.cF, x.cB)
+  bx.Colours (x.f, x.b)
   bx.Write (x.string, l, c)
 }
 
@@ -289,7 +292,7 @@ func (x *text) ToLower0() {
 
 func (t *text) WriteGr (x, y int) {
   bx.Wd (t.uint)
-  bx.Colours (t.cF, t.cB)
+  bx.Colours (t.f, t.b)
   bx.WriteGr (t.string, x, y)
 }
 

@@ -1,6 +1,6 @@
 package reg
 
-// (c) Christian Maurer   v. 210512 - license see µUu.go
+// (c) Christian Maurer   v. 210512 - license see µU.go
 
 type
   Register interface { // Registers with integer values.

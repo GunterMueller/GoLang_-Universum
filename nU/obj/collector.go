@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 170116 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 // Collections of elements of type object or of variables of
 // a concrete atomic type (bool, [u]int.., float.., string, ...).
@@ -43,7 +43,7 @@ type
 //   So x is now still ordered w.r.t. r.
 // In both cases all other elements and their order in x
 // and the actual element in x are not influenced.
-  Ins (a Any)
+  Ins (a any)
 
 // If f and if the actual element of x was defined, then
 // the actual element is now the element behind the former actual
@@ -63,7 +63,7 @@ type
   Eoc (f bool) bool
 
 // Returns a copy of the actual element of x, if that is defined; nil otherwise.
-  Get () Any
+  Get () any
 
 // Pre: a has the type of the elements in x. 
 // If x is not ordered:
@@ -74,19 +74,19 @@ type
 //   If x was empty, a copy of a is now the only element in x.
 //   Otherwise, the actual element in x is deleted and a is inserted into x
 //   where the order of x is preserved.
-  Put (a Any)
+  Put (a any)
 
 // Returns nil, if the actual element of x is not undefined,
 // otherwise, the actual element and that was removed from x,
 // and the actual element is now the element after it,
 // if the former actual element was not the last element of x.
 // In that case the actual element of x is now undefined.
-  Del () Any
+  Del () any
 
 // Returns true, iff a is contained in x. In that case
 // case the first such element is the actual element of x;
 // otherwise, the actual element is the same as before.
-  Ex (a Any) bool
+  Ex (a any) bool
 
 // Pre: If x is ordered, o is strongly monotone with respect
 //      to that order, i.e. x < y implies o(x) < o(y) 

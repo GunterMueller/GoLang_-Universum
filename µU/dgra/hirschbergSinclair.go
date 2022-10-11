@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 200728 - license see µU.go
+// (c) Christian Maurer   v. 220816 - license see µU.go
 //
 // >>> D.S. Hirschberg, J. B. Sinclair: Decentralized Extrema-Finding in
 //     Circular Configuations of Processes. CACM 23 (1980), 627 - 628
@@ -16,7 +16,7 @@ const (
 )
 
 func (x *distributedGraph) hirschbergSinclair() {
-  x.connect (internal.New())
+  x.connect (msg.New())
   defer x.fin()
   status := candidate
   maxnum := uint(1)
@@ -28,43 +28,43 @@ func (x *distributedGraph) hirschbergSinclair() {
     go func (j uint) {
       loop:
       for {
-        msg := x.ch[j].Recv().(internal.Message)
+        message := x.ch[j].Recv().(msg.Message)
         mutex.Lock()
-        id, num, maxnum, ok := msg.IdNumsOk()
-        switch msg.Kind() {
-        case internal.Candidate:
+        id, num, maxnum, ok := message.IdNumsOk()
+        switch message.Kind() {
+        case msg.Candidate:
           if id < x.me {
-            msg.SetReply (false)
-//            x.ch[j].Send (msg)
-            x.send (j, msg)
+            message.SetReply (false)
+//            x.ch[j].Send (message)
+            x.send (j, message)
           } else if id > x.me {
             status = lost
             num++
             if num < maxnum {
-              msg.SetPass (id, num, maxnum)
-//              x.ch[1 - j].Send (msg)
-              x.send (1 - j, msg)
+              message.SetPass (id, num, maxnum)
+//              x.ch[1 - j].Send (message)
+              x.send (1 - j, message)
             } else { // num >= maxnum
-              msg.SetReply (true)
+              message.SetReply (true)
 //              x.ch[j].Send (msg)
-              x.send (j, msg)
+              x.send (j, message)
             }
           } else { // id == x.me
             x.leader = x.me
             status = won
-            msg.SetLeader (x.me)
-//            x.ch[1 - j].Send (msg)
-            x.send (1 - j, msg)
+            message.SetLeader (x.me)
+//            x.ch[1 - j].Send (message)
+            x.send (1 - j, message)
           }
-        case internal.Reply:
+        case msg.Reply:
           if id == x.me {
             replyOk = replyOk && ok
             gotReply <- j
           } else { // id != x.me
-//            x.ch[1 - j].Send (msg) // pass msg
-            x.send (1 - j, msg) // pass msg
+//            x.ch[1 - j].Send (message) // pass msg
+            x.send (1 - j, message) // pass msg
           }
-        case internal.Leader:
+        case msg.Leader:
           if id == x.me {
             gotReply <- j // trick to force termination
             done <- 0
@@ -72,9 +72,9 @@ func (x *distributedGraph) hirschbergSinclair() {
             break loop
           } else {
             status = lost
-            msg.SetLeader (id)
-//            x.ch[1 - j].Send (msg)
-            x.send (1 - j, msg)
+            message.SetLeader (id)
+//            x.ch[1 - j].Send (message)
+            x.send (1 - j, message)
             x.leader = id
             done <- 0
             mutex.Unlock()
@@ -87,12 +87,12 @@ func (x *distributedGraph) hirschbergSinclair() {
   }
   for status == candidate {
     replyOk = true
-    msg := internal.New()
-    msg.SetPass (x.me, 0, maxnum)
-//    x.ch[0].Send (msg)
-    x.send (0, msg)
-//    x.ch[1].Send (msg)
-    x.send (1, msg)
+    message := msg.New()
+    message.SetPass (x.me, 0, maxnum)
+//    x.ch[0].Send (message)
+    x.send (0, message)
+//    x.ch[1].Send (message)
+    x.send (1, message)
     <-gotReply; <-gotReply // await 2 responses
     if ! replyOk {
       status = lost

@@ -1,8 +1,8 @@
 package lr
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/fmon")
+import "nU/fmon"
 
 type farMonitor struct {
   fmon.FarMonitor
@@ -11,7 +11,7 @@ type farMonitor struct {
 func newFMon (h string, port uint16, s bool) LeftRight {
   var nL, nR uint
   x := new(farMonitor)
-  p := func (a Any, i uint) bool {
+  p := func (a any, i uint) bool {
          switch i {
          case leftIn:
            return nR == 0
@@ -20,7 +20,7 @@ func newFMon (h string, port uint16, s bool) LeftRight {
          }
          return true // leftOut, rightOut
        }
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          switch i {
          case leftIn:
            nL++

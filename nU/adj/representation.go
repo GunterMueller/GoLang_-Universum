@@ -1,22 +1,22 @@
 package adj
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
 type (
   pair struct {
        vertex,
-         edge Any
+         edge any
               }
   adjacencyMatrix struct {
                          uint "number of rows/columns"
-                    v, e Any // pattern vertex and edge
+                    v, e any // pattern vertex and edge
                    entry [][]pair
                          }
 )
 
-func new_(n uint, v, e Any) AdjacencyMatrix {
+func new_(n uint, v, e any) AdjacencyMatrix {
   CheckAtomicOrObject (v)
   CheckUintOrValuator (e)
   x := new(adjacencyMatrix)

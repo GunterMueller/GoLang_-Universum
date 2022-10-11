@@ -1,6 +1,6 @@
 package internal
 
-// (c) Christian Maurer   v. 201011 - license see µU.go
+// (c) Christian Maurer   v. 220715 - license see µU.go
 
 import (
   "os"
@@ -23,7 +23,7 @@ type
          file *os.File
        exists bool
        offset,
-    endoffset uint64
+    endoffset uint
        isOpen bool
               error
               }
@@ -62,10 +62,10 @@ func accessible (N string, a accesses) bool {
 }
 */
 
-func directLength (N string) uint64 {
+func directLength (N string) uint {
   fi, err := os.Stat (N)
   if err == nil {
-    return uint64(fi.Size())
+    return uint(fi.Size())
   }
   return 0
 }
@@ -102,7 +102,7 @@ func (f *file) Name (N string) {
 //    if fi.Permission() != rights { errh.Error0(N + " has no rights"); Fin(); Exit (1) } // nothing goes
     f.file, f.error = os.OpenFile (N, os.O_RDWR, rights)
     if f.error == nil {
-      f.endoffset = uint64(fi.Size())
+      f.endoffset = uint(fi.Size())
       _ = f.file.Close()
     } else {
       f.file = nil
@@ -154,15 +154,15 @@ func (f *file) Clr() {
   f.open()
 }
 
-func (f *file) Length() uint64 {
+func (f *file) Length() uint {
   return f.endoffset
 }
 
-func (f *file) Seek (i uint64) {
+func (f *file) Seek (i uint) {
   f.offset = i
 }
 
-func (f *file) Position() uint64 {
+func (f *file) Position() uint {
   return f.offset
 }
 
@@ -179,7 +179,7 @@ func (f *file) Read (s Stream) (int, error) {
   f.open()
   r := len(s)
   r, f.error = f.file.ReadAt (s, int64 (f.offset))
-  f.offset += uint64(r)
+  f.offset += uint(r)
   return r, f.error
 }
 
@@ -187,7 +187,7 @@ func (f *file) Write (s Stream) (int, error) {
   f.open()
   w := len (s)
   w, f.error = f.file.WriteAt (s, int64 (f.offset))
-  f.offset += uint64(w)
+  f.offset += uint(w)
   if f.offset > f.endoffset { f.endoffset = f.offset }
   return w, f.error
 }

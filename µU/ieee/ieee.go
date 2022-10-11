@@ -1,6 +1,6 @@
 package ieee
 
-// (c) Christian Maurer   v. 201204 - license see µU.go
+// (c) Christian Maurer   v. 220809 - license see µU.go
 
 import (
   "unsafe"
@@ -31,7 +31,7 @@ func dual (n uint) string {
 
 func (x *ieee) SetFloat64 (f float64) {
   x.float64 = f
-  p := uint(*(*uint64)(unsafe.Pointer (&f)))
+  p := uint(*(*uint)(unsafe.Pointer (&f)))
   s := dual(p)
   for len(s) < M { s = "0" + s }
   if f < 0 { s = "1" + s[1:] }

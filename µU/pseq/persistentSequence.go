@@ -1,6 +1,6 @@
 package pseq
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220715 - license see µU.go
 //
 //  >  The following problem is not yet solved: Access to psequences
 //     is only possible, if the rights are set correspondingly.
@@ -24,13 +24,13 @@ type
                      any "pattern object"
               object any
                 file internal.File
-        owner, group uint
-      size, pos, num uint64
+        owner, group,
+      size, pos, num uint
            buf, buf1 Stream
                      }
 const (
-  null = uint64(0)
-  one  = uint64(1)
+  null = uint(0)
+  one  = uint(1)
 )
 var
   wasRead, wasWritten int
@@ -42,7 +42,7 @@ func (x *persistentSequence) read (bs Stream) {
 
 func (x *persistentSequence) write (bs Stream) {
   w, _ := x.file.Write (bs[:x.size])
-  if uint64(w) < x.size {
+  if uint(w) < x.size {
     wasWritten = w
   }
 }
@@ -62,7 +62,7 @@ func new_(a any) PersistentSequence {
   x.any = Clone(a)
   x.object = Clone(a)
   x.num = null
-  x.size = uint64(Codelen(a))
+  x.size = Codelen(a)
   x.file = internal.New()
   x.buf = make (Stream, x.size)
   x.buf1 = make (Stream, x.size)
@@ -99,7 +99,11 @@ func (x *persistentSequence) Name (n string) {
   x.file.Name (x.name)
 //    $USER 
   x.pos = 0
-  x.num = x.file.Length() / x.size
+  if x.file.Empty() {
+    x.num = 0
+  } else {
+    x.num = x.file.Length() / x.size
+  }
   x.tmpName = x.name + "-tmp"
 //  tmpName.Temporieren()
 }
@@ -183,7 +187,7 @@ func (x *persistentSequence) Step (forward bool) {
 }
 
 func (x *persistentSequence) Seek (n uint) {
-  x.pos = uint64(n)
+  x.pos = n
 }
 
 func (x *persistentSequence) Jump (forward bool) {
@@ -212,7 +216,8 @@ func (x *persistentSequence) Pos() uint {
 func (x *persistentSequence) Get() any {
   x.file.Seek (x.pos * x.size)
   x.read (x.buf)
-  return Clone (Decode (x.object, x.buf))
+//  return Clone (Decode (x.object, x.buf))
+  return Decode (x.object, x.buf)
 }
 
 func (x *persistentSequence) Put (a any) {
@@ -308,7 +313,7 @@ func (x *persistentSequence) Del() any {
   if x.num + 1 != n {
     errh.Error2 ("what to devil", uint(x.num + 1), "is here loose", uint(n))
   }
-  if x.num != uint64(x.Num()) { Panic ("pseq.Del: num bug") }
+  if x.num != x.Num() { Panic ("pseq.Del: num bug") }
   return a
 }
 
@@ -369,13 +374,13 @@ func (x *persistentSequence) ExGeq (a any) bool {
 }
 
 func (x *persistentSequence) Trav (op Op) {
-  if x.num != uint64(x.Num()) { Panic ("pseq.Trav: num bug") }
+  if x.num != x.Num() { Panic ("pseq.Trav: num bug") }
   b := x.file.Length() == 0
   if b { if x.num != 0 || ! x.Empty() { Panic ("pseq.Trav: oops") } }
   x.file.Seek (0)
   for i := null; i < x.num; i++ {
     x.read (x.buf)
-    if uint64(wasRead) < x.size {
+    if uint(wasRead) < x.size {
       copy (x.buf, Encode (x.any)) // provisorial
     }
     x.object = Decode (Clone (x.any), x.buf)
@@ -406,8 +411,8 @@ func (x *persistentSequence) Filter (Y Collector, p Pred) {
     }
   }
   y.file.Fin()
-  if x.num != uint64(x.Num()) { Panic ("pseq.Filter: x.num bug") }
-  if y.num != uint64(y.Num()) { Panic ("pseq.Filter: y.num bug") }
+  if x.num != x.Num() { Panic ("pseq.Filter: x.num bug") }
+  if y.num != y.Num() { Panic ("pseq.Filter: y.num bug") }
 }
 
 func (x *persistentSequence) Cut (Y Collector, p Pred) {
@@ -436,8 +441,8 @@ func (x *persistentSequence) Cut (Y Collector, p Pred) {
   x1.Fin()
   x.file.Name (x.name)
   y.file.Fin()
-  if x.num != uint64(x.Num()) { Panic ("pseq.Cut: x.num bug") }
-  if y.num != uint64(y.Num()) { Panic ("pseq.Cut: y.num bug") }
+  if x.num != x.Num() { Panic ("pseq.Cut: x.num bug") }
+  if y.num != y.Num() { Panic ("pseq.Cut: y.num bug") }
 }
 /*/
 

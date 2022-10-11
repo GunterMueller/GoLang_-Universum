@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   . "µU/obj"
@@ -19,9 +19,8 @@ const ( // Format
 type
   Person interface {
 
-  Object
-  col.Colourer
   Editor
+  col.Colourer
   Formatter
   TeXer
   Printer

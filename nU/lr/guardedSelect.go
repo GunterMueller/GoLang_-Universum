@@ -1,17 +1,17 @@
 package lr
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
 type guardedSelect struct {
-  inL, outL, inR, outR chan Any
+  inL, outL, inR, outR chan any
 }
 
 func newGS() LeftRight {
   x := new(guardedSelect)
-  x.inL, x.outL = make(chan Any), make(chan Any)
-  x.inR, x.outR = make(chan Any), make(chan Any)
+  x.inL, x.outL = make(chan any), make(chan any)
+  x.inR, x.outR = make(chan any), make(chan any)
   go func() {
     var nL, nR uint
     for {

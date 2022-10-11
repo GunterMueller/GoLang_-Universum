@@ -1,15 +1,15 @@
 package mbbuf
 
-// (c) Christian Maurer   v. 171106 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/bbuf"; "nU/sem")
+import ("nU/bbuf"; "nU/sem")
 
 type mBuffer1 struct {
   bbuf.BoundedBuffer
   notEmpty, notFull, ins, get sem.Semaphore
 }
 
-func new1 (a Any, n uint) MBoundedBuffer {
+func new1 (a any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }
   x := new(mBuffer1)
   x.BoundedBuffer = bbuf.New (a, n)
@@ -18,7 +18,7 @@ func new1 (a Any, n uint) MBoundedBuffer {
   return x
 }
 
-func (x *mBuffer1) Ins (a Any) {
+func (x *mBuffer1) Ins (a any) {
   x.notFull.P()
   x.ins.P()
   x.BoundedBuffer.Ins (a)
@@ -26,7 +26,7 @@ func (x *mBuffer1) Ins (a Any) {
   x.notEmpty.V()
 }
 
-func (x *mBuffer1) Get() Any {
+func (x *mBuffer1) Get() any {
   x.notEmpty.P()
   x.get.P()
   a := x.BoundedBuffer.Get()

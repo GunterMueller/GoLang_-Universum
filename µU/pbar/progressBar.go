@@ -1,6 +1,6 @@
 package pbar
 
-// (c) Christian Maurer   v. 220124 - license see µU.go
+// (c) Christian Maurer   v. 220804 - license see µU.go
 
 import (
   "µU/col"
@@ -79,8 +79,11 @@ func (B *progressBar) Filldegree() uint {
 }
 
 func (B *progressBar) Colours (f, b col.Colour) {
-  B.cF = f
-  B.cB = b
+  B.cF, B.cB = f, b
+}
+
+func (B *progressBar) Cols() (col.Colour, col.Colour) {
+  return B.cF, B.cB
 }
 
 func (B *progressBar) Write() {

@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220809 - license see µU.go
 
 import (
   . "µU/obj"
@@ -48,7 +48,9 @@ func new3n (n string, r, g, b byte) Colour {
 
 func (c *colour) imp (Y any) *colour {
   y, ok := Y.(*colour)
-  if ! ok { TypeNotEqPanic(c, Y) }
+  if ! ok {
+    TypeNotEqPanic(c, Y)
+  }
   return y
 }
 
@@ -119,6 +121,7 @@ func (c *colour) Less (Y any) bool {
 
 func (c *colour) Copy (Y any) {
   y := c.imp(Y)
+  c.string = y.string
   c.r, c.g, c.b = y.r, y.g, y.b
 }
 
@@ -145,7 +148,15 @@ func random() Colour {
 }
 
 func startCols() (Colour, Colour) {
-  return White(), Black()
+  return LightWhite(), Black()
+}
+
+func startColF() Colour {
+  return LightWhite()
+}
+
+func startColB() Colour {
+  return LightWhite()
 }
 
 func startColsA() (Colour, Colour) {
@@ -239,11 +250,7 @@ func (c *colour) EncodeInv() Stream {
 }
 
 func (c *colour) Decode (s Stream) {
-  if len(s) == 3 {
-    c.r, c.g, c.b = s[0], s[1], s[2]
-  } else {
-    c = LightWhite().(*colour)
-  }
+  c.r, c.g, c.b = s[0], s[1], s[2]
 }
 
 /*/
@@ -255,3 +262,12 @@ func depth() uint {
 func (c *colour) Code() uint {
   return (uint(c.r) << 8 + uint(c.g)) << 8 + uint(c.b)
 }
+
+func headF() Colour { return LightWhite() }
+func headB() Colour { return Blue() }
+func hintF() Colour { return LightWhite() }
+func hintB() Colour { return Magenta() }
+func errorF() Colour { return FlashYellow() }
+func errorB() Colour { return Red() }
+func menuF() Colour { return LightWhite() }
+func menuB() Colour { return Red() }

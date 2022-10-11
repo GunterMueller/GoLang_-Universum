@@ -1,6 +1,6 @@
 package li
 
-// (c) Christian Maurer   v. 211106 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,9 +9,8 @@ import (
 type
   LongInteger interface {
 
-  Object
-  col.Colourer
   Editor
+  col.Colourer
   Geq0() bool
   Stringer
   Printer

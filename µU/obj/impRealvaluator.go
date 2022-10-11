@@ -70,6 +70,6 @@ func setRealVal (a *any, r float64) {
   case RealValuator:
     (*a).(RealValuator).SetRealVal(r)
   default:
-    ker.Panic(reflect.TypeOf(*a).String() + " has no number-type nor implements RealValuator")
+    ker.Panic (reflect.TypeOf(*a).String() + " has no number-type nor implements RealValuator")
   }
 }

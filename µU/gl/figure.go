@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 210228 - license see µU.go
+// (c) Christian Maurer   v. 220827 - license see µU.go
 
 import (
   "math"
@@ -46,12 +46,14 @@ func point (x []float64) {
 }
 
 func line1 (x []float64) {
+  for i := 0; i < 6; i++ { if math.IsNaN(x[i]) { return } }
   vertex (x[0], x[1], x[2])
   vertex (x[3], x[4], x[5])
 }
 
 func line (x []float64) {
   if len(x) != 6 { fail() }
+  for i := 0; i < 6; i++ { if math.IsNaN(x[i]) { return } }
   begin (Lines)
   vertex (x[0], x[1], x[2])
   vertex (x[3], x[4], x[5])

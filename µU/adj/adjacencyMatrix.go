@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220804 - license see µU.go
 
 import (
   "µU/ker"
@@ -99,6 +99,10 @@ func (x *adjacencyMatrix) Full() bool {
 
 func (x *adjacencyMatrix) Colours (f, g col.Colour) {
   x.cF, x.cB = f, g
+}
+
+func (x *adjacencyMatrix) Cols() (col.Colour, col.Colour) {
+  return x.cF, x.cB
 }
 
 func (x *adjacencyMatrix) Write (l, c uint) {

@@ -1,19 +1,19 @@
 package bbuf
 
-// (c) Christian Maurer   v. 171106 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
 type boundedBuffer0 struct {
-  Any
+  any
   num int
   cap, in, out uint
   content AnyStream
 }
 
-func new0(a Any, n uint) BoundedBuffer {
+func new0(a any, n uint) BoundedBuffer {
   x := new(boundedBuffer0)
-  x.Any = Clone(a)
+  x.any = Clone(a)
   x.cap = n
   x.content = make (AnyStream, x.cap)
   return x
@@ -31,20 +31,20 @@ func (x *boundedBuffer0) Full() bool {
   return x.num == int(x.cap - 1)
 }
 
-func (x *boundedBuffer0) Ins (a Any) {
+func (x *boundedBuffer0) Ins (a any) {
   if x.Full() { return }
-  CheckTypeEq (a, x.Any)
+  CheckTypeEq (a, x.any)
   x.content[x.in] = Clone (a)
   x.in = (x.in + 1) % x.cap
   x.num++
 }
 
-func (x *boundedBuffer0) Get() Any {
+func (x *boundedBuffer0) Get() any {
   if x.Empty() {
-    return x.Any
+    return x.any
   }
   a := Clone (x.content[x.out])
-  x.content[x.out] = Clone (x.Any)
+  x.content[x.out] = Clone (x.any)
   x.out = (x.out + 1) % x.cap
   x.num--
   return a

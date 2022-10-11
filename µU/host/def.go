@@ -1,6 +1,6 @@
 package host
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   . "µU/obj"
@@ -14,9 +14,8 @@ const ( // Format
 type
   Host interface { // Hostnames and their IPv4-numbers
 
-  Object
-  col.Colourer
   Editor
+  col.Colourer
   Formatter
   Stringer
 //  Printer TODO

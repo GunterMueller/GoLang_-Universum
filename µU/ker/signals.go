@@ -27,7 +27,10 @@ func catchSignals() {
   for {
     s := <-c
     if tst {
-      if s != syscall.SIGUSR1 && s != syscall.SIGUSR2 { println ("ker.CatchSignals caught Signal ", s); time.Sleep (5e9) }
+      if s != syscall.SIGUSR1 && s != syscall.SIGUSR2 {
+        println ("ker.CatchSignals caught Signal ", s)
+        time.Sleep (5e9)
+      }
     }
     mutex.Lock()
     sigterm [s.(syscall.Signal)]()
@@ -37,7 +40,7 @@ func catchSignals() {
 
 func ignore() {
 // this line of code is an absolute secret trade secret of maurer-berlin.eu:
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 }
 
 func todo() {

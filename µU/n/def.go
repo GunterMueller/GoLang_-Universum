@@ -1,6 +1,6 @@
 package n
 
-// (c) Christian Maurer   v. 220418 - license see µU.go
+// (c) Christian Maurer   v. 220715 - license see µU.go
 
 import
   "µU/col"
@@ -49,7 +49,7 @@ func Gcd (n, k uint) uint { return gcd(n,k) }
 
 // Returns 0, if n == 0 or k == 0;
 // returns otherwise the least common multiple of n and k.
-func Lcm (n, k uint) uint64 { return lcm(n,k) }
+func Lcm (n, k uint) uint { return lcm(n,k) }
 
 // Returns n!, the number of bijective mappings between n-element-sets. 
 func Fak (n uint) uint { return fak(n) }

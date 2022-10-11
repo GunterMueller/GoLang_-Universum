@@ -1,11 +1,12 @@
 package scr
 
-// (c) Christian Maurer   v. 171217 - license see µU.go
+// (c) Christian Maurer   v. 220809 - license see µU.go
 
 import (
   "µU/time"
   "µU/rand"
   "µU/col"
+  "µU/str"
   "µU/scr"
 )
 const (
@@ -23,11 +24,11 @@ func drawCustomer (column uint, veryHairy bool, F col.Colour) {
   if veryHairy {
     scr.ColourF (F)
     scr.Write (" w ", line, column)
-    scr.Write (" § ", line + 1, column)
+    scr.Write ("=@;", line + 1, column)
   } else {
     scr.ColourF (col.LightGreen())
     scr.Write ("   ", line, column)
-    scr.Write (" ö ", line + 1, column)
+    scr.Write (str.Lat1(" ö "), line + 1, column)
   }
   scr.Write ("/O\\", line + 2, column)
   scr.Write ("|=|", line + 3, column)
@@ -50,7 +51,7 @@ func w() {
 func cut () {
   scr.Lock(); defer scr.Unlock()
   scr.ColourF (col.LightOrange())
-  scr.Write ("ö   ", line    , columnB - 4)
+  scr.Write (str.Lat1("ö   "), line    , columnB - 4)
   scr.Write ("O=8<", line + 1, columnB - 4)
   scr.Write ("|   ", line + 2, columnB - 4)
   scr.Write ("|_  ", line + 3, columnB - 4)
@@ -58,7 +59,7 @@ func cut () {
   scr.Write (  "8<", line + 1, columnB - 2)
   w()
   scr.ColourF (col.LightOrange())
-  scr.Write ("ö 8<", line    , columnB - 4)
+  scr.Write (str.Lat1("ö 8<"), line    , columnB - 4)
   scr.Write ("O/  ", line + 1, columnB - 4)
   scr.Write ("|\\  ",line + 2, columnB - 4)
   scr.Write ("||_ ", line + 3, columnB - 4)
@@ -67,7 +68,7 @@ func cut () {
   w()
   scr.Clr (line, columnB - 4, 4, 4)
   scr.ColourF (col.LightOrange())
-  scr.Write (">8 ö", line    , columnB + 3)
+  scr.Write (str.Lat1(">8 ö"), line    , columnB + 3)
   scr.Write ("  \\O",line + 1, columnB + 3)
   scr.Write ("   |", line + 2, columnB + 3)
   scr.Write ("  _|", line + 3, columnB + 3)
@@ -75,7 +76,7 @@ func cut () {
   scr.Write (">8"    , line    , columnB + 3)
   w()
   scr.ColourF (col.LightOrange())
-  scr.Write ("   ö", line    , columnB + 3)
+  scr.Write (str.Lat1("   ö"), line    , columnB + 3)
   scr.Write (">8=O", line + 1, columnB + 3)
   scr.Write ("  /|", line + 2, columnB + 3)
   scr.Write (" _||", line + 3, columnB + 3)
@@ -88,13 +89,13 @@ func cut () {
 func getNextCustomer() {
   barberSleeping = false
   drawCustomer (columnC + 4 * K, true, col.Black())
-  K ++
+  K++
   if K == 10 { K = 0 }
   time.Sleep (1)
   drawCustomer (columnB, true, col.LightGreen())
-  for i:= 0; i <= 15; i++ { cut () }
+  for i:= 0; i <= 10; i++ { cut () }
   drawCustomer (columnB, false, col.LightGreen())
-  time.Sleep (2)
+  time.Sleep (3)
   drawCustomer (columnB, true, col.Black())
   barberSleeping = true
 }

@@ -1,13 +1,13 @@
 package gra
 
-// (c) Christian Maurer   v. 171127 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
 /*    vertex           neighbour                        neighbour            vertex
    ___________                                                            ___________ 
   /           \         /----------------------------------------------->/           \
-  |    Any    |        /                                                 |    Any    |
+  |    any    |        /                                                 |    any    |
   |___________|<--------------------------------------------------\      |___________|
   |           |      /                                             \     |           |
   |   nbPtr---|-----------\                                  /-----------|---nbPtr   |
@@ -16,7 +16,7 @@ import . "nU/obj"
   |   bool    |   |        v              edge              V         |  |   bool    |
   |___________|   |   ___________      __________      ___________    |  |___________|
   |           |   |  /           \    /          \    /           \   |  |           |
-  |   dist    |   |  | edgePtr---|--->|   Any    |<---|--edgePtr  |   |  |   dist    |
+  |   dist    |   |  | edgePtr---|--->|   any    |<---|--edgePtr  |   |  |   dist    |
   |_____ _____|   |  |___________|    |__________|    |___________|   |  |_____ _____|
   |           |   |  |           |    |          |    |           |   |  |           |
   |predecessor|<-----|---from    |<---|--nbPtr0  |    |   from----|----->|predecessor|
@@ -35,12 +35,12 @@ import . "nU/obj"
                      \___________/    \__________/    \___________/
 
 The vertices of a graph are represented by structs,
-whose field "Any" represents the "real" vertex.
+whose field "any" represents the "real" vertex.
 All vertices are connected in a doubly linked list with anchor cell,
 that can be traversed to execute some operation on all vertices of the graph.
 
 The edges are also represented by structs,
-whose field "Any" is a variable of a type that implements Valuator.
+whose field "any" is a variable of a type that implements Valuator.
 Also all edges are connected in a doubly linked list with anchor cell.
 
 For a vertex v one finds all outgoing and incoming edges
@@ -55,7 +55,7 @@ For an edge e one finds its two vertices by the links
   e.nbPtr0.from = e.nbPtr1.to und e.nbPtr0.to = e.nbPtr1.from. */
 
 type vertex struct {
-  Any "content of the vertex"
+  any "content of the vertex"
   nbPtr *neighbour
   bool "marked"
   dist uint32
@@ -66,7 +66,7 @@ type vCell struct {
   next *vCell
 }
 type edge struct {
-  Any "attribute of the edge"
+  any "attribute of the edge"
   nbPtr0, nbPtr1 *neighbour
   bool "marked"
   nextE, prevE *edge
@@ -85,14 +85,14 @@ type graph struct {
   write CondOp
   write2 CondOp2
 }
-func newVertex (a Any) *vertex {
+func newVertex (a any) *vertex {
   v := new(vertex)
-  v.Any = Clone(a)
+  v.any = Clone(a)
   v.nextV, v.prevV = v, v
   return v
 }
 
-func new_(d bool, v, e Any) Graph {
+func new_(d bool, v, e any) Graph {
   CheckAtomicOrObject(v)
   x := new (graph)
   x.bool = d
@@ -108,7 +108,7 @@ func new_(d bool, v, e Any) Graph {
   return x
 }
 
-func (x *graph) imp (Y Any) *graph {
+func (x *graph) imp (Y any) *graph {
   y, ok := Y.(*graph)
   if ! ok { TypeNotEqPanic (x, Y) }
   return y

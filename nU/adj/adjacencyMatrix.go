@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 171227 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import (. "nU/obj"; "nU/col"; "nU/scr")
 
@@ -15,13 +15,13 @@ func (x *adjacencyMatrix) Equiv (Y AdjacencyMatrix) bool {
   return true
 }
 
-func (x *adjacencyMatrix) Edge (i, k uint, e Any) {
+func (x *adjacencyMatrix) Edge (i, k uint, e any) {
   if i >= x.uint || k >= x.uint { return }
   CheckTypeEq (e, x.e)
   x.entry[i][k].edge = Clone(e)
 }
 
-func (x *adjacencyMatrix) Vertex (i uint) Any {
+func (x *adjacencyMatrix) Vertex (i uint) any {
   return Clone(x.entry[i][i].vertex)
 }
 
@@ -35,7 +35,7 @@ func (x *adjacencyMatrix) Val (i, k uint) uint {
   return Val(x.entry[i][k].edge)
 }
 
-func (x *adjacencyMatrix) Set (i, k uint, v, e Any) {
+func (x *adjacencyMatrix) Set (i, k uint, v, e any) {
   if i >= x.uint || k >= x.uint { return }
   CheckTypeEq (v, x.v)
   CheckTypeEq (e, x.e)

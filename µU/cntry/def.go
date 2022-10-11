@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 210511 - license see µU.go
+// (c) Christian Maurer   v. 221003 - license see µU.go
 
 import (
   . "µU/obj"
@@ -27,11 +27,11 @@ type
 type
   Country interface {
 
-  Object
-  col.Colourer
   Editor
+  col.Colourer
   Formatter
   Stringer
+  TLD() string
   TeXer
   Printer
 

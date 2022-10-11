@@ -1,6 +1,6 @@
 package box
 
-// (c) Christian Maurer   v. 220524 - license see µU.go
+// (c) Christian Maurer   v. 220804 - license see µU.go
 
 import (
   "µU/char"
@@ -56,6 +56,10 @@ func (x *box) ScrColours() {
 
 func (x *box) Colours (f, b col.Colour) {
   x.cF, x.cB = f, b
+}
+
+func (x *box) Cols() (col.Colour, col.Colour) {
+  return x.cF, x.cB
 }
 
 func (x *box) ColourF (f col.Colour) {
@@ -275,8 +279,6 @@ func (b *box) editText (imGraphikmodus bool, s *string, x, y uint) {
   if b.start > 0 && b.start < b.width {
     b.index = b.start
     b.start = 0
-  } else {
-    b.index = 0
   }
   cf, cb := scr.Cols() // Warp may destroy the colours
   for {
@@ -290,12 +292,7 @@ func (b *box) editText (imGraphikmodus bool, s *string, x, y uint) {
     } else {
       scr.Warp (y / scr.Ht1(), x / scr.Wd1() + b.index, cursorshape)
     }
-    for {
-      c, b.Comm, b.depth = kbd.Read()
-      if b.Comm < kbd.NComms { // kbd.Go {
-        break
-      }
-    }
+    c, b.Comm, b.depth = kbd.Read()
     edited = c != 0
     if b.graphical {
       scr.WarpGr (x + scr.Wd1() * b.index, y, shape.Off)

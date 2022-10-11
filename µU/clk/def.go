@@ -1,6 +1,6 @@
 package clk
 
-// (c) Christian Maurer   v. 171011 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   . "µU/obj"
@@ -16,9 +16,8 @@ const ( // Format
 type
   Clocktime interface { // given by a triple of uints h.m:s with h < 24 and m, s < 60.
 
-  Object
-  col.Colourer
   Editor
+  col.Colourer
   Stringer
   Formatter
   Printer

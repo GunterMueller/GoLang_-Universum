@@ -1,6 +1,6 @@
 package tval
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220804 - license see µU.go
 
 import (
   . "µU/obj"
@@ -122,6 +122,10 @@ func (x *truthValue) String() string {
 
 func (x *truthValue) Colours (f, b col.Colour) {
   x.cF, x.cB = f, b
+}
+
+func (x *truthValue) Cols() (col.Colour, col.Colour) {
+  return x.cF, x.cB
 }
 
 func (x *truthValue) Write (l, c uint) {

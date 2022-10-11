@@ -11,9 +11,8 @@ const
 type
   Euro interface {
 
-  Object
-  col.Colourer
   Editor
+  col.Colourer
   Stringer
   Printer
 

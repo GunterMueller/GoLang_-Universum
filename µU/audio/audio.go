@@ -1,6 +1,6 @@
 package audio
 
-// (c) Christian Maurer   v. 220510 - license see µU.go
+// (c) Christian Maurer   v. 221003 - license see µU.go
 
 import (
   . "µU/obj"
@@ -8,25 +8,29 @@ import (
   "µU/kbd"
   "µU/col"
   "µU/scr"
+  "µU/errh"
   "µU/text"
-  "µU/audio/field"
-  "µU/audio/medium"
+  "µU/enum"
 )
 const (
   len0 = 30
   len1 = 60
+  lenf = 13
+  lenm =  2
+  sep = ';'
+  seps = ";"
 )
-type
-  order int; const (
-  fieldOrder = iota
-//  composerOrder
-  mediumOrder
-  nOrders
+const (
+  fieldIndex = iota
+  composerIndex
+  mediumIndex
+  workIndex
+  nIndices
 )
 type
   audio struct {
-               field.Field
-               medium.Medium
+         field,
+        medium enum.Enum
       composer,
           work,
      composer1,
@@ -36,7 +40,7 @@ type
        soloist text.Text
                }
 var
-  actOrder = fieldOrder
+  actIndex = fieldIndex
 
 func (x *audio) imp (Y any) *audio {
   y, ok := Y.(*audio)
@@ -46,8 +50,13 @@ func (x *audio) imp (Y any) *audio {
 
 func new_() Audio {
   x := new (audio)
-  x.Field = field.New()
-  x.Medium = medium.New()
+  x.field = enum.Newk (lenf, 1)
+  x.field.Set ("alte Musik", "Barock", "Klassik", "Romantik", "neue Musik", "Pop/Beat/Rock",
+               "Folklore", "Jazz", "Italien", "Weihnachten", "Kinder")
+  x.field.Setk ("a", "b", "k", "r", "n", "p", "f", "j", "i", "w", "c")
+  x.medium = enum.Newk (lenm, 1)
+  x.medium.Set ("LP", "SP", "CD")
+  x.medium.Setk ("l", "s", "c")
   x.composer = text.New (len0)
   x.work = text.New (len1)
   x.composer1 = text.New (len0)
@@ -66,15 +75,15 @@ func new_() Audio {
 }
 
 func (x *audio) Empty() bool {
-  return x.Field.Empty() && x.Medium.Empty() &&
+  return x.field.Empty() && x.medium.Empty() &&
          x.composer.Empty() && x.work.Empty() &&
          x.composer1.Empty() && x.work1.Empty() &&
          x.orchestra.Empty() && x.conductor.Empty() && x.soloist.Empty()
 }
 
 func (x *audio) Clr() {
-  x.Field.Clr()
-  x.Medium.Clr()
+  x.field.Clr()
+  x.medium.Clr()
   x.composer.Clr(); x.work.Clr()
   x.composer1.Clr(); x.work1.Clr()
   x.orchestra.Clr()
@@ -84,8 +93,8 @@ func (x *audio) Clr() {
 
 func (x *audio) Eq (Y any) bool {
   y := x.imp(Y)
-  return x.Field.Eq (y.Field) &&
-         x.Medium.Eq (y.Medium) &&
+  return x.field.Eq (y.field) &&
+         x.medium.Eq (y.medium) &&
          x.composer.Eq (y.composer) && x.work.Eq (y.work) &&
          x.composer1.Eq (y.composer1) && x.work1.Eq (y.work1) &&
          x.conductor.Eq (y.conductor) &&
@@ -95,8 +104,8 @@ func (x *audio) Eq (Y any) bool {
 
 func (x *audio) Copy (Y any) {
   y := x.imp(Y)
-  x.Field.Copy (y.Field)
-  x.Medium.Copy (y.Medium)
+  x.field.Copy (y.field)
+  x.medium.Copy (y.medium)
   x.composer.Copy (y.composer)
   x.work.Copy (y.work)
   x.composer1.Copy (y.composer1)
@@ -114,46 +123,149 @@ func (x *audio) Clone() any {
 
 func (x *audio) Less (Y any) bool {
   y := x.imp(Y)
-  switch actOrder {
-  case fieldOrder:
-    if x.Field.Eq (y.Field) {
-      if x.composer.Eq (y.composer) {
-        if x.work.Eq (y.work) {
-          return x.Medium.Less (y.Medium)
-        }
-        return x.work.Less (y.work)
-      }
+  switch actIndex {
+  case fieldIndex:
+    if ! x.field.Eq (y.field) {
+      return x.field.Less (y.field)
+    }
+    if ! x.medium.Eq (y.medium) {
+      return x.medium.Less (y.medium)
+    }
+    if ! x.composer.Eq (y.composer) {
       return x.composer.Less (y.composer)
     }
-    return x.Field.Less (y.Field)
-  case mediumOrder:
-    if x.Medium.Eq (y.Medium) {
-      if x.Field.Eq (y.Field) {
-        if x.composer.Eq (y.composer) {
-          return x.work.Less (y.work)
-        }
-        return x.composer.Less (y.composer)
-      }
-      return x.Field.Less (y.Field)
+    if ! x.work.Eq (y.work) {
+      return x.work.Less (y.work)
     }
-    return x.Medium.Less (y.Medium)
+  case mediumIndex:
+    if ! x.medium.Eq (y.medium) {
+      return x.medium.Less (y.medium)
+    }
+    if ! x.field.Eq (y.field) {
+      return x.field.Less (y.field)
+    }
+    if ! x.composer.Eq (y.composer) {
+       return x.composer.Less (y.composer)
+    }
+    if ! x.work.Eq (y.work) {
+      return x.work.Less (y.work)
+    }
+  case composerIndex:
+    if ! x.composer.Eq (y.composer) {
+       return x.composer.Less (y.composer)
+    }
+    if ! x.field.Eq (y.field) {
+      return x.field.Less (y.field)
+    }
+    if ! x.medium.Eq (y.medium) {
+      return x.medium.Less (y.medium)
+    }
+    if ! x.work.Eq (y.work) {
+      return x.work.Less (y.work)
+    }
+  case workIndex:
+    if ! x.work.Eq (y.work) {
+      return x.work.Less (y.work)
+    }
+    if ! x.field.Eq (y.field) {
+      return x.field.Less (y.field)
+    }
+    if ! x.medium.Eq (y.medium) {
+      return x.medium.Less (y.medium)
+    }
+    if ! x.composer.Eq (y.composer) {
+       return x.composer.Less (y.composer)
+    }
   }
-  panic ("")
+  return false
+}
+
+func (x *audio) String() string {
+  s := x.field.String()
+  str.OffSpc1 (&s)
+  s += seps
+  t := x.medium.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.composer.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.work.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.composer1.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.work1.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.orchestra.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.conductor.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.soloist .String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  return s
+}
+
+func (x *audio) Defined (s string) bool {
+  ss, n := str.SplitByte (s, sep)
+  if n != 9 { errh.Error (s, n) }
+  if ! x.field.Defined (ss[0]) {
+    errh.Error0 (ss[0])
+    return false
+  }
+  if ! x.medium.Defined (ss[1]) {
+    errh.Error0 (ss[1])
+    return false
+  }
+  if ! x.composer.Defined (ss[2]) {
+    errh.Error0 (ss[2])
+    return false
+  }
+  if ! x.work.Defined (ss[3]) {
+    errh.Error0 (ss[3])
+    return false
+  }
+  if ! x.composer1.Defined (ss[4]) {
+    errh.Error0 (ss[4])
+    return false
+  }
+  if ! x.work1.Defined (ss[5]) {
+    errh.Error0 (ss[5])
+    return false
+  }
+  if ! x.orchestra.Defined (ss[6]) {
+    errh.Error0 (ss[6])
+    return false
+  }
+  if ! x.conductor.Defined (ss[7]) {
+    errh.Error0 (ss[7])
+    return false
+  }
+  if ! x.soloist.Defined (ss[8]) {
+    errh.Error0 (ss[8])
+    return false
+  }
+  return true
 }
 
 func (x *audio) Sub (Y any) bool {
   y := x.imp(Y)
-  if ! x.Field.Empty() {
-    return x.Field.Eq (y.Field)
+  if ! x.field.Empty() {
+    return x.field.Eq (y.field)
   }
-  if ! x.composer.Empty() {
-    return x.composer.Sub (y.composer)
+  if ! x.medium.Empty() {
+    return x.medium.Eq (y.medium)
   }
   if ! x.composer1.Empty() {
     return x.composer1.Sub (y.composer1)
   }
-  if ! x.soloist.Empty() {
-    return x.soloist.Sub (y.soloist)
+  if ! x.work.Empty() {
+    return x.work.Sub (y.soloist)
   }
   return false
 }
@@ -173,7 +285,7 @@ const (
 /*        1         2         3         4         5         6         7
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
 
-   Gebiet ________                        Medium ___
+   Gebiet ___________                     Medium __
 
 Komponist ______________________________
 
@@ -190,7 +302,7 @@ Orchester ____________________________________________________________________
 func writeMask (l, c uint) {
   scr.Colours (col.LightGray(), col.Black())
   scr.Write ("Gebiet",    l + lg,  c +  3)
-  scr.Write ("Medium",    l + lm,  c + 42)
+  scr.Write ("medium",    l + lm,  c + 42)
   scr.Write ("Komponist", l + lc,  c +  0)
   scr.Write ("Werk",      l + lw,  c +  5)
   scr.Write ("Komponist", l + lc1, c +  0)
@@ -200,15 +312,16 @@ func writeMask (l, c uint) {
   scr.Write ("Solist",    l + ls,  c + 42)
 }
 
-var maskWritten = false
+var
+  maskWritten = false
 
 func (x *audio) Write (l, c uint) {
   if ! maskWritten {
     writeMask (l, c)
     maskWritten = true
   }
-  x.Field.Write (l + lg, c + cg)
-  x.Medium.Write (l + lm, c + cm)
+  x.field.Write (l + lg, c + cg)
+  x.medium.Write (l + lm, c + cm)
   x.composer.Write (l + lc, c + cc)
   x.work.Write (l + lw, c + cw)
   x.composer1.Write (l + lc1, c + cc1)
@@ -218,18 +331,35 @@ func (x *audio) Write (l, c uint) {
   x.soloist.Write (l + ls, c + cs)
 }
 
+func containsSep (t text.Text) bool {
+  _, c := str.Pos (t.String(), sep)
+  return c
+}
+
+func edit (t text.Text, s string, l, c uint) {
+  for {
+    t.Edit (l, c)
+    if containsSep (t) {
+      errh.Error0 (s + " darf kein " + seps + " enthalten")
+    } else {
+      break
+    }
+  }
+}
+
 func (x *audio) Edit (l, c uint) {
   x.Write (l, c)
   i := 0
   loop:
   for {
+    x.Write (l, c)
     switch i {
     case 0:
-      x.Field.Edit (l + lg, c + cg)
+      x.field.Edit (l + lg, c + cg)
     case 1:
-      x.Medium.Edit (l + lm, c + cm)
+      x.medium.Edit (l + lm, c + cm)
     case 2:
-      x.composer.Edit (l + lc, c + cc)
+      edit (x.composer, "Komponist", l + lc, c + cc)
       if ! x.composer.Empty() {
         if co, _ := kbd.LastCommand(); co == kbd.Tab {
           for i := 0; i < len(k); i++ {
@@ -242,7 +372,7 @@ func (x *audio) Edit (l, c uint) {
         }
       }
     case 3:
-      x.work.Edit (l + lw, c + cw)
+      edit (x.work, "Werk", l + lw, c + cw)
       s := x.work.String()
       if str.ProperLen (s) == 1 {
         switch s[0] {
@@ -254,7 +384,7 @@ func (x *audio) Edit (l, c uint) {
         x.work.Write (l + lw, c + cw)
       }
     case 4:
-      x.composer1.Edit (l + lc1, c + cc1)
+      edit (x.composer, "Komponist", l + lc1, c + cc1)
       if ! x.composer1.Empty() {
         if co, _ := kbd.LastCommand(); co == kbd.Tab {
           for i := 0; i < len(k); i++ {
@@ -267,7 +397,7 @@ func (x *audio) Edit (l, c uint) {
         }
       }
     case 5:
-      x.work1.Edit (l + lw1, c + cw1)
+      edit (x.work, "Werk", l + lw1, c + cw1)
       if ! x.work1.Empty() {
         s := x.work1.String()
         if str.ProperLen (s) == 1 {
@@ -281,7 +411,7 @@ func (x *audio) Edit (l, c uint) {
       }
       x.work1.Write (l + lw1, c + cw1)
     case 6:
-      x.orchestra.Edit (l + lo, c + co)
+      edit (x.orchestra, "Orchester", l + lo, c + co)
     case 7:
       x.conductor.Edit (l + ld, c + cd)
       if ! x.conductor.Empty() {
@@ -293,9 +423,9 @@ func (x *audio) Edit (l, c uint) {
           }
         }
       }
-      x.conductor.Write (l + ld, c + cd)
+      edit (x.conductor, "Dirigent", l + ld, c + cd)
     case 8:
-      x.soloist.Edit (l + ls, c + cs)
+      edit (x.soloist, "Soloist", l + ls, c + cs)
     }
     switch k, _ := kbd.LastCommand(); k {
     case kbd.Esc:
@@ -314,7 +444,9 @@ func (x *audio) Edit (l, c uint) {
   }
 }
 
-var lastField = field.New()
+var
+  lastfield = enum.New (lenm)
+//  lastfield = enum.Newk (lenm, 1)
 
 func texdef() string {
   return "\\def\\n{\\newline} \\def\\p{\\par\\smallpagebreak}\n"
@@ -322,11 +454,11 @@ func texdef() string {
 
 func (x *audio) TeX() string {
   s := ""
-  if ! x.Field.Eq (lastField) {
-    lastField.Copy (x.Field)
-    s += "\\bigskip\\line{\\bf\\hfil " + x.Field.TeX() + "\\hfil}\\medskip\\nopagebreak\n"
+  if ! x.field.Eq (lastfield) {
+    lastfield.Copy (x.field)
+    s += "\\bigskip\\line{\\bf\\hfil " + x.field.(TeXer).TeX() + "\\hfil}\\medskip\\nopagebreak\n"
   }
-  s += "\\x " + x.Medium.TeX() + " "
+  s += "\\x " + x.medium.TeX() + " "
   if x.composer.Empty() {
     s += "\\leavevmode"
   } else {
@@ -353,18 +485,18 @@ func (x *audio) TeX() string {
 }
 
 func (x *audio) Codelen() uint {
-  return x.Field.Codelen() + x.Medium.Codelen() +
+  return x.field.Codelen() + x.medium.Codelen() +
          len0 + len1 + len0 + len1 +
          len1 + 2 * len0
 }
 
 func (x *audio) Encode() Stream {
   s := make(Stream, x.Codelen())
-  i, a := uint(0), x.Field.Codelen()
-  copy (s[i:i+a], x.Field.Encode())
+  i, a := uint(0), x.field.Codelen()
+  copy (s[i:i+a], x.field.Encode())
   i += a
-  a = x.Medium.Codelen()
-  copy (s[i:i+a], x.Medium.Encode())
+  a = x.medium.Codelen()
+  copy (s[i:i+a], x.medium.Encode())
   i += a
   a = len0
   copy (s[i:i+a], x.composer.Encode())
@@ -388,11 +520,11 @@ func (x *audio) Encode() Stream {
 }
 
 func (x *audio) Decode (s Stream) {
-  i, a := uint(0), x.Field.Codelen()
-  x.Field.Decode (s[i:i+a])
+  i, a := uint(0), x.field.Codelen()
+  x.field.Decode (s[i:i+a])
   i += a
-  a = x.Medium.Codelen()
-  x.Medium.Decode (s[i:i+a])
+  a = x.medium.Codelen()
+  x.medium.Decode (s[i:i+a])
   i += a
   a = len0
   x.composer.Decode (s[i:i+a])
@@ -415,7 +547,7 @@ func (x *audio) Decode (s Stream) {
 }
 
 func (x *audio) Rotate() {
-  actOrder = (actOrder + 1) % nOrders
+  actIndex = (actIndex + 1) % nIndices
 }
 
 func (x *audio) Index() Func {

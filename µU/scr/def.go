@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220923 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -12,7 +12,7 @@ package scr
           X is installed.
         Programs for execution on far hosts are only called under X.
    Fore-/background colour of the screen and actual fore-/backgroundcolour
-   are White and Black. The screen is cleared and the cursor is off.
+   are LightWhite and Black. The screen is cleared and the cursor is off.
    In a console SIGUSR1 and SIGUSR2 are used internally and not any more available.
    GNo process is in the exclusive possession of the screen. */
 

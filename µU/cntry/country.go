@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221003 - license see µU.go
 
 import (
   . "µU/obj"
@@ -20,41 +20,85 @@ const
 type
   id = byte; const (
               undefined = id(iota)
-/* Europa */  Albanien; Andorra; Belgien; BosnienHerzegowina; Bulgarien
-              Dänemark; Deutschland; Estland; Finnland; Frankreich
-              Griechenland; Großbritannien; Irland; Island; Italien; Kroatien
-              Lettland; Liechtenstein; Litauen; Luxemburg; Malta; Mazedonien
-              Moldau; Monaco; Montenegro; Niederlande; Norwegen; Österreich
-              Polen; Portugal; Rumänien; Russland; SanMarino; Schweden
-              Schweiz; Serbien; Slowakei; Slowenien; Spanien; Tschechien
-              Türkei; Ukraine; Ungarn; Vatikan; Weißrussland; Zypern
-/* Afrika */  Ägypten; ÄquatorialGuinea; Äthiopien; Algerien; Angola; Benin
-              Botsuana; BurkinaFaso; Burundi; Dschibuti; Elfenbeinküste
-              Eritrea; Gabun; Gambia; Ghana; Guinea; GuineaBissau; Kamerun
-              KapVerde; Kenia; Komoren; Kongo; KongoDemRep; Lesotho; Liberia
-              Libyen; Madagaskar; Malawi; Mali; Marokko; Mauretanien; Mauritius
-              Mosambik; Namibia; Niger; Nigeria; Ruanda; Sambia; SanTomePrincipe
-              Senegal; Seychellen; SierraLeone; Simbabwe; Somalia; Südafrika
-              Südsudan; Sudan; Swasiland; Tansania; Togo; Tschad; Tunesien
-              Uganda; Zentralafrika
-/* Amerika */ Antigua; Argentinien; Bahamas; Barbados; Belize; Bolivien
-              Brasilien; Chile; CostaRica; Dominica; DominikanRep; Ecuador
-              ElSalvador; Grenada; Guatemala; Guyana; Haiti; Honduras; Jamaika
-              Kanada; StKittsNevis; Kolumbien; Kuba; StLucia; Mexiko; Nikaragua
-              Panama; Paraguay; Peru; Suriname; TrinidadTobago; Uruguay; USA
+/* Europa */  Albanien; Andorra;
+              Belgien; BosnienHerzegowina; Bulgarien
+              Dänemark; Deutschland
+              Estland
+              Finnland; Frankreich
+              Griechenland; Großbritannien
+              Irland; Island; Italien
+              Kroatien
+              Lettland; Liechtenstein; Litauen; Luxemburg
+              Malta; Mazedonien; Moldau; Monaco; Montenegro
+              Niederlande; Norwegen; Österreich
+              Polen; Portugal
+              Rumänien; Russland
+              SanMarino; Schweden; Schweiz; Serbien; Slowakei; Slowenien; Spanien
+              Tschechien; Türkei
+              Ukraine; Ungarn
+              Vatikan
+              Weißrussland
+              Zypern
+/* Afrika */  Ägypten; ÄquatorialGuinea; Äthiopien
+              Algerien; Angola; Benin
+              Botsuana; BurkinaFaso; Burundi
+              Dschibuti
+              Elfenbeinküste; Eritrea
+              Gabun; Gambia; Ghana; Guinea; GuineaBissau
+              Kamerun; KapVerde; Kenia; Komoren; Kongo; KongoDemRep
+              Lesotho; Liberia; Libyen
+              Madagaskar; Malawi; Mali; Marokko; Mauretanien; Mauritius; Mosambik
+              Namibia; Niger; Nigeria
+              Ruanda
+              Sambia; SanTomePrincipe; Senegal; Seychellen; SierraLeone
+                Simbabwe; Somalia; Südafrika; Südsudan; Sudan; Swasiland
+              Tansania; Togo; Tschad; Tunesien
+              Uganda
+              Zentralafrika
+/* Amerika */ Antigua; Argentinien
+              Bahamas; Barbados; Belize; Bolivien; Brasilien
+              Chile; CostaRica
+              Dominica; DominikanRep
+              Ecuador; ElSalvador
+              Grenada; Guatemala; Guyana
+              Haiti; Honduras
+              Jamaika
+              Kanada; StKittsNevis; Kolumbien; Kuba; StLucia
+              Mexiko
+              Nikaragua
+              Panama; Paraguay; Peru
+              Suriname
+              TrinidadTobago
+              Uruguay
+              USA
               Venezuela; StVincent
-/* Asien */   Afghanistan; Armenien; Aserbaidschan; Bahrain; Bangladesch
-              Bhutan; Brunei; China; Georgien; Indien; Indonesien; Irak; Iran
-              Israel; Japan; Jemen; Jordanien; Kambodscha; Kasachstan; Katar
-              Kirgisistan; Kuwait; Laos; Libanon; Malaysia; Malediven; Mongolei
-              Myanmar; Nepal; Nordkorea; Oman; Osttimor; Pakistan; Palästina
-              Philippinen; SaudiArabien; Singapur; SriLanka; Südkorea; Syrien
-              Taiwan; Thailand; Tadschikistan; Turkmenistan; Usbekistan
+/* Asien */   Afghanistan; Armenien; Aserbaidschan
+              Bahrain; Bangladesch; Bhutan; Brunei
+              China
+              Georgien
+              Indien; Indonesien; Irak; Iran; Israel
+              Japan; Jemen; Jordanien
+              Kambodscha; Kasachstan; Katar; Kirgisistan; Kuwait
+              Laos; Libanon
+              Malaysia; Malediven; Mongolei; Myanmar
+              Nepal; Nordkorea
+              Oman; Osttimor
+              Pakistan; Palästina; Philippinen
+              SaudiArabien; Singapur; SriLanka; Südkorea; Syrien
+              Taiwan; Thailand; Tadschikistan; Turkmenistan
+              Usbekistan
               VerArabEmirate; Vietnam
 /* Australien und Ozeanien */
-              Australien; Cookinseln; Fidschi; Kiribati; Marshallinseln
-              Mikronesien; Nauru; Neuseeland; Niue; Palau; PapuaNeuguinea
-              Salomonen; Samoa; Tonga; Tuvalu; Vanuatu
+              Australien
+              Cookinseln
+              Fidschi
+              Kiribati
+              Marshallinseln; Mikronesien; Nauru
+              Neuseeland; Niue
+              Palau; PapuaNeuguinea
+              Salomonen; Samoa
+              Tonga; Tuvalu
+              Vanuatu
               nNations)
 type (
   attribut struct {
@@ -160,9 +204,12 @@ func (x *country) String() string {
   return x.attribut.name
 }
 
+func (x *country) TLD() string {
+  return x.attribut.tld
+}
+
 func (x *country) TeX() string {
-  s := x.attribut.car
-  str.OffSpc1 (&s)
+  s := str.TeX (x.attribut.name)
   return s
 }
 
@@ -193,6 +240,10 @@ func (x *country) Defined (t string) bool {
 
 func (x *country) Colours (f, b col.Colour) {
   x.cF, x.cB = f, b
+}
+
+func (x *country) Cols() (col.Colour, col.Colour) {
+  return x.cF, x.cB
 }
 
 func (x *country) GetFormat() Format {

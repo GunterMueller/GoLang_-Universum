@@ -1,6 +1,6 @@
 package date
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220804 - license see µU.go
 
 import (
   . "µU/obj"
@@ -91,6 +91,10 @@ func (x *daytime) Less (Y any) bool {
 func (x *daytime) Colours (f, b col.Colour) {
   x.Calendarday.Colours (f, b)
   x.Clocktime.Colours (f, b)
+}
+
+func (x *daytime) Cols() (col.Colour, col.Colour) {
+  return x.Calendarday.Cols()
 }
 
 func (x *daytime) SetFormat (d, c Format) {

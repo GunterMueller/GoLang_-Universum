@@ -1,16 +1,17 @@
 package qmat
 
-// (c) Christian Maurer   v. 211118 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   . "µU/obj"
+  "µU/col"
   "µU/q"
 )
 type
-  QMatrix interface { // matrices of fractions of rationsls
+  QMatrix interface { // matrices of fractions of rationals
 
-  Object
   Editor
+  col.Colourer
 //  Stringer
   TeXer
 //  Printer

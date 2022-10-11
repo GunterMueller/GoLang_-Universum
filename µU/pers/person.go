@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220809 - license see µU.go
 
 import (
   . "µU/obj"
@@ -10,7 +10,7 @@ import (
   "µU/font"
   "µU/pbox"
   "µU/text"
-  "µU/tval"
+  "µU/sex"
   "µU/day"
 )
 const (
@@ -26,9 +26,13 @@ type (
   person struct {
         surname,
       firstName text.Text
-                tval.TruthValue "female/indetermined/male"
+                sex.Sex
                 day.Calendarday "birthday"
           title text.Text
+/*/
+  Prof.
+  
+/*/
           field []any // to [En|De]code
              cl []uint
                 Format
@@ -45,13 +49,12 @@ func new_() Person {
   x := new(person)
   x.surname = text.New (lenName)
   x.firstName = text.New (lenFirstName)
-  x.TruthValue = tval.New()
-  x.TruthValue.SetFormat (" ", "m", "w")
+  x.Sex = sex.New()
   x.Calendarday = day.New()
   x.title = text.New (lenName)
-  x.field = []any { x.surname, x.firstName, x.Calendarday, x.TruthValue, x.title }
+  x.field = []any { x.surname, x.firstName, x.Calendarday, x.Sex, x.title }
   x.cl = []uint {lenName, lenFirstName, x.Calendarday.Codelen(),
-                 x.TruthValue.Codelen(), x.title.Codelen()}
+                 x.Sex.Codelen(), x.title.Codelen()}
   x.Format = LongB
   return x
 }
@@ -72,7 +75,7 @@ func (x *person) Empty() bool {
 func (x *person) Clr() {
   x.surname.Clr()
   x.firstName.Clr()
-  x.TruthValue.Clr()
+  x.Sex.Clr()
   x.Calendarday.Clr()
   x.title.Clr()
 }
@@ -108,7 +111,7 @@ func (x *person) Copy (Y any) {
   y := x.imp (Y)
   x.surname.Copy (y.surname)
   x.firstName.Copy (y.firstName)
-  x.TruthValue.Copy (y.TruthValue)
+  x.Sex.Copy (y.Sex)
   x.Calendarday.Copy (y.Calendarday)
   x.title.Copy (y.title)
   x.Format = y.Format
@@ -131,7 +134,7 @@ func (x *person) Eq (Y any) bool {
   switch x.Format {
   case LongTB:
     g = g && x.title.Eq (y.title) &&
-             x.TruthValue.Eq (y.TruthValue)
+             x.Sex.Eq (y.Sex)
   }
   return g
 }
@@ -142,7 +145,7 @@ func (x *person) Equiv (Y Person) bool {
     return x.surname.Eq (y.surname) &&
            x.firstName.Eq (y.firstName) &&
            x.Calendarday.Eq (y.Calendarday)
-  }
+  } // actualOrder == AgeOrder
   return x.Calendarday.Eq (y.Calendarday)
 }
 
@@ -198,9 +201,13 @@ func (x *person) SetFormat (f Format) {
 func (x *person) Colours (f, b col.Colour) {
   x.surname.Colours (f, b)
   x.firstName.Colours (f, b)
-  x.TruthValue.Colours (f, b)
+  x.Sex.Colours (f, b)
   x.Calendarday.Colours (f, b)
   x.title.Colours (f, b)
+}
+
+func (x *person) Cols() (col.Colour, col.Colour) {
+  return x.surname.Cols()
 }
 
 var
@@ -269,8 +276,8 @@ func (x *person) TeX() string {
   s := ""
   if ! x.title.Empty() { s += "{\\bf " + x.title.TeX() + "} " }
   s += "{\\bf " + x.firstName.TeX() + " " + x.surname.TeX() + "}"
-//  if ! x.TruthValue.Empty() { s += " (" + x.TruthValue.String() + ")" }
-  if ! x.Calendarday.Empty() { s += ", geb. " + x.Calendarday.String() }
+//  if ! x.Sex.Empty() { s += " (" + x.Sex.String() + ")" }
+  if ! x.Calendarday.Empty() { s += " (" + x.Calendarday.String() + ")" }
   s += "\\newline\n"
   return s
 }
@@ -285,7 +292,7 @@ func (x *person) Write (l, c uint) {
   case LongTB:
     x.Calendarday.Write (l, c + cb)
     x.title.Write (l + 1, c + ca)
-    x.TruthValue.Write (l + 1, c + cg)
+    x.Sex.Write (l + 1, c + cg)
   }
 }
 
@@ -310,7 +317,7 @@ func (x *person) Edit (l, c uint) {
       }
     case 4:
       if x.Format == LongTB {
-        x.TruthValue.Edit (l + 1, c + cg)
+        x.Sex.Edit (l + 1, c + cg)
       }
     }
     switch C, d := kbd.LastCommand(); C {
@@ -355,7 +362,7 @@ func (x *person) Print (l, c uint) {
 func (x *person) Codelen() uint {
   return lenName + lenFirstName +
          x.Calendarday.Codelen() +
-         x.TruthValue.Codelen() +
+         x.Sex.Codelen() +
          lenName
 }
 
@@ -368,8 +375,23 @@ func (x *person) Decode (bs Stream) {
   x.surname = x.field[0].(text.Text)
   x.firstName = x.field[1].(text.Text)
   x.Calendarday = x.field[2].(day.Calendarday)
-  x.TruthValue = x.field[3].(tval.TruthValue)
+  x.Sex = x.field[3].(sex.Sex)
   x.title = x.field[4].(text.Text)
+}
+
+func (x *person) Index() Func {
+  if actualOrder == nameOrder {
+    return func (a any) any {
+      x, ok := a.(*person)
+      if ! ok { TypeNotEqPanic(x, a) }
+      return x.surname
+    }
+  } // actualOrder == AgeOrder
+  return func (a any) any {
+    x, ok := a.(*person)
+    if ! ok { TypeNotEqPanic(x, a) }
+    return x.Calendarday
+  }
 }
 
 func (x *person) Rotate() {

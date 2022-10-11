@@ -36,7 +36,7 @@ func drawCustomer (column uint, veryHairy bool, F col.Colour) {
   if veryHairy {
     scr.ColourF (F)
     scr.Write (" w ", line, column)
-    scr.Write (" § ", line + 1, column)
+    scr.Write ("=@;", line + 1, column)
   } else {
     scr.ColourF (col.LightGreen())
     scr.Write ("   ", line, column)

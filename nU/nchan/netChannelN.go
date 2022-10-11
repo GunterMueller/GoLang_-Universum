@@ -1,10 +1,10 @@
 package nchan
 
-// (c) Christian Maurer   v. 190402 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import ("strconv"; "time"; "net"; . "nU/obj")
 
-func (x *netChannel) Chan() (chan Any, chan Any) {
+func (x *netChannel) Chan() (chan any, chan any) {
   return x.in, x.out
 }
 
@@ -15,28 +15,28 @@ func (x *netChannel) serve (c net.Conn) {
     if r == 0 {
       break
     }
-    if x.Any == nil {
+    if x.any == nil {
       x.uint = uint(Decode (uint(0), x.Stream[:c0]).(uint))
       x.in <- x.Stream[c0:c0+x.uint]
       a := <-x.out
       _, x.error = c.Write(append(Encode(Codelen(a)), Encode(a)...))
     } else {
-      x.in <- Decode (Clone (x.Any), x.Stream[:r])
+      x.in <- Decode (Clone (x.any), x.Stream[:r])
       _, x.error = c.Write (Encode(<-x.out))
     }
   }
   c.Close()
 }
 
-func newn (a Any, h string, p uint16, s bool) NetChannel {
+func newn (a any, h string, p uint16, s bool) NetChannel {
   x := new(netChannel)
-  x.Any = Clone(a)
+  x.any = Clone(a)
   x.uint = Codelen(a)
   if a == nil {
     x.uint = maxWidth
   }
   x.Stream = make(Stream, x.uint)
-  x.in, x.out = make(chan Any), make(chan Any)
+  x.in, x.out = make(chan any), make(chan any)
   x.isServer = s
   ps := ":" + strconv.Itoa(int(p))
   if x.isServer {

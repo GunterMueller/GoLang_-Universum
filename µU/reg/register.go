@@ -1,6 +1,6 @@
 package reg
 
-// (c) Christian Maurer   v. 210512 - license see murus.go
+// (c) Christian Maurer   v. 210512 - license see µU.go
 
 type
   register struct {

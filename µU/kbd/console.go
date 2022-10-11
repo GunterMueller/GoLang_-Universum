@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 220206 - license see µU.go
+// (c) Christian Maurer   v. 220816 - license see µU.go
 
 import (
   "os"
@@ -18,7 +18,7 @@ func catch() {
   shift, ctrl, alt, altGr = false, false, false, false
   defer ker.Fin() // hilft nich
   for {
-    b := internal.Read()
+    b := terminal.Read()
     switch b {
     // case 0:
       // ker.Oops() // Fn-key combination !
@@ -192,8 +192,8 @@ func inputC (B *byte, C *Comm, D *uint) {
 }
 
 func initConsole() {
-  internal.New()
-  ker.InstallTerm (func() { internal.Fin() } )
+  terminal.New()
+  ker.InstallTerm (func() { terminal.Fin() } )
   keypipe = make (chan byte, 256)
 //  navipipe = navi.Channel()
   go catch()

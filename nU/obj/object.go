@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 180902 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 type Object interface {
 
@@ -22,7 +22,7 @@ type Object interface {
 }
 
 // Returns true, iff the type of a implements Object.
-func IsObject (a Any) bool {
+func IsObject (a any) bool {
   if a == nil { return false }
   _, ok := a.(Object)
   return ok
@@ -30,7 +30,7 @@ func IsObject (a Any) bool {
 
 // Returns true, iff the type of a is bool,
 // [u]int{8|16|32}, float[32|64], complex[64|128] or string.
-func Atomic (a Any) bool {
+func Atomic (a any) bool {
   switch a.(type) {
   case bool,
        int8,  int16,  int32,  int,  int64,
@@ -44,6 +44,6 @@ func Atomic (a Any) bool {
 
 // Returns true, iff the type of a is atomic or implements Object
 // (the types that are particularly supported by nU).
-func AtomicOrObject (a Any) bool {
+func AtomicOrObject (a any) bool {
   return Atomic (a) || IsObject (a)
 }

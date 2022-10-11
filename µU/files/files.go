@@ -1,9 +1,10 @@
 package files
 
-// (c) Christian Maurer   v. 210507 - license see µU.go
+// (c) Christian Maurer   v. 220828 - license see µU.go
 
 import (
   "os"
+  "os/exec"
   "path"
   "sort"
   . "µU/obj"
@@ -179,7 +180,9 @@ func del (path, s string) bool {
 }
 
 func move (f, d string) {
-  os.Rename (f, d + "/" + f)
+  if ! isFile (f) { ker.Panic (f + " not found") }
+  if ! isDir (d) { ker.Panic (d + " does not exist") }
+  exec.Command ("mv", f, d).Run()
 }
 
 func num() uint {

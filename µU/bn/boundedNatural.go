@@ -1,6 +1,6 @@
 package bn
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220809 - license see µU.go
 
 import (
   "math"
@@ -28,7 +28,6 @@ var (
 )
 
 func new_(n uint) Natural {
-  if n == 0 || n > M { ker.PrePanic() }
   x := new(natural)
   x.uint = invalid
   x.wd = n
@@ -126,7 +125,12 @@ func (n *natural) String() string {
 }
 
 func (n *natural) Colours (f, b col.Colour) {
-  n.f, n.b = f, b
+  n.f.Copy (f)
+  n.b.Copy (b)
+}
+
+func (n *natural) Cols() (col.Colour, col.Colour) {
+  return n.f, n.b
 }
 
 func (n *natural) ActFont() font.Font {

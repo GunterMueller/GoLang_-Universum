@@ -1,15 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 211127 - license see µU.go
-
-func HeadF() Colour            { return LightWhite() }
-func HeadB() Colour            { return Blue() }
-func HintF() Colour            { return LightWhite() }
-func HintB() Colour            { return Magenta() }
-func ErrorF() Colour           { return FlashYellow() }
-func ErrorB() Colour           { return Red() }
-func MenuF() Colour            { return LightWhite() }
-func MenuB() Colour            { return Red() }
+// (c) Christian Maurer   v. 220924 - license see µU.go
 
 func Black() Colour            { return new3n ("Black",             0,   0,   0) }
 func Brown() Colour            { return new3n ("Brown",            95,  53,  34) }

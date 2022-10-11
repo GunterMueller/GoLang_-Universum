@@ -1,15 +1,18 @@
 package audio
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221001 - license see µU.go
 
 import
   . "µU/obj"
 type
   Audio interface {
 
-  Indexer
+  Stringer
   TeXer
+  Rotator
 
+// Pre: y is of type Audio.
+// Returns true, iff x is a part of y.
   Sub (Y any) bool
 }
 

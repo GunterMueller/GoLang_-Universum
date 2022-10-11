@@ -1,8 +1,9 @@
 package br
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220916 - license see µU.go
 
 import (
+  "µU/ker"
   . "µU/obj"
   "µU/str"
   "µU/col"
@@ -16,9 +17,10 @@ const
 type
   breal struct {
                float64
-       pre, wd uint
+             d uint // number of digits before the dot
+            wd uint // 
        invalid float64
-        cF, cB col.Colour
+        f, b col.Colour
                font.Font
                }
 var
@@ -26,12 +28,11 @@ var
 
 func new_(d uint) Real {
   x := new(breal)
-  x.float64 = r.NaN()
-  if d == 0 { d = 1 }
-  if d > m { d = m }
-  x.pre, x.wd = d, 1 + d + 1 + 2
-  x.invalid = exp(d)
-  x.cF, x.cB = col.StartCols()
+  x.float64 = 0 // r.NaN()
+  x.d = d
+  x.wd = 1 + d + 1 + 2 // 1 for sign, 1 for dot, 2 digits after the dot
+  x.invalid = exp (d + 1)
+  x.f, x.b = col.StartCols()
   return x
 }
 
@@ -46,6 +47,10 @@ func exp (n uint) float64 {
   return 10 * exp (n - 1)
 }
 
+func (x *breal) Width() uint {
+  return x.wd
+}
+
 func (x *breal) Empty() bool {
   return x.float64 == x.invalid
 }
@@ -55,11 +60,16 @@ func (x *breal) Clr() {
 }
 
 func (x *breal) Copy (Y any) {
-  x.float64 = x.imp (Y).float64
+  y := x.imp (Y)
+  x.float64 = y.float64
+  x.d, x.wd = y.d, y.wd
+  x.invalid = y.invalid
+  x.f, x.b = y.f, y.b
+  x.Font = y.Font
 }
 
 func (x *breal) Clone() any {
-  y := new_(x.pre)
+  y := new_(x.d)
   y.Copy(x)
   return y
 }
@@ -95,9 +105,9 @@ func (x *breal) Defined (s string) bool {
   if x.float64, _, ok = r.Real (s); ok {
     return true
   }
-  x.float64 = r.NaN()
+  x.float64 = 0 // r.NaN()
   return false
-/*/
+/*/ TODO
   if uint(len (s)) > x.wd { return false }
   str.OffSpc (&s)
 //  n := x.wd / 2
@@ -137,7 +147,11 @@ func (x *breal) String() string {
 }
 
 func (x *breal) Colours (f, b col.Colour) {
-  x.cF, x.cB = f, b
+  x.f, x.b = f, b
+}
+
+func (x *breal) Cols() (col.Colour, col.Colour) {
+  return x.f, x.b
 }
 
 func (x *breal) Write (l, c uint) {
@@ -159,20 +173,13 @@ func (x *breal) Print (l, c uint) {
   pbx.Print (x.String(), l, c)
 }
 
-func (x *breal) Width() uint {
-  return x.wd
-}
-
-func (x *breal) Float64() float64 {
+func (x *breal) RealVal() float64 {
   return x.float64
 }
 
-func (x *breal) SetFloat64 (f float64) bool {
-  if f < x.invalid {
-    x.float64 = f
-    return true
-  }
-  return false
+func (x *breal) SetRealVal (r float64) {
+  if r >= x.invalid { ker.PrePanic() }
+  x.float64 = r
 }
 
 func (x *breal) Zero() bool {

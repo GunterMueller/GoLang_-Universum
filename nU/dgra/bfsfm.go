@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import (. "nU/obj"; "nU/fmon")
 
@@ -42,7 +42,7 @@ func (x *distributedGraph) bfsfm (o Op) {
   }
 }
 
-func (x *distributedGraph) b (a Any, i uint) Any {
+func (x *distributedGraph) b (a any, i uint) any {
   x.awaitAllMonitors()
   s := a.(uint) % inf
   j := x.channel(s)

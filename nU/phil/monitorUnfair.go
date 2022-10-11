@@ -1,8 +1,8 @@
 package phil
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/mon")
+import "nU/mon"
 
 type monitorUnfair struct {
   mon.Monitor
@@ -10,7 +10,7 @@ type monitorUnfair struct {
 
 func newMU() Philos {
   var m mon.Monitor
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          p := a.(uint)
          if i == lock {
            changeStatus (p, starving)

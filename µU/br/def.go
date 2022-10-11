@@ -1,6 +1,6 @@
 package br
 
-// (c) Christian Maurer   v. 210409 - license see µU.go
+// (c) Christian Maurer   v. 220811 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,23 +9,21 @@ import (
 type
   Real interface { // real numbers < some power of 10
 
-  Object
-  col.Colourer
-  Editor
-  Stringer
-  Printer
-
-// Returns the width of x given by New.
+// Returns 4 + the number of digits given by New.
   Width() uint
 
-  Float64() float64
-  SetFloat64 (r float64) bool
+  Editor
+  col.Colourer
+  Stringer
+// Pre for SetRealVal: x has enough digits.
+  RealValuator
+  Printer
 
   Adder
   Multiplier
 // further arithmetics ?
 }
 
-// Returns a new Object, that can hold real numbers
-// with at most d digits , where d = nat.Len (n).
+// Pre: d <= .
+// Returns a new empty object with n digits before the dot.
 func New (n uint) Real { return new_(n) }

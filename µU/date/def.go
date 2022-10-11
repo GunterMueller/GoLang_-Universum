@@ -1,6 +1,6 @@
 package date
 
-// (c) Christian Maurer   v. 171011 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   . "µU/obj"
@@ -13,9 +13,8 @@ type
 // Pairs of Calendarday and Clocktime.
 // (M/O, 2) means (last Sunday in March/October, 2.00:00)
 
-  Object
-  col.Colourer
   Editor
+  col.Colourer
   Stringer
   Printer
 

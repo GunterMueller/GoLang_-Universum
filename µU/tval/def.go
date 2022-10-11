@@ -1,6 +1,6 @@
 package tval
 
-// (c) Christian Maurer   v. 200906 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,9 +9,8 @@ import (
 type
   TruthValue interface { // values "indetermined", "false" and "true"
 
-  Object // Clear sets the value of x to "indetermined".
+  Editor // Clear sets the value of x to "indetermined".
   col.Colourer
-  Editor
   Stringer
   Printer
 

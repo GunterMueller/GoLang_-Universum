@@ -2,7 +2,7 @@ package main
 
 import (. "nU/obj"; "nU/ego"; "nU/scr"; "nU/rpc")
 
-func f (a Any, i uint) Any {
+func f (a any, i uint) any {
   p := IntStream{0, 0}
   p = Decode (p, a.(Stream)).(IntStream)
   return p[0] * p[1]

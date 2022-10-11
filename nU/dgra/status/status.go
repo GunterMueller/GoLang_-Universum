@@ -1,6 +1,6 @@
 package status
 
-// (c) Christian Maurer  v. 190402 - license see nU.go
+// (c) Christian Maurer  v. 220801 - license see nU.go
 
 import (
   . "nU/obj"
@@ -17,28 +17,28 @@ func new_() Status {
   return x
 }
 
-func (x *status) imp (Y Any) *status {
+func (x *status) imp (Y any) *status {
   y := Y.(*status)
   return y
 }
 
-func (x *status) Eq (Y Any) bool {
+func (x *status) Eq (Y any) bool {
   y := x.imp(Y)
   return x.phase  == y.phase && x.id == y.id
 }
 
-func (x *status) Copy (Y Any) {
+func (x *status) Copy (Y any) {
   y := x.imp(Y)
   x.phase, x.id = y.phase, y.id
 }
 
-func (x *status) Clone() Any {
+func (x *status) Clone() any {
   y := new_()
   y.Set (x.phase, x.id)
   return y
 }
 
-func (x *status) Less (Y Any) bool {
+func (x *status) Less (Y any) bool {
   y := x.imp(Y)
   if x.phase  == y.phase {
     return x.id < y.id

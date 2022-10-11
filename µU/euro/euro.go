@@ -1,6 +1,6 @@
 package euro
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220812 - license see µU.go
 
 import (
   "math"
@@ -17,12 +17,12 @@ import (
 const (
   undefined = uint(Limit * 100)
   nDigits = 7 // Limit - 1
-  length = nDigits + 1 /* Komma */ + 2
+  length = nDigits + 1 + 2 // 1 for dot or comma, 2 for cents
 )
 type (
   euro struct {
          cent uint
-       cF, cB col.Colour
+         f, b col.Colour
               font.Font
               }
 )
@@ -39,7 +39,7 @@ func init() {
 func new_() Euro {
   x := new(euro)
   x.Clr()
-  x.cF, x.cB = col.StartCols()
+  x.f, x.b = col.StartCols()
   return x
 }
 
@@ -275,17 +275,21 @@ func (x *euro) Defined (s string) bool {
 }
 
 func (x *euro) Colours (f, b col.Colour) {
-  x.cF, x.cB = f, b
+  x.f, x.b = f, b
+}
+
+func (x *euro) Cols() (col.Colour, col.Colour) {
+  return x.f, x.b
 }
 
 func (x *euro) Write (l, c uint) {
-  bx.Colours (x.cF, x.cB)
+  bx.Colours (x.f, x.b)
   bx.Write (x.String(), l, c)
 }
 
 func (x *euro) Edit (l, c uint) {
   s := x.String()
-  bx.Colours (x.cF, x.cB)
+  bx.Colours (x.f, x.b)
   for {
     bx.Edit (&s, l, c)
     if x.Defined (s) {

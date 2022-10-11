@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220713 - license see µU.go
 
 import (
   "math"
@@ -19,6 +19,7 @@ func fail (a any) {
 }
 
 func codelen (a any) uint {
+  if C0 < 8 { ker.Panic ("µU does not any more support 32-bit-computers") }
   if a == nil { return 0 }
   switch a.(type) {
   case bool, int8, uint8:

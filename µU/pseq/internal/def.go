@@ -1,6 +1,6 @@
 package internal
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 220715 - license see µU.go
 
 import
   . "µU/obj"
@@ -12,15 +12,15 @@ type
   Rename (n string)
   Empty() bool
   Clr()
-  Length() uint64
-  Seek (p uint64)
-  Position() uint64
+  Length() uint
+  Seek (p uint)
+  Position() uint
 
   Read (s Stream) (int, error)
   Write (s Stream) (int, error)
 }
 
-func DirectLength (n string) uint64 { return directLength(n) }
+func DirectLength (n string) uint { return directLength(n) }
 func Erase (n string) { erase(n) }
 
 func New() File { return new_() }

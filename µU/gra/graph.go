@@ -271,6 +271,8 @@ func (x *graph) insertedEdge (a any, marked bool) *edge {
 }
 
 func (x *graph) Edge (a any) {
+  if x.Empty() { return }
+  if x.colocal == x.local { ker.Panic ("gra.Edge: colocal == local") }
   x.edgeMarked (a, false)
 }
 

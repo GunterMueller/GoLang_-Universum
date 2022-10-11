@@ -1,14 +1,16 @@
 package q
 
-// (c) Christian Maurer   v. 211117 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
-import
+import (
   . "µU/obj"
+  "µU/col"
+)
 type
   Rational interface {
 
-  Object
   Editor
+  col.Colourer
   Stringer
   Printer
   Adder

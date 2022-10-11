@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import "reflect"
 
@@ -14,11 +14,11 @@ type Valuator interface {
   SetVal (n uint) bool
 }
 
-func Val (a Any) uint { return val(a) }
+func Val (a any) uint { return val(a) }
 
-func SetVal (x *Any, n uint) { setVal(x,n) }
+func SetVal (x *any, n uint) { setVal(x,n) }
 
-func val (a Any) uint {
+func val (a any) uint {
   switch a.(type) {
   case Valuator:
     return (a.(Valuator)).Val()
@@ -41,7 +41,7 @@ func val (a Any) uint {
   return uint(1)
 }
 
-func setVal (x *Any, n uint) {
+func setVal (x *any, n uint) {
   switch (*x).(type) {
   case byte:
     if n < 1<<8 {

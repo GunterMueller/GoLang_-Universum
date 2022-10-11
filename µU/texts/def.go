@@ -1,6 +1,6 @@
 package texts
 
-// (c) Christian Maurer   v. 201005 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,7 +9,6 @@ import (
 type
   Texts interface {
 
-  Object
   Editor
   col.Colourer
   Len() []uint

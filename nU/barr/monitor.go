@@ -1,8 +1,8 @@
 package barr
 
-// (c) Christian Maurer   v. 171019 - license see nU.go
+// (c) Christian Maurer   v. 220809 - license see nU.go
 
-import (. "nU/obj"; "nU/mon")
+import "nU/mon"
 
 type monitor struct {
   mon.Monitor
@@ -13,7 +13,7 @@ func newM (n uint) Barrier {
   waiting := uint(0)
   x := new(monitor)
   if n < 2 { return nil }
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          waiting++
          if waiting < involved {
            x.Monitor.Wait(0)

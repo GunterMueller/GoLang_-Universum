@@ -1,8 +1,8 @@
 package rw
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/fmon")
+import "nU/fmon"
 
 type farMonitor struct {
   fmon.FarMonitor
@@ -11,7 +11,7 @@ type farMonitor struct {
 func newFM (h string, p uint16, s bool) ReaderWriter {
   var nR, nW uint
   x := new(farMonitor)
-  c := func (a Any, i uint) bool {
+  c := func (a any, i uint) bool {
          switch i {
          case readerIn:
            return nW == 0
@@ -20,7 +20,7 @@ func newFM (h string, p uint16, s bool) ReaderWriter {
          }
          return true // readerOut, writerOut
        }
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          switch i {
          case readerIn:
            nR++

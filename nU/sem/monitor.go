@@ -1,8 +1,8 @@
 package sem
 
-// (c) Christian Maurer   v. 171019 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/mon")
+import "nU/mon"
 
 type monitor struct {
   mon.Monitor
@@ -11,7 +11,7 @@ type monitor struct {
 func newM (n uint) Semaphore {
   val := n
   x := new(monitor)
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          if i == p {
            if val == 0 {
              x.Monitor.Wait (v)

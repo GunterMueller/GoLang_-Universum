@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 210404 - license see µU.go
+// (c) Christian Maurer   v. 221003 - license see µU.go
 
 import
   "µU/char"
@@ -623,14 +623,14 @@ func startsWithVar (s string) (string, uint, bool) {
 }
 
 func tex (s string) string {
-  if char.DevilsDung (s) {
-    char.ToHellWithUTF8 (&s)
+  if ! DevilsDung (s) {
+    s = utf8 (s)
   }
-  n, t := uint(len(s)), ""
-  var b byte
-  for i := uint(0); i < n; i++ {
-    b = s[i]
-    t += char.TeX (b)
+  offSpc1 (&s)
+  if p, ok := Pos (s, '.'); ok && uint(len(s)) - p != 1 {
+    if p, ok = Pos (s, ' '); ok {
+      Replace (&s, p, "~")
+    }
   }
-  return t
+  return s
 }

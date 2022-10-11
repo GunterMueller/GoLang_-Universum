@@ -1,10 +1,10 @@
 package phil
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 // >>> Implementation with a universal monitor
 
-import (. "nU/obj"; "nU/mon")
+import "nU/mon"
 
 type monitor struct {
   mon.Monitor
@@ -16,7 +16,7 @@ func newM() Philos {
   for i := uint(0); i < 5; i++ {
     nForks[i] = 2
   }
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          p := a.(uint)
          if i == lock {
            changeStatus (p, starving)

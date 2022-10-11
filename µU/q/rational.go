@@ -1,6 +1,6 @@
 package q
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   "math"
@@ -21,7 +21,7 @@ type
   rational struct {
        num, denom uint
              geq0 bool
-           cF, cB col.Colour
+             f, b col.Colour
                   font.Font
                   }
 var (
@@ -35,8 +35,8 @@ func init() {
 
 func new_() Rational {
   x := new(rational)
-  x.cF, x.cB = col.StartCols()
-  if x.cF.IsWhite() && x.cB.IsBlack() { x.cF = col.LightWhite() } // firlefanz
+  x.f, x.b = col.StartCols()
+  if x.f.IsWhite() && x.b.IsBlack() { x.f = col.LightWhite() } // firlefanz
   x.geq0 = true
   return x
 }
@@ -82,7 +82,7 @@ func (x *rational) Eq (Y any) bool {
   if x.num == 0 { return y.num == 0 }
   if y.num == 0 { return x.num == 0 }
   if x.geq0 != y.geq0 { return false }
-  return uint64 (x.num) * uint64 (y.denom) == uint64 (y.num) * uint64 (x.denom)
+  return uint (x.num) * uint (y.denom) == uint (y.num) * uint (x.denom)
 }
 
 func (x *rational) Less (Y any) bool {
@@ -97,7 +97,7 @@ func (x *rational) Less (Y any) bool {
   if y.num == 0 { return ! x.geq0 }
   if x.geq0 && ! y.geq0 { return false }
   if ! x.geq0 && y.geq0 { return true }
-  p, q := uint64 (x.num) * uint64 (y.denom), uint64 (y.num) * uint64 (x.denom)
+  p, q := uint (x.num) * uint (y.denom), uint (y.num) * uint (x.denom)
   if x.geq0 { return p < q } // y.geq0
   return p > q // ! x.geq0, ! y.geq0
 }
@@ -203,18 +203,22 @@ func (x *rational) Wd() uint {
 }
 
 func (x *rational) Colours (f, b col.Colour) {
-  x.cF, x.cB = f, b
+  x.f, x.b = f, b
+}
+
+func (x *rational) Cols() (col.Colour, col.Colour) {
+  return x.f, x.b
 }
 
 func (x *rational) Write (l, c uint) {
-  bx.Colours (x.cF, x.cB)
+  bx.Colours (x.f, x.b)
   bx.Write (str.New(w), l, c)
   bx.Write (x.String(), l, c)
 }
 
 func (x *rational) Edit (l, c uint) {
   s := x.String()
-  bx.Colours (x.cF, x.cB)
+  bx.Colours (x.f, x.b)
   for {
     bx.Edit (&s, l, c)
     if x.Defined (s) {
@@ -298,14 +302,14 @@ func (x *rational) reduce() {
   }
 }
 
-func gcd (a, b uint64) uint64 {
+func gcd (a, b uint) uint {
   if a < b { a, b = b, a }
   if b == 0 { return a }
   return gcd (a % b, b)
 }
 
 const
-  max64 = uint64(1<<64 - 1)
+  max64 = uint(1<<64 - 1)
 
 func (x *rational) add (Y Adder) {
   y := x.imp(Y)
@@ -316,8 +320,8 @@ func (x *rational) add (Y Adder) {
     x.Clr()
     return
   }
-  a, b := uint64 (x.num) * uint64 (y.denom), uint64 (y.num) * uint64 (x.denom)
-  var n uint64
+  a, b := uint (x.num) * uint (y.denom), uint (y.num) * uint (x.denom)
+  var n uint
   if x.geq0 {
     if y.geq0 {
       if a <= max64 - b {
@@ -355,7 +359,7 @@ func (x *rational) add (Y Adder) {
       }
     }
   }
-  d := uint64 (x.denom) * uint64 (y.denom)
+  d := uint (x.denom) * uint (y.denom)
   g := gcd (n, d)
   if g != 0 {
     n, d = n / g, d / g
@@ -407,7 +411,7 @@ func (x *rational) mul (Y Multiplier) {
     x.num, x.denom, x.geq0 = 0, 1, true
     return
   }
-  n, d := uint64(x.num) * uint64(y.num), uint64(x.denom) * uint64(y.denom)
+  n, d := uint(x.num) * uint(y.num), uint(x.denom) * uint(y.denom)
   g := gcd (n, d)
   if g != 0 {
     n, d = n / g, d / g

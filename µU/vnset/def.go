@@ -1,6 +1,6 @@
 package vnset
 
-// (c) Christian Maurer   v. 201009
+// (c) Christian Maurer   v. 201009 - license see µU.go
 
 import
   . "µU/obj"

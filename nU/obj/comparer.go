@@ -1,19 +1,19 @@
 package obj
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 type Comparer interface {
 
 // Pre: x is of the same type as the calling object.
 // Returns true, iff the calling object is smaller than x.
-  Less (x Any) bool
+  Less (x any) bool
 }
 
-func Less (a, b Any) bool { return less(a,b) }
+func Less (a, b any) bool { return less(a,b) }
 
-func Leq (a, b Any) bool { return leq(a,b) }
+func Leq (a, b any) bool { return leq(a,b) }
 
-func less (a, b Any) bool {
+func less (a, b any) bool {
   switch a.(type) {
   case bool:
     return ! a.(bool) && b.(bool)
@@ -52,7 +52,7 @@ func less (a, b Any) bool {
   return false
 }
 
-func leq (a, b Any) bool {
+func leq (a, b any) bool {
   switch a.(type) {
   case bool:
     return ! a.(bool) && b.(bool) ||

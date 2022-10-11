@@ -1,6 +1,6 @@
 package book
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221001 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,31 +11,82 @@ import (
   "µU/text"
   "µU/str"
   "µU/bn"
-  "µU/book/field"
+  "µU/enum"
 )
 const (
+  lens = 20
+  lenc =  2
   lena = 30
   lent = 63
   sep = ';'
   seps = ";"
-  nosep = " darf kein " + seps + " enthalten"
 )
 const (
-  fieldOrder = iota
-  authorOrder
+  fieldIndex = iota
+  authorIndex
+  titleIndex
+  nIndices
 )
 type
   book struct {
-               field.Field
-        author,
-      coauthor text.Text
-               bn.Natural
-         title,
-      cupboard,
-         floor text.Text
+        field enum.Enum
+       author,
+     coauthor text.Text
+              bn.Natural
+        title,
+     cupboard,
+        floor text.Text
               }
 var
-  actOrder = fieldOrder
+  actIndex = fieldIndex
+
+func new_() Book {
+  x := new (book)
+  x.field = enum.Newk (lens, lenc)
+  x.field.Set ("Ägypten",              // w l 6 h
+               "Antike Biographie",    // w l 6 v
+               "Griechischer Text",    // w l 5 h
+               "Lateinischer Text",    // w l 5 h
+               "Rom-Roman",            // w l 5 v   p 5
+               "Rom-Krimi",            //           p 5 6
+               "Neuere Literatur",     // w r 8 h
+               "Italien-Roman",        // w r 8 v
+//                                     // w r 7 h          
+               "Theaterstück(e)",      // w r 7 hv
+               "Horror",               // w r 7 v
+               "Italien-Krimi",        // w r 6 hv  p 4
+//                                     // w r 5 hv  p 3
+               "Krimi",                // w r 4 hv
+               "Jugendbuch",           // w r 3 hv
+               "Englisch",             // w r 2 h
+               "Französisch",          // w r 2 h
+               "Italienisch",          // w r 2 h
+               "Griechisch",           // w r 2 h
+               "Lateinisch",           // w r 2 h
+               "Sachbuch",             // w r 2 h
+               "Pflanzen",             // w r 2 v
+               "Science Fiction",      // w r 2 v
+               "Klassische Literatur", // g r 4 hv
+               "Historischer Roman",   // g 5 3 hv
+//                                     // g r 2 h
+              )
+  x.field.Setk ("äg", "ab", "gt", "lt", "rr", "rk", "nl", "ir", "th", "ho", "ik", "kr",
+                "jb", "en", "fr", "it", "gr", "la", "sb", "pf", "sf", "kl", "hr")
+  x.field.Colours (col.LightWhite(), col.Blue())
+  x.author = text.New (lena)
+  x.coauthor = text.New (lena)
+  x.Natural = bn.New (lenc)
+  x.title = text.New (lent)
+  x.cupboard = text.New (3)
+  x.floor = text.New (3)
+  x.Natural.Colours (col.LightWhite(), col.DarkGray())
+  x.author.Colours (col.Yellow(), col.Red())
+  x.coauthor.Colours (col.Yellow(), col.Red())
+  x.title.Colours (col.LightWhite(), col.DarkGreen())
+  x.cupboard.Colours (col.LightWhite(), col.Brown())
+  x.floor.Colours (col.LightWhite(), col.Brown())
+  return x
+}
 
 func (x *book) imp (Y any) *book {
   y, ok := Y.(*book)
@@ -43,26 +94,8 @@ func (x *book) imp (Y any) *book {
   return y
 }
 
-func new_() Book {
-  x := new (book)
-  x.Field = field.New()
-  x.author = text.New (lena)
-  x.coauthor = text.New (lena)
-  x.Natural = bn.New (2)
-  x.title = text.New (lent)
-  x.cupboard = text.New (3)
-  x.floor = text.New (3)
-  x.Natural.Colours (col.LightWhite(), col.DarkCyan())
-  x.author.Colours (col.Yellow(), col.Red())
-  x.coauthor.Colours (col.Yellow(), col.Red())
-  x.title.Colours (col.LightWhite(), col.DarkGreen())
-  x.cupboard.Colours (col.LightWhite(), col.DarkGray())
-  x.floor.Colours (col.LightWhite(), col.DarkGray())
-  return x
-}
-
 func (x *book) Empty() bool {
-  return x.Field.Empty() &&
+  return x.field.Empty() &&
          x.author.Empty() && x.coauthor.Empty() &&
          x.Natural.Empty() &&
          x.title.Empty() &&
@@ -71,7 +104,7 @@ func (x *book) Empty() bool {
 }
 
 func (x *book) Clr() {
-  x.Field.Clr()
+  x.field.Clr()
   x.author.Clr()
   x.coauthor.Clr()
   x.Natural.Clr()
@@ -82,17 +115,13 @@ func (x *book) Clr() {
 
 func (x *book) Eq (Y any) bool {
   y := x.imp(Y)
-  return x.Field.Eq (y.Field) &&
-         x.author.Eq (y.author) && x.coauthor.Eq (y.coauthor) &&
-         x.Natural.Eq (y.Natural) &&
-         x.title.Eq (y.title) &&
-         x.cupboard.Eq (y.cupboard) &&
-         x.floor.Eq (y.floor)
+  return x.author.Eq (y.author) &&
+         x.title.Eq (y.title)
 }
 
 func (x *book) Copy (Y any) {
   y := x.imp(Y)
-  x.Field.Copy (y.Field)
+  x.field.Copy (y.field)
   x.author.Copy (y.author)
   x.coauthor.Copy (y.coauthor)
   x.Natural.Copy (y.Natural)
@@ -109,29 +138,43 @@ func (x *book) Clone() any {
 
 func (x *book) Less (Y any) bool {
   y := x.imp(Y)
-  switch actOrder {
-  case fieldOrder:
-    if x.Field.Eq (y.Field) {
-      if x.author.Eq (y.author) {
-        return x.Natural.Less (y.Natural)
-      }
+  switch actIndex {
+  case fieldIndex:
+    if ! x.field.Eq (y.field) {
+      return x.field.Less (y.field)
+    }
+    if ! x.author.Eq (y.author) {
       return x.author.Less (y.author)
     }
-    return x.Field.Less (y.Field)
-  case authorOrder:
-    if x.author.Eq (y.author) {
-      if x.Field.Eq (y.Field) {
-        return x.Natural.Less (y.Natural)
-      }
-      return x.Field.Less (y.Field)
+    if ! x.title.Eq (y.title) {
+      return x.title.Less (y.title)
     }
-    return x.author.Less (y.author)
+  case authorIndex:
+    if ! x.author.Eq (y.author) {
+      return x.author.Less (y.author)
+    }
+    if ! x.field.Eq (y.field) {
+      return x.field.Less (y.field)
+    }
+    if ! x.title.Eq (y.title) {
+      return x.title.Less (y.title)
+    }
+  case titleIndex:
+    if ! x.title.Eq (y.title) {
+      return x.title.Less (y.title)
+    }
+    if ! x.field.Eq (y.field) {
+      return x.field.Less (y.field)
+    }
+    if ! x.author.Eq (y.author) {
+      return x.author.Less (y.author)
+    }
   }
-  panic ("")
+  return false
 }
 
 func (x *book) String() string {
-  s := x.Field.String()
+  s := x.field.String()
   str.OffSpc1 (&s)
   s += seps
   t := x.author.String()
@@ -158,7 +201,7 @@ func (x *book) String() string {
 func (x *book) Defined (s string) bool {
   ss, n := str.SplitByte (s, sep)
   if n != 7 { return false }
-  if ! x.Field.Defined (ss[0]) { return false }
+  if ! x.field.Defined (ss[0]) { return false }
   if ! x.author.Defined (ss[1]) { return false }
   if ! x.coauthor.Defined (ss[2]) { return false }
   if ! x.Natural.Defined (ss[3]) { return false }
@@ -171,8 +214,8 @@ func (x *book) Defined (s string) bool {
 func (x *book) Sub (Y any) bool {
   y := x.imp(Y)
   s := false
-  if ! x.Field.Empty() {
-    s = s || x.Field.Eq (y.Field)
+  if ! x.field.Empty() {
+    s = s || x.field.Eq (y.field)
   }
   if ! x.author.Empty() {
     s = s || x.author.Sub (y.author)
@@ -205,7 +248,7 @@ Gebiet __________________
 
     Nr __ Titel _______________________________________________________________
 
-                                 Schrank / Regal ___________________ / ________ */
+                                 Schrank / Ebene ___________________ / ________ */
 //                                               Papas Zimmer rechts   6 hinten
 
 func writeMask (l, c uint) {
@@ -219,7 +262,8 @@ func writeMask (l, c uint) {
   scr.Write ("/", l + 7, c + 69)
 }
 
-var maskWritten = false
+var
+  maskWritten = false
 
 func (x *book) longC() string {
   n := x.cupboard.ProperLen()
@@ -268,7 +312,7 @@ func (x *book) Write (l, c uint) {
     maskWritten = true
   }
   writeMask (l, c)
-  x.Field.Write (l + lg, c + cg)
+  x.field.Write (l + lg, c + cg)
   x.author.Write (l + la, c + ca)
   x.coauthor.Write (l + lk, c + ck)
   if x.Natural.Val() != 0 {
@@ -279,6 +323,7 @@ func (x *book) Write (l, c uint) {
   x.cupboard.Write (l + lc, c + cc)
   x.floor.Write (l + lf, c + cf)
 /*/
+  scr.Colours (x.cupboard.Cols())
   scr.Write (str.New(19), l + lc, c + cc)
   scr.Write (x.longC(), l + lc, c + cc)
   scr.Write (str.New(8), l + lf, c + cf)
@@ -294,7 +339,7 @@ func edit (t text.Text, s string, l, c uint) {
   for {
     t.Edit (l, c)
     if containsSep (t) {
-      errh.Error0 (s + nosep)
+      errh.Error0 (s + " darf kein " + seps + " enthalten")
     } else {
       break
     }
@@ -309,7 +354,7 @@ func (x *book) Edit (l, c uint) {
     switch i {
     case 0:
       x.Write (l, c)
-      x.Field.Edit (l + lg, c + cg)
+      x.field.Edit (l + lg, c + cg)
     case 1:
       edit (x.author, "Autor", l + la, c + ca)
 /*/
@@ -364,14 +409,16 @@ func (x *book) Edit (l, c uint) {
   }
 }
 
-var lastField = field.New()
+var
+  lastField = enum.New (lens)
 
 func (x *book) TeX() string {
   s := ""
-  if ! x.Field.Eq (lastField) {
-    lastField.Copy (x.Field)
-    s += "\\bigskip\n"
-    s += "\\line{\\bfbig\\hfil " + x.Field.TeX() + "\\hfil}\\medskip\\nopagebreak\n"
+  if ! x.field.Eq (lastField) {
+    lastField.Copy (x.field)
+    s += "\\bigskip\n" + "\\line{\\bfbig\\hfil "
+    s += x.field.(TeXer).TeX()
+    s += "\\hfil}\\medskip\\nopagebreak\n"
   }
   s += "\\vskip-6pt\n{\\bi " + x.author.TeX()
   if ! x.coauthor.Empty() {
@@ -396,7 +443,7 @@ func (x *book) TeX() string {
 }
 
 func (x *book) Codelen() uint {
-  return x.Field.Codelen() +
+  return x.field.Codelen() +
        2 * lena +
        x.Natural.Codelen() +
        2 * 3
@@ -404,8 +451,8 @@ func (x *book) Codelen() uint {
 
 func (x *book) Encode() Stream {
   s := make(Stream, x.Codelen())
-  i, a := uint(0), x.Field.Codelen()
-  copy (s[i:i+a], x.Field.Encode())
+  i, a := uint(0), x.field.Codelen()
+  copy (s[i:i+a], x.field.Encode())
   i += a
   a = lena
   copy (s[i:i+a], x.author.Encode())
@@ -426,8 +473,8 @@ func (x *book) Encode() Stream {
 }
 
 func (x *book) Decode (s Stream) {
-  i, a := uint(0), x.Field.Codelen()
-  x.Field.Decode (s[i:i+a])
+  i, a := uint(0), x.field.Codelen()
+  x.field.Decode (s[i:i+a])
   i += a
   a = lena
   x.author.Decode (s[i:i+a])
@@ -447,7 +494,7 @@ func (x *book) Decode (s Stream) {
 }
 
 func (x *book) Rotate() {
-  actOrder = 1 - actOrder
+  actIndex = (actIndex + 1) % nIndices
 }
 
 func (x *book) Index() Func {

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 140102 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 type
   Sorter interface {
@@ -12,5 +12,5 @@ type
   Sort ()
 
 //
-  ExGeq (a Any) bool
+  ExGeq (a any) bool
 }

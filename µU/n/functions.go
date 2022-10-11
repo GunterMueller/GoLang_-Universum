@@ -1,6 +1,6 @@
 package n
 
-// (c) Christian Maurer   v. 201226 - license see µU.go
+// (c) Christian Maurer   v. 220713 - license see µU.go
 
 import
   "µU/ker"
@@ -20,10 +20,10 @@ func gcd (n, k uint) uint {
   return gcd (n % k, k)
 }
 
-func lcm (n, k uint) uint64 {
+func lcm (n, k uint) uint {
   if n == 0 || k == 0 { return 0
   }
-  return (uint64(n) * uint64 (k)) / uint64(gcd (n, k))
+  return (uint(n) * uint (k)) / uint(gcd (n, k))
 }
 
 func fak (n uint) uint {

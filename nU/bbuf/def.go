@@ -1,8 +1,8 @@
 package bbuf
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/buf")
+import "nU/buf"
 
 type BoundedBuffer interface {
 
@@ -15,5 +15,5 @@ type BoundedBuffer interface {
 
 // Vor.: a ist atomar oder implementiert Equaler.
 // Liefert einen leeren Puffer der Kapazität n für Objekte vom Typ a.
-func New (a Any, n uint) BoundedBuffer { return new_(a,n) }
-func New1 (a Any, n uint) BoundedBuffer { return new1(a,n) }
+func New (a any, n uint) BoundedBuffer { return new_(a,n) }
+func New1 (a any, n uint) BoundedBuffer { return new1(a,n) }

@@ -1,6 +1,6 @@
 package fmon
 
-// (c) Christian Maurer   v. 180813 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
@@ -12,7 +12,7 @@ type FarMonitor interface {
 // ausgeführt; ggf. war der aufrufende Prozess solange
 // blockiert, bis das i-te Prädikat ps(-, i) true war.
 // Liefert den Wert, den der Anbieter zurückgeschickt hat.
-  F (a Any, i uint) Any
+  F (a any, i uint) any
 
 // Alle von x belegten Netzkanäle sind geschlossen.
   Fin()
@@ -42,14 +42,14 @@ type FarMonitor interface {
 // und der Aufrufer muss diese Folge selber decodieren;
 // andernfalls wird das von den Empfangsoperationen
 // der verwendeten Netzwerkkanäle erledigt.
-func New (a Any, n uint, fs FuncSpectrum, ps PredSpectrum,
+func New (a any, n uint, fs FuncSpectrum, ps PredSpectrum,
           h string, p uint16, s bool) FarMonitor {
   return new_(a,n,fs,ps,h,p,s)
 }
 
 // Spezifikation s. oben;
 // die Ergebnisswerte von F sind vom Typ des Wertes von b.
-func New2 (a, b Any, n uint, fs FuncSpectrum, ps PredSpectrum,
+func New2 (a, b any, n uint, fs FuncSpectrum, ps PredSpectrum,
            h string, p uint16, s bool) FarMonitor {
   return new2(a,b,n,fs,ps,h,p,s)
 }

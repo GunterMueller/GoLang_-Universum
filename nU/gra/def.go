@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 200626 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import (. "nU/obj"; "nU/adj")
 
@@ -23,7 +23,7 @@ type Graph interface {
 // ist e jetzt die kolokale und die lokale Ecke von x;
 // sonst ist e jetzt die lokale Ecke von x und die
 // vorherige lokale Ecke ist jetzt kolokale Ecke von x.
-  Ins (e Any)
+  Ins (e any)
 
 // Wenn x leer war oder einen Kantentyp hat oder wenn
 // die kolokale Ecke von x mit der lokalen Ecke von x
@@ -32,7 +32,7 @@ type Graph interface {
 // lokalen Ecke von x eingefügt (wenn diese beiden 
 // Ecken vorher schon durch eine Kante verbunden
 // waren, kann sich ihre Richtung verändert haben.)
-  Edge (e Any)
+  Edge (e any)
 
 // Liefert genau dann true, wenn die kolokale Ecke nicht
 // mit der lokalen Ecke von x übereinstimmt und es in x
@@ -42,12 +42,12 @@ type Graph interface {
 // Liefert genau dann true, wenn v als Ecke in x enthalten
 // ist. In diesem Fall ist v jetzt die lokale Ecke von x.
 // Die kolokale Ecke von x ist die gleiche wie vorher.
-  Ex (v Any) bool
+  Ex (v any) bool
 
 // Liefert genau dann true, wenn v und v1 als Ecken in x
 // enthalten sind und nicht übereinstimmen. In diesem Fall
 // ist v jetzt die kolokale Ecke von x und v1 die lokale.
-  Ex2 (v, v1 Any) bool
+  Ex2 (v, v1 any) bool
 
 // Vor.: p ist auf Ecken definiert.
 // Liefert true, wenn es eine Ecke in x gibt, für die
@@ -58,26 +58,26 @@ type Graph interface {
 
 // Liefert nil, wenn x leer ist.
 // Liefert andernfalls eine Kopie der lokalen Ecke von x.
-  Get() Any
+  Get() any
 
 // Liefert eine Kopie der Musterkante von x, wenn x
 // leer ist oder es keine Kante von der kolokalen
 // zur lokalen Ecke von x gibt oder diese beiden Ecken
 // übereinstimmen. Liefert sonst eine Kopie der Kante
 // von der kolokalen Ecke von x zur lokalen Ecke von x.
-  Get1() Any
+  Get1() any
 
 // Liefert (nil, nil), wenn x leer ist.
 // Liefert andernfalls ein Paar, bestehend aus einer
 // Kopie der kolokalen und einer der lokalen Ecke von x.
-  Get2() (Any, Any)
+  Get2() (any, any)
 
 // Wenn x leer oder v nicht vom Eckentyp von x oder
 // v nicht in x enthalten ist, ist nicht verändert.
 // Andernfalls ist v jetzt die lokale Ecke von x
 // und ist markiert.
 // Die kolokale Ecke von x ist die gleiche wie vorher.
-  Mark (v Any)
+  Mark (v any)
 
 // Wenn x leer ist oder wenn v oder v1 nicht vom
 // Eckentyp von x sind oder wenn v oder v1 nicht in x
@@ -86,7 +86,7 @@ type Graph interface {
 // Andernfalls ist v jetzt die kolokale und v1
 // die lokale Ecke von x und diese beiden Ecken
 // und die Kante zwischen ihnen sind jetzt markiert.
-  Mark2 (v, v1 Any)
+  Mark2 (v, v1 any)
 
 // Liefert genau dann true, wenn alle Ecken und Kanten
 // von x markiert sind.
@@ -125,7 +125,7 @@ type Graph interface {
 // Liefert nil, wenn x leer ist oder i >= NumNeighbours()
 // gilt; liefert andernfalls eine Kopie des i-ten Nachbarn
 // der lokalen Ecke von x.
-  Neighbour (i uint) Any
+  Neighbour (i uint) any
 
 // Vor.: o ist auf Ecken definiert.
 // o ist auf alle Ecken von x angewendet. Die kolokale und
@@ -173,4 +173,4 @@ type Graph interface {
 // Für e == nil hat x keinen Kantentyp und alle Kanten
 // haben den Wert 1; andernfalls ist e die Musterkante von x,
 // die den Typ der Kanten von x definiert.
-func New (d bool, v, e Any) Graph { return new_(d,v,e) }
+func New (d bool, v, e any) Graph { return new_(d,v,e) }

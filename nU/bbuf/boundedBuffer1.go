@@ -1,17 +1,17 @@
 package bbuf
 
-// (c) Christian Maurer   v. 180101 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import (. "nU/obj"; "nU/buf")
 
 type boundedBuffer1 struct {
-  Any "Musterobjekt"
+  any "Musterobjekt"
   buf.Buffer
   num int
   cap uint
 }
 
-func new1(a Any, n uint) BoundedBuffer {
+func new1(a any, n uint) BoundedBuffer {
   x := new(boundedBuffer1)
   x.Buffer = buf.New (a)
   x.cap = n
@@ -30,16 +30,16 @@ func (x *boundedBuffer1) Full() bool {
   return x.num == int(x.cap - 1)
 }
 
-func (x *boundedBuffer1) Ins (a Any) {
+func (x *boundedBuffer1) Ins (a any) {
   if x.Full() { return }
-  CheckTypeEq (a, x.Any)
+  CheckTypeEq (a, x.any)
   x.Buffer.Ins (a)
   x.num++
 }
 
-func (x *boundedBuffer1) Get() Any {
+func (x *boundedBuffer1) Get() any {
   if x.Empty() {
-    return x.Any
+    return x.any
   }
   x.num--
   return x.Buffer.Get()

@@ -1,6 +1,6 @@
 package box
 
-// (c) Christian Maurer   v. 220524 - license see µU.go
+// (c) Christian Maurer   v. 220804 - license see µU.go
 
 import (
   . "µU/obj"
@@ -10,6 +10,7 @@ type
   Box interface { // Boxes within one line of the screen to write and edit strings.
 
   Stringer
+  col.Colourer
 
 // Pre: n > 0.
 // x has the width n.

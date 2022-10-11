@@ -1,18 +1,18 @@
 package qu
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220801 - license see nU.go
 
 import . "nU/obj"
 
 type queue struct {
-  Any "Musterobjekt"
-  qs []Any
+  any "Musterobjekt"
+  qs []any
 }
 
-func new_(a Any) Queue {
+func new_(a any) Queue {
   x := new(queue)
-  x.Any = Clone(a)
-  x.qs = make([]Any, 0)
+  x.any = Clone(a)
+  x.qs = make([]any, 0)
   return x
 }
 
@@ -24,13 +24,13 @@ func (x *queue) Num() int {
   return len(x.qs)
 }
 
-func (x *queue) Enqueue (a Any) {
+func (x *queue) Enqueue (a any) {
   x.qs = append(x.qs, a)
 }
 
-func (x *queue) Dequeue() Any {
+func (x *queue) Dequeue() any {
   if x.Empty() {
-    return x.Any
+    return x.any
   }
   a := x.qs[0]
   x.qs = x.qs[1:]

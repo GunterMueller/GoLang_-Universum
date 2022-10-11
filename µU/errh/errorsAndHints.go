@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 211214 - license see µU.go
+// (c) Christian Maurer   v. 220811 - license see µU.go
 
 import (
   "strconv"
@@ -185,6 +185,11 @@ func error (s string, k uint) {
   do (s + " " + n.String(k), false)
 }
 
+func concm (s string, k uint, s1 string) string {
+  s += " " + n.String (k)
+  return s + " " + s1
+}
+
 func conc2 (s string, k uint, s1 string, k1 uint) string {
   s += " " + n.String (k)
   s1 += " " + n.String(k1)
@@ -204,6 +209,10 @@ func conc4 (s string, k uint, s1 string, k1 uint, s2 string, k2 uint, s3 string,
   s2 += " " + n.String(k2)
   s3 += " " + n.String(k3)
   return s + " " + s1 + " " + s2 + " " + s3
+}
+
+func errorm (s string, n uint, s1 string) {
+  do (concm(s, n, s1), false)
 }
 
 func error2 (s string, n uint, s1 string, n1 uint) {

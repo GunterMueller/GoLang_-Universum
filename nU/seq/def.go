@@ -1,6 +1,6 @@
 package seq
 
-import . "nU/obj"
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 type Sequence interface {
 
@@ -11,7 +11,7 @@ type Sequence interface {
   Num() int
 
 // a ist als letztes Objekt in x eingefügt.
-  InsLast (a Any)
+  InsLast (a any)
 
 // Wenn x leer ist, ist nichts verändert.
 // Andernfalls ist das erste Objekt aus x entfernt.
@@ -19,9 +19,9 @@ type Sequence interface {
 
 // Liefert nil, falls x leer ist,
 // andernfalls das erste Objekt aus x.
-  GetFirst() Any
+  GetFirst() any
 }
 
 // Vor.: a ist atomar oder implementiert Equaler.
 // Liefert eine leere Folge mit Musterobjekt a.
-func New (a Any) Sequence { return new_(a) }
+func New (a any) Sequence { return new_(a) }

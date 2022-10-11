@@ -1,6 +1,6 @@
 package mon
 
-// (c) Christian Maurer   v. 171231 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
@@ -42,7 +42,7 @@ type Monitor interface {
 // Monitorfunktion von x sind und a ein Objekt, ggf. nil).
 // Die Funktion kann durch Monitorfunktionen anderer Prozesse
 // nicht unterbrochen werden.
-  F (a Any, i uint) Any
+  F (a any, i uint) any
 }
 
 // Vor.: n > 0. f (und ggf. p) ist für alle i < n definiert.

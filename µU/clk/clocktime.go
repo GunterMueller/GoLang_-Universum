@@ -1,6 +1,6 @@
 package clk
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220084 - license see µU.go
 
 import (
   . "µU/ker"
@@ -175,6 +175,10 @@ func (x *clocktime) GetFormat() Format {
 
 func (x *clocktime) Colours (f, b col.Colour) {
   x.cF, x.cB = f, b
+}
+
+func (x *clocktime) Cols() (col.Colour, col.Colour) {
+  return x.cF, x.cB
 }
 
 func (x *clocktime) String() string {

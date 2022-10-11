@@ -1,6 +1,6 @@
 package main
 
-/* (c) Christian Maurer   v. 220124
+/* (c) Christian Maurer   v. 220809
 
   Dieses Paket - das n(ano)Universum - enthält die Quelltexte aus meinem Lehrbuch
   "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2019).
@@ -23,17 +23,17 @@ package main
 
   Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angemommen. */
 
-import ("nU/lock"; "nU/lock2"; "nU/lockn";
-        "nU/mbuf"; "nU/mbbuf"; "nU/macc"; "nU/rw"; "nU/lr"; "nU/dgra")
+import (
+  "nU/achan"; "nU/barb"; "nU/barr"; "nU/dgra"; "nU/dlock"; "nU/ego"
+  "nU/lock2"; "nU/lr"; "nU/macc"; "nU/mbuf"; "nU/mbbuf"; "nU/phil"
+  "nU/qu"; "nU/rpc"; "nU/rw"; "nU/schan"; "nU/scr"; "nU/smok"; "nU/term"
+)
 
 func main() {
-  lock.NewTAS()
-  lock2.NewDekker()
-  lockn.NewDijkstra(3)
-  mbuf.New(3)
-  mbbuf.New(0,3)
-  macc.New()
-  rw.New1()
-  lr.New1()
-  dgra.Touch()
+  achan.New (nil); barb.NewDir(); barr.New(0); dgra.Touch(); dlock.Touch(); ego.Me()
+  lock2.NewDekker(); lr.New1(); macc.New(); mbuf.New(3); mbbuf.New(0,3); phil.NewNaive()
+  qu.New (nil); rpc.Touch(); rw.New1(); schan.New (nil); smok.NewNaive()
+  scr.New(); defer scr.Fin()
+  term.New(); defer term.Fin()
+  scr.Write ("all nU-packages are compiled", 0, 0)
 }

@@ -1,14 +1,11 @@
 package schan
 
-// (c) Christian Maurer   v. 171104 - license see nU.go
-
-import . "nU/obj"
+// (c) Christian Maurer   v. 220801 - license see nU.go
 
 type SynchronousChannel interface {
 
-  Send (a Any)
-
-  Recv() Any
+  Send (a any)
+  Recv() any
 }
 
-func New (a Any) SynchronousChannel { return new_(a) }
+func New (a any) SynchronousChannel { return new_(a) }

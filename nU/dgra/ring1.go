@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 190402 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import (. "nU/obj"; "nU/vtx"; "nU/fmon")
 
@@ -50,7 +50,7 @@ func (x *distributedGraph) ring1() {
   }
 }
 
-func (x *distributedGraph) r1 (a Any, i uint) Any {
+func (x *distributedGraph) r1 (a any, i uint) any {
   x.awaitAllMonitors()
   bs := a.(Stream)
   s := Decode(uint(0), bs[:c0]).(uint)

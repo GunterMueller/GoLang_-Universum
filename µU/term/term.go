@@ -182,11 +182,7 @@ func (x *term) Edit (l, c uint) {
       x.Clr()
       break
     }
-    if x.Val() != r.NaN() {
-      break
-    } else {
-      errh.Error0 (errtext[x.errors])
-    }
+    errh.Error0 (errtext[x.errors])
   }
   x.Write (l, c)
 }
@@ -307,20 +303,18 @@ func (x *term) Val() float64 {
     val = r.FuncVal (x.f, x.arg.Val())
   case bracketType:
     val = x.interior.Val()
-  default:
-    val = r.NaN()
   }
   return val
 }
 
 func (x *term) Val1 (a float64) float64 {
   if len(x.variables) != 1 {
-    return r.NaN()
+    return 0
   }
   var val float64
   switch x.typ {
   case noType:
-    val = r.NaN()
+    val = 0
   case realType:
     val = x.real
   case opType:
@@ -339,7 +333,7 @@ func (x *term) Vals (f FuncVal) float64 {
   var val float64
   switch x.typ {
   case noType:
-    val = r.NaN()
+    val = 0
   case realType:
     val = x.real
   case opType:

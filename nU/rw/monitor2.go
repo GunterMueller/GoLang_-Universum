@@ -1,8 +1,8 @@
 package rw
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/mon")
+import "nU/mon"
 
 type monitor2 struct {
   mon.Monitor
@@ -11,7 +11,7 @@ type monitor2 struct {
 func newM2() ReaderWriter {
   x := new(monitor2)
   var nR, nW uint
-  f := func (a Any, k uint) Any {
+  f := func (a any, k uint) any {
          switch k {
          case readerIn:
            for nW > 0 || x.Awaited (writerIn) && nR > 0 {

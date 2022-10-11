@@ -1,8 +1,8 @@
 package lr
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/mon")
+import "nU/mon"
 
 type monitor1 struct {
   mon.Monitor
@@ -11,7 +11,7 @@ type monitor1 struct {
 func newM1() LeftRight {
   x := new(monitor1)
   var nL, nR uint
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          switch i {
          case leftIn:
            for nR > 0 {

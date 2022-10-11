@@ -1,9 +1,10 @@
 package host
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220804 - license see µU.go
 
 import (
-  "os"; "net"
+  "os"
+  "net"
   . "µU/ker"
   . "µU/obj"
   "µU/str"
@@ -249,6 +250,10 @@ func (x *host) Equiv (s string) bool {
 
 func (x *host) Colours (f, b col.Colour) {
   x.cF, x.cB = f, b
+}
+
+func (x *host) Cols() (col.Colour, col.Colour) {
+  return x.cF, x.cB
 }
 
 func (x *host) Write (l, c uint) {

@@ -1,6 +1,6 @@
 package rand
 
-// (c) Christian Maurer   v. 201226 - license see µU.go
+// (c) Christian Maurer   v. 220713 - license see µU.go
 
 // see D. E. Knuth, The Art of Computer Programming, 3.2.1.1-2, 3.6 i)-vi)
 
@@ -36,7 +36,7 @@ func _init() {
 }
 
 func productModM (a, x uint) uint {
-  p:= uint64(a * x)
+  p := uint(a * x)
   a = uint(p % 2^32)
   x = uint(p / 2^32)
 // p = 2^32 * x + a = M * 2 * x + a + 2 * x

@@ -1,6 +1,6 @@
 package field
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220809 - license see µU.go
 
 import (
   . "µU/obj"

@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220804 - license see µU.go
 
 import (
 //  "µU/ker"
@@ -122,6 +122,10 @@ func (x *vertex) UnderMouse() bool {
 
 func (x *vertex) Colours (f, b col.Colour) {
   x.f, x.b = f, b
+}
+
+func (x *vertex) Cols() (col.Colour, col.Colour) {
+  return x.f, x.b
 }
 
 func (x *vertex) ColoursA (f, b col.Colour) {

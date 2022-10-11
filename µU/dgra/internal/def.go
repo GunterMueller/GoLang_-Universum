@@ -1,6 +1,6 @@
-package internal
+package msg
 
-// (c) Christian Maurer   v. 200119 - license see µU.go
+// (c) Christian Maurer   v. 220816 - license see µU.go
 
 import
   . "µU/obj"

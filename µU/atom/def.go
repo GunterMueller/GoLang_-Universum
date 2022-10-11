@@ -1,40 +1,67 @@
 package atom
 
-// (c) Christian Maurer   v. 210415 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
+//
+// >>> This package is only needed for the implementation of µU/mol;
+//     it must not be used elsewhere.
 
 import (
   . "µU/obj"
   "µU/col"
 )
 const (
-  Enumerator = uint(iota)
-  TruthValue
-  Text
+  String = iota
   Natural
   Real
-  Clocktime
   Calendarday
+  Clocktime
   Euro
-  Person
   PhoneNumber
-  Address
   Country
+  Enum
   Ntypes
 )
 type
   Atom interface {
 
-  Object
-  Formatter
-  col.Colourer
   Editor
-  Printer
-  Stringer
+  col.Colourer
+  EditIndex()
+  Print (l, c uint)
 
-// Returns true, iff x and y have the same type.
-  Equiv (y Any) bool
+  Place (l, c uint)
+  Pos() (uint, uint)
+  Width() uint
+
+  PosLess (Y any) bool
+
+  String() string
+
+  Index (b bool)
+  IsIndex() bool
+
+// Pre: If x has type Enum, x.EnumSet must have been called before.
+// x is the atom interactively selected by the user.
+  Select()
+
+// Pre: t < NTypes
+// x has the type t and width n.
+  Define (t int, n uint)
+
+// Returns the type of x.
+  Typ() int
+
+// If x has the type String, true is returned, iff x is a substring of Y.
+// Returns otherwise true, iff x.Eq (Y).
+  Sub (Y any) bool
+
+  SelectColF()
+  SelectColB()
+
+  EnumName (n string)
+  EnumSet (l, c uint)
+  EnumGet()
 }
 
-// Returns a new Atom of the type of o, where o is an object
-// of a type corresponding to one of the above constants.
-func New (o Object) Atom { return new_(o) }
+// Returns a new atom of type Char.
+func New() Atom { return new_() }

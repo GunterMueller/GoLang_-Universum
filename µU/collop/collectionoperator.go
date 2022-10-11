@@ -1,6 +1,6 @@
 package collop
 
-// (c) Christian Maurer   v. 211214 - license see µU.go
+// (c) Christian Maurer   v. 220814 - license see µU.go
 
 import (
   . "µU/obj"
@@ -9,22 +9,22 @@ import (
   "µU/errh"
 )
 
-func operate (c Collector, o Indexer, f func (x, y Indexer) bool) {
+func operate (x Collector, o Rotator, f func (x, y Rotator) bool) {
   help := []string {" vor-/rückwärts: Pfeiltaste ab-/aufwärts",
                     "zum Anfang/Ende: Pos1/Ende              ",
                     " Eintrag ändern: Enter                  ",
                     "       einfügen: Einfg                  ",
                     "      entfernen: Entf                   ",
-                    "       umordnen: F3                     ",
                     "         suchen: F2                     ",
+                    "       umordnen: F3                     ",
                     "   Programmende: Esc                    "}
   for i, h := range (help) { help[i] = str.Lat1 (h) }
-  c.Jump (false)
-  if c.Empty() {
+  x.Jump (false)
+  if x.Empty() {
     for {
-      o.Edit (0, 0)
+      o.(Editor).Edit (0, 0)
       if ! o.Empty() {
-        c.Ins (o)
+        x.Ins (o)
         break
       }
     }
@@ -32,92 +32,92 @@ func operate (c Collector, o Indexer, f func (x, y Indexer) bool) {
   errh.Hint ("Hilfe: F1                  Ende: Esc")
   loop:
   for {
-    o = c.Get().(Indexer)
-    o.Write (0, 0)
-    switch k, _ := kbd.Command(); k {
-    case kbd.Enter:
-      o1 := o.Clone().(Indexer)
-      o.Edit (0, 0)
-      if o.Empty() {
-        c.Del()
-      } else {
-        if ! o.Eq (o1) {
-          c.Put (o)
-        }
-      }
+    o = x.Get().(Rotator)
+    o.(Editor).Write (0, 0)
+    switch c, _ := kbd.Command(); c {
     case kbd.Esc:
       break loop
+    case kbd.Enter:
+      o1 := o.Clone().(Rotator)
+      o.(Editor).Edit (0, 0)
+      if o.Empty() {
+        x.Del()
+      } else {
+        if ! o.Eq (o1) {
+          x.Put (o)
+        }
+      }
     case kbd.Up:
-      c.Step (false)
+      x.Step (false)
     case kbd.Down:
-      c.Step (true)
+      x.Step (true)
     case kbd.Pos1:
-      c.Jump (false)
+      x.Jump (false)
     case kbd.End:
-      c.Jump (true)
+      x.Jump (true)
     case kbd.Ins:
 //      errh.DelHint()
       o.Clr()
-      o.Edit (0, 0)
+      o.(Editor).Edit (0, 0)
       if ! o.Empty() {
-        c.Ins (o)
+        x.Ins (o)
       }
     case kbd.Del:
       if errh.Confirmed() {
-        c.Del()
+        x.Del()
       }
     case kbd.Help:
       errh.Help (help)
     case kbd.Search:
       o.Clr()
-      o.Edit (0, 0)
+      o.(Editor).Edit (0, 0)
       if ! o.Empty() {
-        c.Jump (false)
+        x.Jump (false)
         loop1:
         for {
-          o1 := c.Get().(Indexer)
+          o1 := x.Get().(Rotator)
           if f (o, o1) {
-            o1.Write (0, 0)
+            o1.(Editor).Write (0, 0)
             for {
-              switch k, _ := kbd.Command(); k {
+              switch c1, _ := kbd.Command(); c1 {
               case kbd.Esc:
                 break loop1
               case kbd.Down:
-                for ! c.Eoc (true) {
-                  c.Step (true)
-                  o2 := c.Get().(Indexer)
+                for ! x.Eoc (true) {
+                  x.Step (true)
+                  o2 := x.Get().(Rotator)
                   if f (o, o2) {
-                    o2.Write (0, 0)
+                    o2.(Editor).Write (0, 0)
                     break
                   }
                 }
               case kbd.Up:
-                for ! c.Eoc (false) {
-                  c.Step (false)
-                  o2 := c.Get().(Indexer)
+                for ! x.Eoc (false) {
+                  x.Step (false)
+                  o2 := x.Get().(Rotator)
                   if f (o, o2) {
-                    o2.Write (0, 0)
+                    o2.(Editor).Write (0, 0)
                     break
                   }
                 }
 
               case kbd.Del:
                 if errh.Confirmed() {
-                  c.Del()
+                  x.Del()
                 }
               }
             }
           }
-          if c.Eoc (true) {
-            c.Jump (false)
+          if x.Eoc (true) {
+            x.Jump (false)
             break
           }
-          c.Step (true)
+          x.Step (true)
         }
       }
     case kbd.Act:
       o.(Rotator).Rotate()
-      c.Sort()
+      x.Sort()
     }
   }
   errh.DelHint()

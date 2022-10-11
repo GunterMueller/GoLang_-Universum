@@ -1,30 +1,31 @@
 package mol
 
-// (c) Christian Maurer   v. 210414 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
-import (
+import
   . "µU/obj"
-  "µU/col"
-  "µU/atom"
-  "µU/masks"
-)
+const
+  Suffix = ".s.dat"
 type
-  Molecule interface {
+  Molecule interface { // structs with atoms as components.
+                       // Any molecule has at least one order.
+                       // One of the orders is always the actual one.
 
-  Object
-  col.Colourer
+//  DefineName (n string)
+// Pre for Edit: DefineName has to be called immediately before.
   Editor
-  Printer
+  Print()
+  NumAtoms() uint
+  Indexer
+  Rotator
 
-// a is inserted into x.
-  Ins (a atom.Atom, l, c uint)
-
-// Returns the n-th atom of x.
-  Component (n uint) Any
-
-// m is the set of masks of x.
-  SetMasks (m masks.MaskSet)
+  Sub (Y any) bool
+  Construct (n string)
 }
 
-// Returns a new empty molecule.
+// Returns a new empty moledule.
 func New() Molecule { return new_() }
+
+// Returns the molecule that was built by the call to Construct.
+func Constructed (n string) Molecule { return constructed(n) }
+

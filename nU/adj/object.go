@@ -1,10 +1,10 @@
 package adj
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 220702 - license see µU.go
 
 import . "nU/obj"
 
-func (x *adjacencyMatrix) imp (Y Any) *adjacencyMatrix {
+func (x *adjacencyMatrix) imp (Y any) *adjacencyMatrix {
   y, ok := Y.(*adjacencyMatrix)
   if ! ok { TypeNotEqPanic (x, Y) }
   CheckTypeEq (x.e, y.e)
@@ -31,7 +31,7 @@ func (x *adjacencyMatrix) Clr() {
   }
 }
 
-func (x *adjacencyMatrix) Eq (Y Any) bool {
+func (x *adjacencyMatrix) Eq (Y any) bool {
   y := x.imp (Y)
   if x.Empty() { return y.Empty() }
   for i := uint(0); i < x.uint; i++ {
@@ -47,7 +47,7 @@ func (x *adjacencyMatrix) Eq (Y Any) bool {
   return true
 }
 
-func (x *adjacencyMatrix) Copy (Y Any) {
+func (x *adjacencyMatrix) Copy (Y any) {
   y := x.imp (Y)
   x.uint = y.uint
   x.e, x.v = Clone(y.e), Clone(y.v)
@@ -59,13 +59,13 @@ func (x *adjacencyMatrix) Copy (Y Any) {
   }
 }
 
-func (x *adjacencyMatrix) Clone() Any {
+func (x *adjacencyMatrix) Clone() any {
   y := new_(x.uint, x.v, x.e)
   y.Copy (x)
   return y
 }
 
-func (x *adjacencyMatrix) Less (Y Any) bool {
+func (x *adjacencyMatrix) Less (Y any) bool {
   return false
 }
 

@@ -1,18 +1,18 @@
 package buf
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
 type buffer struct {
-  Any "Musterobjekt"
-  s []Any
+  any "Musterobjekt"
+  s []any
 }
 
-func new_(a Any) Buffer {
+func new_(a any) Buffer {
   x := new(buffer)
-  x.Any = Clone(a)
-  x.s = make([]Any, 0)
+  x.any = Clone(a)
+  x.s = make([]any, 0)
   return x
 }
 
@@ -24,13 +24,13 @@ func (x *buffer) Num() int {
   return len(x.s)
 }
 
-func (x *buffer) Ins (a Any) {
+func (x *buffer) Ins (a any) {
   x.s = append(x.s, a)
 }
 
-func (x *buffer) Get() Any {
+func (x *buffer) Get() any {
   if x.Empty() {
-    return x.Any
+    return x.any
   }
   a := x.s[0]
   x.s = x.s[1:]

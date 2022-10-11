@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 210123 - license see µU.go
+// (c) Christian Maurer   v. 220702 - license see µU.go
 
 import (. "nU/obj"; "nU/col"; "nU/scr")
 
@@ -31,23 +31,23 @@ func (x *vertex) Clr() {
   x.uint = 0
 }
 
-func (x *vertex) Eq (Y Any) bool {
+func (x *vertex) Eq (Y any) bool {
   y := Y.(*vertex)
   return x.uint == y.uint &&
          x.x == y.x && x.y == y.y
 }
 
-func (x *vertex) Less (Y Any) bool {
+func (x *vertex) Less (Y any) bool {
   return x.uint < Y.(*vertex).uint
 }
 
-func (x *vertex) Copy (Y Any) {
+func (x *vertex) Copy (Y any) {
   y := Y.(*vertex)
   x.uint = y.uint
   x.x, x.y = y.x, y.y
 }
 
-func (x *vertex) Clone() Any {
+func (x *vertex) Clone() any {
   y  := new_(x.uint)
   y.Copy (x)
   return y
@@ -99,14 +99,14 @@ func (x *vertex) Write1 (a bool) {
   scr.WriteNat (x.uint, x.x, x.y)
 }
 
-func w (v Any, a bool) {
+func w (v any, a bool) {
   f := col.White()
   if a { f = col.Red() }
   scr.ColourF (f)
   v.(*vertex).Write1(a)
 }
 
-func w2 (v0, v1 Any, a bool) {
+func w2 (v0, v1 any, a bool) {
   x0, y0 := v0.(*vertex).Pos()
   x1, y1 := v1.(*vertex).Pos()
   f := col.White()

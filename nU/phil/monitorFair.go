@@ -1,10 +1,10 @@
 package phil
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 // >>> Fair solution with a monitor due to Dijkstra
 
-import (. "nU/obj"; "nU/mon")
+import "nU/mon"
 
 type monitorFair struct {
   mon.Monitor
@@ -12,7 +12,7 @@ type monitorFair struct {
 
 func newMF() Philos {
   var m mon.Monitor
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          p := a.(uint)
          if i == lock {
            if status[left(p)] == dining && status[right(p)] == thinking ||

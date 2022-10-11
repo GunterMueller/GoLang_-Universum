@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 190402 - license see nU.go
+// (c) Christian Maurer   v. 220801 - license see nU.go
 
 import ("runtime"; "math"; "strconv")
 
@@ -24,16 +24,16 @@ func C0() uint { return c0 }
 
 // Pre: a is atomic or implements Object.
 // Returns the codelength of a.
-func Codelen (a Any) uint { return codelen(a) }
+func Codelen (a any) uint { return codelen(a) }
 
 // Pre: a is atomic or implements Object.
 // Returns a as encoded byte sequence.
-func Encode (a Any) Stream { return encode(a) }
+func Encode (a any) Stream { return encode(a) }
 
 // Pre: a is atomic or implements Object.
 //      bs is a encoded byte sequence.
 // Returns the object, that was encoded.
-func Decode (a Any, bs Stream) Any { return decode(a,bs) }
+func Decode (a any, bs Stream) any { return decode(a,bs) }
 
 // Returns a byte sequence of length 16,
 // that encodes a, b, c, d.
@@ -45,18 +45,18 @@ func Decode (a Any, bs Stream) Any { return decode(a,bs) }
 // func Decode4 (bs Stream) (uint32, uint32, uint32, uint32) { return decode4(bs) }
 
 // Returns true, iff a implements Coder.
-func IsCoder (a Any) bool { return isCoder(a) }
+func IsCoder (a any) bool { return isCoder(a) }
 
 // Returns true, iff a is atomic or implements Coder.
-func AtomicOrCoder (a Any) bool { return Atomic(a) || isCoder(a) }
+func AtomicOrCoder (a any) bool { return Atomic(a) || isCoder(a) }
 
-func isCoder (a Any) bool {
+func isCoder (a any) bool {
   _, c := a.(Coder)
   return c
 }
 
-func fail (a Any) {
-  panic ("nU only [en|de]codes atomic types and objects of type string, {[Bool|Uint|Any]}Stream or Coder !")
+func fail (a any) {
+  panic ("nU only [en|de]codes atomic types and objects of type string, {[Bool|Uint|any]}Stream or Coder !")
 }
 
 var c0 uint
@@ -72,7 +72,7 @@ func init() {
   }
 }
 
-func codelen (a Any) uint {
+func codelen (a any) uint {
   if a == nil { return 0 }
   switch a.(type) {
   case bool, int8, uint8:
@@ -110,7 +110,7 @@ func codelen (a Any) uint {
   panic("shut up, compiler")
 }
 
-func encode (a Any) Stream {
+func encode (a any) Stream {
   if a == nil {
     return nil
   }
@@ -274,7 +274,7 @@ func encode (a Any) Stream {
   return bs
 }
 
-func gödel (a Any) byte {
+func gödel (a any) byte {
   if a == nil { return 0 }
   switch a.(type) {
   case bool:
@@ -315,7 +315,7 @@ func gödel (a Any) byte {
   return 255
 }
 
-func degödel (b byte) Any {
+func degödel (b byte) any {
   switch b {
   case 0:
     return nil
@@ -361,7 +361,7 @@ func chk (b Stream, n int) {
   }
 }
 
-func decode (a Any, bs Stream) Any {
+func decode (a any, bs Stream) any {
   if a == nil { return nil }
   switch a.(type) {
   case bool:

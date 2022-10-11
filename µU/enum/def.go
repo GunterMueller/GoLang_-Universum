@@ -1,72 +1,60 @@
 package enum
 
-// (c) Christian Maurer   v. 210415 - license see µU.go
+// (c) Christian Maurer   v. 221001 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
 )
-const ( // Format
-  Short = Format(iota)
-  Long
-  NFormats
-)
+const
+  M = uint(27) // maximal length of the strings
 type
-  Type = uint8; const ( // details s. corresponding files
-  Title = Type(iota)
-  Audio
-  Book
-  Writer
-  Composer
-  AudioMedium
-  Religion
-  Subject
-  Wortart
-  Casus
-  Genus
-  Persona
-  Numerus
-  Tempus
-  Modus
-  GenusVerbi
-  Comparatio
-  NTypes
-)
-type
-  Enumerator interface { // A set of at most 256 enumerated elements,
-                         // represented by strings of len <= 64.
-                         // The 0-th element is "empty", represented by spaces.
-  Object
-  Formatter
-  col.Colourer
+  Enum interface { // sequences of strings of the same length
+
+// Pre: All s[i] are pairwise different and have a length <= n,
+//      where n is the stringlength given by New.
+  Set (s ...string)
+
+// x has the strings edited by the user.
+// They are saved in a file whose name is determined by n.
+  SetEdit (n string, l, c uint)
+
+// Pre: All k[i] are pairwise different and have a length <= k,
+//      where k is the shortcutlength given by Newk.
+//      No k[i] contains blank spaces.
+  Setk (k ...string)
+
+// x has the strings and shortcuts edited by the user.
+// They are saved in files whose names are determined by n.
+  SetEditk (n string, l, c uint)
+
+  Get (n string)
+
   Editor
+  col.Colourer
+
+// x is the object selected by the user.
+  Select (l, c uint)
+
+// String returns the selected string.
   Stringer
-  Printer
 
-// Returns the type of x.
-  Typ() uint8 // Type
+  TeXer
 
-// Returns the number of elements in the type of x.
-  Num() uint8
+  Print (l, c uint)
 
-// Returns the order number of x.
-  Ord() uint8
+// Returns the number of strings of x given by Set.
+  Num() uint
 
-// Returns the width of the string representation of x (common for all elements).
-  Wd() uint
-
-// Returns true, iff the type of x has an n-th element.
-// In this case x is that element, otherwise x is empty.
-  Set (n uint8) bool
-
-// If s equals an entry in sort,
-// then the number of that entry is returned,
-// otherwise 0.
-  Found (s string, sort uint8, f Format) uint8
+// Returns the width of the strings of x.
+  Width() uint
 }
-var
-  N []Type
 
-// Pre: e < NEnums.
-// Returns a new empty enumerator for objects of Type t.
-func New (t Type) Enumerator { return new_(t) }
+// Pre: 0 < k <= M.
+// Returns a new enumerator with stringlength n.
+func New (n uint) Enum { return new_(n) }
+
+// Pre: 0 < k < n <= M.
+// Returns a new enumerator with stringlength n
+// and shortcutlength k.
+func Newk (n, k uint) Enum { return newk(n,k) }

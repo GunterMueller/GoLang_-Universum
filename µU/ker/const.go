@@ -1,8 +1,15 @@
 package ker
 
-// (c) Christian Maurer   v. 220115 - license see µU.go
+// (c) Christian Maurer   v. 220813 - license see µU.go
 
+import
+  "math"
 const (
+  MaxShortNat = uint(math.MaxUint16)
+  MaxNat = uint(math.MaxUint64)
+  MaxInt = math.MaxInt64
+  MinInt = math.MinInt64
+
   PointsPerInch = 72
   MillimetersPerInch = 25.4
   PointsPerMillimeter = float64(PointsPerInch) / MillimetersPerInch

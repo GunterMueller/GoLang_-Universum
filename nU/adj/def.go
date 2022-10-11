@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 210123 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
@@ -36,10 +36,10 @@ type AdjacencyMatrix interface {
 // d.h., in dem ensprechenden Graph gibt es genau dann
 // eine Kante mit dem Wert von e von seiner i-ten Ecke
 // zu seiner k-ten Ecke, wenn x.Val (i,k) > 0 ist.
-  Edge (i, k uint, e Any)
+  Edge (i, k uint, e any)
 
 // Liefert das erste Element des Paares x(i,i), also eine Ecke.
-  Vertex (i uint) Any
+  Vertex (i uint) any
 
 // Vor.: i, k < x.Num().
 // Liefert 0, wenn in x(i,k) = (v, e) e die Musterkante
@@ -50,7 +50,7 @@ type AdjacencyMatrix interface {
 //       e hat den Typ der Musterkante von x.
 // Wenn i oder k >= x.Num(), ist nichts verändert.
 // Andernfalls ist jetzt x(i,k) == (v, e).
-  Set (i, k uint, v, e Any)
+  Set (i, k uint, v, e any)
 
 // Liefert genau dann true, wenn x(i,k) == x(k,i) für alle i, k < x.Num(),
 // d.h. der entsprechende Graph ist ungerichtet.
@@ -79,4 +79,4 @@ type AdjacencyMatrix interface {
 //       e hat einen uint-Typ oder implementiert Valuator.
 // v ist die Musterecke und e die Musterkante von x.
 // Liefert eine n*n-Matrix nur mit Einträgen (v, e).
-func New (n uint, v, e Any) AdjacencyMatrix { return new_(n,v,e) }
+func New (n uint, v, e any) AdjacencyMatrix { return new_(n,v,e) }

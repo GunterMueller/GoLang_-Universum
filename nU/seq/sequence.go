@@ -1,18 +1,18 @@
 package seq
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
 type sequence struct {
-  Any "Musterobjekt"
-  ss []Any
+  any "Musterobjekt"
+  ss []any
 }
 
-func new_(a Any) Sequence {
+func new_(a any) Sequence {
   x := new(sequence)
-  x.Any = Clone(a)
-  x.ss = make([]Any, 0)
+  x.any = Clone(a)
+  x.ss = make([]any, 0)
   return x
 }
 
@@ -24,7 +24,7 @@ func (x *sequence) Num() int {
   return len(x.ss)
 }
 
-func (x *sequence) InsLast (a Any) {
+func (x *sequence) InsLast (a any) {
   x.ss = append(x.ss, a)
 }
 
@@ -32,9 +32,9 @@ func (x *sequence) DelFirst() {
   x.ss = x.ss[1:]
 }
 
-func (x *sequence) GetFirst() Any {
+func (x *sequence) GetFirst() any {
   if x.Empty() {
-    return x.Any
+    return x.any
   }
   return x.ss[0]
 }

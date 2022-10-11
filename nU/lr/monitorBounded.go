@@ -1,8 +1,8 @@
 package lr
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/mon")
+import "nU/mon"
 
 type monitorBounded struct {
   mon.Monitor
@@ -12,7 +12,7 @@ func newMB (mL, mR uint) LeftRight {
   x := new(monitorBounded)
   var nL, nR, // number of active lefties/righties
       tL, tR uint // number of lefties/righties within one turn
-  fs := func (a Any, i uint) Any {
+  fs := func (a any, i uint) any {
           switch i {
           case leftIn:
             if nR > 0 || x.Awaited (rightIn) && tL >= mL {

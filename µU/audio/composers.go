@@ -1,6 +1,6 @@
 package audio
 
-// (c) Christian Maurer   v. 210516 - license see µU.go
+// (c) Christian Maurer   v. 220809 - license see µU.go
 
 import
   "µU/text"

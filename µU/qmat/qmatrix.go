@@ -1,20 +1,22 @@
 package qmat
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 // >>> matrices with rational fractions as entries
 
 import (
   . "µU/obj"
   "µU/ker"
+  "µU/col"
   "µU/errh"
   "µU/n"
   "µU/q"
 )
 type
   qmatrix struct {
-          nl, nc uint // number of lines and columns
-         matrix  [][]q.Rational
+           nl, nc uint // number of lines and columns
+           matrix [][]q.Rational
+             f, b col.Colour
                  }
 
 func nofit() {
@@ -460,20 +462,33 @@ func (x *qmatrix) wd() uint {
 
 func (x *qmatrix) Write (z, s uint) {
   w := x.wd()
-  for l := uint(0); l < x.nl; l++ {
-    for c := uint(0); c < x.nc; c++ {
-      x.matrix[l][c].Write (z + l, c + s + w * c)
+  for i := uint(0); i < x.nl; i++ {
+    for j := uint(0); j < x.nc; j++ {
+      x.matrix[i][j].Write (z + i, j + s + w * j)
     }
   }
 }
 
 func (x *qmatrix) Edit (z, s uint) {
   w := x.wd()
-  for l := uint(0); l < x.nl; l++ {
-    for c := uint(0); c < x.nc; c++ {
-      x.matrix[l][c].Edit (z + l, c + s + w * c)
+  for i := uint(0); i < x.nl; i++ {
+    for j := uint(0); j < x.nc; j++ {
+      x.matrix[i][j].Edit (z + i, j + s + w * j)
     }
   }
+}
+
+func (x *qmatrix) Colours (f, b col.Colour) {
+  x.f, x.b = f, b
+  for i := uint(0); i < x.nl; i++ {
+    for j := uint(0); j < x.nc; j++ {
+      x.matrix[i][j].Colours (f, b)
+    }
+  }
+}
+
+func (x *qmatrix) Cols() (col.Colour, col.Colour) {
+  return x.f, x.b
 }
 
 func (x *qmatrix) TeX() string { // AmSTeX

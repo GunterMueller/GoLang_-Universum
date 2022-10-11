@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 220131 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   . "µU/obj"
@@ -20,31 +20,31 @@ type
 const
   NWeekdays = uint(nWeekdays)
 const ( // Format
-  Dd = iota  // e.g. "01"
-  Dd_mm_     // e.g. "01.08."
-  Dd_mm_yy   // e.g. "01.08.17" // default Format
-  Dd_mm_yyyy // e.g. "01.08.2017"
-//D          // e.g. "1"
-//D_m        // e.g. "1.8."
-//D_m_yy     // e.g. "1.8.17"
-//           // e.g. "1.8.2017"
-  Yymmdd     // e.g. "170801"
-  Yyyymmdd   // e.g. "20170801"
-//WD_m_yy    // e.g. "Di, 1.8.2017"
-  Dd_M       // e.g. "1. August"
-  Dd_M_yyyy  // e.g. "1. August 2017"
-//WDd_M_yyyy // e.g. "Dienstag, 1. August 2017"
-  Yy         // e.g. "17"
-  Yyyy       // e.g. "2017"
-  Wd         // e.g. "Di"
-  WD         // e.g. "Dienstag"
+  Dd = iota  // e.g. "31"
+  Dd_mm_     // e.g. "31.08."
+  Dd_mm_yy   // e.g. "31.08.22" // default Format
+  Dd_mm_yyyy // e.g. "31.08.2022"
+//D          // e.g. "31"
+//D_m        // e.g. "31.8."
+//D_m_yy     // e.g. "31.8.22"
+//           // e.g. "31.8.2022"
+  Yymmdd     // e.g. "220831"
+  Yyyymmdd   // e.g. "20220831"
+//WD_m_yy    // e.g. "Mi, 31.8.2022"
+  Dd_M       // e.g. "31. August"
+  Dd_M_yyyy  // e.g. "31. August 2022"
+//WDd_M_yyyy // e.g. "Mittwoch, 31. August 2022"
+  Yy         // e.g. "22"
+  Yyyy       // e.g. "2022"
+  Wd         // e.g. "Mi"
+  WD         // e.g. "Mittwoch"
   Mmm        // e.g. "Aug"
   M          // e.g. "August"
-  Myyyy      // e.g. "August 2017"
-  Wn         // e.g. "31" (.Woche)
-  WN         // e.g. "31.Woche"
-  WNyyyy     // e.g. "31.Woche 2017"
-  Qu         // e.g. "III/17"
+  Myyyy      // e.g. "August 2022"
+  Wn         // e.g. "35" (.Woche)
+  WN         // e.g. "35.Woche"
+  WNyyyy     // e.g. "35.Woche 2022"
+  Qu         // e.g. "III/22"
   NFormats
 )
 // Every day has - depending on being a holiday or not
@@ -58,9 +58,9 @@ var (
 type
   Calendarday interface {
 
-  Object
-  col.Colourer
+  Editor
   EditorGr
+  col.Colourer
   Valuator
   Formatter
   Stringer

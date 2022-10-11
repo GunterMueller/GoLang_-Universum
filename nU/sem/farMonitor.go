@@ -1,8 +1,8 @@
 package sem
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/fmon")
+import "nU/fmon"
 
 type farMonitor struct {
   fmon.FarMonitor
@@ -11,13 +11,13 @@ type farMonitor struct {
 func newFM (n uint, h string, port uint16, s bool) Semaphore {
   x := new(farMonitor)
   val := n
-  c := func (a Any, i uint) bool {
+  c := func (a any, i uint) bool {
          if i == p {
            return val > 0
          }
          return true
        }
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          if i == p {
            val--
          } else {

@@ -1,15 +1,12 @@
 package achan
 
-// (c) Christian Maurer   v. 171104 - license see nU.go
-
-import . "nU/obj"
+// (c) Christian Maurer   v. 220801 - license see nU.go
 
 type AsynchronousChannel interface {
 
-  Send (a Any)
-
-  Recv() Any
+  Send (a any)
+  Recv() any
 }
 
 // Liefert einen neuen asynchronen Kanal.
-func New (a Any) AsynchronousChannel { return new_(a) }
+func New (a any) AsynchronousChannel { return new_(a) }

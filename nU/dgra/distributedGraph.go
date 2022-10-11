@@ -1,5 +1,7 @@
 package dgra
 
+// (c) Christian Maurer   v. 220702 - license see nU.go
+
 import ("strconv"; . "nU/obj"; "nU/env"; "nU/nchan"
         "nU/fmon"; "nU/adj"; "nU/vtx"; "nU/gra")
 
@@ -146,7 +148,7 @@ func (x *distributedGraph) setSize (n uint) {
   }
 }
 
-func (x *distributedGraph) connect (a Any) {
+func (x *distributedGraph) connect (a any) {
   for i := uint(0); i < x.n; i++ {
     x.ch[i] = nchan.New (a, x.me, x.nr[i], x.host[i], x.port[i])
   }
@@ -200,7 +202,7 @@ func (x *distributedGraph) edge (v, v1 vtx.Vertex) uint16 {
 
 func valueMax (g gra.Graph) uint {
   m := uint(0)
-  g.Trav (func (a Any) {
+  g.Trav (func (a any) {
     v := a.(uint)
     if v > m { m = v }
   })
@@ -208,7 +210,7 @@ func valueMax (g gra.Graph) uint {
 }
 
 func exValue (g gra.Graph, v uint) bool {
-  return g.ExPred (func (a Any) bool { return a.(uint) == v })
+  return g.ExPred (func (a any) bool { return a.(uint) == v })
 }
 
 func (x *distributedGraph) next (i uint) uint {

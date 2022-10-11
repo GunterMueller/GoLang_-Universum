@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 220114 - license see µU.go
+// (c) Christian Maurer   v. 220815 - license see µU.go
 
 import (
   "µU/col"
@@ -37,17 +37,12 @@ func Select1 (t []string, n, w uint, i *uint, l, c uint, f, b col.Colour) {
   select1 (t, n, w, i, l, c, f, b)
 }
 
-// >>>  experimental version.
-// Pre: m is part of a mask; s is a non empty file-suffix;
-//      w > 0 (width); l < scr.NLines, c + i < scr.NColumns.
-// Returns name + "." + string selected by user.
-func Name (m, s string, i uint, l, c uint, f, b col.Colour) (string, string) {
-  return names(m,s,i,l,c,f,b)
-}
-
 // Returns an interactively selected Colour, true;
 // returns Black, false), if the selection was cancelled.
-func Colour (x, y int) (col.Colour, bool) { return colour(x,y) }
+//func Colour (x, y int) (col.Colour, bool) { return colour(x,y) } // 28 colours
+
+func Colour (l, c, w uint) (col.Colour, bool) { return colour(l,c,w) }
+func Colours (l, c, w uint, cols ...col.Colour) (col.Colour, bool) { return colours(l,c,w,cols...) }
 
 // Returns an interactively selected font size.
 func Fontsize (f, b col.Colour) font.Size { return fontsize(f,b) }

@@ -1,6 +1,5 @@
 package scr
 
-// (c) Christian Maurer   v. 180812 - license see nU.go
 // (c) Christian Maurer   v. 201014 - license see µU.go
 
 // #include <stdlib.h>

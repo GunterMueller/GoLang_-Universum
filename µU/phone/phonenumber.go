@@ -1,6 +1,6 @@
 package phone
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220829 - license see µU.go
 
 import (
   . "µU/obj"
@@ -12,8 +12,6 @@ import (
   "µU/font"
   "µU/pbox"
 )
-const
-  width = 16
 type
   phonenumber struct {
                      uint16 "prefix"
@@ -129,7 +127,7 @@ func (x *phonenumber) String() string {
       s = s + " " + t
     }
   }
-  str.Norm (&s, width)
+  str.Norm (&s, Width)
   return s
 }
 
@@ -143,14 +141,18 @@ func (x *phonenumber) Colours (f, b col.Colour) {
   x.cF, x.cB = f, b
 }
 
+func (x *phonenumber) Cols() (col.Colour, col.Colour) {
+  return x.cF, x.cB
+}
+
 func (x *phonenumber) Write (l, c uint) {
-  bx.Wd (width)
+  bx.Wd (Width)
   bx.Colours (x.cF, x.cB)
   bx.Write (x.String(), l, c)
 }
 
 func (x *phonenumber) Edit (l, c uint) {
-  bx.Wd (width)
+  bx.Wd (Width)
   s := x.String()
   for {
     bx.Edit (&s, l, c)

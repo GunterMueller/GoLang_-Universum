@@ -1,10 +1,10 @@
 package phil
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 // >>> Solution with far monitor
 
-import (. "nU/obj"; "nU/fmon")
+import "nU/fmon"
 
 type farMonitor struct {
   fmon.FarMonitor
@@ -15,14 +15,14 @@ func newFM (h string, port uint16, s bool) Philos {
   for i := uint(0); i < 5; i++ {
     nForks[i] = 2
   }
-  p := func (a Any, i uint) bool {
+  p := func (a any, i uint) bool {
          if i == lock {
            j := a.(uint) // j-th philosopher
            return nForks[j] == 2
          }
          return true // unlock
        }
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          j := a.(uint) // j-th philosopher
          if i == lock {
            nForks[left(j)]--

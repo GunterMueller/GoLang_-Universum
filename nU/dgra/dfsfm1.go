@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171227 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import (. "nU/obj"; "nU/vtx"; "nU/fmon")
 
@@ -50,7 +50,7 @@ func (x *distributedGraph) dfsfm1 (o Op) {
   x.tree.Write()
 }
 
-func (x *distributedGraph) d1 (a Any, i uint) Any {
+func (x *distributedGraph) d1 (a any, i uint) any {
   x.awaitAllMonitors()
   bs := a.(Stream)
   x.tree = x.decodedGraph(bs)

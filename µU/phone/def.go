@@ -1,17 +1,18 @@
 package phone
 
-// (c) Christian Maurer   v. 210511 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
 )
+const
+  Width=16 // maximal number of digits of a phonenumber
 type
   PhoneNumber interface {
 
-  Object
-  col.Colourer
   Editor
+  col.Colourer
   Stringer
   TeXer
   Printer

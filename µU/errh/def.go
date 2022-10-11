@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 210315 - license see µU.go
+// (c) Christian Maurer   v. 220811 - license see µU.go
 
 import
   "µU/col"
@@ -36,6 +36,7 @@ func DelHintPos (s string, l, c uint) { delHintPos(s,l,c) }
 // then the former content of the last line of the screen is restored.
 func Error0 (s string) { error0(s) }
 func Error (s string, n uint) { error(s,n) }
+func Errorm (s string, n uint, s1 string) { errorm(s,n,s1) }
 func Error2 (s string, n uint, s1 string, n1 uint) { error2(s,n,s1,n1) }
 func Error3 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint) {
   error3(s,n,s1,n1,s2,n2)

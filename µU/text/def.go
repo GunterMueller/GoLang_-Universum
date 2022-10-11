@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 220524 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   . "µU/obj"
@@ -10,9 +10,8 @@ import (
 type
   Text interface { // strings of fixed length
 
-  Object
-  col.Colourer
   Editor
+  col.Colourer
   Stringer
   TeXer
   Printer
@@ -50,5 +49,5 @@ type
   EditGr (x, y int)
 }
 
-// Returns a new empty text of length n.
+// Returns a new text of length n.
 func New (n uint) Text { return new_(n) }

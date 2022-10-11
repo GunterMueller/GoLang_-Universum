@@ -1,17 +1,15 @@
 package sel
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220815 - license see µU.go
 
 import (
   "µU/ker"
-  "µU/env"
-  "µU/str"
   "µU/kbd"
+  "µU/str"
   "µU/col"
+  "µU/font"
   "µU/scr"
   "µU/box"
-  "µU/errh"
-  . "µU/files"
 )
 var
   bx, mbx = box.New(), box.New()
@@ -132,76 +130,55 @@ func select1 (s []string, h, w uint, n *uint, l, c uint, f, b col.Colour) {
           }, h, h, w, n, l, c, f, b)
 }
 
-var
-  ptSuffix string
-
-func hasSuffix (a any) bool {
-  p, ok := str.Sub (ptSuffix, a.(string))
-  return ok && p == str.ProperLen (a.(string)) - uint(len (ptSuffix))
+func colour (l, c, w uint) (col.Colour, bool) {
+  return colours (l, c, w, col.Black(), col.DarkRed(), col.Red(), col.FlashRed(),
+                           col.LightRed(), col.FlashOrange(), col.DarkYellow(), col.Yellow(),
+                           col.FlashGreen(), col.Green(), col.DarkGreen(), col.DarkCyan(),
+                           col.Cyan(), col.FlashCyan(), col.LightBlue(), col.FlashBlue(),
+                           col.Blue(), col.Magenta(), col.FlashMagenta(), col.LightMagenta(),
+                           col.White(), col.LightGray(), col.Gray(), col.DarkGray(),
+                           col.DarkBrown(), col.Brown(), col.LightBrown(), col.LightWhite())
 }
 
-func aus (n, l, c uint, f, b col.Colour) {
-//  N := files.NamePred (hasSuffix, n)
-  N := NamePred (hasSuffix, n)
-  if p, ok := str.Sub (ptSuffix, N); ok {
-    N = str.Part (N, 0, p)
-  }
-  bx.Colours (f, b)
-  bx.Write (N, l, c)
-}
-
-func names (mask, suffix string, n uint, l, c uint, f, b col.Colour) (string, string) {
-  t, t1 := uint(len (mask)), uint(0)
-  if t > 0 {
-    t1 = 1 + t
-  }
-  scr.Save (l, c, t1 + n, 1)
-  if t > 0 {
-    mbx.Wd (t)
-    mbx.ScrColours()
-    mbx.Write (mask, l, c)
-  }
-  bx.Wd (n)
-  bx.Colours (f, b)
-  ptSuffix = "." + suffix
-  errh.Hint ("falls Dateien vorhanden, auswählen F2-, dann Pfeil-/Eingabetaste, ggf. Esc")
-  name := env.Arg(1)
-  if name == "" {
-    name = str.New (n) // Wörkeraunt um Fehler in box/imp.go
-  }
-  if p, ok := str.Pos (name, '.'); ok {
-    name = str.Part (name, 0, p)
-  }
-  bx.Edit (&name, l, c + t1)
-  str.OffSpc (&name)
-  if p, ok := str.Pos (name, '.'); ok {
-    name = str.Part (name, 0, p)
-  }
-  filename := name + ptSuffix
-//  a := files.NumPred (hasSuffix)
-  a := NumPred (hasSuffix)
-  if a > 0 {
-    switch C, _ := kbd.LastCommand(); C {
+func colours (l, c, w uint, cols ...col.Colour) (col.Colour, bool) {
+  scr.Save (l, c, w, 1)
+  s := str.New (w)
+  n, i := uint(len(cols)), uint(0)
+  loop:
+  for {
+    scr.ColourB (cols[i])
+    scr.Write (s, l, c)
+    switch cmd, _ := kbd.Command(); cmd {
     case kbd.Esc:
-      return "", "" // str.New (n), ""
+      scr.Restore (l, c, w, 1)
+      return col.Black(), false
     case kbd.Enter:
-      // entered
-    case kbd.Search:
-      i := uint(0)
-      select_ (aus, a, a, n, &i, l, c + t1, b, f)
-      if i == a {
-        return "", "" // str.New (n), ""
-      } else {
-//        filename = str.Lat1 (files.NamePred (hasSuffix, i))
-        filename = str.Lat1 (NamePred (hasSuffix, i))
+      break loop
+    case kbd.Up:
+      if i > 0 {
+        i--
       }
+    case kbd.Down:
+      if i + 1 < n {
+        i++
+      }
+    case kbd.Pos1:
+      i = 0
+    case kbd.End:
+      i = n - 1
     }
   }
-  errh.DelHint()
-  str.OffSpc (&filename)
-  if p, ok := str.Pos (filename, '.'); ok {
-    name = str.Part (filename, 0, p)
+  scr.Restore (l, c, w, 1)
+  return cols[i], true
+}
+
+func fontsize (f, b col.Colour) font.Size {
+  n := uint(0)
+  scr.MousePointer (true)
+  z, s := scr.MousePos()
+  Select1 (font.Name, uint(font.NSizes), font.M, &n, z, s, f, b)
+  if n < uint(font.NSizes) {
+    return font.Size (n)
   }
-  scr.Restore (l, c, t1 + n, 1)
-  return name, filename
+  return font.Normal
 }

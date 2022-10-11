@@ -6,7 +6,7 @@ type
   Indexer interface {
 
   Object
-  Editor
+//  Editor
 
   Index() Func
 }

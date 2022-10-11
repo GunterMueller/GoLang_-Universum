@@ -1,6 +1,6 @@
 package texts
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220809 - license see µU.go
 
 import (
   . "µU/obj"
@@ -93,6 +93,13 @@ func (x *texts) Colours (f, b col.Colour) {
   for i := uint(0); i < x.uint; i++ {
     x.t[i].Colours (f, b)
   }
+}
+
+func (x *texts) Cols() (col.Colour, col.Colour) {
+  if x.uint == 0 {
+    return col.White(), col.Black()
+  }
+  return x.t[0].Cols()
 }
 
 func (x *texts) SetFont (f font.Font) {

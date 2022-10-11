@@ -1,10 +1,10 @@
 package smok
 
-// (c) Christian Maurer   v. 171102 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 // >>> Solution with a universal monitor
 
-import (. "nU/obj"; "nU/mon")
+import "nU/mon"
 
 type monitor struct {
                     mon.Monitor
@@ -14,7 +14,7 @@ func newM() Smokers {
   var avail [3]bool
   smoking := false
   x := new(monitor)
-  f := func (a Any, i uint) Any {
+  f := func (a any, i uint) any {
          u := a.(uint)
          u1, u2 := others (u)
          switch i {

@@ -1,0 +1,3 @@
+package cdrom
+
+func Touch() { }

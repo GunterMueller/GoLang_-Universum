@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 180212 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import ("time"; "strconv"; "net"; . "nU/obj")
 
@@ -10,9 +10,9 @@ const (
 )
 
 type netChannel struct {
-  Any "Musterobjekt"
+  any "Musterobjekt"
   uint "Kapazität des Kanals"
-  in, out chan Any
+  in, out chan any
   FuncSpectrum
   PredSpectrum
   isServer,
@@ -28,15 +28,15 @@ func init() {
   c0 = C0()
 }
 
-func new_(a Any, me, i uint, n string, p uint16) NetChannel {
+func new_(a any, me, i uint, n string, p uint16) NetChannel {
   if me == i { panic("me == i") }
   x := new(netChannel)
   if a == nil {
-    x.Any, x.uint = nil, maxWidth
+    x.any, x.uint = nil, maxWidth
   } else {
-    x.Any, x.uint = Clone(a), Codelen(a)
+    x.any, x.uint = Clone(a), Codelen(a)
   }
-  x.in, x.out = make(chan Any), make(chan Any)
+  x.in, x.out = make(chan any), make(chan any)
   x.Stream = make(Stream, x.uint)
   x.oneOne = true
   x.isServer = me < i
@@ -56,18 +56,18 @@ if x.error != nil { println ("Listen error", n, ps) }
   return x
 }
 
-func (x *netChannel) Send (a Any) {
+func (x *netChannel) Send (a any) {
   if x.Conn == nil { panic("no Conn") }
-  if x.Any == nil {
+  if x.any == nil {
     x.Conn.Write (append (Encode (Codelen(a)), Encode(a)...))
   } else {
     x.Conn.Write (Encode(a))
   }
 }
 
-func (x *netChannel) Recv() Any {
+func (x *netChannel) Recv() any {
   if x.Conn == nil { panic("no Conn") }
-  if x.Any == nil {
+  if x.any == nil {
     _, x.error = x.Conn.Read (x.Stream[:c0])
     if x.error != nil { return nil }
     x.uint = Decode (uint(0), x.Stream[:c0]).(uint)
@@ -76,7 +76,7 @@ func (x *netChannel) Recv() Any {
     return x.Stream[c0:c0+x.uint]
   }
   x.Conn.Read (x.Stream)
-  return Decode(Clone(x.Any), x.Stream)
+  return Decode(Clone(x.any), x.Stream)
 }
 
 func (x *netChannel) Fin() {

@@ -1,6 +1,6 @@
 package bn
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220809 - license see µU.go
 
 import (
   . "µU/obj"
@@ -20,7 +20,7 @@ type
   Adder
 //  Multiplier ?
 
-// Returns the width of x given by New.
+// Returns the width of x.
   Width() uint
 
 // Pre: s contains only the digits 0 and 1.
@@ -31,6 +31,5 @@ type
   Dual() string
 }
 
-// Pre: 0 < n <= M.
 // Returns a new Natural with value 0 for numbers with at most n digits.
 func New (n uint) Natural { return new_(n) }

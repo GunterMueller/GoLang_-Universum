@@ -1,8 +1,8 @@
 package internal
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 220702 - license see µU.go
 
-import . "nU/obj"
+import . "µU/obj"
 
 type message struct {
   byte "message type"
@@ -10,23 +10,18 @@ type message struct {
   num, maxnum uint
   bool "reply ok"
 }
-var c0 uint
-
-func init() {
-  c0 = C0()
-}
 
 func new_() Message {
   return &message{ Candidate, 0, 0, 0, false }
 }
 
-func (x *message) imp(Y Any) *message {
+func (x *message) imp(Y any) *message {
   y, ok := Y.(*message)
   if ! ok { TypeNotEqPanic(x, Y) }
   return y
 }
 
-func (x *message) Eq (Y Any) bool {
+func (x *message) Eq (Y any) bool {
   y := x.imp(Y)
   return x.byte == y.byte &&
          x.uint == y.uint &&
@@ -35,7 +30,7 @@ func (x *message) Eq (Y Any) bool {
          x.bool == y.bool
 }
 
-func (x *message) Copy (Y Any) {
+func (x *message) Copy (Y any) {
   y := x.imp(Y)
   x.byte = y.byte
   x.uint = y.uint
@@ -43,20 +38,20 @@ func (x *message) Copy (Y Any) {
   x.bool = y.bool
 }
 
-func (x *message) Clone() Any {
+func (x *message) Clone() any {
   y := new_()
   y.Copy(x)
   return y
 }
 
 func (x *message) Codelen() uint {
-  return 1 + 3 * c0 + 1
+  return 1 + 3 * C0 + 1
 }
 
 func (x *message) Encode() Stream {
   bs := make(Stream, x.Codelen())
   bs[0] = x.byte
-  i, a := uint(1), c0
+  i, a := uint(1), C0
   copy(bs[i:i+a], Encode(x.uint))
   i += a
   copy(bs[i:i+a], Encode(x.num))
@@ -69,7 +64,7 @@ func (x *message) Encode() Stream {
 
 func (x *message) Decode (bs Stream) {
   x.byte = bs[0]
-  i, a := uint(1), c0
+  i, a := uint(1), C0
   x.uint = Decode(uint(0), bs[i:i+a]).(uint)
   i += a
   x.num = Decode(uint(0), bs[i:i+a]).(uint)

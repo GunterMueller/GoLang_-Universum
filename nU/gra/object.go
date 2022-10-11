@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 171122 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
@@ -12,19 +12,19 @@ func (x *graph) numEdges (n *vertex) uint {
   return c
 }
 
-func (x *graph) Eq (Y Any) bool { // disgusting complexity
+func (x *graph) Eq (Y any) bool { // disgusting complexity
   y := x.imp (Y)
   if x.nVertices != y.nVertices || x.nEdges != y.nEdges {
     return false
   }
-  if ! TypeEq (x.vAnchor.Any, y.vAnchor.Any) || ! TypeEq (x.eAnchor.Any, y.eAnchor.Any) {
+  if ! TypeEq (x.vAnchor.any, y.vAnchor.any) || ! TypeEq (x.eAnchor.any, y.eAnchor.any) {
     panic ("oops")
   }
   ya := y.local // save
   eq := true
   loop:
   for xv := x.vAnchor.nextV; xv != x.vAnchor; xv = xv.nextV {
-    if ! y.Ex (xv.Any) {
+    if ! y.Ex (xv.any) {
       eq = false
       break
     }
@@ -37,10 +37,10 @@ func (x *graph) Eq (Y Any) bool { // disgusting complexity
       for yn := yv.nbPtr; yn.nextNb != yv.nbPtr; yn = yn.nextNb {
         if yn.to == xn.to {
           aa := true
-          if x.eAnchor.Any != nil {
+          if x.eAnchor.any != nil {
             if xn.edgePtr == nil { break }
             if yn.edgePtr == nil { break }
-            aa = Eq (xn.edgePtr.Any, yn.edgePtr.Any)
+            aa = Eq (xn.edgePtr.any, yn.edgePtr.any)
           }
           if aa {
             break // next xnb
@@ -56,19 +56,19 @@ func (x *graph) Eq (Y Any) bool { // disgusting complexity
   return eq
 }
 
-func (x *graph) Copy (Y Any) {
+func (x *graph) Copy (Y any) {
   y := x.imp(Y)
   x.Decode (y.Encode())
   x.write, x.write2 = y.write, y.write2
 }
 
-func (x *graph) Clone() Any {
-  y := new_(x.bool, x.vAnchor.Any, x.eAnchor.Any)
+func (x *graph) Clone() any {
+  y := new_(x.bool, x.vAnchor.any, x.eAnchor.any)
   y.Copy (x)
   return y
 }
 
-func (x *graph) Less (Y Any) bool {
+func (x *graph) Less (Y any) bool {
   return false
 }
 
@@ -109,12 +109,12 @@ func (x *graph) Codelen() uint {
   c := uint(1) + 4
   if x.nVertices > 0 {
     for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-      c += 4 + Codelen(v.Any) + 1
+      c += 4 + Codelen(v.any) + 1
     }
     c += 3 * 4
     if x.nEdges > 0 {
       for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-        c += 4 + Codelen(e.Any) + 1 + 2 * (4 + 1)
+        c += 4 + Codelen(e.any) + 1 + 2 * (4 + 1)
       }
     }
   }
@@ -130,12 +130,12 @@ func (x *graph) Encode() Stream {
   i += a
   z := uint32(0)
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    k := uint32(Codelen (v.Any))
+    k := uint32(Codelen (v.any))
     copy (bs[i:i+a], Encode (k))
     i += a
     bs[i] = 0; if v.bool { bs[i] = 1 }
     i++
-    copy (bs[i:i+k], Encode (v.Any))
+    copy (bs[i:i+k], Encode (v.any))
     i += k
     v.dist = z
     z++
@@ -148,10 +148,10 @@ func (x *graph) Encode() Stream {
   if x.nEdges == 0 { return bs }
   i += a
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    k := uint32(Codelen (e.Any))
+    k := uint32(Codelen (e.any))
     copy (bs[i:i+a], Encode (k))
     i += a
-    copy (bs[i:i+k], Encode (e.Any))
+    copy (bs[i:i+k], Encode (e.any))
     i += k
     bs[i] = 0; if e.bool { bs[i] = 1 }
     i++
@@ -182,9 +182,9 @@ func (x *graph) Decode (bs Stream) {
     i += a
     marked := bs[i] == 1
     i++
-    vc := Clone (x.vAnchor.Any)
-    content := Decode (x.vAnchor.Any, bs[i:i+k])
-    x.vAnchor.Any = Clone (vc)
+    vc := Clone (x.vAnchor.any)
+    content := Decode (x.vAnchor.any, bs[i:i+k])
+    x.vAnchor.any = Clone (vc)
     x.insertedVertex (content, marked)
     i += k
   }
@@ -208,7 +208,7 @@ func (x *graph) Decode (bs Stream) {
   for z := uint32(0); z < x.nEdges; z++ {
     k := Decode (uint32(0), bs[i:i+a]).(uint32)
     i += a
-    attrib := Decode (x.eAnchor.Any, bs[i:i+k])
+    attrib := Decode (x.eAnchor.any, bs[i:i+k])
     e := newEdge (attrib)
     i += k
     e.bool = bs[i] == 1

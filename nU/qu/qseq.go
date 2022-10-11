@@ -1,22 +1,22 @@
 package qu
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220801 - license see nU.go
 
 import (. "nU/obj"; "nU/seq")
 
 type queueSeq struct {
-  Any "Musterobjekt"
+  any "Musterobjekt"
   seq.Sequence
 }
 
-func news (a Any) Queue {
+func news (a any) Queue {
   x := new(queueSeq)
-  x.Any = Clone(a)
+  x.any = Clone(a)
   x.Sequence = seq.New(a)
   return x
 }
 
-func (x *queueSeq) Enqueue (a Any) {
+func (x *queueSeq) Enqueue (a any) {
   x.InsLast (Clone(a))
 }
 
@@ -24,9 +24,9 @@ func (x *queueSeq) Num() int {
   return x.Num()
 }
 
-func (x *queueSeq) Dequeue() Any {
+func (x *queueSeq) Dequeue() any {
   if x.Empty() {
-    return x.Any
+    return x.any
   }
   defer x.DelFirst()
   return x.GetFirst()

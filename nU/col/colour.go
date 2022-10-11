@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 171227 - license see nU.go
+// (c) Christian Maurer   v. 22070r - license see nU.go
 
 import . "nU/obj"
 
@@ -52,21 +52,21 @@ func (x *colour) Clr() {
   x.r, x.g, x.b = 0, 0, 0
 }
 
-func (x *colour) Eq (Y Any) bool {
+func (x *colour) Eq (Y any) bool {
   y := Y.(*colour)
   return x.r == y.r && x.g == y.g && x.b == y.b
 }
 
-func (x *colour) Less (Y Any) bool {
+func (x *colour) Less (Y any) bool {
   return false
 }
 
-func (x *colour) Copy (Y Any) {
+func (x *colour) Copy (Y any) {
   y := Y.(*colour)
   x.r, x.g, x.b = y.r, y.g, y.b
 }
 
-func (x *colour) Clone() Any {
+func (x *colour) Clone() any {
   y := new(colour)
   y.Copy (x)
   return y

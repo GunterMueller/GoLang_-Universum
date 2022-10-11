@@ -1,20 +1,18 @@
 package nchan
 
-// (c) Christian Maurer   v. 171215 - license see nU.go
-
-import . "nU/obj"
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 const Port0 = uint16(49152) // erster "privater" Port
 
 type NetChannel interface { // Kanäle zum netzweiten Austausch
                             // von Objekten zwischen Prozessen
 
-  Chan() (chan Any, chan Any)
+  Chan() (chan any, chan any)
 
 // Vor.: a ist vom Typ von x.
 // Liefert genau dann nil, wenn das Objekt a ist auf x zum
 // Kommunikationspartner des aufrufenden Prozesses gesendet ist.
-  Send (a Any)
+  Send (a any)
 
 // Liefert einen Slice von Bytes, wenn x nicht an einen Typ
 // gebunden ist. In diesem Fall muss der Empfänger diesen
@@ -24,7 +22,7 @@ type NetChannel interface { // Kanäle zum netzweiten Austausch
 // es vollständig übertragen wurde, andernfalls das
 // Musterobjekt von x. Der aufrufende Prozess war ggf.
 // solange blockiert, bis ein Objekt empfangen wurde.
-  Recv() Any
+  Recv() any
 
 // Alle von x benutzten Netzkanäle sind geschlossen.
   Fin()
@@ -49,12 +47,12 @@ type NetChannel interface { // Kanäle zum netzweiten Austausch
 // Für a == nil können unterschiedlich große Objekte
 // gesendet werden. In diesem Fall liefern Aufrufe von Recv()
 // Slices von Bytes, die der Empfänger selber decodieren muss.
-  func New (a Any, me, i uint, n string, p uint16) NetChannel { return new_(a,me,i,n,p) }
+  func New (a any, me, i uint, n string, p uint16) NetChannel { return new_(a,me,i,n,p) }
 
 // Siehe obige Funktion.
 // Dieser Konstruktor wird für die Erzeugung eines fernen Monitors gebraucht:
 // h ist genau dann der anbietende Monitor, wenn s den Wert true hat. 
-  func NewN (a Any, n string, p uint16, s bool) NetChannel { return newn(a,n,p,s) }
+  func NewN (a any, n string, p uint16, s bool) NetChannel { return newn(a,n,p,s) }
 
 // Wichtig: Bei aufeinanderfolgenden Aufrufen von New
 //          muss zur Vermeidung von Verklemmungen

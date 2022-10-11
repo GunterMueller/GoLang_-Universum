@@ -1,9 +1,7 @@
-package internal
+package heap
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220816 - license see µU.go
 
-import
-  . "µU/obj"
 type
   Heap interface {
 

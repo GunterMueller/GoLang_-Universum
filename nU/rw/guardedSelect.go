@@ -1,17 +1,17 @@
 package rw
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 220702 - license see nU.go
 
 import . "nU/obj"
 
 type guardedSelect struct {
-  inR, outR, inW, outW chan Any
+  inR, outR, inW, outW chan any
 }
 
 func newGS() ReaderWriter {
   x := new(guardedSelect)
-  x.inR, x.outR = make(chan Any), make(chan Any)
-  x.inW, x.outW = make(chan Any), make(chan Any)
+  x.inR, x.outR = make(chan any), make(chan any)
+  x.inW, x.outW = make(chan any), make(chan any)
   go func() {
     var nR, nW uint // active readers, writers
     for {

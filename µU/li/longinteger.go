@@ -1,6 +1,6 @@
 package li
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220804 - license see µU.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 
@@ -118,6 +118,10 @@ func (x *longInteger) SetInt (n int) {
 
 func (x *longInteger) SetInt64 (n int64) {
   x.n.SetInt64 (int64(n))
+}
+
+func (x *longInteger) Cols() (col.Colour, col.Colour) {
+  return x.cF, x.cB
 }
 
 func (x *longInteger) Colours (f, b col.Colour) {

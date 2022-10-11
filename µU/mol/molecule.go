@@ -1,63 +1,93 @@
 package mol
 
-// (c) Christian Maurer   v. 210414 - license see µU.go
+// (c) Christian Maurer   v. 220831 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/kbd"
   "µU/col"
-  "µU/font"
+  "µU/scr"
+  "µU/errh" 
+  "µU/n" 
+  "µU/pseq"
   "µU/atom"
-  "µU/masks"
+  "µU/stru"
 )
 type
   molecule struct {
-                  uint8 "number of atoms"
-             comp []atom.Atom
-             l, c []uint
-                  masks.MaskSet
+                  uint // length of a
+                a []atom.Atom
                   }
+var (
+  help = []string {"    Komponente erzeugen: rechte Maustaste",
+//                   "    Schriftfarbe ändern: F10             ",
+//                   "Hintergrundfarbe ändern: Umschalt-F10    ",
+                   "                 fertig: Esc             "}
+  index []uint
+  nIndices uint
+  actIndex uint
+  file pseq.PersistentSequence
+)
 
 func new_() Molecule {
   x := new(molecule)
-  x.comp = make([]atom.Atom, 0)
-  x.l, x.c = make([]uint, 0), make([]uint, 0)
+  x.a = make([]atom.Atom, 0)
   return x
 }
 
-func (x *molecule) imp (Y Any) *molecule {
+func (x *molecule) imp (Y any) *molecule {
   y, ok := Y.(*molecule)
   if ! ok { TypeNotEqPanic (x, Y) }
-/*/
-  if x.uint8 != y.uint8 {
-    println ("mol.imp: x.uint8 ==", x.uint8,"!= y.uint8 ==", y.uint8);
-    TypeNotEqPanic (x, Y)
-  }
-/*/
-  for i := uint8(0); i < y.uint8; i++ {
-    if ! x.comp[i].Equiv (y.comp[i]) { TypeNotEqPanic (x.comp[i], y.comp[i]) }
-  }
   return y
 }
 
-func (x *molecule) Component (n uint) Any {
-  if n >= uint(x.uint8) { return nil }
-  return x.comp[n]
+func (x *molecule) Eq (Y any) bool {
+  y := x.imp (Y)
+  for i := uint(0); i < y.uint; i++ {
+    if ! x.a[i].Eq (y.a[i]) {
+      return false
+    }
+  }
+  return true
 }
 
-func (x *molecule) Ins (a atom.Atom, l, c uint) {
-  x.comp = append (x.comp, a.Clone().(atom.Atom))
-  x.l, x.c = append (x.l, l), append (x.c, c)
-  x.uint8++
+func (x *molecule) Copy (Y any) {
+  y := x.imp (Y)
+  x.uint = y.uint
+  x.a = make([]atom.Atom, x.uint)
+  for i := uint(0); i < x.uint; i++ {
+    x.a[i] = atom.New()
+    x.a[i].Copy (y.a[i])
+  }
 }
 
-func (x *molecule) SetMasks (m masks.MaskSet) {
-  x.MaskSet = m
+func (x *molecule) Clone() any {
+  y := new_().(*molecule)
+  y.Copy (x)
+  return y
+}
+
+func (x *molecule) Less (Y any) bool {
+  y := x.imp (Y)
+  if x.a[actIndex] != y.a[actIndex] { return x.a[actIndex].Less (y.a[actIndex]) }
+  for i := uint(0); i < nIndices; i++ {
+    if i != actIndex {
+      if x.a[i] != y.a[i] {
+        return x.a[i].Less (y.a[i])
+      }
+    }
+  }
+  return false
+}
+
+func (x *molecule) Sub (Y any) bool {
+  i := actIndex
+  return x.a[i].Sub (x.imp(Y).a[i])
 }
 
 func (x *molecule) Empty() bool {
-  for i := uint8(0); i < x.uint8; i++ {
-    if ! x.comp[i].Empty() {
+  for i := uint(0); i < x.uint; i++ {
+    if ! x.a[i].Empty() {
       return false
     }
   }
@@ -65,80 +95,61 @@ func (x *molecule) Empty() bool {
 }
 
 func (x *molecule) Clr() {
-  for i := uint8(0); i < x.uint8; i++ {
-    x.comp[i].Clr()
+  for i := uint(0); i < x.uint; i++ {
+    x.a[i].Clr()
   }
 }
 
-func (x *molecule) Eq (Y Any) bool {
-  y := x.imp (Y)
-  for i := uint8(0); i < x.uint8; i++ {
-    if ! x.comp[i].Eq (y.comp[i]) {
-      return false
-    }
+func (x *molecule) Codelen() uint {
+  n := uint(1)
+  for i := uint(0); i < x.uint; i++ {
+    n += x.a[i].Codelen()
   }
-  return true
+  return n
 }
 
-func (x *molecule) Copy (Y Any) {
-//  x.comp = make ([]atom.Atom, x.uint)
-//  x.l, x.c = make ([]uint, x.uint), make ([]uint, x.uint)
-  y := x.imp (Y)
-  for i := uint8(0); i < y.uint8; i++ {
-    x.comp[i].Copy (y.comp[i])
-    x.l[i], x.c[i] = y.l[i], y.c[i]
+func (x *molecule) Encode() Stream {
+  s := make(Stream, x.Codelen())
+  copy (s[0:1], Encode(uint8(x.uint)))
+  i := uint(1)
+  for j := uint(0); j < x.uint; j++ {
+    a := x.a[j].Codelen()
+    x.a[j].Write (0, 0)
+    copy (s[i:i+a], x.a[j].Encode())
+    i += a
   }
-// x.MaskSet.Copy (y.MaskSet) // because of type loss in piset.New this does not work
-  x.MaskSet = y.MaskSet
+  return s
 }
 
-func (x *molecule) Clone() Any {
-  y := new_()
-  y.Copy (x)
-  return y
-}
-
-func (x *molecule) less (y *molecule, n uint) bool {
-  if n >= uint(x.uint8) { return false }
-  if x.comp[n].Less (y.comp[n]) { return true }
-  if x.comp[n].Eq (y.comp[n]) { return x.less (y, n + 1) }
-  return false
-}
-
-func (x *molecule) Less (Y Any) bool {
-  n := uint(0) // TODO
-  return x.less (x.imp (Y), n)
-}
-
-func (x *molecule) Colours (f, b col.Colour) {
-  for i := uint8(0); i < x.uint8; i++ {
-     x.comp[i].Colours (f, b)
+func (x *molecule) Decode (s Stream) {
+  x.uint = uint(Decode(uint8(0), s[0:1]).(uint8))
+  i := uint(1)
+  for j := uint(0); j < x.uint; j++ {
+    a := x.a[j].Codelen()
+    x.a[j].Decode (s[i:i+a])
+    i += a
   }
 }
 
 func (x *molecule) Write (l, c uint) {
-  if x.MaskSet != nil {
-    x.MaskSet.Write (l, c)
-  }
-  for i := uint8(0); i < x.uint8; i++ {
-    if x.l[i] < 512 {
-      x.comp[i].Write (l + x.l[i], c + x.c[i])
-    }
+  for i := uint(0); i < x.uint; i++ {
+    x.a[i].Write (l, c)
   }
 }
 
 func (x *molecule) Edit (l, c uint) {
-  x.Write (l, c)
-  i := uint8(0)
+  x.Write (0, 0)
+  i := uint(0)
   loop:
   for {
-    x.comp[i].Edit (l + x.l[i], c + x.c[i])
-    switch C, d := kbd.LastCommand(); C {
+    x.a[i].Edit (l, c)
+    cmd, d := kbd.LastCommand()
+    switch cmd {
     case kbd.Esc:
       break loop
     case kbd.Enter:
       if d == 0 {
-        if i + 1 < x.uint8 {
+        if i + 1 < x.uint {
           i++
         } else {
           break loop
@@ -147,7 +158,7 @@ func (x *molecule) Edit (l, c uint) {
         break loop
       }
     case kbd.Down:
-      if i + 1 < x.uint8 {
+      if i + 1 < x.uint {
         i++
       } else {
         i = 0
@@ -156,87 +167,152 @@ func (x *molecule) Edit (l, c uint) {
       if i > 0 {
         i--
       } else {
-        i = x.uint8 - 1
+        i = x.uint - 1
       }
     case kbd.Pos1:
       i = 0
     case kbd.End:
-      i = x.uint8 - 1
-    case kbd.Tab:
-      if d == 0 {
-        if i + 1 < x.uint8 {
-          i++
-        }
-      } else {
-        if i > 0 {
-          i--
-        }
-      }
+      i = x.uint - 1
     }
   }
+  x.Write (0, 0)
 }
 
-func (x *molecule) SetFont (f font.Font) {
-  for i := uint8(0); i < x.uint8; i++ {
-    x.SetFont (f)
-  }
-}
-
-func (x *molecule) Print (l, c uint) {
-  x.MaskSet.Print (l, c)
-  for i := uint8(0); i < x.uint8; i++ {
-    x.comp[i].Print (x.l[i], x.c[i])
+func (x *molecule) Print() {
+  for i := uint(0); i < x.uint; i++ {
+    l, c := x.a[i].Pos()
+    x.a[i].Print (l, c)
   }
 }
 
-func (x *molecule) Codelen() uint {
-  c := uint(1)
-  for k := uint8(0); k < x.uint8; k++ {
-    c += x.comp[k].Codelen()
-    c += 2
+func (x *molecule) defineIndices() {
+/*/ example for len(x.a) = 6:
+  If x.a[i].IsIndex() for the numbers marked by "*",
+ 
+    0   1   2   3   4   5
+  |---|---|---|---|---|---|
+  |   | * | * |   | * |   |
+  |---|---|---|---|---|---|
+ 
+  then nIndices = 3, index[0] = 1, index[1] = 2 and index [2] = 4.
+/*/
+  nIndices = 0
+  for i := uint(0); i < x.uint; i++ {
+    if x.a[i].IsIndex() {
+      index = append (index, uint(0))
+      index[nIndices] = i
+      nIndices++
+    }
   }
-  if x.MaskSet != nil {
-    c += x.MaskSet.Codelen()
-  }
-  return c
+  actIndex = index[0]
 }
 
-func (x *molecule) Encode() Stream {
-  s := make (Stream, x.Codelen())
-  i, a := uint(0), uint(1)
-  s[0] = x.uint8
-  i += a
-  for k := uint8(0); k < x.uint8; k++ {
-    a = x.comp[k].Codelen()
-    copy (s[i:i+a], x.comp[k].Encode())
-    i += a
-    copy (s[i:i+1], Encode(uint8(x.l[k])))
-    i++
-    copy (s[i:i+1], Encode(uint8(x.c[k])))
-    i++
+func (x *molecule) Construct (name string) {
+  errh.Hint ("Molekülkonstruktion")
+  i := uint(0)
+  loop:
+  for {
+    x.Write (0, 0)
+    cmd, _ := kbd.Command()
+    scr.MousePointer (true)
+    l, c := scr.MousePos()
+    switch cmd {
+    case kbd.Esc:
+      if nIndices == 0 {
+        errh.Error0 ("kein Index !")
+      } else {
+        break loop
+      }
+    case kbd.Here:
+      x.uint++
+      a := atom.New()
+      x.a = append (x.a, a)
+      x.a[i] = a
+      x.a[i].Place (l, c)
+      x.a[i].Select()
+      if x.a[i].Typ() == atom.Enum {
+        x.a[i].EnumName (name + "." + n.String(i))
+        x.a[i].EnumSet (l, c)
+      }
+      x.a[i].EditIndex()
+      x.a[i].Index (x.a[i].IsIndex())
+      if x.a[i].IsIndex() { nIndices++ }
+/*/
+      errh.Hint ("Schriftfarbe auswählen")
+      x.a[i].SelectColF()
+/*/
+      errh.Hint ("Hintergrundfarbe auswählen")
+      x.a[i].SelectColB()
+      errh.Hint ("Molekülkonstruktion")
+      i++
+    case kbd.Go:
+      l0 := scr.NLines() - 1
+      scr.Colours (col.LightWhite(), col.Black())
+      scr.Write ("       ", l0, 0)
+      scr.WriteNat (l, l0, 0)
+      scr.WriteNat (c, l0, 4)
+    }
   }
-  if x.MaskSet != nil {
-    a = x.MaskSet.Codelen()
-    copy (s[i:i+a], x.MaskSet.Encode())
+  errh.DelHint()
+  x.defineIndices()
+// store the structure of x
+  file = pseq.New (stru.New())
+  file.Name (name + Suffix)
+  for i := uint(0); i < x.uint; i++ {
+    s := stru.New()
+    w := x.a[i].Width()
+    s.Define (x.a[i].Typ(), w)
+    l, c := x.a[i].Pos()
+    s.Place (l, c)
+    f, b := x.a[i].Cols()
+    s.Colours (f, b)
+    s.Index (x.a[i].IsIndex())
+    file.Seek (i)
+    file.Put (s)
   }
-  return s
 }
 
-func (x *molecule) Decode (s Stream) {
-  i, a := uint(0), uint(1)
-  x.uint8 = s[0]
-  i += a
-  for k := uint8(0); k < x.uint8; k++ {
-    a = x.comp[k].Codelen()
-    x.comp[k].Decode (s[i:i+a])
-    i += a
-    x.l[k] = uint(Decode (uint8(0), s[i:i+1]).(uint8))
-    i++
-    x.c[k] = uint(Decode (uint8(0), s[i:i+1]).(uint8))
-    i++
+// Returns the molecule constructed from the stored structure
+func constructed (name string) Molecule {
+  file = pseq.New (stru.New())
+  filename := name + Suffix
+  file.Name (filename)
+  m := new_().(*molecule)
+  num := file.Num()
+  m.uint = num
+  m.a = make([]atom.Atom, num)
+  for i := uint(0); i < num; i++ {
+    file.Seek (i)
+    s := file.Get().(stru.Structure)
+    m.a[i] = atom.New()
+    m.a[i].Define (s.Typ(), s.Width())
+    if m.a[i].Typ() == atom.Enum {
+      filename = name + "." + n.String(i)
+      m.a[i].EnumName (filename)
+      m.a[i].EnumGet()
+    }
+    l, c := s.Pos()
+    m.a[i].Place (l, c)
+    f, b := s.Cols()
+    m.a[i].Colours (f, b)
+    m.a[i].Index (s.IsIndex())
   }
-  if x.MaskSet != nil {
-    a = x.MaskSet.Codelen()
-    x.MaskSet.Decode (s[i:i+a])
+  m.defineIndices()
+  return m
+}
+
+func (x *molecule) NumAtoms() uint {
+  return uint(len(x.a))
+}
+
+func (x *molecule) Index() Func {
+  return func (a any) any {
+    x, ok := a.(*molecule)
+    if ! ok { TypeNotEqPanic (x, a) }
+    return actIndex
   }
+}
+
+func (x *molecule) Rotate() {
+  actIndex = (actIndex + 1) % nIndices
 }

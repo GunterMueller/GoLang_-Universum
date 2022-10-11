@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 211127 - license see µU.go
+// (c) Christian Maurer   v. 220924 - license see µU.go
 
 import
  . "µU/obj"
@@ -59,12 +59,24 @@ func New3 (r, g, b byte) Colour { return new3(r,g,b) }
 // Returns the colour defined by (r, g, b) with name n.
 func New3n (n string, r, g, b byte) Colour { return new3n(n,r,g,b) }
 
+func HeadF() Colour { return headF() }
+func HeadB() Colour { return headB() }
+func HintF() Colour { return hintF() }
+func HintB() Colour { return hintB() }
+func ErrorF() Colour { return errorF() }
+func ErrorB() Colour { return errorB() }
+func MenuF() Colour { return menuF() }
+func MenuB() Colour { return menuB() }
+
 // Returns a random colour.
 func Rand() Colour { return random() }
 
 // Returns the fore- and backgroundcolours at the start of the system
 // for unmarked and marked objects.
 func StartCols() (Colour, Colour) { return startCols() }
+func StartColF() Colour { return startColF() }
+func StartColB() Colour { return startColB() }
+
 func StartColsA() (Colour, Colour) { return startColsA() }
 
 func AllColours() []Colour { return allColours() }

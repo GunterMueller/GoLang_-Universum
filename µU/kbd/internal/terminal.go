@@ -1,6 +1,6 @@
-package internal
+package terminal
 
-// (c) Christian Maurer   v. 210324 - license see µU.go
+// (c) Christian Maurer   v. 220816 - license see µU.go
 
 // #include <termios.h>
 // #include <unistd.h>

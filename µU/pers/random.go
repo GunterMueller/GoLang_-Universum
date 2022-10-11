@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 140217 - license see µU.go
+// (c) Christian Maurer   v. 221003 - license see µU.go
 
 import (
   "µU/rand"
@@ -14,10 +14,14 @@ var (
 )
 
 func (x *person) Rand() {
-  x.surname.Copy (NN[rand.Natural (N)])
-  n:= rand.Natural (N)
+  n := rand.Natural (N)
+  x.surname.Copy (n)
   x.firstName.Copy (VN[n])
-  x.TruthValue.Set (n < N / 2)
+  if rand.Natural (2) == 0 {
+    x.Sex.Defined ("m")
+  } else {
+    x.Sex.Defined ("w")
+  }
   x.Calendarday.Randomize()
 }
 

@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 220902 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -1644,7 +1644,7 @@ var
 func NewWHW (x, y, w, h uint) Screen {
   initX()
   X := new(xwindow)
-  X.Mode = mode.None // mode.ModeOf (w, h)
+  X.Mode = mode.ModeOf (w, h)
   X.x, X.y = int(x), int(y)
   X.wd, X.ht = w, h
   if X.wd > monitorWd || X.ht > monitorHt { ker.Panic ("win too large: " +
