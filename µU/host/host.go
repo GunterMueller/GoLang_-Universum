@@ -1,6 +1,6 @@
 package host
 
-// (c) Christian Maurer   v. 220804 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   "os"
@@ -92,6 +92,10 @@ func (x *host) Less (Y any) bool {
     }
   }
   return false
+}
+
+func (x *host) Leq (Y any) bool {
+  return x.Less (Y) || x.Leq (Y)
 }
 
 func (x *host) Copy (Y any) {

@@ -1,6 +1,6 @@
 package q
 
-// (c) Christian Maurer   v. 220831 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   "math"
@@ -100,6 +100,10 @@ func (x *rational) Less (Y any) bool {
   p, q := uint (x.num) * uint (y.denom), uint (y.num) * uint (x.denom)
   if x.geq0 { return p < q } // y.geq0
   return p > q // ! x.geq0, ! y.geq0
+}
+
+func (x *rational) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *rational) Vals() (bool, uint, uint) {

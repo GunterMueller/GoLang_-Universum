@@ -1,6 +1,6 @@
 package seq
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   "sync"
@@ -116,6 +116,10 @@ func (x *sequence) Less (Y any) bool {
     c = c.next
   }
   return true
+}
+
+func (x *sequence) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *sequence) Codelen() uint {

@@ -1,6 +1,6 @@
 package date
 
-// (c) Christian Maurer   v. 220804 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -85,6 +85,10 @@ func (x *daytime) Eq (Y any) bool {
 }
 
 func (x *daytime) Less (Y any) bool {
+  return false
+}
+
+func (x *daytime) Leq (Y any) bool {
   return false
 }
 

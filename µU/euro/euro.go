@@ -1,6 +1,6 @@
 package euro
 
-// (c) Christian Maurer   v. 220812 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   "math"
@@ -89,6 +89,10 @@ func (x *euro) Less (Y any) bool {
     return true
   }
   return x.cent < y.cent
+}
+
+func (x *euro) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *euro) Val() uint {

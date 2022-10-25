@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 221003 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   "µU/ker"
@@ -236,6 +236,10 @@ func (x *enumerator) Eq (Y any) bool {
 
 func (x *enumerator) Less (Y any) bool {
   return str.Less (x.string, x.imp(Y).string)
+}
+
+func (x *enumerator) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *enumerator) Codelen() uint {

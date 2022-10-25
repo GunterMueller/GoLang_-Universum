@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 220811 - license see µU.go
+// (c) Christian Maurer   v. 221016 - license see µU.go
 
 import (
   "strconv"
@@ -123,6 +123,7 @@ func hint (s string) {
   s = str.Lat1 (s)
   str.Center (&s, w)
   hintbox.Wd (w)
+  hintbox.Colours (col.HintF(), col.HintB())
   hintbox.Write (s, l, 0)
   post()
 }
@@ -146,6 +147,7 @@ func hintPos (s string, l, c uint) {
   if c + w >= NColumns() { c = NColumns() - w }
   Save (l, c, w, 1)
   hintbox.Wd (w)
+  hintbox.Colours (col.HintF(), col.HintB())
   hintbox.Write (s, l, c)
   post()
 }

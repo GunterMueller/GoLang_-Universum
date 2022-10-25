@@ -202,10 +202,7 @@ func (x *persistentIndexedSet) Join (Y Collector) {
   if y.Set.Empty() { return }
   for i := uint(0); i < y.PersistentSequence.Num(); i++ {
     y.PersistentSequence.Seek (i)
-    y.Object = y.PersistentSequence.Get().(Object)
-    if ! y.Object.Empty() {
-      x.Ins (y.Object)
-    }
+    x.Ins (y.PersistentSequence.Get().(Object))
   }
   x.Jump (false)
   y.Clr()

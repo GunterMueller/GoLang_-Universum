@@ -247,7 +247,7 @@ type
 // If there is no path from the colocal to the local vertex of x,
 // the actual path consists only of the colocal vertex.
 // The marked vertices and edges of x are
-// the vertices and edges in the actual path of x,
+// the vertices and edges in the actual path of x.
   Act()
 
 // Pre: p is defined on vertices.
@@ -260,7 +260,7 @@ type
 // (hence, if x has no edgetype, w.r.t. their number).
 // Otherwise the actual path consists only of the colocal vertex.
 // The marked vertices and edges of x are
-// the vertices and edges in the actual path of x,
+// the vertices and edges in the actual path of x.
   ActPred (p Pred)
 
 // Returns the sum of the values of all edges of x
@@ -470,8 +470,6 @@ type
 
 // x is written on the screen by means of the actual write functions.
   Write()
-
-  ExVtx (a any) any
 
 // Pre: x.Name was called.
 // Returns the corresponding file.

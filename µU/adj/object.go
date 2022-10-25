@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 201014 - license see µU.go
+// (c) Christian Maurer   v. 201021 - license see µU.go
 
 import (
   "µU/ker"
@@ -52,6 +52,10 @@ func (x *adjacencyMatrix) Eq (Y any) bool {
 }
 
 func (x *adjacencyMatrix) Less (Y any) bool {
+  return false
+}
+
+func (x *adjacencyMatrix) Leq (Y any) bool {
   return false
 }
 

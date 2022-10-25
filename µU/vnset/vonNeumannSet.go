@@ -1,6 +1,6 @@
 package vnset
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -52,6 +52,10 @@ func (x *set) Less (Y any) bool {
   y := x.imp(Y)
   if x.Num() == y.Num() { return false }
   return x.Subset (y)
+}
+
+func (x *set) Leq (Y any) bool {
+  return x.Subset (x.imp(Y))
 }
 
 func (x *set) Copy (Y any) {

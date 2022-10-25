@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 type
   Comparer interface {
@@ -8,6 +8,8 @@ type
 // Pre: x is of the same type as the calling object.
 // Returns true, iff the calling object is smaller than x.
   Less (x any) bool
+
+  Leq (x any) bool
 }
 
 // Returns true, iff a implements Comparer.
@@ -21,4 +23,4 @@ func Less (a, b any) bool { return less(a,b) }
 // Pre: a and b have the same type; both
 //      both are atomic or implement Comparer and Equaler.
 // Returns true, if a is smaller than b or a equals b.
-func Leq (a, b any) bool { return Less (a, b) || Eq (a, b) }
+func Leq (a, b any) bool { return leq(a,b) }

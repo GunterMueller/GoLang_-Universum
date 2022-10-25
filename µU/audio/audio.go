@@ -1,6 +1,6 @@
 package audio
 
-// (c) Christian Maurer   v. 221003 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -178,6 +178,10 @@ func (x *audio) Less (Y any) bool {
     }
   }
   return false
+}
+
+func (x *audio) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *audio) String() string {

@@ -1,6 +1,6 @@
 package bn
 
-// (c) Christian Maurer   v. 220809 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   "math"
@@ -74,6 +74,10 @@ func (x *natural) Eq (Y any) bool {
 // non-empty Less than Empty
 func (x *natural) Less (Y any) bool {
   return x.uint < x.imp(Y).uint
+}
+
+func (x *natural) Leq (Y any) bool {
+  return x.uint <= x.imp(Y).uint
 }
 
 func (x *natural) Codelen() uint {

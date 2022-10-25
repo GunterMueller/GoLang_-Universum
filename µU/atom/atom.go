@@ -1,6 +1,6 @@
 package atom
 
-// (c) Christian Maurer   v. 220831 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   "µU/ker"
@@ -380,6 +380,10 @@ func (x *atom) Less (Y any) bool {
     return x.Enum.Less (y.Enum)
   }
   return false
+}
+
+func (x *atom) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *atom) Sub (Y any) bool {

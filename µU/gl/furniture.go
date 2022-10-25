@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 191022 - license see µU.go
+// (c) Christian Maurer   v. 221023 - license see µU.go
 
 import (
   "math"
@@ -33,14 +33,14 @@ func table (x, y, z, w, d, h, p, l, a float64, f col.Colour) {
 
 func roundTable (x, y, z, r, rf, rb, h, hf, hp float64, c col.Colour) {
   Colour (c)
-  if hf > 0 { Cylinder (x, y, z, rf, hf) } // Fuß
-  Cylinder (x, y, z + hf, rb, h - hf - hp) // Bein 
-  Cylinder (x, y, z + h - hp, r, hp) // Platte 
+  if hf > 0 { Cylinder (x, y, z, rf, hf) } // foot
+  Cylinder (x, y, z + hf, rb, h - hf - hp) // leg
+  Cylinder (x, y, z + h - hp, r, hp) // olate 
 }
 
 func ovalTable (x, y, z, w, d, h, a float64, f col.Colour) {
-  s, c := fsin(a), fcos(a)
   if d > w { panic ("oops") }
+  s, c := fsin(a), fcos(a)
   r := d / 2
   x1, y1 := x + r * c, y + r * s
   x2, y2 := x + (w - r) * c, y + (w - r) * s
@@ -52,6 +52,10 @@ func ovalTable (x, y, z, w, d, h, a float64, f col.Colour) {
   Quad (x1, y1, z + h, x2, y2, z + h, x4, y4, z + h, x3, y3, z + h)
   VertRectangle (x1, y1, z, x2, y2, z + h)
   VertRectangle (x4, y4, z, x3, y3, z + h)
+}
+
+func chair (x, y, z, w, h, p, a float64, c col.Colour) {
+  bench (x, y, z, w, w, h/2, p, h/20, h/20, h/2, a, c)
 }
 
 func armChair (x, y, z, w, d, h, wb, wd, hs, hb, a float64, f col.Colour) {

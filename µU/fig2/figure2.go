@@ -1,6 +1,6 @@
 package fig2
 
-// (c) Christian Maurer   v. 220210 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   "math"
@@ -244,6 +244,10 @@ func (f *figure) Eq (Y any) bool {
 }
 
 func (x *figure) Less (Y any) bool {
+  return false
+}
+
+func (x *figure) Leq (Y any) bool {
   return false
 }
 

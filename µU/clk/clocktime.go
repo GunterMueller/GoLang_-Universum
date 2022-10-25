@@ -1,6 +1,6 @@
 package clk
 
-// (c) Christian Maurer   v. 220084 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/ker"
@@ -104,6 +104,10 @@ func less (C, C1 uint) bool {
 
 func (x *clocktime) Less (Y any) bool {
   return x.internalCode() < x.imp(Y).internalCode()
+}
+
+func (x *clocktime) Leq (Y any) bool {
+  return x.internalCode() <= x.imp(Y).internalCode()
 }
 
 func (x *clocktime) Elapsed() bool {

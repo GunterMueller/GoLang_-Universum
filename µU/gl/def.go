@@ -1,12 +1,14 @@
 package gl
 
-// (c) Christian Maurer   v. 210504 - license see µU.go
+// (c) Christian Maurer   v. 221024 - license see µU.go
 
 // #include <GL/gl.h>
 import
   "C"
-import
+import (
+  "µU/obj"
   "µU/col"
+)
 type
   Figure C.GLenum; const (
   Points = Figure(iota)
@@ -57,85 +59,130 @@ func Enable (i uint) { enable(i) }
 func ShadeModel (m uint) { shadeModel(m) }
 func Error() string { return error() }
 
-func Point (x ...float64) { point(x) }
-func Line (x ...float64) { line(x) }
-// For long series of lines: The client has to include them into Begin (gl.Lines) - End()
-func Line1 (x ...float64) { line1(x) }
-func Lineloop (x ...float64) { lineloop(x) }
-func Linestrip (x ...float64) { linestrip(x) }
+// Figures in the 3-dimensional space ///////////////////////////////////////////////////////////
+
+// Pre: len(x) == 3.
+func Point (x ...float64) { point(x...) }
+
+// Pre: len(x) == 6.
+func Line (x ...float64) { line(x...) }
+
+// Long series of lines must be included by "begin (Lines)" ... "end()"
+
+// Pre: len(x) % 3 == 0, len(x) >= 9.
+func Lineloop (x ...float64) { lineloop(x...) }
+func Linestrip (x ...float64) { linestrip(x...) }
+
+// Pre: len(x) == 9.
 func Triangle (x ...float64) { triangle(x...) }
-func Trianglestrip (x ...float64) { trianglestrip(x) }
-func Trianglefan (x ...float64) { trianglefan(x) }
-func Quad (x ...float64) { quad(x) }
-func Quadstrip (x ...float64) { quadstrip(x) }
-func Polygon (x ...float64) { polygon (x) }
-func Polygon1 (x, y, z []float64) { polygon1 (x,y,z) }
-func Curve (w uint, f1, f2, f3 func (float64) float64, t0, t1 float64) { curve(w,f1,f2,f3,t0,t1) }
+
+// Pre: len(x) % 3 == 0, len(x) >= 12.
+func Trianglestrip (x ...float64) { trianglestrip(x...) }
+func Trianglefan (x ...float64) { trianglefan(x...) }
+
+// Pre: len(x) == 12.
+func Quad (x ...float64) { quad(x...) }
+
+// Pre: len(x) % 3 == 0, len(x) >= 18.
+func Quadstrip (x ...float64) { quadstrip(x...) }
 
 func HorRectangle (x, y, z, x1, y1 float64, up bool) { horRectangle(x,y,z,x1,y1,up) }
-func VertRectangle (x ...float64) { vertRectangle(x) }
-func Parallelogram (x ...float64) { parallelogram(x) }
+
+// Pre: len(x) == 6, x[2] != x[5].
+func VertRectangle (x ...float64) { vertRectangle(x...) }
+
+// Pre: len(x) == 9.
+func Parallelogram (x ...float64) { parallelogram(x...) }
+
+// Pre: len(x) % 3 == 0, len(x) >= 9.
+func Polygon (x ...float64) { polygon (x...) }
+func Polygon1 (x, y, z []float64) { polygon1 (x,y,z) }
+
+func Curve (w uint, f, f1, f2 func (float64) float64, t, t1 float64) { curve(w,f,f1,f2,t,t1) }
+
+// Pre: a != 0.
 func Cube (x, y, z, a float64) { cube(x,y,z,a) }
 func CubeC (c []col.Colour, x, y, z, a float64) { cubeC(c,x,y,z,a) }
-func Cuboid (x ...float64) { cuboid (x) }
-func CuboidC (c []col.Colour, x ...float64) { cuboidC(c,x) }
+
+// Pre: len(x) == 6, x[2] != x[5].
+func Cuboid (x ...float64) { cuboid (x...) }
+// Pre: len(c) == 6.
+func CuboidC (c []col.Colour, x ...float64) { cuboidC(c,x...) }
+
 func Cuboid1 (x, y, z, w, d, h, a float64) { cuboid1(x,y,z,w,d,h,a) }
-func Prism (x ...float64) { prism (x) }
-func PrismC (c []col.Colour, x ...float64) { prismC (c,x) }
-func Parallelepiped (x ...float64) { parallelepiped (x) }
+
+// Pre: len(x) % 3 == 0, len(x) >= 12.
+func Prism (x ...float64) { prism (x...) }
+// Pre: len(x) == len(x).
+func PrismC (c []col.Colour, x ...float64) { prismC (c,x...) }
+
+// Pre: len(x) == 12.
+func Parallelepiped (x ...float64) { parallelepiped (x...) }
+
 func Pyramid (x, y, z, a, b, h float64) { pyramid (x,y,z,a,b,h) }
 func PyramidC (c []col.Colour, x, y, z, a, b, h float64) { pyramidC (c,x,y,z,a,b,h) }
+
+// Pre: len(x) % 3 == 0, len(x) >= 12.
+func Multipyramid (x ...float64) { multipyramid (x...) }
+func MultipyramidC (c []col.Colour, x ...float64) { multipyramidC (c,x...) }
+
 func Octahedron (x, y, z, r float64) { octahedron (x,y,z,r) }
+// Pre: len(c) == 8.
 func OctahedronC (c []col.Colour, x, y, z, r float64) { octahedronC (c, x, y, z, r) }
-func Multipyramid (x ...float64) { multipyramid (x) }
-func MultipyramidC (c []col.Colour, x ...float64) { multipyramidC (c,x) }
+
 func Circle (x, y, z, r float64) { circle (x,y,z,r) }
+
 func CircleSegment (x, y, z, r, a, b float64) { circleSegment (x,y,z,r,a,b) }
+
 func VertCircle (x, y, z, r, a float64) { vertCircle (x,y,z,r,a) }
+
 func Sphere (x, y, z, r float64) { sphere (x,y,z,r) }
+
 func Cone (x, y, z, r, h float64) { cone (x,y,z,r,h) }
+
 func DoubleCone (x, y, z, r, h float64) { doubleCone (x,y,z,r,h) }
+
 func Cylinder (x, y, z, r, h float64) { cylinder (x,y,z,r,h) }
+
 func CylinderSegment (x, y, z, r, h, a, b float64) { cylinderSegment (x,y,z,r,h,a,b) }
+
 func HorCylinder (x, y, z, r, l, a float64) { horCylinder (x,y,z,r,l,a) }
+
+// Pre: R > 0, r > 0.
 func Torus (x, y, z, R, r float64) { torus (x,y,z,R,r) }
 func VerTorus (x, y, z, R, r, a float64) { verTorus(x,y,z,R,r,a) }
-func Surface (f func (float64, float64) float64, x, y, z, x1, y1, z1 float64, wd, ht, g uint) { surface (f,x,y,z,x1,y1,z1,wd,ht,g) }
 
-// furniture: (x, y, z) = left front corner, (w, d, h) = width, depth and height
+func Paraboloid (x, y, z, a, w, h float64) { paraboloid(x,y,z,a,w,h) }
+
+func Surface (f obj.XY2Z, w, h float64) { surface (f,w,h) }
+
+// Furniture ////////////////////////////////////////////////////////////////////////////////////
+// (x, y, z) = left front corner, (w, d, h) = width, depth and height, a = angle
 
 // p, l = thickness of table plate, legs
-func Table (x, y, z, w, d, h, p, l, a float64, c col.Colour) {
-  table(x,y,z,w,d,h,p,l,a,c)
-}
+func Table (x, y, z, w, d, h, p, l, a float64, c col.Colour) { table(x,y,z,w,d,h,p,l,a,c) }
 
-// r, rf, rl = radius of table plate, foot and leg
-// hf, hp = height of foot and plate (thickness)
+// r, rf, rl = radius of table plate, foot and leg, hf, hp = height (thickness) of foot and plate
 func RoundTable (x, y, z, r, rf, rl, h, hf, hp float64, c col.Colour) {
-  roundTable(x,y,z,r,rf,rl,h,hf,hp,c)
-}
+     roundTable(x,y,z,r,rf,rl,h,hf,hp,c) }
 
-func OvalTable (x, y, z, w, d, h, a float64, c col.Colour) {
-  ovalTable(x,y,z,w,d,h,a,c)
-}
+// Pre: d <= w.
+// d = length of straight part
+func OvalTable (x, y, z, w, d, h, a float64, c col.Colour) { ovalTable(x,y,z,w,d,h,a,c) }
 
 // wb, db, hb = width, depth and height of back and arm rests
-// hs means the seat height
+// p = thickness of seat plate
+func Chair (x, y, z, w, h, p, a float64, c col.Colour) { chair (x,y,z,w,h,p,a,c) }
+
+// wb, db, hb = width, depth and height of back and arm rests, hs = seat height
 func ArmChair (x, y, z, w, d, h, wb, db, hs, hb, a float64, c col.Colour) {
-  armChair(x,y,z,w,d,h,wb,db,hs,hb,a,c)
-}
+     armChair(x,y,z,w,d,h,wb,db,hs,hb,a,c) }
 
-// h = seat height, p, l = thickness of seat plate, legs
-// db, hb = depth, height of back rest
+// h = seat height, p, l = thickness of seat plate, legs, db, hb = depth, height of back rest
 func Bench (x, y, z, w, d, h, p, l, db, hb, a float64, c col.Colour) {
-  bench (x,y,z,w,d,h,p,l,db,hb,a,c)
-}
+     bench (x,y,z,w,d,h,p,l,db,hb,a,c) }
 
-func Chair (x, y, z, w, h, p, a float64, c col.Colour) {
-  bench (x,y,z,w,w,h/2,p,h/20,h/20,h/2,a,c)
-}
-
-// walls, windows and doors
+// Walls, Windows and Doors /////////////////////////////////////////////////////////////////////
 
 func SetHt (f, c float64) { height0, height = f, f + c }
 func SetAng (a float64) { alpha = a }
@@ -146,13 +193,15 @@ func Move (x, y float64) { xx += x; yy += y }
 func SetColW (c col.Colour) { cWall = c }
 func Wall (w float64) { wall(w) }
 
-// w, d, h = width, depth, height
-// r = Rand, v = Vorsprung
-func Door (w, r, d, v, h float64, c col.Colour) { door(w,r,d,v,h,c) }
+// w, d, h = width, depth, height, f = door framg, p = door protrusion
+func Door (w, f, d, p, h float64, c col.Colour) { door(w,f,d,p,h,c) }
 
-// r, rb, rt = Rand left/right, down, top; f = height Fensterbrett
-func Window (w, d, h, f, r, rb, rt float64, b bool, c col.Colour) { window(w,d,h,f,r,rb,rt,b,c) }
+// f, fb, ft = window frame left/right, bottom, top; wc = height of window cill
+func Window (w, d, h, wc, f, fb, ft float64, b bool, c col.Colour) {
+     window(w,d,h,wc,f,fb,ft,b,c) }
 func Window1 (w, d, h, f float64, c col.Colour) { window1(w,d,h,f,c) }
+
+// Light ////////////////////////////////////////////////////////////////////////////////////////
 
 // Pre: n < MaxL, 0 <= h[i] <= 1 für i = 0, 1.
 // If Light n is already switched on, nothing has happened.

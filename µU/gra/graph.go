@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221013 - license see µU.go
 //
 // >>>  References:
 // >>>  CLR  = Cormen, Leiserson, Rivest        (1990)
@@ -12,6 +12,7 @@ import (
   . "µU/obj"
   "µU/kbd"
   "µU/pseq"
+//  "µU/time"
 )
 
 /*    vertex           neighbour                        neighbour            vertex
@@ -44,29 +45,29 @@ import (
                    <-|---prevNb  |  <-|---prevE  |  <-|---prevNb  |
                       \_________/      \________/      \_________/
 
-The vertices of a graph are represented by structs,
-whose field "any" represents the "real" vertex.
-All vertices are connected in a doubly linked list with anchor cell,
-that can be traversed to execute some operation on all vertices of the graph.
+  The vertices of a graph are represented by structs,
+  whose field "any" represents the "real" vertex.
+  All vertices are connected in a doubly linked list with anchor cell,
+  that can be traversed to execute some operation on all vertices of the graph.
 
-The edges are also represented by structs,
-whose field "any" is a variable of a type that implements Valuator.
-Also all edges are connected in a doubly linked list with anchor cell.
+  The edges are also represented by structs,
+  whose field "any" is a variable of a type that implements Valuator.
+  Also all edges are connected in a doubly linked list with anchor cell.
 
-For a vertex v one finds all outgoing and incoming edges
-with the help of a further doubly linked ringlist of neighbour(hoodrelation)s
-  nb1 = v.nbPtr, nb2 = v.nbPtr.nextNb, nb3 = v.nbPtr.nextNb.nextNb etc.
-by the links outgoing from the nbi (i = 1, 2, 3, ...)
-  nb1.edgePtr, nb2.edgePtr, nb3.edgePtr etc.
-In directed graphs the edges outgoing from a vertex are exactly those ones
-in the neighbourlist, for which outgoing == true.
+  For a vertex v one finds all outgoing and incoming edges
+  with the help of a further doubly linked ringlist of neighbour(hoodrelation)s
+    nb1 = v.nbPtr, nb2 = v.nbPtr.nextNb, nb3 = v.nbPtr.nextNb.nextNb etc.
+  by the links outgoing from the nbi (i = 1, 2, 3, ...)
+    nb1.edgePtr, nb2.edgePtr, nb3.edgePtr etc.
+  In directed graphs the edges outgoing from a vertex are exactly those ones
+  in the neighbourlist, for which outgoing == true.
 
-For an edge e one finds its two vertices by the links
-  e.nbPtr0.from = e.nbPtr1.to und e.nbPtr0.to = e.nbPtr1.from.
+  For an edge e one finds its two vertices by the links
+    e.nbPtr0.from = e.nbPtr1.to und e.nbPtr0.to = e.nbPtr1.from.
 
-Semantics of some variables, that are "hidden" in fields of vAnchor:
-  vAnchor.time0: in that the "time" is incremented for each search step
-  vAnchor.acyclic: (after call of search) == true <=> graph has no cycles. */
+  Semantics of some variables, that are "hidden" in fields of vAnchor:
+    vAnchor.time0: in that the "time" is incremented for each search step
+    vAnchor.acyclic: (after call of search) == true <=> graph has no cycles. */
 
 const (
   suffix = "gra"
@@ -270,12 +271,6 @@ func (x *graph) insertedEdge (a any, marked bool) *edge {
   return e
 }
 
-func (x *graph) Edge (a any) {
-  if x.Empty() { return }
-  if x.colocal == x.local { ker.Panic ("gra.Edge: colocal == local") }
-  x.edgeMarked (a, false)
-}
-
 // Returns nil, iff there is no edge from n to n1;
 // returns otherwise the corresponding pointer.
 func (x *graph) connection (v, v1 *vertex) *edge {
@@ -317,6 +312,12 @@ func (x *graph) edgeMarked (a any, marked bool) {
   n.edgePtr.any = Clone(a)
   n.edgePtr.bool = marked
   x.nEdges++
+}
+
+func (x *graph) Edge (a any) {
+  if x.Empty() { return }
+  if x.colocal == x.local { ker.Panic ("gra.Edge: colocal == local") }
+  x.edgeMarked (a, false)
 }
 
 func (x *graph) Edge2 (v, v1, e any) {
@@ -388,11 +389,18 @@ func (x *graph) CoEdged() bool {
 // returns otherwise (n, true), where n is the pointer to that vertex
 // (which is unique because of effect of Ins).
 func (x *graph) found (a any) (*vertex, bool) {
+//  println ("look for", a.(Stringer).String())
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
+//    s := v.any.(Stringer).String()
     if Eq (v.any, a) {
+//      println (s + " found")
       return v, true
+    } else {
+//      println (s + " not found")
     }
+//    time.Msleep (1)
   }
+//  println ("nothing found")
   return nil, false
 }
 
@@ -420,11 +428,14 @@ func (x *graph) Ex2 (a, a1 any) bool {
 // Returns true, iff there is no vertex in x, for which p returns true,
 // Returns otherwise a pointer to such a vertex.
 func (x *graph) foundPred (p Pred) (*vertex, bool) {
+//  print ("foundPred ")
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     if p (v.any) {
+//      println (v.any.(Stringer).String()); time.Msleep (100)
       return v, true
     }
   }
+//  println()
   return nil, false
 }
 
@@ -981,12 +992,3 @@ func (x *graph) Write() {
   x.Trav1Cond (x.writeE)
   x.TravCond (x.writeV)
 }
-
-func (x *graph) ExVtx (a any) any {
-/*/
-Wenn ein vertex in x existiert, dessen Inhalt mit a identisch ist, wird der Zeiger auf diesen vertex geliefert, sonst nil.
-/*/
-  return nil
-}
-
-// func (x *graph) WriteEdge (v, v1 vtx.Vertex, c col.Colour) { }

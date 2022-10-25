@@ -1,6 +1,6 @@
 package pos
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   "math"
@@ -78,6 +78,10 @@ func (x *position) Less (Y any) bool {
     return x.x < y.x
   }
   return false
+}
+
+func (x *position) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *position) Clone() any {

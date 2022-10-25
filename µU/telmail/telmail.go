@@ -1,6 +1,6 @@
 package telmail
 
-// (c) Christian Maurer   v. 221003 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -80,6 +80,10 @@ func (x *telmail) Eq (Y any) bool {
 }
 
 func (x *telmail) Less (Y any) bool {
+  return false
+}
+
+func (x *telmail) Leq (Y any) bool {
   return false
 }
 

@@ -1,6 +1,6 @@
 package stru
 
-// (c) Christian Maurer   v. 220818 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -65,6 +65,10 @@ func (x *structure) Clone() any {
 }
 
 func (x *structure) Less (Y any) bool {
+  return false
+}
+
+func (x *structure) Leq (Y any) bool {
   return false
 }
 

@@ -1,6 +1,6 @@
 package mol
 
-// (c) Christian Maurer   v. 220831 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -78,6 +78,10 @@ func (x *molecule) Less (Y any) bool {
     }
   }
   return false
+}
+
+func (x *molecule) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *molecule) Sub (Y any) bool {

@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 220702 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import . "nU/obj"
 
@@ -66,6 +66,10 @@ func (x *adjacencyMatrix) Clone() any {
 }
 
 func (x *adjacencyMatrix) Less (Y any) bool {
+  return false
+}
+
+func (x *adjacencyMatrix) Leq (Y any) bool {
   return false
 }
 

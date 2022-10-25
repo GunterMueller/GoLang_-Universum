@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 22070r - license see nU.go
+// (c) Christian Maurer   v. 221021 - license see nU.go
 
 import . "nU/obj"
 
@@ -58,6 +58,10 @@ func (x *colour) Eq (Y any) bool {
 }
 
 func (x *colour) Less (Y any) bool {
+  return false
+}
+
+func (x *colour) Leq (Y any) bool {
   return false
 }
 

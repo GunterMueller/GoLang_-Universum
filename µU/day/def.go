@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 220831 - license see µU.go
+// (c) Christian Maurer   v. 221016 - license see µU.go
 
 import (
   . "µU/obj"
@@ -20,30 +20,26 @@ type
 const
   NWeekdays = uint(nWeekdays)
 const ( // Format
-  Dd = iota  // e.g. "31"
-  Dd_mm_     // e.g. "31.08."
-  Dd_mm_yy   // e.g. "31.08.22" // default Format
-  Dd_mm_yyyy // e.g. "31.08.2022"
-//D          // e.g. "31"
-//D_m        // e.g. "31.8."
-//D_m_yy     // e.g. "31.8.22"
-//           // e.g. "31.8.2022"
-  Yymmdd     // e.g. "220831"
-  Yyyymmdd   // e.g. "20220831"
-//WD_m_yy    // e.g. "Mi, 31.8.2022"
-  Dd_M       // e.g. "31. August"
-  Dd_M_yyyy  // e.g. "31. August 2022"
-//WDd_M_yyyy // e.g. "Mittwoch, 31. August 2022"
+  Dd = iota  // e.g. "07"
+  Dd_mm_     // e.g. "07.09."
+  Dd_mm_yy   // e.g. "07.09.22" // default Format
+  Dd_mm_yyyy // e.g. "07.09.2022"
+  Yymmdd     // e.g. "220931"
+  Yyyymmdd   // e.g. "20220931"
+  Dd_M       // e.g. "07. September"
+  D_M        // e.g. "7. September"
+  Dd_M_yyyy  // e.g. "07. September 2022"
+  D_M_yyyy   // e.g. "7. September 2022"
   Yy         // e.g. "22"
   Yyyy       // e.g. "2022"
   Wd         // e.g. "Mi"
   WD         // e.g. "Mittwoch"
-  Mmm        // e.g. "Aug"
-  M          // e.g. "August"
-  Myyyy      // e.g. "August 2022"
-  Wn         // e.g. "35" (.Woche)
-  WN         // e.g. "35.Woche"
-  WNyyyy     // e.g. "35.Woche 2022"
+  Mmm        // e.g. "Sep"
+  M          // e.g. "September"
+  Myyyy      // e.g. "September 2022"
+  Wn         // e.g. "36" (.Woche)
+  WN         // e.g. "36. Woche"
+  WNyyyy     // e.g. "36. Woche 2022"
   Qu         // e.g. "III/22"
   NFormats
 )

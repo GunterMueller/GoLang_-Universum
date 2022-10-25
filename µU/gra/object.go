@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   "µU/ker"
@@ -76,6 +76,10 @@ func (x *graph) Less (Y any) bool {
   return false
 }
 
+func (x *graph) Leq (Y any) bool {
+  return false
+}
+
 func (x *graph) Empty() bool {
   return x.vAnchor.nextV == x.vAnchor
 }
@@ -128,50 +132,50 @@ func (x *graph) Codelen() uint {
 }
 
 func (x *graph) Encode() Stream {
-  bs := make (Stream, x.Codelen())
-  bs[0] = 0; if x.bool { bs[0] = 1 }
+  s := make (Stream, x.Codelen())
+  s[0] = 0; if x.bool { s[0] = 1 }
   i, a := uint32(1), uint32(4)
-  copy (bs[i:i+a], Encode (x.nVertices))
-  if x.nVertices == 0 { return bs }
+  copy (s[i:i+a], Encode (x.nVertices))
+  if x.nVertices == 0 { return s }
   i += a
   z := uint32(0)
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     k := uint32(Codelen (v.any))
-    copy (bs[i:i+a], Encode (k))
+    copy (s[i:i+a], Encode (k))
     i += a
-    bs[i] = 0; if v.bool { bs[i] = 1 }
+    s[i] = 0; if v.bool { s[i] = 1 }
     i++
-    copy (bs[i:i+k], Encode (v.any))
+    copy (s[i:i+k], Encode (v.any))
     i += k
     v.dist = z
     z++
   }
-  copy (bs[i:i+a], Encode (x.colocal.dist))
+  copy (s[i:i+a], Encode (x.colocal.dist))
   i += a
-  copy (bs[i:i+a], Encode (x.local.dist))
+  copy (s[i:i+a], Encode (x.local.dist))
   i += a
-  copy (bs[i:i+a], Encode (x.nEdges))
-  if x.nEdges == 0 { return bs }
+  copy (s[i:i+a], Encode (x.nEdges))
+  if x.nEdges == 0 { return s }
   i += a
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
     if x.eAnchor.any == nil { ker.Oops() }
     k := uint32(Codelen (e.any))
-    copy (bs[i:i+a], Encode (k))
+    copy (s[i:i+a], Encode (k))
     i += a
-    copy (bs[i:i+k], Encode (e.any))
+    copy (s[i:i+k], Encode (e.any))
     i += k
-    bs[i] = 0; if e.bool { bs[i] = 1 }
+    s[i] = 0; if e.bool { s[i] = 1 }
     i++
-    copy (bs[i:i+a], Encode (e.nbPtr0.from.dist))
+    copy (s[i:i+a], Encode (e.nbPtr0.from.dist))
     i += a
-    bs[i] = 0; if e.nbPtr0.outgoing { bs[i] = 1 }
+    s[i] = 0; if e.nbPtr0.outgoing { s[i] = 1 }
     i++
-    copy (bs[i:i+a], Encode (e.nbPtr1.from.dist))
+    copy (s[i:i+a], Encode (e.nbPtr1.from.dist))
     i += a
-    bs[i] = 0; if e.nbPtr1.outgoing { bs[i] = 1 }
+    s[i] = 0; if e.nbPtr1.outgoing { s[i] = 1 }
     i++
   }
-  return bs
+  return s
 }
 
 func (x *graph) check (s string, i, a uint32, bs Stream) {
@@ -186,30 +190,30 @@ func (x *graph) check (s string, i, a uint32, bs Stream) {
   }
 }
 
-func (x *graph) Decode (bs Stream) {
-  if len(bs) == 0 { panic("gra.Decode: len(bs) == 0") }
+func (x *graph) Decode (s Stream) {
+  if len(s) == 0 { panic("gra.Decode: len(s) == 0") }
   x.Clr()
-  x.bool = bs[0] == 1
+  x.bool = s[0] == 1
   i, a := uint32(1), uint32(4)
-  x.nVertices = Decode (uint32(0), bs[i:i+a]).(uint32)
+  x.nVertices = Decode (uint32(0), s[i:i+a]).(uint32)
   if x.nVertices == 0 {
     return
   }
   i += a
   for n := uint32(0); n < x.nVertices; n++ {
-    k := Decode (uint32(0), bs[i:i+a]).(uint32)
+    k := Decode (uint32(0), s[i:i+a]).(uint32)
     i += a
-    marked := bs[i] == 1
+    marked := s[i] == 1
     i++
     vc := Clone (x.vAnchor.any)
-    content := Decode (x.vAnchor.any, bs[i:i+k])
+    content := Decode (x.vAnchor.any, s[i:i+k])
     x.vAnchor.any = Clone (vc)
     x.insertedVertex (content, marked)
     i += k
   }
-  p := Decode (uint32(0), bs[i:i+a]).(uint32)
+  p := Decode (uint32(0), s[i:i+a]).(uint32)
   i += a
-  c := Decode (uint32(0), bs[i:i+a]).(uint32)
+  c := Decode (uint32(0), s[i:i+a]).(uint32)
   i += a
   for v, z := x.vAnchor.nextV, uint32(0); v != x.vAnchor; v, z = v.nextV, z + 1 {
     if z == p {
@@ -219,30 +223,30 @@ func (x *graph) Decode (bs Stream) {
       x.local = v
     }
   }
-  x.nEdges = Decode (uint32(0), bs[i:i+a]).(uint32)
+  x.nEdges = Decode (uint32(0), s[i:i+a]).(uint32)
   if x.nEdges == 0 {
     return
   }
   i += a
   for z := uint32(0); z < x.nEdges; z++ {
-    k := Decode (uint32(0), bs[i:i+a]).(uint32)
+    k := Decode (uint32(0), s[i:i+a]).(uint32)
     i += a
-    attrib := Decode (x.eAnchor.any, bs[i:i+k])
+    attrib := Decode (x.eAnchor.any, s[i:i+k])
     e := newEdge (attrib)
     i += k
-    e.bool = bs[i] == 1
+    e.bool = s[i] == 1
     i++
-    fromdist := Decode (uint32(0), bs[i:i+a]).(uint32)
+    fromdist := Decode (uint32(0), s[i:i+a]).(uint32)
     i += a
     v0 := x.vAnchor.nextV
     for fromdist > 0 {
       v0 = v0.nextV
       fromdist--
     }
-    e.nbPtr0 = newNeighbour (e, v0, nil, bs[i] == 1) // e.nbPtr0.to see below
+    e.nbPtr0 = newNeighbour (e, v0, nil, s[i] == 1) // e.nbPtr0.to see below
     i++
     insertNeighbour (e.nbPtr0, v0)
-    fromdist = Decode (uint32(0), bs[i:i+a]).(uint32)
+    fromdist = Decode (uint32(0), s[i:i+a]).(uint32)
     i += a
     v0 = x.vAnchor.nextV
     for fromdist > 0 {
@@ -250,11 +254,11 @@ func (x *graph) Decode (bs Stream) {
       fromdist--
     }
     e.nbPtr0.to = v0
-    dir := bs[i] == 1
-    i++
+    dir := s[i] == 1
+
     d := e.nbPtr0.outgoing != dir
     if d != x.bool {
-      s := "decoded Graph is "; if x.bool { s += "not " }; ker.Panic(s + "directed")
+      t := "decoded Graph is "; if x.bool { t += "not " }; ker.Panic (t + "directed")
     }
     e.nbPtr1 = newNeighbour (e, v0, e.nbPtr0.from, dir)
     insertNeighbour (e.nbPtr1, v0)

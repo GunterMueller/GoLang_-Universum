@@ -1,9 +1,10 @@
 package gl
 
-// (c) Christian Maurer   v. 220827 - license see µU.go
+// (c) Christian Maurer   v. 221024 - license see µU.go
 
 import (
   "math"
+  "µU/ker"
   "µU/col"
 )
 const (
@@ -31,27 +32,17 @@ func ok (x float64) bool {
 }
 
 func fail() {
-  panic("wrong number of float64's")
+  ker.Panic ("wrong number of float64's")
 }
 
-func fail1() {
-  panic("some pre not met")
-}
-
-func point (x []float64) {
+func point (x ...float64) {
   if len(x) != 3 { fail() }
   begin (Points)
   vertex (x[0], x[1], x[2])
   end()
 }
 
-func line1 (x []float64) {
-  for i := 0; i < 6; i++ { if math.IsNaN(x[i]) { return } }
-  vertex (x[0], x[1], x[2])
-  vertex (x[3], x[4], x[5])
-}
-
-func line (x []float64) {
+func line (x ...float64) {
   if len(x) != 6 { fail() }
   for i := 0; i < 6; i++ { if math.IsNaN(x[i]) { return } }
   begin (Lines)
@@ -60,7 +51,7 @@ func line (x []float64) {
   end()
 }
 
-func lineloop (x []float64) {
+func lineloop (x ...float64) {
   n := len(x)
   if n % 3 != 0 || n < 3 * 3 { fail() }
   begin (LineLoop)
@@ -70,7 +61,7 @@ func lineloop (x []float64) {
   end()
 }
 
-func linestrip (x []float64) {
+func linestrip (x ...float64) {
   n := len(x)
   if n % 3 != 0 || n < 3 * 3 { fail() }
   begin (LineStrip)
@@ -90,7 +81,7 @@ func triangle (x ...float64) {
   end()
 }
 
-func trianglestrip (x []float64) {
+func trianglestrip (x ...float64) {
   n := len(x)
   if n % 3 != 0 || n < 4 * 3 { fail() }
   begin (TriangleStrip)
@@ -100,7 +91,7 @@ func trianglestrip (x []float64) {
   end()
 }
 
-func trianglefan (x []float64) {
+func trianglefan (x ...float64) {
   n := len(x)
   if n % 3 != 0 || n < 4 * 3 { fail() }
   begin (TriangleFan)
@@ -110,7 +101,7 @@ func trianglefan (x []float64) {
   end()
 }
 
-func quad (x []float64) {
+func quad (x ...float64) {
   if len(x) != 12 { fail() }
   begin (Quads)
   for i := 0; i < 12; i += 3 {
@@ -119,7 +110,7 @@ func quad (x []float64) {
   end()
 }
 
-func quadstrip (x []float64) {
+func quadstrip (x ...float64) {
   n := len(x)
   if n % 3 != 0 || n < 6 * 3 { fail() }
   begin (QuadStrip)
@@ -138,9 +129,9 @@ func horRectangle (x, y, z, x1, y1 float64, up bool) {
   end()
 }
 
-func vertRectangle (x []float64) {
+func vertRectangle (x ...float64) {
   if len(x) != 6 { fail() }
-  if x[2] == x[5] { fail1() }
+  if x[2] == x[5] { ker.PrePanic() }
   begin (Quads)
   vertex (x[0], x[1], x[2])
   vertex (x[3], x[4], x[2])
@@ -149,7 +140,7 @@ func vertRectangle (x []float64) {
   end()
 }
 
-func parallelogram (x []float64) {
+func parallelogram (x ...float64) {
   if len(x) != 9 { fail() }
   begin (Quads)
   vertex (x[0],               x[1],               x[2])
@@ -159,7 +150,7 @@ func parallelogram (x []float64) {
   end()
 }
 
-func polygon (x []float64) {
+func polygon (x ...float64) {
   n := len(x)
   if n % 3 != 0 || n < 3 * 3 { fail() }
   begin (Polygons)
@@ -204,7 +195,7 @@ func cubeC (c []col.Colour, x, y, z, a float64) {
   CuboidC (c, x - a / 2, y - a / 2, z - a / 2, x + a / 2, y + a / 2, z + a / 2)
 }
 
-func cuboid (x []float64) {
+func cuboid (x ...float64) {
   if len(x) != 6 { fail() }
   VertRectangle (x[0], x[1], x[2], x[3], x[1], x[5])
   VertRectangle (x[3], x[1], x[2], x[3], x[4], x[5])
@@ -214,7 +205,8 @@ func cuboid (x []float64) {
   horRectangle (x[0], x[1], x[2], x[3], x[4], false)
 }
 
-func cuboidC (c []col.Colour, x []float64) {
+func cuboidC (c []col.Colour, x ...float64) {
+  if len(x) != 6 || len(c) != 6 { fail() }
   colour (c[0])
   VertRectangle (x[0], x[1], x[2], x[3], x[1], x[5]) // front
   colour (c[1])
@@ -254,26 +246,20 @@ func cuboid1 (x, y, z, w, d, h, a float64) {
 //  Quad (f, x, y, z, x2, y2, z, x1, y1, z, x0, y0, z) // XXX
 }
 
-func prism (x []float64) {
+func prism (x ...float64) {
   n := len(x)
   if n % 3 != 0 || n < 4 * 3 { fail() }
-/*
-  x1 := make([]float64, n)
-  for i := 0; i < n - 3; i++ {
-    x1[i] = x[i] + x[i % 3]
-  }
-*/
   begin (QuadStrip)
   for i := 3; i < n - 3; i += 3 {
-    vertex (x[i], x [i + 1], x [i + 2])
-    vertex (x[i] + x[0], x[i + 1] + x[1], x[i + 2] + x[2])
+    vertex (x[i], x[i+1], x[i+2])
+    vertex (x[i] + x[0], x[i+1] + x[1], x[i+2] + x[2])
   }
   vertex (x[3], x[4], x[5])
   vertex (x[3] + x[0], x[4] + x[1], x[5] + x[2])
   end()
 }
 
-func prismC (c []col.Colour, x []float64) {
+func prismC (c []col.Colour, x ...float64) {
   n := len(x)
   if n % 3 != 0 || n < 4 * 3 { fail() }
   x1 := make([]float64, n)
@@ -298,9 +284,67 @@ func prismC (c []col.Colour, x []float64) {
   end()
 }
 
-func parallelepiped (x []float64) { // BUG
+func parallelepiped (x ...float64) { // BUG
   if  len(x) != 12 { fail() }
-  prism (x)
+  prism (x...)
+}
+
+func pyramid (x, y, z, a, b, h float64) {
+  begin (TriangleFan)
+  vertex (x,     y,     z + h)
+  vertex (x + a, y + b, z)
+  vertex (x - a, y + b, z)
+  vertex (x - a, y - b, z)
+  vertex (x + a, y - b, z)
+//  vertex (x + a, y + b, z)
+  end()
+  horRectangle (x - a, y - b, z, x + a, y + b, false)
+}
+
+func pyramidC (c []col.Colour, x, y, z, a, b, h float64) {
+  begin (TriangleFan)
+  colour (c[0])
+  vertex (x,     y,     z + h)
+  vertex (x + a, y + b, z)
+  vertex (x - a, y + b, z)
+  colour (c[1])
+  vertex (x - a, y - b, z)
+  colour (c[2])
+  vertex (x + a, y - b, z)
+  colour (c[3])
+  vertex (x + a, y + b, z)
+  end()
+  colour (c[4])
+  horRectangle (x - a, y - b, z, x + a, y + b, false)
+}
+
+func multipyramid (x ...float64) {
+  n := len(x)
+  if n % 3 != 0 || n < 4 * 3 { fail() }
+  begin (TriangleFan)
+  vertex (x[0], x[1], x[2])
+  for i := 1; i < n / 3; i++ {
+    j := 3 * i
+    vertex (x[j], x[j + 1], x[j + 2])
+  }
+  vertex (x[3], x[4], x[5])
+  end()
+}
+
+func multipyramidC (c []col.Colour, x ...float64) {
+  n := len(x)
+  if n % 3 != 0 || n < 4 * 3 { fail() }
+  for i := 1; i < n / 3 - 1; i++ {
+    j, k := 3 * i, 3 * (i + 1)
+    colour (c[i])
+    Triangle (x[0], x[1],     x[2],
+              x[j], x[j + 1], x[j + 2],
+              x[k], x[k + 1], x[k + 2])
+  }
+  colour (c[n / 3 - 1])
+  Triangle (x[0], x[1],         x[2],
+            x[n - 3], x[n - 2], x[n - 1],
+            x[3], x[4],         x[5])
 }
 
 func octahedron (x, y, z, r float64) {
@@ -341,64 +385,6 @@ func octahedronC (c []col.Colour, x, y, z, r float64) { // BUG
   end()
 }
 
-func pyramid (x, y, z, a, b, h float64) {
-  begin (TriangleFan)
-  vertex (x,     y,     z + h)
-  vertex (x + a, y + b, z)
-  vertex (x - a, y + b, z)
-  vertex (x - a, y - b, z)
-  vertex (x + a, y - b, z)
-//  vertex (x + a, y + b, z)
-  end()
-  horRectangle (x - a, y - b, z, x + a, y + b, false)
-}
-
-func pyramidC (c []col.Colour, x, y, z, a, b, h float64) {
-  begin (TriangleFan)
-  colour (c[0])
-  vertex (x,     y,     z + h)
-  vertex (x + a, y + b, z)
-  vertex (x - a, y + b, z)
-  colour (c[1])
-  vertex (x - a, y - b, z)
-  colour (c[2])
-  vertex (x + a, y - b, z)
-  colour (c[3])
-  vertex (x + a, y + b, z)
-  end()
-  colour (c[4])
-  horRectangle (x - a, y - b, z, x + a, y + b, false)
-}
-
-func multipyramid (x []float64) {
-  n := len(x)
-  if n % 3 != 0 || n < 4 * 3 { fail() }
-  begin (TriangleFan)
-  vertex (x[0], x[1], x[2])
-  for i := 1; i < n / 3; i++ {
-    j := 3 * i
-    vertex (x[j], x[j + 1], x[j + 2])
-  }
-  vertex (x[3], x[4], x[5])
-  end()
-}
-
-func multipyramidC (c []col.Colour, x []float64) {
-  n := len(x)
-  if n % 3 != 0 || n < 4 * 3 { fail() }
-  for i := 1; i < n / 3 - 1; i++ {
-    j, k := 3 * i, 3 * (i + 1)
-    colour (c[i])
-    Triangle (x[0], x[1],     x[2],
-              x[j], x[j + 1], x[j + 2],
-              x[k], x[k + 1], x[k + 2])
-  }
-  colour (c[n / 3 - 1])
-  Triangle (x[0], x[1],         x[2],
-            x[n - 3], x[n - 2], x[n - 1],
-            x[3], x[4],         x[5])
-}
-
 /*/
   func frustum (x, y, z, r, h, h1 float64) { TODO
   if h1 > h { fail() }
@@ -415,3 +401,219 @@ func multipyramidC (c []col.Colour, x []float64) {
   circle (x, y, z, -r)
 }
 */
+
+func circle (x, y, z, r float64) {
+//  circleSegment (x, y, z, r, 0, 360)
+  if r == 0 {
+    Point (x, y, z)
+    return
+  }
+//  if r < 0 { r = -r } // change orientation
+  begin (TriangleFan)
+  vertex (x, y, z)
+  for i := 0; i <= N; i++ {
+    vertex (x + r * cos[i], y + r * sin[i], z)
+  }
+  end()
+}
+
+func circleSegment (x, y, z, r, a, b float64) {
+  if r == 0 {
+    Point (x, y, z)
+    return
+  }
+//  if r < 0 { r = -r } // change orientation
+  aa := uint(math.Floor (a / float64 (angle) + 0.5))
+  bb := uint(math.Floor (b / float64 (angle) + 0.5))
+  begin (TriangleFan)
+  vertex (x, y, z)
+  for i := aa; i <= bb; i++ {
+    vertex (x + r * cos[i], y + r * sin[i], z)
+  }
+  end()
+}
+
+func vertCircle (x, y, z, r, a float64) {
+  if r == 0 {
+    Point (x, y, z)
+    return
+  }
+//  if r < 0 { r = -r } // change orientation
+  s, c := math.Sin (a * pi_180), math.Cos (a * pi_180)
+  begin (TriangleFan)
+  vertex (x, y, z)
+  for i := 0; i <= N; i++ {
+    vertex (x - r * s * cos[i], y + r * c * cos[i], z + r * sin[i])
+  }
+  end()
+}
+
+func sphere (x, y, z, r float64) {
+  r0, z0 := r * sin[1], z + r * cos[1]
+  begin (TriangleFan)
+  vertex (x, y, z + r)
+  for i := 0; i <= N; i++ {
+    vertex (x + r0 * cos[i], y + r0 * sin[i], z0)
+  }
+  end()
+  begin (QuadStrip)
+  for i := 1; i <= N / 2 - 2; i++ {
+    r0, z0 =  r * sin[i],     z + r * cos[i]
+    r1, z1 := r * sin[i + 1], z + r * cos[i + 1]
+    for j := 0; j <= N; j++ {
+      s, c := sin[j], cos[j]
+      vertex (x + r0 * c, y + r0 * s, z0)
+      vertex (x + r1 * c, y + r1 * s, z1)
+    }
+  }
+  end()
+  r0, z0 = r * sin[N / 2 - 1], z + r * cos[N / 2 - 1]
+  begin (TriangleFan)
+  vertex (x, y, z - r)
+  for i := N; i >= 0; i -= 1 {
+    vertex (x + r0 * cos[i], y + r0 * sin[i], z0)
+  }
+  end()
+/*
+  n := vectors(N + 2)
+  n[0] = vect.New3 (0, 0, 1)
+  for l := 0; l <= N; l++ {
+    n[1 + l] = vect.New3 (sin[1] * cos[l], sin[1] * sin[l], cos[1])
+  }
+  n = vectors(2 * (N + 1))
+  for i := 1; i <= N / 2 - 2; i++ {
+    for j := 0; j <= N; j++ {
+      n[2 * j] = vect.New3 (sin[i] * c, sin[i] * s, cos[i])
+      n[2 * j + 1].Set3 (sin[i+1] * c, sin[i+1] * s, cos[i+1])
+    }
+  }
+  n = vectors(N + 2)
+  n[0] = vect.New3 (0, 0, -1)
+  for l := N; l >= 0; l -= 1 {
+    n[1 + N-l] = vect.New3 (sin[b] * cos[l], sin[b] * sin[l], cos[b])
+  }
+*/
+}
+
+func cone (x, y, z, r, h float64) {
+  begin (TriangleFan)
+  vertex (x, y, z + h)
+  for l := 0; l <= N; l++ {
+    vertex (x + r * cos[l], y + r * sin[l], z)
+  }
+  end()
+  circle (/* c, */ x, y, z, -r)
+}
+
+func doubleCone (x, y, z, r, h float64) {
+  cone (x, y, z - h, r,  h)
+  cone (x, y, z + h, r, -h)
+}
+
+func cylinder (x, y, z, r, h float64) {
+//  cylinderSegment (c, x, y, z, r, h, 0, 360)
+  circle (/* c, */ x, y, z,    -r)
+  circle (/* c, */ x, y, z + h, r)
+  begin (QuadStrip)
+  for i := 0; i <= N; i++ {
+    vertex (x + r * cos[i], y + r * sin[i], z)
+    vertex (x + r * cos[i], y + r * sin[i], z + h)
+  }
+  end()
+}
+
+func cylinderSegment (x, y, z, r, h, a, b float64) {
+  circleSegment (x, y, z,    -r, a, b)
+  circleSegment (x, y, z + h, r, a, b)
+  aa := uint(math.Floor (a / float64 (angle) + 0.5))
+  bb := uint(math.Floor (b / float64 (angle) + 0.5))
+  begin (QuadStrip)
+  for i := aa; i <= bb; i++ {
+    vertex (x + r * cos[i], y + r * sin[i], z)
+    vertex (x + r * cos[i], y + r * sin[i], z + h)
+  }
+  end()
+}
+
+func horCylinder (x, y, z, r, l, a float64) {
+  if r == 0 {
+    vertCircle (x, y, z, r, a)
+    return
+  }
+  sa, ca := math.Sin (a * pi_180), math.Cos (a * pi_180)
+  dx, dy := l * ca, l * sa
+  vertCircle (x, y, z, -r, a)
+  vertCircle (x + dx, y + dy, z, r, a)
+  begin (QuadStrip)
+  for i := 0; i <= 2 * N; i += 2 {
+    si, ci := sin[i / 2], cos[i / 2]
+    sci, cci := sa * ci, ca * ci
+    x0, y0, z0 := x - r * sci, y + r * cci, z + r * si
+    vertex (x0, y0, z0)
+    vertex (x0 + dx, y0 + dy, z0)
+  }
+  end()
+}
+
+func torus (x, y, z, R, r float64) {
+  if r <= 0 || R <= 0 { fail() }
+  begin (QuadStrip)
+  for i := 0; i < N; i++ {
+    s0, s1 := R + r * cos[i], R + r * cos[i+1]
+    z0, z1 := z + r * sin[i], z + r * sin[i+1]
+    for j := 0; j < N; j++ {
+      vertex (x + s0 * cos[j],     y + s0 * sin[j],     z0)
+      vertex (x + s0 * cos[j + 1], y + s0 * sin[j + 1], z0)
+      vertex (x + s1 * cos[j + 1], y + s1 * sin[j + 1], z1)
+      vertex (x + s1 * cos[j],     y + s1 * sin[j],     z1)
+      vertex (x + s0 * cos[j],     y + s0 * sin[j],     z0)
+//      n[2*j].Set3 (1., 1., 1.)
+      vertex (x + s0 * cos[j + 1], y + s0 * sin[j + 1], z0)
+//      n[2*j+1].Set3 (1, 1, 1)
+    }
+  }
+  end()
+}
+
+func verTorus (x, y, z, R, r, a float64) {
+  if r <= 0 || R <= 0 { fail() }
+  for a <= -180 { a += 180 }
+  for a >=  180 { a -= 180 }
+  sa, ca := math.Sin (a * pi_180), math.Cos (a * pi_180)
+  begin (QuadStrip)
+  for i := 0; i < N; i++ {
+    s0, s1 := R + r * cos[i], R + r * cos[i + 1]
+    x0, x1 := r * sin[i], r * sin[i + 1]
+    for j := 0; j < N; j++ { //  x -> x * c - y * sa, y -> x * sa + y * ca
+      y00, y01 := s0 * cos[j], s0 * cos[j + 1]
+      y10, y11 := s1 * cos[j], s1 * cos[j + 1]
+      vertex (x + x0 * ca - y00 * sa, y + x0 * sa + y00 * ca, z + s0 * sin[j])
+      vertex (x + x0 * ca - y01 * sa, y + x0 * sa + y01 * ca, z + s0 * sin[j + 1])
+      vertex (x + x1 * ca - y11 * sa, y + x1 * sa + y11 * ca, z + s1 * sin[j + 1])
+      vertex (x + x1 * ca - y10 * sa, y + x1 * sa + y10 * ca, z + s1 * sin[j])
+    }
+  }
+  end()
+}
+
+func paraboloid (x, y, z, a, w, h float64) {
+  surface (func (x0, y0 float64) float64 { dx, dy := x0 - x, y0 - y
+             return a * a * (dx * dx + dy * dy) + z}, w, h)
+}
+
+func surface (f func (float64, float64) float64, w, h float64) {
+  if w < 0 { w = -w }
+  if h < 0 { h = -h }
+  const bluse = 0.1
+  dx, dy := w * bluse, h * bluse
+  for x := -w; x < w; x += dx {
+    for y := -h; y < h; y += dy {
+      x1, y1 := x + dx, y + dy
+      z0, z1, z2, z3 := f(x, y), f(x1, y), f(x1, y1), f(x, y1)
+      if ok (z0) && ok (z1) && ok (z2) && ok (z3) {
+        triangle (x, y, z0, x1, y1, z2, x, y1, z3)
+        triangle (x, y, z0, x1, y, z1, x1, y1, z2)
+      }
+    }
+  }
+}

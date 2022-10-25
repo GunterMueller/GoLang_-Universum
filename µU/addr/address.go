@@ -1,6 +1,6 @@
 package addr
 
-// (c) Christian Maurer   v. 221003 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -101,6 +101,10 @@ func (x *address) Less (Y any) bool {
     }
   }
   return x.Natural.Less (y.Natural)
+}
+
+func (x *address) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *address) Colours (f, b col.Colour) {

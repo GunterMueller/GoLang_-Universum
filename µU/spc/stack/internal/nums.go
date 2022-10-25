@@ -1,6 +1,6 @@
 package nums
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import
   . "µU/obj"
@@ -49,6 +49,10 @@ func (x *numbers) Clone() any {
 }
 
 func (x *numbers) Less (Y any) bool {
+  return false
+}
+
+func (x *numbers) Leq (Y any) bool {
   return false
 }
 

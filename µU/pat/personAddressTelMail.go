@@ -1,6 +1,6 @@
 package pat
 
-// (c) Christian Maurer   v. 221003 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -69,6 +69,10 @@ func (x *personAddressTelMail) Eq (Y any) bool {
 func (x *personAddressTelMail) Less (Y any) bool {
   y := x.imp (Y)
   return x.Person.Less (y.Person)
+}
+
+func (x *personAddressTelMail) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *personAddressTelMail) Sub (Y any) bool {

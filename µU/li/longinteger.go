@@ -1,6 +1,6 @@
 package li
 
-// (c) Christian Maurer   v. 220804 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 //
 // >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
 
@@ -86,6 +86,10 @@ func (x *longInteger) Clone() any {
 
 func (x *longInteger) Less (Y any) bool {
   return x.n.Cmp (x.imp (Y)) == -1
+}
+
+func (x *longInteger) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *longInteger) Geq0() bool {

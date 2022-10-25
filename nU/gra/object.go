@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 220702 - license see nU.go
+// (c) Christian Maurer   v. 221021 - license see nU.go
 
 import . "nU/obj"
 
@@ -69,6 +69,10 @@ func (x *graph) Clone() any {
 }
 
 func (x *graph) Less (Y any) bool {
+  return false
+}
+
+func (x *graph) Leq (Y any) bool {
   return false
 }
 

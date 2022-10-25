@@ -1,6 +1,6 @@
 package br
 
-// (c) Christian Maurer   v. 220916 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   "µU/ker"
@@ -84,6 +84,10 @@ func (x *breal) Less (Y any) bool {
     return false
   }
   return x.float64 < y.float64
+}
+
+func (x *breal) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *breal) Codelen() uint {

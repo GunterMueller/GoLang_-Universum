@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 220809 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -167,6 +167,10 @@ func (x *person) Less (Y any) bool {
     return x.surname.Less (y.surname)
   }
   return x.Calendarday.Less (x.imp (Y).Calendarday)
+}
+
+func (x *person) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *person) Sub (Y any) bool {

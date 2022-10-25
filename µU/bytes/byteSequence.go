@@ -61,6 +61,10 @@ func (x *byteSequence) Less (Y any) bool {
   return false // TODO lexicographic ? ? ?
 }
 
+func (x *byteSequence) Leq (Y any) bool {
+  return false
+}
+
 func (x *byteSequence) Codelen() uint {
   return uint(len (x.Stream))
 }

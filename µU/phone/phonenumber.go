@@ -1,6 +1,6 @@
 package phone
 
-// (c) Christian Maurer   v. 220829 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -65,6 +65,10 @@ func (x *phonenumber) Less (Y any) bool {
   if x.uint16 < y.uint16 { return true }
   if x.uint16 == y.uint16 { return x.uint32 < y.uint32 }
   return false
+}
+
+func (x *phonenumber) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *phonenumber) Defined (s string) bool {

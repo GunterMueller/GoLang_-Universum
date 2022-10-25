@@ -1,12 +1,16 @@
 package obj
 
-// (c) Christian Maurer   v. 220702 - license see nU.go
+// (c) Christian Maurer   v. 221021 - license see nU.go
 
 type Comparer interface {
 
 // Pre: x is of the same type as the calling object.
 // Returns true, iff the calling object is smaller than x.
   Less (x any) bool
+
+// Pre: See Less.
+// Returns true, iff the calling object is smaller than x or equals x.
+  Leq (x any) bool
 }
 
 func Less (a, b any) bool { return less(a,b) }
@@ -90,7 +94,7 @@ func leq (a, b any) bool {
       case Equaler:
         switch b.(type) {
         case Equaler:
-          return a.(Comparer).Less (b) || a.(Equaler).Eq (b)
+          return a.(Comparer).Leq (b)
         }
       }
     }

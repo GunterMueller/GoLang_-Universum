@@ -1,6 +1,6 @@
 package edg
 
-// (c) Christian Maurer   v. 220528 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -81,6 +81,10 @@ func (x *edge) Eq (Y any) bool {
 
 func (x *edge) Less (Y any) bool {
   return Less (x.any, x.imp(Y).any)
+}
+
+func (x *edge) Leq (Y any) bool {
+  return Leq (x.any, x.imp(Y).any)
 }
 
 func (x *edge) Copy (Y any) {

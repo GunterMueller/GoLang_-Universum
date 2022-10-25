@@ -1,6 +1,6 @@
 package pair
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import
   . "µU/obj"
@@ -41,6 +41,10 @@ func (x *pair) Eq (Y any) bool {
 
 func (x *pair) Less (Y any) bool {
   return Less (x.any, x.imp(Y).any)
+}
+
+func (x *pair) Leq (Y any) bool {
+  return Leq (x.any, x.imp(Y).any)
 }
 
 func (x *pair) Pos() uint {

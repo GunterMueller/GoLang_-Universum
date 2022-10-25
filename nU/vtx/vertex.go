@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 220702 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (. "nU/obj"; "nU/col"; "nU/scr")
 
@@ -39,6 +39,10 @@ func (x *vertex) Eq (Y any) bool {
 
 func (x *vertex) Less (Y any) bool {
   return x.uint < Y.(*vertex).uint
+}
+
+func (x *vertex) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *vertex) Copy (Y any) {

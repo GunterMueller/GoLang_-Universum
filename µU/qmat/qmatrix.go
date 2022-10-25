@@ -1,6 +1,6 @@
 package qmat
 
-// (c) Christian Maurer   v. 220831 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 // >>> matrices with rational fractions as entries
 
@@ -123,6 +123,10 @@ func (x *qmatrix) Clone () any {
 }
 
 func (x *qmatrix) Less (Y any) bool {
+  return false
+}
+
+func (x *qmatrix) Leq (Y any) bool {
   return false
 }
 

@@ -1,6 +1,6 @@
 package main
 
-/* (c) Christian Maurer   v. 220809
+/* (c) Christian Maurer   v. 221021
 
   Dieses Paket - das n(ano)Universum - enthält die Quelltexte aus meinem Lehrbuch
   "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2019).

@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 220809 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -116,6 +116,10 @@ func (c *colour) Eq (Y any) bool {
 }
 
 func (c *colour) Less (Y any) bool {
+  return false
+}
+
+func (c *colour) Leq (Y any) bool {
   return false
 }
 

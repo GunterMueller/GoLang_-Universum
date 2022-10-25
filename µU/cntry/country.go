@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 221003 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -198,6 +198,10 @@ func (x *country) Eq (Y any) bool {
 
 func (x *country) Less (Y any) bool {
   return str.Less (x.attribut.name, x.imp (Y).attribut.name)
+}
+
+func (x *country) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *country) String() string {

@@ -1,6 +1,6 @@
 package mask
 
-// (c) Christian Maurer   v. 220805 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   . "µU/obj"
@@ -68,6 +68,10 @@ func (x *mask) Less (Y any) bool {
     return x.c + x.w <= y.c
   }
   return x.l < y.l
+}
+
+func (x *mask) Leq (Y any) bool {
+  return x.Less (Y) || x.Eq (Y)
 }
 
 func (x *mask) Codelen() uint {

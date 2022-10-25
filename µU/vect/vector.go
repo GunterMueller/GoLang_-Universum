@@ -1,6 +1,6 @@
 package vect
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221021 - license see µU.go
 
 import (
   "math"
@@ -101,6 +101,10 @@ func (x *vector) Eq (Y any) bool {
 }
 
 func (x *vector) Less (Y any) bool {
+  return false
+}
+
+func (x *vector) Leq (Y any) bool {
   return false
 }
 
