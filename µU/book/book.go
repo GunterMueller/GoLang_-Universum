@@ -1,6 +1,6 @@
 package book
 
-// (c) Christian Maurer   v. 221001 - license see µU.go
+// (c) Christian Maurer   v. 221025 - license see µU.go
 
 import (
   . "µU/obj"
@@ -24,6 +24,7 @@ const (
 const (
   fieldIndex = iota
   authorIndex
+  numberIndex
   titleIndex
   nIndices
 )
@@ -146,28 +147,37 @@ func (x *book) Less (Y any) bool {
     if ! x.author.Eq (y.author) {
       return x.author.Less (y.author)
     }
+    if ! x.Natural.Eq (y.Natural) {
+      return x.Natural.Less (y. Natural)
+    }
     if ! x.title.Eq (y.title) {
       return x.title.Less (y.title)
     }
-  case authorIndex:
+  case authorIndex, numberIndex:
     if ! x.author.Eq (y.author) {
       return x.author.Less (y.author)
     }
-    if ! x.field.Eq (y.field) {
-      return x.field.Less (y.field)
+    if ! x.Natural.Eq (y.Natural) {
+      return x.Natural.Less (y. Natural)
     }
     if ! x.title.Eq (y.title) {
       return x.title.Less (y.title)
+    }
+    if ! x.field.Eq (y.field) {
+      return x.field.Less (y.field)
     }
   case titleIndex:
     if ! x.title.Eq (y.title) {
       return x.title.Less (y.title)
     }
-    if ! x.field.Eq (y.field) {
-      return x.field.Less (y.field)
-    }
     if ! x.author.Eq (y.author) {
       return x.author.Less (y.author)
+    }
+    if ! x.Natural.Eq (y.Natural) {
+      return x.Natural.Less (y.Natural)
+    }
+    if ! x.field.Eq (y.field) {
+      return x.field.Less (y.field)
     }
   }
   return false

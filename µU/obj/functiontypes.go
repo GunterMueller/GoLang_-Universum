@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 221023 - license see µU.go
+// (c) Christian Maurer   v. 221113 - license see µU.go
 
 import
   "runtime"
@@ -29,8 +29,10 @@ type (
 // relations
   Rel func (any, any) bool
   RelSpectrum func (any, any, uint) bool
-
-  XY2Z func (float64, float64) float64
+// real-valued functions
+  Fx2y func (float64) float64
+  Fxy2z func (float64, float64) float64
+  Ft2xyz func (float64) (float64, float64, float64)
 )
 
 // Stmt[Spectrum]

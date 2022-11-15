@@ -17,7 +17,7 @@ type (
   e = C.GLenum
 )
 
-func init() {
+func init() { // TODO
 /*
   C.glDepthFunc (C.GL_LESS) // default
   C.glEnable (C.GL_DEPTH_TEST)

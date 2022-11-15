@@ -32,16 +32,16 @@ import (
   "µU/achan"; "µU/atom"; "µU/audio"; "µU/barb"; "µU/barr"; "µU/bbuf"; "µU/book"; "µU/bpqu"
   "µU/br"; "µU/bytes"; "µU/car"; "µU/char"; "µU/cdrom"; "µU/col"; "µU/collop"; "µU/cntry"
   "µU/comp"; "µU/day"; "µU/date"; "µU/dgra"; "µU/dlock"; "µU/enum"; "µU/env"; "µU/errh"
-  "µU/euro"; "µU/fig2"; "µU/files"; "µU/gram"; "µU/host"; "µU/ieee"; "µU/kbd"; "µU/li"
-  "µU/lock2"; "µU/lr"; "µU/macc"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"; "µU/masks"
-  "µU/mol"; "µU/mstk"; "µU/pbar"; "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/pstk"
-  "µU/q"; "µU/qmat"; "µU/r"; "µU/reg"; "µU/rpc"; "µU/rw"; "µU/scale"; "µU/schan"; "µU/scr"
-  "µU/smok"; "µU/stru"; "µU/term"; "µU/texts"; "µU/time"; "µU/vnset"; "µU/z"
+  "µU/euro"; "µU/fig2"; "µU/fig3"; "µU/files"; "µU/gram"; "µU/host"; "µU/ieee"; "µU/kbd"
+  "µU/li"; "µU/lock2"; "µU/lr"; "µU/macc"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"
+  "µU/masks"; "µU/mol"; "µU/mstk"; "µU/pbar"; "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"
+  "µU/pstk"; "µU/q"; "µU/qmat"; "µU/r"; "µU/reg"; "µU/rpc"; "µU/rw"; "µU/scale"; "µU/schan"
+  "µU/scr"; "µU/smok"; "µU/stru"; "µU/term"; "µU/texts"; "µU/time"; "µU/vnset"; "µU/z"
 )
 const (
   yy = 2022
-  mm =   10
-  dd =   24
+  mm =   11
+  dd =   13
 )
 var (
   red, green = col.FlashRed(), col.FlashGreen()
@@ -147,8 +147,8 @@ func main() { // gets all packages compiled and shows the license
   achan.New(0); atom.New(); audio.New(); barb.NewDir(); barr.New(2); bbuf.New(nil, 0)
   book.New(); bpqu.New(0, 1); br.New(3); bytes.Touch(); cdrom.Touch(); cntry.New()
   collop.Touch(); comp.Touch(); date.New(); enum.Touch(); euro.New(); dgra.Touch()
-  dlock.New(0, nil, 0); fig2.Touch(); gram.Touch(); host.New(); ieee.New(); li.New(0)
-  lock2.NewPeterson(); lr.NewMutex(); macc.New(); masks.New(); mbbuf.New(nil, 2)
+  dlock.New(0, nil, 0); fig2.Touch(); fig3.Touch(); gram.Touch(); host.New(); ieee.New()
+  li.New(0); lock2.NewPeterson(); lr.NewMutex(); macc.New(); masks.New(); mbbuf.New(nil, 2)
   mbuf.New(0); mcorn.New(0); menue.Touch(); mol.New(); mstk.New(0); pbar.Touch()
   pat.New(); piset.Touch(); pos.Touch(); pstk.Touch(); q.Touch(); qmat.Touch()
   r.String(0); reg.Touch(); rpc.Touch(); rw.New1(); scale.Touch(); schan.New(0)
