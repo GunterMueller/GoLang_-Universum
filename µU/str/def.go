@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 220530 - license see µU.go
+// (c) Christian Maurer   v. 221115 - license see µU.go
 
 //     latin-1-strings (without any UTF-8-stuff)
 
@@ -128,6 +128,10 @@ func Append (s *string, b byte) { app(s,b) }
 // at position p, otherwise all bytes, are removed from s.
 // Otherwise s is unchanged.
 func Rem (s *string, p, n uint) { rem(s,p,n) }
+
+// If s contains bytes equal to b, the first of these bytes
+// is removed from s; return s.
+func Del (s string, b byte) string { return del(s,b) }
 
 // Returns the string consisting of n bytes of s,
 // beginning at position p, if s contains at least p + n bytes.

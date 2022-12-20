@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 220609 - license see µU.go
+// (c) Christian Maurer   v. 221210 - license see µU.go
 
 import (
   . "µU/obj"
@@ -248,7 +248,7 @@ type
 // the actual path consists only of the colocal vertex.
 // The marked vertices and edges of x are
 // the vertices and edges in the actual path of x.
-  Act()
+  FindShortestPath()
 
 // Pre: p is defined on vertices.
 // If x is empty, nothing had happened. Otherwise:
@@ -261,7 +261,11 @@ type
 // Otherwise the actual path consists only of the colocal vertex.
 // The marked vertices and edges of x are
 // the vertices and edges in the actual path of x.
-  ActPred (p Pred)
+  FindShortestPathPred (p Pred)
+
+// Pre: Act or ActPred was called before.
+// Returns the slice of the vertices of the actual path.
+  ShortestPath() []any
 
 // Returns the sum of the values of all edges of x
 // (hence, if x has no edgetype, the number of the edges of x).

@@ -13,7 +13,7 @@ const (
   maxInt = int(math.MaxInt32)
 )
 var (
-  nX, nY,              // pixel per screen
+  wd, ht,              // pixel per screen
   x0, y0,              // left lower corner
   xMin, yMin,          // left limit
   xm, ym,              // center
@@ -21,12 +21,12 @@ var (
   maxWidth, maxHeight, //
   maxMag,              //
   mX, mY float64       // transformation factors
-  mm, nn [3]float64 = [3]float64 { math.Sqrt (math.Sqrt (2)), math.Sqrt (2), 2 }, // magnification factor
-                      [3]float64 { 16, 4, 1 } // move part
+  mm, nn [3]float64 = [3]float64 {math.Sqrt (math.Sqrt (2)), math.Sqrt (2), 2}, // magnification factor
+                      [3]float64 {16, 4, 1} // move part
 )
 
 func setRange (x, y, w float64) {
-  nX, nY = float64(scr.Wd()), float64(scr.Ht())
+  wd, ht = float64(scr.Wd()), float64(scr.Ht())
   x0, y0 = x, y
   if w <= 0 {
     width = 1
@@ -35,7 +35,7 @@ func setRange (x, y, w float64) {
   }
   height = width / scr.Proportion()
   xm, ym = x0 + width / 2, y0 + height / 2
-  mX, mY = nX / width, nY / height
+  mX, mY = wd / width, ht / height
 }
 
 func scale (x, y float64) (int, int) {
@@ -81,7 +81,7 @@ func edit() {
       width = maxWidth
     }
     height = width / scr.Proportion()
-    mX, mY = nX / width, nY / height
+    mX, mY = wd / width, ht / height
   case kbd.Enter:
     if width > maxWidth / maxMag {
       w := width / mm[d]
@@ -92,7 +92,7 @@ func edit() {
       x0, y0 = x0 - dw, y0 - dw / scr.Proportion()
       width = w
       height = width / scr.Proportion()
-      mX, mY = nX / width, nY / height
+      mX, mY = wd / width, ht / height
     }
   case kbd.Left:
     if x0 >= xMin {

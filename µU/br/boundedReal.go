@@ -1,6 +1,6 @@
 package br
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   "µU/ker"
@@ -10,7 +10,7 @@ import (
   "µU/font"
   "µU/pbox"
 //  "µU/n"
-  "µU/r"
+  "µU/R"
 )
 const
   m = 20 // XXX ?
@@ -28,7 +28,7 @@ var
 
 func new_(d uint) Real {
   x := new(breal)
-  x.float64 = 0 // r.NaN()
+  x.float64 = 0 // R.NaN()
   x.d = d
   x.wd = 1 + d + 1 + 2 // 1 for sign, 1 for dot, 2 digits after the dot
   x.invalid = exp (d + 1)
@@ -106,10 +106,10 @@ func (x *breal) Decode (b Stream) {
 
 func (x *breal) Defined (s string) bool {
   ok := true
-  if x.float64, _, ok = r.Real (s); ok {
+  if x.float64, _, ok = R.Real (s); ok {
     return true
   }
-  x.float64 = 0 // r.NaN()
+  x.float64 = 0 // R.NaN()
   return false
 /*/ TODO
   if uint(len (s)) > x.wd { return false }
@@ -143,7 +143,7 @@ func (x *breal) String() string {
   if x.float64 == x.invalid {
     return str.New (x.wd)
   }
-  s := r.String (x.float64)
+  s := R.String (x.float64)
   str.OffSpc (&s)
   str.Norm (&s, x.wd)
   str.Move (&s, false)
@@ -159,13 +159,13 @@ func (x *breal) Cols() (col.Colour, col.Colour) {
 }
 
 func (x *breal) Write (l, c uint) {
-  r.Write (x.float64, l, c)
+  R.Write (x.float64, l, c)
 }
 
 func (x *breal) Edit (l, c uint) {
-  r.Wd (x.wd)
-//  r.SetFormat (2)
-  r.Edit (&x.float64, l, c)
+  R.Wd (x.wd)
+//  R.SetFormat (2)
+  R.Edit (&x.float64, l, c)
 }
 
 func (x *breal) SetFont (f font.Font) {

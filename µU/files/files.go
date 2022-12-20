@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 220828 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   "os"
@@ -11,7 +11,7 @@ import (
   "µU/ker"
   "µU/str"
   "µU/env"
-  "µU/n"
+  "µU/N"
   "µU/files/pair"
 )
 const (
@@ -236,7 +236,7 @@ func TmpDir() string {
 }
 
 func Tmp() string {
-  return TmpDir() + n.StringFmt (uint(os.Getpid()), 5, true) + "."
+  return TmpDir() + N.StringFmt (uint(os.Getpid()), 5, true) + "."
 }
 
 var (

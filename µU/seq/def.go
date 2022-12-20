@@ -1,14 +1,18 @@
 package seq
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221118 - license see µU.go
 
 import
   . "µU/obj"
 type
   Sequence interface {
 
-  Object
-  Seeker // hence Collector
+//  Object
+  Clearer
+  Equaler
+//  Comparer
+  Coder
+  Seeker // hence Collector, hence Clearer
   Predicator
 
 // Pre: x is not ordered.

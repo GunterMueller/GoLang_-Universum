@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221210 - license see µU.go
 
 import (
   "sort"
@@ -94,7 +94,7 @@ func (x *graph) defineMarked (v *vertex) {
   }
 }
 
-func (x *graph) ActPred (p Pred) {
+func (x *graph) FindShortestPathPred (p Pred) {
   v := x.vAnchor.nextV
   if v == x.vAnchor { return }
   if ! p (x.local.any) { return }
@@ -102,24 +102,24 @@ func (x *graph) ActPred (p Pred) {
   if ! x.ConnCond (p) { return }
   x.preBreadth()
   if x.eAnchor.any == nil {
-    x.bfs (p)
+    x.breadthFirstSearch (p)
   } else {
     x.searchShortestPath (p)
   }
   x.path = nil
   for v := x.local; v != nil; v = v.predecessor {
-   x.path = insert (x.path, v, 0)
+    x.path = insert (x.path, v, 0)
   }
   x.defineMarked (x.local)
 }
 
-func (x *graph) Act() {
-  x.ActPred (AllTrue)
+func (x *graph) FindShortestPath() {
+  x.FindShortestPathPred (AllTrue)
 }
 
 // Lit.: CLR 23.2, CLRS 22.2
 // TODO spec
-func (x *graph) bfs (p Pred) {
+func (x *graph) breadthFirstSearch (p Pred) {
   var qu []*vertex
   qu = append (qu, x.colocal)
   for len (qu) > 0 {
@@ -152,6 +152,14 @@ func (x *graph) bfs (p Pred) {
       }
     }
   }
+}
+
+func (x *graph) ShortestPath() []any {
+  p := make([]any, 0)
+  for i := 0; i < len(x.path); i++ {
+    p = append (p, x.path[i].any)
+  }
+  return p
 }
 
 type vSeq []*vertex

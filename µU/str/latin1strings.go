@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 221003 - license see µU.go
+// (c) Christian Maurer   v. 221115 - license see µU.go
 
 import
   "µU/char"
@@ -61,7 +61,7 @@ func letterOrDigit (c byte) bool {
 }
 
 func lit (s string) bool {
-  n := len (s)
+  n := len(s)
   if n == 0 { return false }
   if ! letter (s[0]) { return false }
   for i := 1; i < n; i++ {
@@ -71,7 +71,7 @@ func lit (s string) bool {
 }
 
 func empty (s string) bool {
-  for i := 0; i < len (s); i++ {
+  for i := 0; i < len(s); i++ {
     if s[i] != spc {
       return false
     }
@@ -80,7 +80,7 @@ func empty (s string) bool {
 }
 
 func properLen (s string) uint {
-  n := len (s)
+  n := len(s)
   for {
     if n == 0 { break }
     if s[n-1] == spc {
@@ -120,12 +120,12 @@ func toLower (s *string) {
 }
 
 func toUpper0 (s *string) {
-  if len (*s) == 0 { return }
+  if len(*s) == 0 { return }
   *s = string(char.Upper ((*s)[0])) + (*s)[1:]
 }
 
 func toLower0 (s *string) {
-  if len (*s) == 0 { return }
+  if len(*s) == 0 { return }
   *s = string(char.Lower ((*s)[0])) + (*s)[1:]
 }
 
@@ -148,7 +148,7 @@ func equiv (s, t string) bool {
 }
 
 func less (s, t string) bool {
-  n, n1 := len (s), len (t)
+  n, n1 := len(s), len(t)
   i := 0
   for {
     if i == n {
@@ -175,7 +175,7 @@ func equivLess (s, t string) bool {
 }
 
 func pos (s string, b byte) (uint, bool) {
-  n := uint(len (s))
+  n := uint(len(s))
   for i := uint(0); i < n; i++ {
     if s[i] == b {
       return i, true
@@ -185,7 +185,7 @@ func pos (s string, b byte) (uint, bool) {
 }
 
 func equivPos (s string, b byte) (uint, bool) {
-  n := uint(len (s))
+  n := uint(len(s))
   for i := uint(0); i < n; i++ {
     if char.Equiv (s[i], b) {
       return i, true
@@ -199,7 +199,7 @@ func sub (s, t string) (uint, bool) {
 //  char.ToHellWithUTF8 (&t)
   n := properLen (s)
   if n == 0 { return 0, true }
-  k, m := uint(len (t)), properLen (t)
+  k, m := uint(len(t)), properLen (t)
   if n > m {
     return k, false
   }
@@ -251,7 +251,7 @@ func ins1 (s *string, c byte, p uint) {
 }
 
 func ins (s *string, t string, p uint) {
-  if len (t) == 0 || p > uint(len (*s)) { return }
+  if len(t) == 0 || p > uint(len(*s)) { return }
   *s = (*s)[:p] + t + (*s)[p:]
 }
 
@@ -271,7 +271,7 @@ func insAll (s *string, v, t string) {
 }
 
 func replace1 (s *string, p uint, c byte) {
-  n := len (*s)
+  n := len(*s)
   if int(p) >= n { return }
   t := string(c)
   *s = (*s)[:p] + t + (*s)[p+1:]
@@ -279,7 +279,7 @@ func replace1 (s *string, p uint, c byte) {
 }
 
 func replaceAll (s *string, b byte, t string) {
-  n := len (*s)
+  n := len(*s)
   bs := make([]byte, 0)
   for i := 0; i < n; i++ {
     c := (*s)[i]
@@ -294,7 +294,7 @@ func replaceAll (s *string, b byte, t string) {
 
 func replace (s *string, p uint, t string) {
   m := uint(len(t))
-  n := len (*s)
+  n := len(*s)
   if p + m >= uint(n) { return }
   *s = (*s)[:p] + t + (*s)[p+m:]
 }
@@ -309,12 +309,22 @@ func app (s *string, b byte) {
 
 func rem (s *string, p, n uint) {
   if n == 0 { return }
-  l := uint(len (*s))
+  l := uint(len(*s))
   if p >= l { return }
   if p + n >= l {
     n = l - p
   }
   *s = (*s)[:p] + (*s)[p+n:]
+}
+
+func del (s string, b byte) string {
+  if s == "" {
+    return s
+  }
+  if s[0] == b {
+    return s[1:]
+  }
+  return s[0:1] + del (s[1:], b)
 }
 
 func part (s string, p, n uint) string {
@@ -327,7 +337,7 @@ func part (s string, p, n uint) string {
 
 func norm (s *string, n uint) {
   if n == 0 { *s = ""; return }
-  k := uint(len (*s))
+  k := uint(len(*s))
   if k > n {
     *s = (*s)[:n]
     return
@@ -347,7 +357,7 @@ func offSpc1 (s *string) {
 }
 
 func offBytes (s *string, b byte) {
-  n := len (*s)
+  n := len(*s)
   if n == 0 { return }
   ss := make ([]byte, n)
   i, j := 0, 0
@@ -368,7 +378,7 @@ func offBytes (s *string, b byte) {
 }
 
 func move (s *string, left bool) {
-  l := uint(len (*s))
+  l := uint(len(*s))
   if l == 0 { return }
   if left {
     n := l
@@ -395,13 +405,13 @@ func move (s *string, left bool) {
 }
 
 func insSpace (s *string, p uint) {
-  l := uint(len (*s))
+  l := uint(len(*s))
   if l == 0 || p >= l { return }
   *s = (*s)[:p] + " " + (*s)[p:]
 }
 
 func shift (s *string, p uint) {
-  l := uint(len (*s))
+  l := uint(len(*s))
   if l <= 1 || p + 1 >= l { return }
   if (*s)[l-1] != spc { return }
   *s = (*s)[0:p] + " " + (*s)[p:l-1]
@@ -428,7 +438,7 @@ func center (s *string, n uint) {
 }
 
 func offNondigits (s *string) {
-  l := uint(len (*s))
+  l := uint(len(*s))
   if l == 0 { return }
   b := make ([]byte, l)
   i, j := uint(0), uint(0)
@@ -480,7 +490,7 @@ func appendLine (s *string, t string) {
 }
 
 func splitLine (s *string) string {
-  l := uint(len (*s))
+  l := uint(len(*s))
   if l == 0 { return "" }
   n := uint(0)
   for n = 0; n < l; n++ {

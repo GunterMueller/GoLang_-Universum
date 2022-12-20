@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   "µU/ker"
@@ -9,7 +9,7 @@ import (
   "µU/time"
   "µU/col"
   "µU/scr"
-  "µU/n"
+  "µU/N"
   "µU/str"
   "µU/errh"
   "µU/vtx"
@@ -300,7 +300,7 @@ func (x *distributedGraph) Blink() {
 }
 
 func (x *distributedGraph) ParentChildren() string {
-  s := "parent " + n.String (x.parent)
+  s := "parent " + N.String (x.parent)
   cs := make([]uint, 0)
   for i := uint(0); i < x.n; i++ {
     if x.child[i] {
@@ -314,7 +314,7 @@ func (x *distributedGraph) ParentChildren() string {
       s += "ren"
     }
     for _, c := range cs {
-      s += " " + n.String (c)
+      s += " " + N.String (c)
     }
   }
   return s

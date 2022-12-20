@@ -1,6 +1,6 @@
 package mol
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   . "µU/obj"
@@ -8,7 +8,7 @@ import (
   "µU/col"
   "µU/scr"
   "µU/errh" 
-  "µU/n" 
+  "µU/N" 
   "µU/pseq"
   "µU/atom"
   "µU/stru"
@@ -235,7 +235,7 @@ func (x *molecule) Construct (name string) {
       x.a[i].Place (l, c)
       x.a[i].Select()
       if x.a[i].Typ() == atom.Enum {
-        x.a[i].EnumName (name + "." + n.String(i))
+        x.a[i].EnumName (name + "." + N.String(i))
         x.a[i].EnumSet (l, c)
       }
       x.a[i].EditIndex()
@@ -291,7 +291,7 @@ func constructed (name string) Molecule {
     m.a[i] = atom.New()
     m.a[i].Define (s.Typ(), s.Width())
     if m.a[i].Typ() == atom.Enum {
-      filename = name + "." + n.String(i)
+      filename = name + "." + N.String(i)
       m.a[i].EnumName (filename)
       m.a[i].EnumGet()
     }

@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   . "µU/obj"
@@ -10,7 +10,7 @@ import (
   "µU/scr"
   "µU/box"
   "µU/errh"
-  "µU/n"
+  "µU/N"
   "µU/font"
   "µU/pbox"
   "µU/sel"
@@ -277,8 +277,8 @@ func (x *country) Write (l, c uint) {
     bx.Clr (l, c)
     bx.Write (x.attribut.name, l, c)
   case Tel:
-    n.Colours (x.cF, x.cB)
-    n.Write (uint(x.attribut.prefix), l, c)
+    N.Colours (x.cF, x.cB)
+    N.Write (uint(x.attribut.prefix), l, c)
   case Car:
     bx.Write (x.attribut.car, l, c)
   case Ioc:

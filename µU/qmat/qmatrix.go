@@ -1,6 +1,6 @@
 package qmat
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 // >>> matrices with rational fractions as entries
 
@@ -9,13 +9,13 @@ import (
   "µU/ker"
   "µU/col"
   "µU/errh"
-  "µU/n"
-  "µU/q"
+  "µU/N"
+  "µU/Q"
 )
 type
   qmatrix struct {
            nl, nc uint // number of lines and columns
-           matrix [][]q.Rational
+           matrix [][]Q.Rational
              f, b col.Colour
                  }
 
@@ -26,11 +26,11 @@ func nofit() {
 func new_(m, n uint) QMatrix {
   x := new (qmatrix)
   x.nl, x.nc = m, n
-  x.matrix = make([][]q.Rational, x.nl)
+  x.matrix = make([][]Q.Rational, x.nl)
   for l := uint(0); l < x.nl; l++ {
-    x.matrix[l] = make([]q.Rational, x.nc)
+    x.matrix[l] = make([]Q.Rational, x.nc)
     for c := uint(0); c < x.nc; c++ {
-      x.matrix[l][c] = q.New()
+      x.matrix[l][c] = Q.New()
     }
   }
   return x
@@ -56,21 +56,21 @@ func (x *qmatrix) imp (Y any) *qmatrix {
   return y
 }
 
-func (x *qmatrix) Det() q.Rational {
+func (x *qmatrix) Det() Q.Rational {
   if x.nl != x.nc { nofit() }
-  b := q.New()
+  b := Q.New()
   b.Set1 (0)
   for c := uint(0); c < x.nc; c++ {
-    a := x.matrix[0][c].Clone().(q.Rational)
+    a := x.matrix[0][c].Clone().(Q.Rational)
     for l := uint(1); l < x.nc; l++ {
       a.Mul (x.matrix[l][(c + l) % x.nc])
     }
     b.Add (a)
   }
-  b1 := q.New()
+  b1 := Q.New()
   b1.Set1 (0)
   for c := uint(0); c < x.nc; c++ {
-    a := x.matrix[0][c].Clone().(q.Rational)
+    a := x.matrix[0][c].Clone().(Q.Rational)
     for l := uint(1); l < x.nc; l++ {
       a.Mul (x.matrix[l][(c + x.nc - l) % x.nc])
     }
@@ -252,8 +252,8 @@ func (x *qmatrix) One() bool {
 func (x *qmatrix) mul (Y Multiplier) {
   y := x.imp(Y)
   if y.nl != x.nc { nofit() }
-  a := q.New()
-  b := q.New()
+  a := Q.New()
+  b := Q.New()
   xy := New (x.nl, y.nc).(*qmatrix)
   for l := uint(0); l < xy.nl; l++ {
     for c := uint(0); c < xy.nc; c++ {
@@ -283,7 +283,7 @@ func (x *qmatrix) Prod (Y, Z Multiplier) {
 }
 
 func (x *qmatrix) norm (y *qmatrix, m uint) {
-  a := x.matrix[m][m].Clone().(q.Rational)
+  a := x.matrix[m][m].Clone().(Q.Rational)
   _, _, d := a.Vals()
   if d == 0 {
     errh.Error ("0/0 bei", m)
@@ -298,27 +298,27 @@ func (x *qmatrix) norm (y *qmatrix, m uint) {
 const
   withProtocol = false
 
-func write (a q.Rational, i, j uint, t, t1 string) {
+func write (a Q.Rational, i, j uint, t, t1 string) {
   if withProtocol {
-    v, N, Z := a.Vals()
-    s :=  t + n.String(i + 1) + "][" + n.String(j + 1) + t1; if ! v { s += " -" }
-    if Z == 1 { errh.Error (s, N) } else { errh.Error2 (s, N, "/", Z) }
+    v, n, Z := a.Vals()
+    s :=  t + N.String(i + 1) + "][" + N.String(j + 1) + t1; if ! v { s += " -" }
+    if Z == 1 { errh.Error (s, n) } else { errh.Error2 (s, n, "/", Z) }
   }
 }
 
 func (x *qmatrix) do1 (y *qmatrix, m uint) {
   for l := m + 1; l < x.nc; l++ {
-    z := x.matrix[l][m].Clone().(q.Rational)
+    z := x.matrix[l][m].Clone().(Q.Rational)
     for c := uint(0); c < x.nc; c++ {
-      a := z.Clone().(q.Rational)
+      a := z.Clone().(Q.Rational)
       write (a, l, m, "a = a[", "] =")
-      a1 := x.matrix[m][c].Clone().(q.Rational)
+      a1 := x.matrix[m][c].Clone().(Q.Rational)
       write (a1, m, c, "a1 = a[", "] =")
       a1.Mul (a)
       write (a1, m, c, "a1 * a = a[", "] =")
       x.matrix[l][c].Sub (a1)
       write (x.matrix[l][c], l, c, "a[", "] -= a * a1 =")
-      b1 := y.matrix[m][c].Clone().(q.Rational)
+      b1 := y.matrix[m][c].Clone().(Q.Rational)
       b1.Mul (a)
       y.matrix[l][c].Sub (b1)
     }
@@ -327,12 +327,12 @@ func (x *qmatrix) do1 (y *qmatrix, m uint) {
 
 func (x *qmatrix) do2 (y *qmatrix, m uint) {
   for l := uint(0); l < m; l++ {
-    a := x.matrix[l][m].Clone().(q.Rational)
+    a := x.matrix[l][m].Clone().(Q.Rational)
     for c := uint(0); c < x.nc; c++ {
-      a1 := x.matrix[m][c].Clone().(q.Rational)
+      a1 := x.matrix[m][c].Clone().(Q.Rational)
       a1.Mul (a)
       x.matrix[l][c].Sub (a1)
-      b1 := y.matrix[m][c].Clone().(q.Rational)
+      b1 := y.matrix[m][c].Clone().(Q.Rational)
       b1.Mul (a)
       y.matrix[l][c].Sub (b1)
     }
@@ -503,14 +503,14 @@ func (x *qmatrix) TeX() string { // AmSTeX
     if ! v {
       s += "-"
     }
-    s += n.String(a) + "/" + n.String(b)
+    s += N.String(a) + "/" + N.String(b)
     for c := uint(1); c < x.nc; c++ {
       v, a, b := x.matrix[l][c].Vals()
       s += "&"
       if ! v {
         s += "-"
       }
-      s +=  n.String(a) + "/" + n.String(b)
+      s +=  N.String(a) + "/" + N.String(b)
     }
     if l + 1 < x.nl {
       s += r + r

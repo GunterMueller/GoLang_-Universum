@@ -1,11 +1,11 @@
 package naddr
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/str"
-  "µU/n"
+  "µU/N"
   "µU/host"
 )
 type
@@ -101,7 +101,7 @@ const
 func (x *netAddress) Defined (s string) bool {
   k := uint(len (s))
   if i, ok := str.Pos (s, separator); ok && i < k {
-    if p, ok1 := n.Natural (str.Part (s, i + 1, k - (i + 1))); ok1 && p < 1<<16 {
+    if p, ok1 := N.Natural (str.Part (s, i + 1, k - (i + 1))); ok1 && p < 1<<16 {
       return x.Host.Defined (str.Part (s, 0, i))
     }
   }
@@ -110,7 +110,7 @@ func (x *netAddress) Defined (s string) bool {
 
 func (x *netAddress) String() string {
   x.Host.SetFormat (x.Format)
-  return x.Host.String() + string(separator) + n.String (uint(x.uint16))
+  return x.Host.String() + string(separator) + N.String (uint(x.uint16))
 }
 
 func (x *netAddress) Set (h host.Host, p uint16) {

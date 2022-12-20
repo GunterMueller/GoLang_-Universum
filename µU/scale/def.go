@@ -31,4 +31,4 @@ func Rescale (x, y int) (float64, float64) { return rescale(x,y) }
 func Lim (x, y, w, h, v float64) { lim(x,y,w,h,v) }
 
 // The transformation magnification is manipulated by the user.
-func Edit () { edit() }
+func Edit() { edit() }

@@ -1,10 +1,11 @@
 package col
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 221212 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/rand"
+  "µU/str"
 )
 const (
   m = 1 << 8
@@ -42,7 +43,7 @@ func new3n (n string, r, g, b byte) Colour {
   if n == "" {
     n = c.String1()
   }
-  c.string = n
+  c.string = str.Lat1(n)
   return c
 }
 

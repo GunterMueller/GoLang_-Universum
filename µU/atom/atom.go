@@ -1,6 +1,6 @@
 package atom
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   "µU/ker"
@@ -12,7 +12,7 @@ import (
   "µU/box"
   "µU/errh"
   "µU/sel"
-  "µU/n"
+  "µU/N"
   "µU/bn"
   "µU/br"
   "µU/text"
@@ -116,7 +116,7 @@ func z (t string, max, l uint) uint {
     t1 = str.New (w)
     bx.Edit (&t1, l, c + 1)
     if cmd, _ := kbd.LastCommand(); cmd != kbd.Go {
-      nn, ok := n.Natural (t1)
+      nn, ok := N.Natural (t1)
       if ok {
         if nn == 0 {
           errh.Error0 ("Zahl muss > 0 sein")

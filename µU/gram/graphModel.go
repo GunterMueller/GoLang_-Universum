@@ -1,6 +1,6 @@
 package gram
 
-// (c) Christian Maurer   v. 220426 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   . "µU/obj"
@@ -89,6 +89,10 @@ func (x *graphModel) Colours (f, b col.Colour) {
   x.f, x.b = f, b
   x.edge.Colours (f, b)
   x.vertex.Colours (f, b)
+}
+
+func (x *graphModel) Cols() (col.Colour, col.Colour) {
+  return x.f, x.b
 }
 
 func (x *graphModel) ColoursA (f, b col.Colour) {
@@ -329,7 +333,7 @@ func (x *graphModel) DFS (all bool) {
 func (x *graphModel) BFS (all bool) {
   x.SetDemo (gra.Breadth) // >>> ist eine DijkstraDemo, wenn x bewertet ist
   if x.Conn() {
-    x.Act()
+    x.FindShortestPath()
     x.Write()
     errh.Error ("ein kürzester Weg in Hinrichtung der Länge", x.NumMarked1())
   } else {
@@ -340,7 +344,7 @@ func (x *graphModel) BFS (all bool) {
     x.Relocate()
     x.Write()
     if x.Conn() {
-      x.Act()
+      x.FindShortestPath()
       x.Write()
       errh.Error ("ein (kürzester) Weg in Rückrichtung der Länge", x.NumMarked1())
     } else {

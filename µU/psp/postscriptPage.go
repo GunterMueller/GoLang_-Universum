@@ -1,6 +1,6 @@
 package psp
 
-// (c) Christian Maurer   v. 220114 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   "os"
@@ -12,7 +12,7 @@ import (
   "µU/col"
   "µU/scr"
   "µU/font"
-  "µU/n"
+  "µU/N"
 )
 const (
   dx = -72
@@ -323,7 +323,7 @@ func (x *postscriptPage) nodes (xs, ys []float64) int {
 func bezier (t float64, k uint, xs, ys []float64) (float64, float64) {
   x, y := 0.0, 0.0
   for i := uint(0); i <= k; i++ {
-    a := float64(n.Binom (k, i)) * p (1 - t, 1, k - i) * p (t, 1, i)
+    a := float64(N.Binom (k, i)) * p (1 - t, 1, k - i) * p (t, 1, i)
     x += a * xs[i]
     y += a * ys[i]
   }

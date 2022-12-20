@@ -35,12 +35,12 @@ import (
   "µU/euro"; "µU/fig2"; "µU/fig3"; "µU/files"; "µU/gram"; "µU/host"; "µU/ieee"; "µU/kbd"
   "µU/li"; "µU/lock2"; "µU/lr"; "µU/macc"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"
   "µU/masks"; "µU/mol"; "µU/mstk"; "µU/pbar"; "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"
-  "µU/pstk"; "µU/q"; "µU/qmat"; "µU/r"; "µU/reg"; "µU/rpc"; "µU/rw"; "µU/scale"; "µU/schan"
-  "µU/scr"; "µU/smok"; "µU/stru"; "µU/term"; "µU/texts"; "µU/time"; "µU/vnset"; "µU/z"
+  "µU/pstk"; "µU/Q"; "µU/qmat"; "µU/R"; "µU/reg"; "µU/rpc"; "µU/rw"; "µU/scale"; "µU/schan"
+  "µU/scr"; "µU/smok"; "µU/stru"; "µU/term"; "µU/texts"; "µU/time"; "µU/vnset"; "µU/Z"
 )
 const (
   yy = 2022
-  mm =   11
+  mm =   12
   dd =   13
 )
 var (
@@ -150,9 +150,9 @@ func main() { // gets all packages compiled and shows the license
   dlock.New(0, nil, 0); fig2.Touch(); fig3.Touch(); gram.Touch(); host.New(); ieee.New()
   li.New(0); lock2.NewPeterson(); lr.NewMutex(); macc.New(); masks.New(); mbbuf.New(nil, 2)
   mbuf.New(0); mcorn.New(0); menue.Touch(); mol.New(); mstk.New(0); pbar.Touch()
-  pat.New(); piset.Touch(); pos.Touch(); pstk.Touch(); q.Touch(); qmat.Touch()
-  r.String(0); reg.Touch(); rpc.Touch(); rw.New1(); scale.Touch(); schan.New(0)
-  smok.TouchSmok(); stru.New(); term.Touch(); texts.Touch(); vnset.EmptySet(); z.String(0)
+  pat.New(); piset.Touch(); pos.Touch(); pstk.Touch(); Q.Touch(); qmat.Touch()
+  R.String(0); reg.Touch(); rpc.Touch(); rw.New1(); scale.Touch(); schan.New(0)
+  smok.TouchSmok(); stru.New(); term.Touch(); texts.Touch(); vnset.EmptySet(); Z.String(0)
   var v day.Calendarday = day.New()
   v.Set (dd, mm, yy); v.SetFormat (day.Yymmdd)
   wdtext = 91 * wd1 // 91 == width of license text lines + 2

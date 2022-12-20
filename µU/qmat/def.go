@@ -1,11 +1,11 @@
 package qmat
 
-// (c) Christian Maurer   v. 220831 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
-  "µU/q"
+  "µU/Q"
 )
 type
   QMatrix interface { // matrices of fractions of rationals
@@ -34,7 +34,7 @@ type
   Vals (l, c uint) (bool, uint, uint)
 
 // Returns the determinant of x.
-  Det() q.Rational
+  Det() Q.Rational
 }
 
 // Returns a new empty matrix with m lines and n colums

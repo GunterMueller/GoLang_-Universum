@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 221016 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   "strconv"
@@ -10,7 +10,7 @@ import (
   "µU/col"
   . "µU/scr"
   "µU/box"
-  "µU/n"
+  "µU/N"
 )
 var (
   errorbox, headbox, hintbox, licenseBox, choiceBox = box.New(), box.New(), box.New(), box.New(), box.New()
@@ -129,11 +129,11 @@ func hint (s string) {
 }
 
 func hint1 (s string, k uint) {
-  hint (s + " " + n.String (k))
+  hint (s + " " + N.String (k))
 }
 
 func hint2 (s string, k uint, s1 string, k1 uint) {
-  hint (s + " " + n.String (k) + " " + s1 + " " + n.String (k1))
+  hint (s + " " + N.String (k) + " " + s1 + " " + N.String (k1))
 }
 
 func delHintPos (s string, l, c uint) {
@@ -169,7 +169,7 @@ func do (s string, enter bool) {
 
 func errorZ (s string, i int) {
   if i < 0 {
-    do (s + " -" + n.String (uint(-i)), false)
+    do (s + " -" + N.String (uint(-i)), false)
   } else {
     error (s, uint(i))
   }
@@ -184,32 +184,32 @@ func error0 (s string) {
 }
 
 func error (s string, k uint) {
-  do (s + " " + n.String(k), false)
+  do (s + " " + N.String(k), false)
 }
 
 func concm (s string, k uint, s1 string) string {
-  s += " " + n.String (k)
+  s += " " + N.String (k)
   return s + " " + s1
 }
 
 func conc2 (s string, k uint, s1 string, k1 uint) string {
-  s += " " + n.String (k)
-  s1 += " " + n.String(k1)
+  s += " " + N.String (k)
+  s1 += " " + N.String(k1)
   return s + " " + s1
 }
 
 func conc3 (s string, k uint, s1 string, k1 uint, s2 string, k2 uint) string {
-  s += " " + n.String (k)
-  s1 += " " + n.String(k1)
-  s2 += " " + n.String(k2)
+  s += " " + N.String (k)
+  s1 += " " + N.String(k1)
+  s2 += " " + N.String(k2)
   return s + " " + s1 + " " + s2
 }
 
 func conc4 (s string, k uint, s1 string, k1 uint, s2 string, k2 uint, s3 string, k3 uint) string {
-  s += " " + n.String (k)
-  s1 += " " + n.String(k1)
-  s2 += " " + n.String(k2)
-  s3 += " " + n.String(k3)
+  s += " " + N.String (k)
+  s1 += " " + N.String(k1)
+  s2 += " " + N.String(k2)
+  s3 += " " + N.String(k3)
   return s + " " + s1 + " " + s2 + " " + s3
 }
 
@@ -244,7 +244,7 @@ func error0Pos (s string, l, c uint) {
 }
 
 func errorPos (s string, k, l, c uint) {
-  s += " " + n.String (k)
+  s += " " + N.String (k)
   error0Pos(s, l, c)
 }
 

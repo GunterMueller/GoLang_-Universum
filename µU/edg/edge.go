@@ -1,13 +1,13 @@
 package edg
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
   "µU/scr"
   "µU/box"
-  "µU/n"
+  "µU/N"
 )
 type
   edge struct {
@@ -30,7 +30,7 @@ func new_(d bool, a any) Edge {
   }
   CheckUintOrValuator(a)
   x.any = Clone(a)
-  x.wd = n.Wd(Val(a))
+  x.wd = N.Wd(Val(a))
   x.label = true
   x.f, x.b = col.StartCols()
   x.fa, x.ba = col.StartColsA()
@@ -149,7 +149,7 @@ func (x *edge) Write1 (a bool) {
   if ! x.label { return }
   x0 -= int(scr.Wd1()) / 2; y0 -= int(scr.Ht1()) / 2
   bx.Colours (f, b)
-  s := n.String (Val(x.any))
+  s := N.String (Val(x.any))
   bx.Wd(x.wd)
   bx.WriteGr (s, x0, y0)
 }
@@ -165,12 +165,12 @@ func (x *edge) Edit() {
     return
   }
   k := Val (x.any)
-  s := n.String(k)
+  s := N.String(k)
   bx.Wd (x.wd)
   bx.Colours (x.f, x.b)
   for {
     bx.EditGr (&s, x0, y0)
-    if i, ok := n.Natural(s); ok {
+    if i, ok := N.Natural(s); ok {
       SetVal (&x.any, i)
       break
     }

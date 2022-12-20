@@ -1,6 +1,6 @@
 package euro
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   "math"
@@ -10,7 +10,7 @@ import (
   "µU/col"
   "µU/box"
   "µU/errh"
-  "µU/n"
+  "µU/N"
   "µU/font"
   "µU/pbox"
 )
@@ -220,8 +220,8 @@ func (x *euro) Round (Y Euro) {
 
 func (x *euro) String() string {
   if x.Empty() { return str.New (length) }
-  return n.StringFmt (x.cent / 100, nDigits, false) + "," +
-         n.StringFmt (x.cent % 100, 2, true)
+  return N.StringFmt (x.cent / 100, nDigits, false) + "," +
+         N.StringFmt (x.cent % 100, 2, true)
 }
 
 func (x *euro) Defined (s string) bool {
@@ -229,13 +229,13 @@ func (x *euro) Defined (s string) bool {
     x.cent = undefined
     return true
   }
-  a, t, P, L := n.DigitSequences (s)
+  a, t, P, L := N.DigitSequences (s)
   if len(t) == 0 { return false }
   k, hatKomma := str.Pos (s, ',')
   if ! hatKomma {
     k, hatKomma = str.Pos (s, '.')
   }
-  i, ok := n.Natural (t[0])
+  i, ok := N.Natural (t[0])
   if ! ok { return false }
   switch a {
   case 1:
@@ -264,7 +264,7 @@ func (x *euro) Defined (s string) bool {
     } else {
       x.cent = 100 * i
     }
-    if i, ok = n.Natural (t[1]); ! ok { return false }
+    if i, ok = N.Natural (t[1]); ! ok { return false }
     switch L[1] {
     case 1:
       x.cent += 10 * i

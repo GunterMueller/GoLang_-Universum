@@ -1,12 +1,12 @@
 package dgra
 
-// (c) Christian Maurer   v. 210113 - license see µU.go
+// (c) Christian Maurer   v. 211213 - license see µU.go
 
 import (
   "µU/env"
   "µU/col"
   "µU/scr"
-  "µU/n"
+  "µU/N"
   "µU/bn"
   "µU/vtx"
   "µU/edg"
@@ -18,7 +18,7 @@ func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
   cf, ca, cb := col.Blue(), col.Red(), col.LightWhite()
   k := uint(len(l))
   if k != uint(len(es)) || k != uint(len(c)) { panic("len's different") }
-  wd := n.Wd (k)
+  wd := N.Wd (k)
   g := gra.New (dir, vtx.New (bn.New(wd), wd, 1), edg.New(dir, uint32(nchan.Port0)))
   v := make([]vtx.Vertex, k)
   for i := uint(0); i < k; i++ {

@@ -1,6 +1,6 @@
 package clk
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
   . "µU/ker"
@@ -13,7 +13,7 @@ import (
   "µU/font"
   "µU/pbox"
   "µU/errh"
-  "µU/n"
+  "µU/N"
 )
 const (
   maxlength = 8 // maximal Formatlength for "Hh_mm_ss"
@@ -189,12 +189,12 @@ func (x *clocktime) String() string {
   if x.Empty() {
     return str.New (textlength[x.Format])
   }
-  s := n.StringFmt(x.minute, 2, true)
+  s := N.StringFmt(x.minute, 2, true)
   if x.Format <= Hh_mm_ss {
-    s = n.StringFmt(x.hour, 2, true) + "." + s
+    s = N.StringFmt(x.hour, 2, true) + "." + s
   }
   if x.Format >= Hh_mm_ss {
-    s += ":" + n.StringFmt(x.second, 2, true)
+    s += ":" + N.StringFmt(x.second, 2, true)
   }
   return s
 }
@@ -210,7 +210,7 @@ func (x *clocktime) defined(h, m, s uint) bool {
 func (x *clocktime) Defined(t string) bool {
   x.Clr()
   if str.Empty(t) { return true }
-  k, ss, P, L := n.DigitSequences(t)
+  k, ss, P, L := N.DigitSequences(t)
   if k == 0 || k > 3 { return false }
   if k == 3 {
     if x.Format == Hh_mm { return false }
@@ -218,21 +218,21 @@ func (x *clocktime) Defined(t string) bool {
   if L[0] >= textlength[x.Format] { return false }
   h, m, s, ok := uint(0), uint(0), uint(0), false
   if k == 1 {
-    if h, ok = n.Natural(str.Part (t, P[0], 2)); ! ok { return false }
+    if h, ok = N.Natural(str.Part (t, P[0], 2)); ! ok { return false }
     if L[0] > 2 {
-      if m, ok = n.Natural(str.Part (t, P[0] + 2, 2)); ! ok { return false }
+      if m, ok = N.Natural(str.Part (t, P[0] + 2, 2)); ! ok { return false }
       if L[0] > 4 {
-        if s, ok = n.Natural(str.Part (t, P[0] + 4, 2)); ! ok { return false }
+        if s, ok = N.Natural(str.Part (t, P[0] + 4, 2)); ! ok { return false }
       }
     }
   } else {
-    if h, ok = n.Natural(ss[0]); ! ok { return false }
-    if m, ok = n.Natural(ss[1]); ! ok { return false }
+    if h, ok = N.Natural(ss[0]); ! ok { return false }
+    if m, ok = N.Natural(ss[1]); ! ok { return false }
     if k == 2 && x.Format == Mm_ss {
       s, m, h = m, h, 0
     }
     if k == 3 {
-      if _, ok := n.Natural(ss[2]); ! ok { return false }
+      if _, ok := N.Natural(ss[2]); ! ok { return false }
     }
   }
   return x.defined(h, m, s)
