@@ -1,10 +1,11 @@
 package smok
 
-// (c) Christian Maurer   v. 191105 - license see µU.go
+// (c) Christian Maurer   v. 221223 - license see µU.go
 
 import (
   "µU/time"
   "µU/env"
+  "µU/str"
 //  "µU/mode"
   "µU/col"
   "µU/scr"
@@ -21,8 +22,10 @@ const (
 )
 const
   raucher = "Raucher mit"
+var
+  Hölzer = str.Lat1("Hölzer")
 var (
-  text   = [3]string     {"Papier",         " Tabak",         "Hölzer" }
+  text   = [3]string     {"Papier",         " Tabak",         Hölzer}
   colour = [3]col.Colour {col.LightWhite(), col.LightBrown(), col.SandYellow()}
 )
 var (

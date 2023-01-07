@@ -216,6 +216,7 @@ type
            focus,
              top vect.Vector
  polygonW, doneW [][]bool // to fill polygons
+             swa C.XSetWindowAttributes // XXX
                  }
 var (
   dspl string = env.Val ("DISPLAY")
@@ -408,7 +409,7 @@ func (X *xwindow) ColB() col.Colour {
 func (X *xwindow) Colour (x, y uint) col.Colour {
   var r, g, b C.int16_t
   ximg := C.XGetImage (dpy, C.Drawable(X.win), C.int(x), C.int(y), 1, 1, C.AllPlanes, C.XYPixmap)
-  C.getPixelColour (dpy, ximg, swa.colormap, C.int(0), C.int(0), &r, &g, &b)
+  C.getPixelColour (dpy, ximg, X.swa.colormap, C.int(0), C.int(0), &r, &g, &b)
   return col.New3 (byte(r), byte(g), byte(b))
 }
 
@@ -1638,8 +1639,8 @@ func NewW (x, y uint, m mode.Mode) Screen {
   return NewWHW (x, y, mode.Wd (m), mode.Ht (m))
 }
 
-var
-  swa C.XSetWindowAttributes
+//var // XXX
+//  swa C.XSetWindowAttributes
 
 func NewWHW (x, y, w, h uint) Screen {
   initX()
@@ -1649,7 +1650,6 @@ func NewWHW (x, y, w, h uint) Screen {
   X.wd, X.ht = w, h
   if X.wd > monitorWd || X.ht > monitorHt { ker.Panic ("win too large: " +
                          strconv.Itoa(int(X.wd)) + " x " + strconv.Itoa(int(X.ht))) }
-
   X.polygonW = make([][]bool, X.wd)
   X.doneW = make([][]bool, X.wd)
   for i := 0; i < int(X.wd); i++ {
@@ -1668,16 +1668,15 @@ func NewWHW (x, y, w, h uint) Screen {
   vi := C.glXChooseVisual (dpy, screen, &a[0] )
   cx := C.glXCreateContext (dpy, vi, C.GLXContext(nil), C.True)
   rootWin = C.XRootWindow (dpy, vi.screen)
-//  var swa C.XSetWindowAttributes
-  swa.colormap = C.XCreateColormap (dpy, rootWin, vi.visual, C.AllocNone)
-  swa.border_pixel = 8
-  swa.event_mask = C.KeyPressMask | C.KeyReleaseMask | C.ButtonPressMask | C.ButtonReleaseMask |
+  X.swa.colormap = C.XCreateColormap (dpy, rootWin, vi.visual, C.AllocNone)
+  X.swa.border_pixel = 8
+  X.swa.event_mask = C.KeyPressMask | C.KeyReleaseMask | C.ButtonPressMask | C.ButtonReleaseMask |
                    C.FocusChangeMask | C.ExposureMask | C.VisibilityChangeMask |
                    C.StructureNotifyMask
-//  swa.override_redirect = C.True
+//  X.swa.override_redirect = C.True
   X.win = C.XCreateWindow (dpy, rootWin, C.int(x), C.int(y), C.uint(X.wd), C.uint(X.ht), 0,
                            vi.depth, C.InputOutput, vi.visual,
-                           C.CWBorderPixel | C.CWColormap | C.CWEventMask, &swa)
+                           C.CWBorderPixel | C.CWColormap | C.CWEventMask, &X.swa)
   X.gc = C.XDefaultGC (dpy, screen)
   C.XSetGraphicsExposures (dpy, X.gc, C.False)
   s := C.CString(env.Call()); defer C.free(unsafe.Pointer(s))

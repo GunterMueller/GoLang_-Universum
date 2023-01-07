@@ -41,7 +41,7 @@ import (
 const (
   yy = 2022
   mm =   12
-  dd =   13
+  dd =   23
 )
 var (
   red, green = col.FlashRed(), col.FlashGreen()
@@ -93,7 +93,7 @@ func joke (x, x1, y, imx, imy, imw int, c col.Colour, s string) {
   y1 += a * ht1
   y2 += a * ht1
   switch s {
-  case "nsp4", "nspe":
+  case "nsp4", "nspe", "obp":
     y1 +=  4 * ht1
     y2 += 16 * ht1
   }
@@ -116,24 +116,26 @@ func joke (x, x1, y, imx, imy, imw int, c col.Colour, s string) {
 
 func drive (cl, cf, cb col.Colour, d chan int) {
   x := (wd - wdtext) / 2
-  y := ((int(scr.NLines()) - 33) / 2 + 3) * ht1
+  y := ((int(scr.NLines()) - 34) / 2 + 3) * ht1
   x1 := x + wdtext - car.W
   dr (x, x1, y +  0 * ht1, cl, false)
   dr (x, x1, y +  2 * ht1, cf, false)
   dr (x, x1, y +  3 * ht1, cf, false)
   joke (x, x1, y,  1, 4, 32, cf, "nsp4")
   joke (x, x1, y, 12, 5, 32, cf, "nspe")
-  dr (x, x1, y +  6 * ht1, cf, false)
+  joke (x, x1, y, 30, 6, 32, cf, "obp")
   dr (x, x1, y +  7 * ht1, cf, false)
-  dr (x, x1, y + 20 * ht1, cf, false)
-  dr (x, x + 42 * wd1, y + 21 * ht1, cf, false)
-  dr (x + 43 * wd1, wd + 33 * wd1, y + 21 * ht1, red, true)
-  joke (x, x1, y, 67, 22, 14, cf, "fire")
-  joke (x, x1, y, 38, 23, 22, cf, "mca")
+  dr (x, x1, y +  8 * ht1, cf, false)
+  dr (x, x1, y +  9 * ht1, cf, false)
+  dr (x, x1, y + 22 * ht1, cf, false)
+  dr (x, x + 42 * wd1, y + 23 * ht1, cf, false)
+  dr (x + 43 * wd1, wd + 33 * wd1, y + 23 * ht1, red, true)
+  joke (x, x1, y, 67, 24, 14, cf, "fire")
+  joke (x, x1, y, 38, 25, 22, cf, "mca")
   moon (x + 85 * wd1, col.LightGray())
-  dr (x, x1, y + 24 * ht1, cf, false)
-  dr (x, x1, y + 25 * ht1, cf, false)
-  dr (x, x1, y + 27 * ht1, col.FlashYellow(), false)
+  dr (x, x1, y + 26 * ht1, cf, false)
+  dr (x, x1, y + 27 * ht1, cf, false)
+  dr (x, x1, y + 29 * ht1, col.FlashYellow(), false)
   d <- 0
 }
 

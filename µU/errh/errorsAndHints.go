@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 221223 - license see µU.go
 
 import (
   "strconv"
@@ -9,26 +9,19 @@ import (
   "µU/kbd"
   "µU/col"
   . "µU/scr"
-  "µU/box"
   "µU/N"
 )
 var (
-  errorbox, headbox, hintbox, licenseBox, choiceBox = box.New(), box.New(), box.New(), box.New(), box.New()
-  hintwidth uint
   transparent bool
 //           1         2         3         4         5         6         7         8         9
 // 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
   license = []string {
   " Das Mikrouniversum µU ist nur zum Einsatz in der Lehre konstruiert  und hat deshalb einen ",
-/*/
-  " rein akademischen Charakter. Es liefert u. a. etliche Beispiele und Animationen für meine ",
-  " Lehrbücher  \"Nichtsequentielle Programmierung mit Go 1\"  (Springer Vieweg 2012),  \"Nicht- ",
-  " \"Nichtsequentielle Programmierung mit Go 1\"  (Springer Vieweg 2012),  \"Nicht- ",
-  " neue Ausgabe  \"Nonsequential and Distributed Programming with Go\" (Springer Nature 2021). ",
-/*/
-  " rein akademischen Charakter. Es liefert u. a. eine Reihe von Beispielen für mein Lehrbuch   ",
+  " rein akademischen Charakter. Es liefert u. a. eine Reihe von Beispielen für mein Lehrbuch ",
   " \"Nichtsequentielle und Verteilte Programmierung mit Go\" (Springer Vieweg 2019) und dessen ",
   " Übersetzung  \"Nonsequential and Distributed Programming with Go\"  (Springer Nature 2021). ",
+  " Auch alle Projekte im Buch  \"Objektbasierte Programmierung mit Go\" (Springer Vieweg 2022) ",
+  " machen intensiven Gebrauch von diversen Paketen aus dem Mikrouniversum.                   ",
   " Für Zwecke der Lehre an Universitäten und in Schulen sind die Quellen des Mikrouniversums ",
   " uneingeschränkt verwendbar; jede Form weitergehender Nutzung ist jedoch strikt untersagt. ",
   "                                                                                           ",
@@ -55,9 +48,6 @@ var (
 
 func init() {
   for i, l := range (license) { license[i] = str.Lat1 (l) }
-  headbox.Colours (col.HeadF(), col.HeadB())
-  hintbox.Colours (col.HintF(), col.HintB())
-  errorbox.Colours (col.ErrorF(), col.ErrorB())
 //  pre() TODO theScreen not yet defined
 //  post() TODO theScreen not yet defined
 //                                         1         2         3         4         5         6         7
@@ -77,14 +67,10 @@ func init() {
 func pre() {
   transparent = Transparent()
   if transparent { Transparence (false) }
-////    errorbox = box.New()
-////    errorbox.Colours (col.ErrorF(), col.ErrorB())
 //  actualFontsize = ActFontsize()
-//  if actualFontsize # Normal {
+//  if actualFontsize != Normal {
 //    SwitchFontsize (Normal)
 //  }
-//  hintbox.Wd (width)
-//  errorbox.Wd (width)
 }
 
 func post() {
@@ -104,9 +90,11 @@ func head (s string) {
   pre()
   w := NColumns()
   Save (0, 0, w, 1)
-  headbox.Wd (w)
+  Lock()
   str.Norm (&s, w)
-  headbox.Write (s, 0, 0)
+  Colours (col.HeadF(), col.HeadB())
+  Write (s, 0, 0)
+  Unlock()
   post()
 }
 
@@ -122,9 +110,10 @@ func hint (s string) {
   Save (l, 0, w, 1)
   s = str.Lat1 (s)
   str.Center (&s, w)
-  hintbox.Wd (w)
-  hintbox.Colours (col.HintF(), col.HintB())
-  hintbox.Write (s, l, 0)
+  Lock()
+  Colours (col.HintF(), col.HintB())
+  Write (s, l, 0)
+  Unlock()
   post()
 }
 
@@ -146,9 +135,10 @@ func hintPos (s string, l, c uint) {
   w := uint(len (s))
   if c + w >= NColumns() { c = NColumns() - w }
   Save (l, c, w, 1)
-  hintbox.Wd (w)
-  hintbox.Colours (col.HintF(), col.HintB())
-  hintbox.Write (s, l, c)
+  Lock()
+  Colours (col.HintF(), col.HintB())
+  Write (s, l, c)
+  Unlock()
   post()
 }
 
@@ -158,9 +148,11 @@ func do (s string, enter bool) {
   str.Center (&s, NColumns())
   l := NLines() - 1
   Save (l, 0, NColumns(), 1)
-  errorbox.Wd (NColumns())
-  errorbox.Write (s, l, 0)
-  errorbox.Colours (col.ErrorF(), col.ErrorB())
+  Lock()
+  Colours (col.ErrorF(), col.ErrorB())
+  Write (s, l, 0)
+//  Colours (col.ErrorF(), col.ErrorB())
+  Unlock()
   kbd.Wait (enter)
   Restore (l, 0, NColumns(), 1)
   post()
@@ -236,8 +228,10 @@ func error0Pos (s string, l, c uint) {
   w := uint(len (s))
   if c + w >= NColumns() { c = NColumns() - w }
   Save (l, c, w, 1)
-  errorbox.Wd (w)
-  errorbox.Write (s, l, c)
+  Lock()
+  Colours (col.ErrorF(), col.ErrorB())
+  Write (s, l, c)
+  Unlock()
   kbd.Wait (false)
   Restore (l, c, w, 1)
   post()
@@ -259,8 +253,10 @@ func confirmed() bool {
   str.Center (&s, w)
   l := NLines() - 1
   Save (l, 0, w, 1)
-  errorbox.Wd (w)
-  errorbox.Write (s, l, 0)
+  Lock()
+  Colours (col.ErrorF(), col.ErrorB())
+  Write (s, l, 0)
+  Unlock()
   b, _, _ := kbd.Read()
   a := char.Lower(b) == 'j'
   Restore (l, 0, w, 1)
@@ -275,27 +271,42 @@ func writeLicense (project, version, author string, f, cl, b col.Colour, g []str
   l, c := (NLines() - h) / 2, (NColumns() - w) / 2
   l0, c0 := l, c
   Save (l0, c0, w, h)
-  licenseBox.Wd (w)
-  licenseBox.Colours (cl, b)
   emptyLine := str.New (w)
-  licenseBox.Write (emptyLine, l, c); l ++
+  Lock()
+  Colours (cl, b)
+  Write (emptyLine, l, c)
+  Unlock()
+  l++
   s := str.Lat1 (project + " v. " + version)
   *t = s
   str.Center (&s, w)
-  licenseBox.Write (s, l, c); l ++
-  licenseBox.Write (emptyLine, l, c); l ++
+  Lock()
+  Colours (cl, b)
+  Write (s, l, c)
+  l++
+  Write (emptyLine, l, c)
+  Unlock()
+  l++
   s = str.Lat1 ("(c) " + author)
   str.Center (&s, w)
-  licenseBox.Colours (f, b)
-  licenseBox.Write (s, l, c); l ++ // l, c = 30, 52
-  licenseBox.Colours (cl, b)
-  licenseBox.Write (emptyLine, l, c); l ++
+  Lock()
+  Colours (f, b)
+  Write (s, l, c)
+  Unlock()
+  l++
+// l, c = 30, 52
+  Lock()
+  Colours (cl, b)
+  Write (emptyLine, l, c)
+  l++
   for i := 0; i < len (g); i++ {
-    licenseBox.Write (g[i], l, c); l ++
+    Write (g[i], l, c)
+    l++
   }
-  licenseBox.Write (emptyLine, l, c); l ++
-  licenseBox.Colours (f, b)
+  Write (emptyLine, l, c)
+  Unlock()
 /*
+  l++
   var line string
   if DocExists {
     line = str.Lat1 ("ausführliche Bedienungshinweise: siehe Dokumentation")
@@ -308,8 +319,11 @@ func writeLicense (project, version, author string, f, cl, b col.Colour, g []str
     }
   }
   if ! str.Empty (line) { str.Center (&line, w) }
-  licenseBox.Write (line, l, c); l ++
-  licenseBox.Write (emptyLine, l, c)
+  Lock()
+  Colours (f, b)
+  Write (line, l, c); l ++
+  Write (emptyLine, l, c)
+  Unlock()
 */
 //  kbd.Wait (true)
 //  scr.Restore (l0, c0, w, h)
@@ -324,9 +338,10 @@ func headline (project, version, author string, f, b col.Colour) {
   n := NColumns()
   Text := project + "       (c) " + author + "  v. " + version
   str.Center (&Text, n)
-  licenseBox.Wd (n)
-  licenseBox.Colours (f, b)
-  licenseBox.Write (Text, 0, 0)
+  Lock()
+  Colours (f, b)
+  Write (Text, 0, 0)
+  Unlock()
   post()
 }
 
@@ -350,15 +365,17 @@ func help (H []string) {
     l, c = (NLines() - h - 2) / 2, (NColumns() - w - 4) / 2
   }
   Save (l, c, w + 4, h + 2)
-  hintbox.Wd (w + 4)
-  T := str.New (w + 4)
+  Lock()
+  Colours (col.HintF(), col.HintB())
+  t := str.New (w + 4)
   for i := uint(0); i <= h + 1; i++ {
-    hintbox.Write (T, l + i, c)
+    Write (t, l + i, c)
   }
-  hintbox.Wd (w)
   for i := uint(0); i < h; i++ {
-    hintbox.Write (H[i], l + 1 + i, c + 2)
+    str.Center (&H[i], w) 
+    Write (H[i], l + 1 + i, c + 2)
   }
+  Unlock()
   kbd.Wait (false)
   Restore (l, c, w + 4, h + 2)
   if mouseOn { MousePointer (true) }
@@ -370,12 +387,16 @@ func help1() {
   s := "kurze Bedienungshinweise: F1-Taste"
   w := uint(len (s))
   l, c := (NLines() - 3) / 2, (NColumns() - w - 4) / 2
-  hintbox.Wd (w + 4)
   t := str.New (w + 4)
   Save (l, c, w + 4, 3)
-  for i := uint(0); i <= 2; i++ { hintbox.Write (t, l + i, c) }
-  hintbox.Wd (w)
-  hintbox.Write (s, l + 1, c + 2)
+  Lock()
+  Colours (col.HintF(), col.HintB())
+  for i := uint(0); i <= 2; i++ {
+    Write (t, l + i, c)
+  }
+  str.Center (&s, w)
+  Write (s, l + 1, c + 2)
+  Unlock()
   kbd.Quit()
   Restore (l, c, w + 4, 3)
   post()

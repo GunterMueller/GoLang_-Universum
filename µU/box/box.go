@@ -90,8 +90,8 @@ func (x *box) Write (s string, l, c uint) {
   if x.width < n { str.Norm (&s, x.width) }
   if x.numerical { str.Move (&s, false) }
   scr.Lock()
-  scr.Colours (x.cF, x.cB)
   if x.transparent { scr.Transparence (true) }
+  scr.Colours (x.cF, x.cB)
   scr.Write (s, l, c)
   if x.transparent { scr.Transparence (false) }
   scr.Unlock()
@@ -111,8 +111,8 @@ func (b *box) WriteGr (s string, x, y int) {
   if b.width < n { str.Norm (&s, b.width) }
   if b.numerical { str.Move (&s, false) }
   scr.Lock()
-  scr.Colours (b.cF, b.cB)
   if b.transparent { scr.Transparence (true) }
+  scr.Colours (b.cF, b.cB)
   scr.WriteGr (s, x, y)
   if b.transparent { scr.Transparence (false) }
   scr.Unlock()
