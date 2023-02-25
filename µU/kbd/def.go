@@ -74,9 +74,9 @@ type
 //   - Navigate:                3d-mouse used
 
    commands of depth > 0 by combination with metakeys:
-   - depth 1:                 Shift- or Strg-key,
-   - depth 2:                 Alt-key,
-   - depth 3:                 Ctrl- and Alt-key.
+   - depth 1:                 Shift- or Strg-key (or both),
+   - depth 2:                 Alt- or AltGr-key,
+   - depth 3:                 Alt- or AltGr-key + other metakey(s).
 
    >>> Under X some meta-key/key-combinations are eaten up
        by the window-manager, e.g. with Esc, Tab and Back. */

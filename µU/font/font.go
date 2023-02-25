@@ -1,7 +1,9 @@
 package font
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
+import
+  . "µU/fontsize"
 var (
   sign = []string {"r", "b", "i"}
   size = []string {"t", "s", "n", "b", "b", "b"}

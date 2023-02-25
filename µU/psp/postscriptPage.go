@@ -1,6 +1,6 @@
 package psp
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 import (
   "os"
@@ -11,6 +11,7 @@ import (
   "µU/char"
   "µU/col"
   "µU/scr"
+  "µU/fontsize"
   "µU/font"
   "µU/N"
 )
@@ -51,7 +52,7 @@ func (x *postscriptPage) Name (n string) {
   x.write ("%%EndComments\n")
   x.write (x.f(x.float64) + " setlinewidth\n")
   x.SetFont (font.Roman)
-  x.SetFontsize (font.Normal)
+  x.SetFontsize (fontsize.Normal)
   x.write ("72 72 translate\n")
 }
 
@@ -137,20 +138,20 @@ func (x *postscriptPage) SetFont (f font.Font) {
   x.write ("/" + s + " findfont\n")
 }
 
-func (x *postscriptPage) SetFontsize (s font.Size) {
+func (x *postscriptPage) SetFontsize (s fontsize.Size) {
   h := 0
   switch s {
-  case font.Tiny:
+  case fontsize.Tiny:
     h = 4
-  case font.Small:
+  case fontsize.Small:
     h = 5
-  case font.Normal:
+  case fontsize.Normal:
     h = 8
-  case font.Big:
+  case fontsize.Big:
     h = 12
-  case font.Large:
+  case fontsize.Large:
     h = 14
-  case font.Huge:
+  case fontsize.Huge:
     h = 16
   }
   x.write ("/terminus-normal 16 findfont\n")

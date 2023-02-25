@@ -1,8 +1,9 @@
 package fmon
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 221231 - license see µU.go
 
 import (
+//  "reflect"
   . "µU/ker"
   "µU/time"
   . "µU/obj"
@@ -33,6 +34,8 @@ func new1 (a any, n uint, fs FuncSpectrum, ps PredSpectrum,
   for i := uint(0); i < x.uint; i++ {
     x.ch[i] = nchan.NewN (x.input, h, p + uint16(i), s)
   }
+//print ("fmon.new1: type of a is ", reflect.TypeOf(a).String(), "  n == ", n, "  port == ", p)
+//if s { println (" as server") } else { println (" as client") }
   return x.common (fs, ps, stmt)
 }
 
@@ -74,7 +77,7 @@ func (x *farMonitor) common (fs FuncSpectrum, ps PredSpectrum, stmt Stmt) FarMon
           }
         default:
         }
-        time.Msleep(1e3)
+        time.Msleep(10)
       }
     }(i)
   }

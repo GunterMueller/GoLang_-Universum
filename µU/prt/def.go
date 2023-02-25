@@ -1,11 +1,13 @@
 package prt
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 // >>> Pre: TeX is installed.
 
-import
+import (
+  "µU/fontsize"
   "µU/font"
+)
 var
   PrintCommand = "lp"
 
@@ -16,10 +18,10 @@ func SetFont (f font.Font) { setFont(f) }
 func ActualFont() font.Font { return actualFont }
 
 // The actual fontsize is f.
-func SetFontsize (s font.Size) { setFontsize(s) }
+func SetFontsize (s fontsize.Size) { setFontsize(s) }
 
 // Returns the actual fontsize.
-func ActualSize() font.Size { return actualSize }
+func ActualSize() fontsize.Size { return actualSize }
 
 // Returns the number of lines per page.
 func NLines() uint { return nL[actualSize] }

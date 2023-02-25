@@ -1,23 +1,15 @@
 package font
 
-// (c) Christian Maurer   v. 220524 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
+import
+  . "µU/fontsize"
 type
   Font byte; const ( // only for prt
   Roman = Font(iota)
   Bold
   Italic
   NFonts
-)
-type
-  Size byte; const ( // for prt  for screen
-  Tiny = Size(iota)  // cmtt6     7 *  5 px
-  Small              // cmtt8    10 *  6 px
-  Normal             // cmtt10   16 *  8 px
-  Big                // cmtt12   24 * 12 px
-  Large              // cmtt14   28 * 14 px
-  Huge               // cmtt17   32 * 16 px
-  NSizes
 )
 const
   M = 6 // len names

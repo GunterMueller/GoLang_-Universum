@@ -2,7 +2,7 @@ package rw
 
 // (c) Christian Maurer   v. 200421 - license see µU.go
 
-// >>> readers/writers problem
+// >>> bounded readers/writers problem
 
 import
   "µU/cr"

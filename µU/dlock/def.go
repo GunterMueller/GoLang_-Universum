@@ -1,9 +1,9 @@
 package dlock
 
-// (c) Christian Maurer   v. 171125 - license see µU.go
+// (c) Christian Maurer   v. 230207 - license see µU.go
 
 import
-  . "µU/lock"
+  . "sync"
 type
   DistributedLock interface {
 

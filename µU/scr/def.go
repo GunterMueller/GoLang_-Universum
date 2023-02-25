@@ -25,6 +25,7 @@ import (
   "µU/obj"
   "µU/col"
   "µU/mode"
+  . "µU/fontsize"
   "µU/font"
   "µU/scr/shape"
   "µU/linewd"
@@ -216,10 +217,10 @@ type
   SetFont (f font.Font)
 
 // Returns the actual fontsize; at the beginning Normal.
-  ActFontsize() font.Size
+  ActFontsize() Size
 
 // s is the actual fontsize. NColumns and NLines are changed accordingly.
-  SetFontsize (s font.Size)
+  SetFontsize (s Size)
 
 // graphics ////////////////////////////////////////////////////////////
 

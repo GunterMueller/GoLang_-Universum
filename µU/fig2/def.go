@@ -1,10 +1,11 @@
 package fig2
 
-// (c) Christian Maurer   v. 221110 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
+  "µU/fontsize"
   "µU/psp"
 )
 type
@@ -86,7 +87,7 @@ type
   Change()
 
 // If x is a text, it has the font size f. // TODO
-//  SetFont (font.Size)
+SetFontsize (fontsize.Size)
 
 // x is printed (see package µU/psp).
   Print (psp.PostscriptPage)

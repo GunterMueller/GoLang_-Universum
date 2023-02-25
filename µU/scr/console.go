@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 //#include <stdlib.h>
@@ -56,6 +56,7 @@ import (
   "µU/ker"
   "µU/time"
   "µU/obj"
+  "µU/fontsize"
   "µU/font"
   "µU/col"
   "µU/mode"
@@ -84,7 +85,7 @@ type
       scrF, scrB col.Colour
           lineWd linewd.Linewidth
                  font.Font
-                 font.Size
+                 fontsize.Size
      transparent bool
      cursorShape,
     consoleShape,
@@ -570,11 +571,11 @@ func (X *console) SetFont (f font.Font) {
   X.Font = f
 }
 
-func (X *console) ActFontsize() font.Size {
+func (X *console) ActFontsize() fontsize.Size {
   return X.Size
 }
 
-func (X *console) SetFontsize (s font.Size) {
+func (X *console) SetFontsize (s fontsize.Size) {
   X.Size = s
   X.ht1, X.wd1 = font.Ht (X.Size), font.Wd (X.Size)
   X.nLines, X.nColumns = X.ht / X.ht1, X.wd / X.wd1
@@ -2027,11 +2028,11 @@ func (X *console) init_(x, y uint) {
   }
   X.initMouse()
   X.SetLinewidth (linewd.Thin)
-  wm, _ := MaxResC()
-  if wm > mode.Wd (mode.UHD) {
-    X.SetFontsize (font.Huge)
+  mw, _ := MaxResC()
+  if mw > mode.Wd (mode.UHD) {
+    X.SetFontsize (fontsize.Huge)
   } else {
-    X.SetFontsize (font.Normal)
+    X.SetFontsize (fontsize.Normal)
   }
   X.Transparence (false)
   X.Colours (col.StartCols())
@@ -2044,7 +2045,7 @@ func (X *console) init_(x, y uint) {
   }
   X.ScrColours (X.cF, X.cB)
   X.Cls()
-  X.SetFontsize (font.Normal)
+  X.SetFontsize (fontsize.Normal)
   X.doBlink()
   X.Cls()
   ptr[Crosshair] = []string {

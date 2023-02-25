@@ -1,44 +1,47 @@
 package spc
 
-// (c) Christian Maurer   v. 201103 - license see µU.go
+// (c) Christian Maurer   v. 230213 - license see µU.go
 
 // The package maintains the following 5 vectors:
-// origin,
-// focus and
-// an orthogonal right-handed trihedron (right, front, top)
-//   with len(right) = len(front) = len(top) = 1,
-//   s.t. front = focus - origin normed to len 1.
-// Maintains furthermore two stacks of such quintupels.
+// origin, focus and an orthogonal right-handed trihedron (right, front, top)
+// with len(right) = len(front) = len(top) = 1, s.t. front = focus - origin normed to len 1.
+// Maintains furthermore two stacks of those quintupels.
 
 // origin = (ox, oy, oz), focus = (fx, fy, fz), top = (tx, ty, tz),
 // front = focus - origin normed to len 1 and right = cross-product front x top.
 func Set (ox, oy, oz, fx, fy, fz, tx, ty, tz float64) { set (ox,oy,oz,fx,fy,fz,tx,ty,tz) }
 
-// Returns (ox, oy, oz, fx, fy, fz, tx, ty, tz).
-func Get() (float64, float64, float64, float64, float64, float64, float64, float64, float64) { return get() }
+// Returns the coordinates of origin, focus and top.
+func GetOrigin() (float64, float64, float64) { return getOrigin() }
+func GetFocus()  (float64, float64, float64) { return getFocus() }
+func GetRight()  (float64, float64, float64) { return getRight() }
+func GetFront()  (float64, float64, float64) { return getFront() }
+func GetTop()    (float64, float64, float64) { return getTop() }
 
-// Returns the coordinates of origin.
-func Get3() (float64, float64, float64) { return get3() }
+// origin is moved in direction Right/Front/Top by distance d,
+func MoveRight (d float64) { moveR(d) }
+func MoveFront (d float64) { moveF(d) }
+func MoveTop (d float64) { moveT(d) }
 
-// Pre: i < 3.
-// origin is moved in direction i by distance d,
-// where i = 0/1/2 means direction of right/front/top.
-func Move (i uint, d float64) { move(i,d) }
+// origin and focus are moved in direction Right/Front/Top by distance d,
+func Move1Right (d float64) { move1R(d) }
+func Move1Front (d float64) { move1F(d) }
+func Move1Top (d float64) { move1T(d) }
 
-// Pre: i < 3.
-// origin and focus are moved in direction i by distance d,
-// where i = 0/1/2 means direction of right/front/top.
-func Move1 (i uint, d float64) { move1(i,d) }
+func Tilt (a float64) { tilt(a) }
+// front is rotated around right by angle a, top is adjusted.
 
-// Pre: i < 3.
-// trihedron[n] (n = (i + 1) % 3) is rotated around trihedron[i] by angle a,
-// trihedron[p] (p = (i + 2) % 3) is adjusted.
-func Turn (i uint, a float64) { turn(i,a) }
+func Roll (a float64) { roll(a) }
+// top is rotated around front by angle a, right is adjusted.
 
-// Pre: i < 3.
-// i = 0, 1, 2 means direction of right, front, top.
+func Turn (a float64) { turn(a) }
+// right is rotated around top by angle a, front is adjusted.
+
 // TODO Spec
-func TurnAroundFocus (i uint, a float64) { turnAroundFocus(i,a) }
+func TurnAroundFocusR (a float64) { turnAroundFocusR(a) }
+
+// TODO Spec
+func TurnAroundFocusT (a float64) { turnAroundFocusT(a) }
 
 // Returns true, iff the corresponding stack is empty.
 func Empty() bool { return empty() }
@@ -53,4 +56,4 @@ func Pop() { pop() }
 func Pop1() { pop1() }
 
 // TODO Spec
-// func SetLight (n uint) { setLight(n) }
+func SetLight (n uint) { setLight(n) }

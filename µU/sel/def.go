@@ -1,10 +1,10 @@
 package sel
 
-// (c) Christian Maurer   v. 220815 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 import (
   "µU/col"
-  "µU/font"
+  "µU/fontsize"
 )
 type // TODO description of semantics !
   WritingCol func (uint, uint, uint, col.Colour, col.Colour)
@@ -45,4 +45,4 @@ func Colour (l, c, w uint) (col.Colour, bool) { return colour(l,c,w) }
 func Colours (l, c, w uint, cols ...col.Colour) (col.Colour, bool) { return colours(l,c,w,cols...) }
 
 // Returns an interactively selected font size.
-func Fontsize (f, b col.Colour) font.Size { return fontsize(f,b) }
+func Fontsize (f, b col.Colour) fontsize.Size { return size(f,b) }

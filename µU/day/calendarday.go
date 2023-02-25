@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 230111 - license see µU.go
 
 import (
   . "µU/ker"
@@ -20,7 +20,7 @@ import (
 const (
   emptyYear = uint(1879)
   startYear = emptyYear + 1
-  limitYear = uint(2020) // Yy: 0..20 -> 2000..2020; 21..99 -> 1921..1999
+  limitYear = uint(2030) // Yy: 0..20 -> 2000..2020; 21..99 -> 1921..1999
   endYear   = uint(2058) // emptyYear + 179, // got to change that, if I am 113 years old
                          // 179 Jahre < MAX (uint16) Tage < 180 Jahre
   wdDay     = 10

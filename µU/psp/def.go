@@ -1,9 +1,10 @@
 package psp
 
-// (c) Christian Maurer   v. 220112 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 import (
   "µU/col"
+  "µU/fontsize"
   "µU/font"
 )
 type
@@ -23,8 +24,9 @@ type
 
   SetColour (c col.Colour)
 
-//  SetFont (f font.Font)
-  SetFontsize (s font.Size)
+  SetFontsize (s fontsize.Size)
+
+  SetFont (f font.Font)
 
   Write (s string, x, y float64)
 

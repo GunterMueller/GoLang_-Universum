@@ -53,30 +53,30 @@ func inputX (B *byte, C *Comm, D *uint) {
     mouseBitM    =  9
     mouseBitR    = 10
   )
-  var e scr.Event
+  var event scr.Event
   ok := false
 loop:
   for {
     *B, *C, *D = 0, None, 0
-    e, ok = <-xpipe
+    event, ok = <-xpipe
     if ! ok { panic ("kbd/x.go inputX: ! ok") }
     unlock()
-    if e.S == 64 { continue } // d(o,o)f-key
-    shift := isSet (shiftBit, e.S)
-    shiftLock := isSet (shiftLockBit, e.S)
+    if event.S == 64 { continue } // d(o,o)f-key
+    shift := isSet (shiftBit, event.S)
+    shiftLock := isSet (shiftLockBit, event.S)
     if shiftLock { shift = false } // weg isser
-    ctrl := isSet (ctrlBit, e.S)
-    alt := isSet (altBit, e.S)
-    altGr := isSet (altGrBit, e.S)
-    mouseL := isSet (mouseBitL, e.S)
-    mouseM := isSet (mouseBitM, e.S)
-    mouseR := isSet (mouseBitR, e.S)
+    ctrl := isSet (ctrlBit, event.S)
+    alt := isSet (altBit, event.S)
+    altGr := isSet (altGrBit, event.S)
+    mouseL := isSet (mouseBitL, event.S)
+    mouseM := isSet (mouseBitM, event.S)
+    mouseR := isSet (mouseBitR, event.S)
     if shift || ctrl {
       *D = 1
     } else if alt {
       *D = 2
     }
-    switch e.T {
+    switch event.T {
 /*/
     case C.Expose:
       *B = 0
@@ -85,30 +85,30 @@ loop:
       break loop
 /*/
     case C.KeyPress:
-      if e.C <= 8 {
-        println ("oops, kbd/x.go C.Keypress keycode ", e.C, " <= 8")
+      if event.C <= 8 {
+        println ("oops, kbd/x.go C.Keypress keycode ", event.C, " <= 8")
       } else {
-        e.C -= 8
+        event.C -= 8
         switch {
-        case e.C == esc:
+        case event.C == esc:
           *C = Esc
-        case e.C == shiftL || e.C == shiftR:
+        case event.C == shiftL || event.C == shiftR:
           shift = true
-        case e.C == ctrlL || e.C ==  ctrlR:
+        case event.C == ctrlL || event.C ==  ctrlR:
           ctrl = true
-        case e.C == altL:
+        case event.C == altL:
           alt = true
-        case e.C == altR:
+        case event.C == altR:
           altGr = true
-        case isAlpha (e.C):
-          if ctrl && (e.C == 'C' || e.C == 'Q' ) {
+        case isAlpha (event.C):
+          if ctrl && (event.C == 'C' || event.C == 'Q' ) {
             // finX () // TODO
             os.Exit (0)
           }
           switch *D {
           case 0:
             if altGr {
-              switch e.C {
+              switch event.C {
               case 3: // 2
                 *B = twoSup
               case 4: // 3
@@ -141,12 +141,12 @@ loop:
                 *B = division
               }
             } else {
-              *B = bb[e.C]
+              *B = bb[event.C]
             }
           case 1:
             if altGr {
 /*/
-              switch e.C {
+              switch event.C {
               case 26:
                 *B = Ü
               case 39:
@@ -158,14 +158,14 @@ loop:
               }
 /*/
             } else {
-              *B = aa[e.C]
+              *B = aa[event.C]
             }
           case 2:
-            *B = aa[e.C]
+            *B = aa[event.C]
           }
-        case isCmd (e.C):
-          *C = kK[e.C]
-          switch e.C {
+        case isCmd (event.C):
+          *C = kK[event.C]
+          switch event.C {
           case left:
           if alt {
             *C = PgLeft
@@ -194,22 +194,22 @@ loop:
             break loop
           }
 //          if (e.C == left || e.C == right) && e.S == 64 { *D += 2 }
-          if e.C == back && *D > 2 {
+          if event.C == back && *D > 2 {
             *C, *D = None, 0
           } // doesn't help: wm crashes
-        case e.C == numOnOff:
+        case event.C == numOnOff:
 //        // TODO
-        case isKeypad (e.C):
+        case isKeypad (event.C):
           switch *D {
           case 0:
-            *B = bb[e.C]
+            *B = bb[event.C]
           default:
-            *C = kK[e.C]
+            *C = kK[event.C]
           }
-        case e.C == 127:
+        case event.C == 127:
           *B = backslash
         default:
-          println ("kbd/x.go C.KeyPress: keycode ", e.C, "/ state ", e.S) // XXX
+          println ("kbd/x.go C.KeyPress: keycode ", event.C, "/ state ", event.S) // XXX
         }
       }
       if *B > 0 || *C > 0 {
@@ -221,7 +221,7 @@ loop:
       if *D > 1 {
         *D = 1 // because the WM eats up everything else
       }
-      switch e.C {
+      switch event.C {
       case 1:
         *C = Here
       case 2:
@@ -233,7 +233,7 @@ loop:
       case 5:
         *C = ScrollDown
       default:
-        println ("kbd/x.go C.ButtonPress: button ", e.C ,"/ state ", e.S) // XXX
+        println ("kbd/x.go C.ButtonPress: button ", event.C ,"/ state ", event.S) // XXX
       }
       if *C > 0 {
         break loop
@@ -245,7 +245,7 @@ loop:
       ctrl = false
       alt = false
       altGr = false
-      switch e.C {
+      switch event.C {
       case 1:
         if mouseL {
 //          mouseL = false
@@ -266,7 +266,7 @@ loop:
       case 5:
         *C = ScrollDown
       default:
-        println ("kbd/x.go C.ButtonRelease: button ", e.C ,"/ state ", e.S) // XXX
+        println ("kbd/x.go C.ButtonRelease: button ", event.C ,"/ state ", event.S) // XXX
       }
       if *C > 0 {
         break loop

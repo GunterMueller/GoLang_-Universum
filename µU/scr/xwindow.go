@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220902 - license see µU.go
+// (c) Christian Maurer   v. 230223 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -165,6 +165,7 @@ import (
   "µU/char"
   "µU/env"
   "µU/str"
+  "µU/fontsize"
   "µU/font"
   "µU/col"
   "µU/mode"
@@ -198,7 +199,7 @@ type
           lineWd linewd.Linewidth
              fsp *C.XFontStruct
                  font.Font
-                 font.Size
+                 fontsize.Size
    wd1, ht1, bl1 uint // font baseline
      transparent bool
          pointer uint
@@ -605,7 +606,8 @@ func (X *xwindow) WriteGr (s string, x, y int) {
                       C.int(x), C.int(y), n * C.uint(X.wd1), C.uint(X.ht1))
     C.XSetForeground (dpy, X.gc, cu (X.cF))
   }
-  cs := C.CString (s); defer C.free (unsafe.Pointer (cs))
+  cs := C.CString (s)
+  defer C.free (unsafe.Pointer (cs))
   if ! X.buff { C.XDrawString (dpy, C.Drawable(X.win), X.gc, C.int(x), C.int(y) + C.int(X.bl1), cs, C.int(n)) }
   C.XDrawString (dpy, C.Drawable(X.buffer), X.gc, C.int(x), C.int(y) + C.int(X.bl1), cs, C.int(n))
   C.XFlush (dpy)
@@ -639,15 +641,15 @@ func (X *xwindow) SetFont (f font.Font) {
  X.Font = f
 }
 
-func (X *xwindow) ActFontsize() font.Size {
+func (X *xwindow) ActFontsize() fontsize.Size {
   return X.Size
 }
 
-func (X *xwindow) SetFontsize (s font.Size) {
+func (X *xwindow) SetFontsize (s fontsize.Size) {
   X.Size = s
   name := "-xos4-terminus-bold"
   h := int(font.Ht (s))
-  if s < font.Normal {
+  if s < fontsize.Normal {
     name = "-misc-fixed-medium"
   }
   name += "-r-*-*-" + strconv.Itoa(h) + "-*-*-*-*-*-*-*"
@@ -687,10 +689,16 @@ func (X *xwindow) SetLinewidth (w linewd.Linewidth) {
   X.lineWd = w
   cw := C.uint(0)
   switch w {
+  case linewd.Thin:
+    cw = C.uint(1)
   case linewd.Thick:
     cw = C.uint(2)
   case linewd.Thicker:
     cw = C.uint(3)
+  case linewd.VeryThick:
+    cw = C.uint(4)
+  case linewd.Fat:
+    cw = C.uint(5)
   }
   C.XSetLineAttributes (dpy, X.gc, cw, C.LineSolid, C.CapRound, C.JoinRound)
 }
@@ -1368,19 +1376,23 @@ func (X *xwindow) Screenshot (x, y int, w, h uint) obj.Stream {
 const (
   um = math.Pi / 180
   epsilon = 1e-6
-)
-const (
-  right = 0; front = 1; top = 2
-  Esc = 9; Enter = 36; Back = 22; Tab = 23
-  Left = 113; Right = 114; Up = 111; Down = 116; PgUp = 112; PgDown = 117
-  Pos1 = 110; End = 115; Ins = 118; Del = 119
-  F1 = 67; F2 = 68; F3 = 69; F4 = 70; F9 = 75; F10 = 76; F11 = 96; F12 = 96
+  Esc = 9; Enter = 36; Back = 22
+  Left = 113; Right = 114; Up = 111; Down = 116
+  F1 = 67; F9 = 75; F10 = 76; F11 = 95; F12 = 96
   Shift = 1; Strg = 4; Alt = 8; AltGr = 128
 )
 type
   d = C.GLdouble
+/*/
 var
-  firstWrite = true
+  help = []string{ // TODO
+// 0         1         2         3         4         5         6         7
+// 01234567890123456789012345678901234567890123456789012345678901234567890123456789
+  "                                                                                ",
+  "                                                                                ",
+  "                                                                                ")
+                 }
+/*/
 
 /*/
 func (X *xwindow) fly() {
@@ -1399,36 +1411,27 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
   X.top.Norm()
   gl.Enable (gl.Depthtest)
   gl.ShadeModel (gl.Flat)
-//  gl.ShowLight (true)
+//  gl.ShowLight (true) // XXX
   spc.Set (ox, oy, oz, fx, fy, fz, tx, ty, tz)
-//  dfe := X.origin.Distance (X.focus)
-//  delta := dfe / 500.
-//  const nSteps = 3
-//  Phi, Delta := [nSteps]float64 { 1, 9, 90 }, [nSteps]float64 { 1, 10, 100 }
-  phi, delta0 := 3., 0.1
-//  step := 1
+  phi, delta := 1.0, 0.1
   var xev C.XEvent
   redraw := true
 //  if m == Fly { go X.fly() }
   for {
-//    phi, delta := float64 (Phi[step]), delta0 * Delta[step]
     if redraw {
       gl.Clear()
-      ex, ey, ez, fx, fy, fz, nx, ny, nz := spc.Get()
+      ex, ey, ez := spc.GetOrigin()
+      fx, fy, fz := spc.GetFocus()
+      nx, ny, nz := spc.GetTop()
       if math.Abs(fx) < epsilon { fx = 0 }; if math.Abs(fy) < epsilon { fy = 0 }
       gl.MatrixMode (gl.Projection)
       gl.LoadIdentity()
-//      gl.Viewport (0, 0, X.wd, X.ht)
+      gl.Viewport (0, 0, X.wd, X.ht)
       glu.Perspective (60, X.proportion, 0.1, 10000.)
       C.gluLookAt (d(ex), d(ey), d(ez), d(fx), d(fy), d(fz), d(nx), d(ny), d(nz))
       draw()
-//      e := gl.Error(); if e != "" { ker.Panic ("openGL error: " + e) }
       C.glXSwapBuffers (dpy, C.GLXDrawable(X.win))
       C.glFinish()
-//      gl.MatrixMode (gl.Modelview) // obviously superfluous
-//      fmt.Println ("origin   ", ex, ey, ez)
-//      fmt.Println ("fogus   ", fx, fy, fz)
-//      fmt.Println ("normal   ", nx, ny, nz)
     }
     redraw = true
     C.XNextEvent (dpy, &xev)
@@ -1436,127 +1439,36 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
     switch et {
     case C.KeyPress:
       c, t := C.kCode (&xev), C.kState (&xev)
+      depth := uint(0)
+      switch t {
+      case 0:
+        depth = 0
+      case Shift:
+        depth = 1
+      case Strg, Shift + Strg:
+        depth = 1
+      case Alt, AltGr:
+        depth = 2
+      case Shift + Alt, Strg + Alt, Shift + Strg + Alt,
+           Shift + AltGr, Strg + AltGr, Shift + Strg + AltGr:
+        depth = 3
+      }
       switch c {
       case Esc:
         return
-      case Left:
-        switch m {
-        case Look:
-          switch t {
-          case 0:
-            spc.TurnAroundFocus (top, phi) // turn
-          case Shift:
-            spc.Move (right, delta0) // move
-          case Strg:
-            spc.Turn (front, phi) // roll
-          case Alt, AltGr:
-            // TODO
-          }
-        case Walk:
-          switch t {
-          case 0:
-            spc.Turn (top, phi) // turn
-          case Shift:
-            spc.Move (right, -delta0) // move
-          case Strg:
-            spc.Turn (front, phi) // roll
-          }
-        case Fly:
-          if t == 0 {
-            spc.Turn (top, phi) // turn
-          } else {
-            spc.Turn (front, phi) // roll
-          }
-        }
-      case Right:
-        switch m {
-        case Look:
-          switch t {
-          case 0:
-            spc.TurnAroundFocus (top, -phi) // turn
-          case Shift:
-            spc.Move (right, -delta0) // move
-          case Strg:
-            spc.Turn (front, -phi) // roll
-          case Alt, AltGr:
-            // TODO
-          }
-        case Walk:
-          switch t {
-          case 0:
-            spc.Turn (top, -phi) // turn
-          case Shift:
-            spc.Move (right, delta0) // move
-          case Strg:
-            spc.Turn (front, -phi) // roll
-          }
-        case Fly:
-          if t == 0 {
-            spc.Turn (top, -phi) // turn
-          } else {
-            spc.Turn (front, -phi) // roll
-          }
-        }
-      case Up:
-        switch m {
-        case Look:
-          switch t {
-          case 0:
-            spc.TurnAroundFocus (right, phi) // tilt
-          case Shift:
-            spc.Move (top, delta0) // move
-          case Strg:
-
-          case Alt, AltGr:
-
-          }
-        case Walk:
-          switch t {
-          case 0:
-            spc.Turn (right, phi) // tilt
-          case Shift:
-            spc.Move (top, delta0) // move
-          }
-        case Fly:
-          spc.Turn (right, phi) // tilt
-        }
-      case Down:
-        switch m {
-        case Look:
-        switch t {
-          case 0:
-            spc.TurnAroundFocus (right, -phi) // tilt
-          case Shift:
-            spc.Move (top, -delta0) // move
-          case Strg:
-
-          case Alt, AltGr:
-
-          }
-        case Walk:
-          switch t {
-          case 0:
-            spc.Turn (right, -phi) // tilt
-          case Shift:
-            spc.Move (top, -delta0) // move
-          }
-        case Fly:
-          spc.Turn (right, -phi) // tilt
-        }
       case Enter:
         switch m {
         case Look:
-          if t == 0 {
-            spc.Move (front, delta0) // move ahead
+          if depth == 0 {
+            spc.MoveFront (delta)
           } else {
-            spc.Move (front, -delta0) // move back
+            spc.MoveFront (-delta)
           }
         case Walk:
-          if t == 0 {
-            spc.Move (front, delta0) // move ahead
+          if depth == 0 {
+            spc.MoveFront (delta)
           } else {
-            spc.Move (front, -delta0) // move back
-            // spc.Move (front, delta0) // move TODO translate focus ?
+            spc.MoveFront (-delta)
           }
         case Fly:
           // TODO increase speed
@@ -1564,66 +1476,130 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
       case Back:
         switch m {
         case Look:
-          spc.Move (front, -delta0) // move
-        case Walk:
-          if t == 0 {
-            spc.Move (front, -delta0) // move
+          if depth == 0 {
+            spc.Turn (180)
           } else {
-            spc.Move (front, -delta0) // move TODO translate focus ?
+            d := X.origin.Distance (X.focus)
+            spc.MoveFront (2 * d)
+            spc.Turn (180)
+          }
+        case Walk:
+          if depth == 0 {
+            spc.Turn (180)
+          } else {
+            spc.MoveFront (delta)
           }
         case Fly:
           // TODO decrease speed
         }
-      case Pos1:
-        spc.Turn (front, phi)
-      case End:
-        spc.Turn (front, -phi)
-/*/
-      case F1: // quicker
-        if step + 1 < nSteps {
-          step++
-        }
-      case F2: // slow down
-        if step > 0 {
-          step --
-        }
-      case F3:
-        if m == Walk {
-          if t == 0 {
-            spc.Invert() // turn 180°
-          } else { // TODO
-            dfe = X.origin.Distance (X.focus)
-            spc.Move (front, 2 * dfe)
-            spc.Invert()
+      case Left:
+        switch m {
+        case Look:
+          switch depth {
+          case 0:
+            spc.Turn (-phi)
+          case 1:
+            spc.MoveRight (delta)
+          case 2:
+            spc.TurnAroundFocusT (phi)
+          case 3:
+            spc.Roll (phi)
+          }
+        case Walk:
+          switch depth {
+          case 0:
+            spc.Turn (phi)
+          case 1:
+            spc.MoveRight (-phi)
+          case 2:
+            spc.Roll (phi)
+          }
+        case Fly:
+          if depth == 0 {
+            spc.Turn (phi)
+          } else {
+            spc.Roll (phi)
           }
         }
-      case F4:
-        dfe = X.origin.Distance (X.focus)
-        spc.Move (front, dfe)
-        if t == 0 {
-          spc.Move (right, dfe)
-          spc.Turn (top, 90.)
-        } else {
-          spc.Move (right, -dfe)
-          spc.Turn (top, -90.)
+      case Right:
+        switch m {
+        case Look:
+          switch depth {
+          case 0:
+            spc.Turn (phi)
+          case 1:
+            spc.MoveRight (-delta)
+          case 2:
+            spc.TurnAroundFocusT (-phi)
+          case 3:
+            spc.Roll (-phi)
+          }
+        case Walk:
+          switch depth {
+          case 0:
+            spc.Turn (-phi)
+          case 1:
+            spc.MoveRight (phi)
+          case 2:
+            spc.Roll (-phi)
+          }
+        case Fly:
+          if depth == 0 {
+            spc.Turn (-phi)
+          } else {
+            spc.Roll (-phi)
+          }
         }
-      case Del: // TODO
-        dfe = X.origin.Distance (X.focus)
-        spc.Move (top, dfe)
-        spc.Move (front, dfe)
-        spc.Turn (right, -90) // x -> rechts, y -> oben
-        if t != 0 { // y -> rechts, x -> unten
-          spc.Turn (front, -90)
+      case Up:
+        switch m {
+        case Look:
+          switch depth {
+          case 0:
+            spc.Tilt (phi)
+          case 1:
+            spc.MoveTop (delta)
+          case 2:
+            spc.TurnAroundFocusR (phi)
+          case 3:
+            spc.Tilt (phi)
+          }
+        case Walk:
+          switch depth {
+          case 0:
+            spc.Tilt (phi)
+          case 1:
+            spc.MoveTop (phi)
+          }
+        case Fly:
+          spc.Tilt (phi)
         }
-      case F9:
-        spc.SetLight (0)
-      case F10:
-        spc.SetLight (1)
-      case F11:
-        spc.SetLight (2)
-      case F12:
-        spc.SetLight (3)
-/*/
+      case Down:
+        switch m {
+        case Look:
+        switch depth {
+          case 0:
+            spc.Tilt (-phi)
+          case 1:
+            spc.MoveTop (-phi / 10)
+          case 2:
+            spc.TurnAroundFocusR (-phi)
+          case 3:
+            spc.Tilt (-phi)
+          }
+        case Walk:
+          switch depth {
+          case 0:
+            spc.Tilt (-phi)
+          case 1:
+            spc.MoveTop (-phi)
+          }
+        case Fly:
+          spc.Tilt (-phi)
+        }
+      case F1:
+        // TODO help
+//      case F9:
+//        spc.SetLight (0)
       default:
         redraw = false
       }
@@ -1638,9 +1614,6 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
 func NewW (x, y uint, m mode.Mode) Screen {
   return NewWHW (x, y, mode.Wd (m), mode.Ht (m))
 }
-
-//var // XXX
-//  swa C.XSetWindowAttributes
 
 func NewWHW (x, y, w, h uint) Screen {
   initX()
@@ -1751,9 +1724,9 @@ func NewWHW (x, y, w, h uint) Screen {
   X.SetLinewidth (linewd.Thin)
   mr, _ := MaxResW()
   if mr >= mode.Wd (mode.UHD) {
-    X.SetFontsize (font.Huge)
+    X.SetFontsize (fontsize.Huge)
   } else {
-    X.SetFontsize (font.Normal)
+    X.SetFontsize (fontsize.Normal)
   }
   X.Colours (col.StartCols())
   X.ScrColours (col.StartCols())

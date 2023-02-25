@@ -8,7 +8,7 @@ package lockn
 
 type
   LockerN interface {
-
+  
 // Pre: p < number of processes defined by the constructor.
 //      The calling goroutine is not in the critical section.
 // It is the only one in the critical section.

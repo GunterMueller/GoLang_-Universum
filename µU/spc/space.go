@@ -1,6 +1,6 @@
 package spc
 
-// (c) Christian Maurer   v. 201101 - license see µU.go
+// (c) Christian Maurer   v. 230213 - license see µU.go
 
 import (
   "µU/vect"
@@ -8,75 +8,147 @@ import (
   "µU/gl"
 )
 const
-  epsilon = 1.0E-6
+  epsilon = 1e-6
 var (
   origin, focus = vect.New(), vect.New()
-  trihedron [3]vect.Vector // right, front, top = trihedron[0], trihedron[1], trihedron[2]
+  right, front, top = vect.New(), vect.New(), vect.New()
+// Invariant: Right, front and top build an orthogonal right-handed trihedron.
   temp = vect.New()
 )
 
 func init() {
-  trihedron = [3]vect.Vector {vect.New3(1, 0, 0), vect.New3(0, 1, 0), vect.New3(0, 0, 1)}
+  right = vect.New3 (1, 0, 0)
+  front = vect.New3 (0, 1, 0)
+  top   = vect.New3 (0, 0, 1)
 }
 
 func set (ox, oy, oz, fx, fy, fz, tx, ty, tz float64) {
   origin.Set3 (ox, oy, oz)
   focus.Set3 (fx, fy, fz)
-  trihedron[2].Set3 (tx, ty, tz)
-  trihedron[1].Copy (focus)
-  trihedron[1].Sub (origin)
-  trihedron[0].Ext (trihedron[1], trihedron[2])
-  for i := 0; i < 3; i++ { trihedron[i].Norm() }
+  top.Set3 (tx, ty, tz)
+  front.Copy (focus); front.Sub (origin)
+  right.Ext (front, top)
+  right.Ext (front, top)
+  right.Norm(); front.Norm(); top.Norm()
+/*/
+x, y, z := getFront(); println ("set front =", x, y, z)
+x, y, z  = getTop();   println ("set top   =", x, y, z)
+x, y, z  = getRight(); println ("set right =", x, y, z); println()
+/*/
 }
 
-func get() (float64, float64, float64, float64, float64, float64, float64, float64, float64) {
-  ox, oy, oz := origin.Coord3()
-  fx, fy, fz := focus.Coord3()
-  tx, ty, tz := trihedron[2].Coord3()
-  return ox, oy, oz, fx, fy, fz, tx, ty, tz
-}
-
-func get3() (float64, float64, float64) {
+func getOrigin() (float64, float64, float64) {
   return origin.Coord3()
 }
 
+func getFocus() (float64, float64, float64) {
+  return focus.Coord3()
+}
+
+func getRight() (float64, float64, float64) {
+  return right.Coord3()
+}
+
+func getFront() (float64, float64, float64) {
+  return front.Coord3()
+}
+
+func getTop() (float64, float64, float64) {
+  return top.Coord3()
+}
+
 func adjustFocus() {
-  delta := origin.Distance (focus)
-  focus.Scale (delta, trihedron[1])
-  focus.Add (origin)
+  d := origin.Distance (focus)
+  focus.Scale (d, front)
+  focus.Add (origin) // focus = origin + | origin - focus | * front
 }
 
-func move (i uint, d float64) {
-  temp.Scale (d, trihedron[i])
-  origin.Add (temp)
+func moveR (d float64) {
+  temp.Scale (d, right)
+  origin.Add (temp) // origin += d * right
   adjustFocus()
 }
 
-func move1 (i uint, d float64) {
-  temp.Scale (d, trihedron[i])
-  origin.Add (temp)
-  focus.Add (temp)
-}
-
-func rotate (i uint, alpha float64) {
-  n, p := (i + 1) % 3, (i + 2) % 3
-  trihedron[n].Rot (trihedron[i], alpha)
-  trihedron[n].Norm()
-  trihedron[p].Ext (trihedron[i], trihedron[n])
-  trihedron[p].Norm()
-}
-
-func turn (i uint, alpha float64) {
-  rotate (i, alpha)
+func moveF (d float64) {
+  temp.Scale (d, front)
+  origin.Add (temp) // origin += d * front
   adjustFocus()
 }
 
-func turnAroundFocus (i uint, alpha float64) {
-  delta := origin.Distance (focus)
-  if delta < epsilon { return }
-  rotate (i, -alpha)
-  temp.Scale (delta, trihedron[1])
-  origin.Diff (focus, temp)
+func moveT (d float64) {
+  temp.Scale (d, top)
+  origin.Add (temp) // origin += d * top
+  adjustFocus()
+}
+
+func move1R (d float64) {
+  temp.Scale (d, right)
+  origin.Add (temp) // origin += d * right
+  focus.Add (temp) // focus += d * right
+}
+
+func move1F (d float64) {
+  temp.Scale (d, front)
+  origin.Add (temp) // origin += d * front
+  focus.Add (temp) // focus += d * front 
+}
+
+func move1T (d float64) {
+  temp.Scale (d, top)
+  origin.Add (temp) // origin += d * top
+  focus.Add (temp) // focus += d * top
+}
+
+func rotR (alpha float64) {
+  front.Rot (right, alpha)
+  front.Norm()
+  top.Ext (right, front)
+  top.Norm()
+}
+
+func rotF (alpha float64) {
+  top.Rot (front, alpha)
+  top.Norm()
+  right.Ext (front, top)
+  right.Norm()
+}
+
+func rotT (alpha float64) {
+  right.Rot (top, alpha)
+  right.Norm()
+  front.Ext (top, right)
+  front.Norm()
+}
+
+func tilt (alpha float64) {
+  rotR (alpha)
+  adjustFocus()
+}
+
+func roll (alpha float64) {
+  rotF (alpha)
+  adjustFocus()
+}
+
+func turn (alpha float64) {
+  rotT (alpha)
+  adjustFocus()
+}
+
+func turnAroundFocusR (alpha float64) {
+  d := origin.Distance (focus)
+  if d < epsilon { return }
+  rotR (-alpha)
+  temp.Scale (d, front)
+  origin.Diff (focus, temp) // origin = focus - | focus - origin | * front
+}
+
+func turnAroundFocusT (alpha float64) {
+  d := origin.Distance (focus)
+  if d < epsilon { return }
+  rotT (-alpha)
+  temp.Scale (d, front)
+  origin.Diff (focus, temp) // origin = focus - | focus - origin | * front
 }
 
 func empty() bool {
@@ -86,13 +158,13 @@ func empty() bool {
 func push() {
   ox, oy, oz := origin.Coord3()
   fx, fy, fz := focus.Coord3()
-  tx, ty, tz := trihedron[2].Coord3()
+  tx, ty, tz := top.Coord3()
   stack.Push (ox, oy, oz, fx, fy, fz, tx, ty, tz)
 }
 
 func pop() {
-  r := stack.Pop()
-  set (r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8])
+  x := stack.Pop()
+  set (x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8])
 }
 
 func empty1() bool {
@@ -102,13 +174,13 @@ func empty1() bool {
 func push1() {
   ox, oy, oz := origin.Coord3()
   fx, fy, fz := focus.Coord3()
-  tx, ty, tz := trihedron[2].Coord3()
+  tx, ty, tz := top.Coord3()
   stack.Push1 (ox, oy, oz, fx, fy, fz, tx, ty, tz)
 }
 
 func pop1() {
-  r := stack.Pop1()
-  set (r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8])
+  x := stack.Pop1()
+  set (x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8])
 }
 
 func setLight (n uint) {

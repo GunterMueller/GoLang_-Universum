@@ -1,22 +1,21 @@
 package lock
 
-// (c) Christian Maurer   v. 190323 - license see µU.go
+// (c) Christian Maurer   v. 230207 - license see µU.go
+
+import
+  . "sync"
 
 // Secures the access to a critical section.
 // The functions Lock and Unlock cannot be interrupted
 // by calls of Lock or Unlock of other goroutines.
 
-type
-  Locker interface {
-
 // Pre: The calling goroutine is not in the critical section.
 // It is the only one in the critical section.
-  Lock()
+// Lock()
 
 // Pre: The calling goroutine is in the critical section.
 // It is not in the critical section.
-  Unlock()
-}
+// Unlock()
 
 // Return new unlocked locks
 // with an implementation revealed by their names.

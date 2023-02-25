@@ -3,6 +3,7 @@ package nchan
 // (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
+//  "reflect"
   "errors"
   "net"
   "µU/ker"
@@ -19,6 +20,7 @@ const (
 type
   netChannel struct {
                     any "type of objects in the channel"
+               port uint16
                     uint "byte capacity of the channel"
             in, out chan any
                     FuncSpectrum
@@ -45,6 +47,7 @@ func new_(a any, me, i uint, n string, p uint16) NetChannel {
   } else {
     x.any, x.uint = Clone (a), Codelen (a)
   }
+  x.port = p
   x.in, x.out = make(chan any), make(chan any)
   x.Stream = make(Stream, x.uint)
   x.oneOne = true
@@ -64,6 +67,7 @@ func new_(a any, me, i uint, n string, p uint16) NetChannel {
       time.Msleep (500)
     }
   }
+// println ("nchan new_: a has type", reflect.TypeOf(a).String(), " me ==", me, " i ==", i, " port ==", x.port)
   return x
 }
 
@@ -76,6 +80,9 @@ func (x *netChannel) Send (a any) error {
     bs = append (Encode(Codelen(a)), bs...)
     _, x.error = x.Conn.Write (bs)
   } else {
+// print ("Send on port ", x.port, ", ")
+// ta, ts := reflect.TypeOf(x.any).String(), reflect.TypeOf(a).String()
+// println ("pattern has type", ta, "and object to send has type", ts)
     CheckTypeEq (x.any, a)
     _, x.error = x.Conn.Write (Encode(a))
   }

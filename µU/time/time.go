@@ -1,6 +1,6 @@
 package time
 
-// (c) Christian Maurer   v. 220713 - license see µU.go
+// (c) Christian Maurer   v. 230110 - license see µU.go
 
 import
   "time"
@@ -49,17 +49,17 @@ func secnsec() uint {
   return uint(t.Second()) * 1e9 + uint(t.Nanosecond())
 }
 
-func uTime() (uint, uint, uint) {
+func updateTime() (uint, uint, uint) {
   h, m, s := time.Now().Clock()
   return uint(h), uint(m), uint(s)
 }
 
-func uDate() (uint, uint, uint) {
+func updateDate() (uint, uint, uint) {
   t := time.Now()
   return uint(t.Day()), uint(t.Month()), uint(t.Year())
 }
 
-func sSU() (s, us uint) {
+func secondsSinceUnix() (s, us uint) {
   t := time.Now()
   s, us = uint(t.Unix()), uint(t.UnixNano())
   return

@@ -39,6 +39,7 @@ func newn (a any, h string, p uint16, s bool) NetChannel {
   x := new(netChannel)
   x.any = Clone(a)
   x.uint = Codelen(a)
+  x.port = p
   if a == nil {
     x.uint = maxWidth
   }
@@ -57,7 +58,7 @@ func newn (a any, h string, p uint16, s bool) NetChannel {
         }
       }
     }()
-  } else { // client
+  } else { // x is client
     ht := host.NewS (h)
     for {
       if x.Conn, x.error = net.Dial (network, naddr.New2 (ht, p).String()); x.error == nil {

@@ -1,30 +1,42 @@
 package smok
 
-// (c) Christian Maurer   v. 171102 - license see µU.go
+// (c) Christian Maurer   v. 230105 - license see µU.go
 
 type
   Smokers interface {
 
-// Vor.: u < 3.
-// Die aufrufende Wirtin hat die zu u komplementären Utensilien
-// verfügbar gemacht. Sie war ggf. solange blockiert, bis keiner raucht.
+// Pre: u < 3.
+// The calling agent has put the utensils complementary to u on the table
+// (she was blocked, until no smoker smokes).
   Agent (u uint)
 
-// Vor.: u < 3.
-// Die zu u komplementären Utensilien sind nicht mehr verfügbar,
-// sondern im exklusiven Besitz des aufrufenden Rauchers, der jetzt raucht.
-// Er war ggf. solange blockiert, bis das möglich war.
+// Pre: u < 3.
+// The utensils complementary to u do not lie on the table any more,
+// but are in exclusive posssession of the calling smoker, who now is smoking
+// (he was blocked, until that was possible).
   SmokerIn (u uint)
 
-// Der aufrufende Raucher raucht nicht mehr.
+// The calling smoker does not smoke any more.
   SmokerOut()
 }
+
 func WriteAgent (u uint) { writeAgent(u) }
 func WriteSmoker (u uint) { writeSmoker(u) }
 
+// naive implementation with danger of deadlock:
 func NewNaive() Smokers { return new_() }
+
+// implementation with helper processes (due to Parnas):
 func NewParnas() Smokers { return newP() }
+
+// implementation with critical sections:
 func NewCriticalSection() Smokers { return newCS() }
+
+// implementation with a universal monitor:
 func NewMonitor() Smokers { return newM() }
+
+// implementation with a conditioned monitor:
 func NewConditionedMonitor() Smokers { return newCM() }
+
+// implementation with message passing:
 func NewChannel() Smokers { return newCh() }

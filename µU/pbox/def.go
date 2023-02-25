@@ -1,9 +1,11 @@
 package pbox
 
-// (c) Christian Maurer   v. 200902 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
-import
+import (
+  "µU/fontsize"
   "µU/font"
+)
 type
   Printbox interface {
 
@@ -11,13 +13,13 @@ type
   SetFont (f font.Font)
 
 // TODO Spec
-  SetFontsize (s font.Size)
+  SetFontsize (s fontsize.Size)
 
 // TODO Spec
   Font() font.Font
 
 // TODO Spec
-  Fontsize() font.Size
+  Fontsize() fontsize.Size
 
 // TODO Spec
   Print (s string, l, c uint)

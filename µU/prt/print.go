@@ -1,11 +1,12 @@
 package prt
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 import (
   "os/exec"
   "µU/time"
   "µU/str"
+  . "µU/fontsize"
   . "µU/font"
   "µU/N"
   "µU/pseq"

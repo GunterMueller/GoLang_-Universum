@@ -1,9 +1,11 @@
 package lock
 
-// (c) Christian Maurer   v. 161216 - license see µU.go
+// (c) Christian Maurer   v. 230207 - license see µU.go
 
 // >>> Implementation with message passing
 
+import
+  . "sync"
 type
   channel struct {
                c chan bool

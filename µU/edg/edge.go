@@ -32,7 +32,8 @@ func new_(d bool, a any) Edge {
   x.any = Clone(a)
   x.wd = N.Wd(Val(a))
   x.label = true
-  x.f, x.b = col.StartCols()
+//  x.f, x.b = col.StartCols()
+  x.f, x.b = col.Black(), col.White()
   x.fa, x.ba = col.StartColsA()
   return x
 }

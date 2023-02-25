@@ -4,9 +4,8 @@ package lr
 
 // >>> 2nd left/right problem
 
-import (
+import
   "µU/mon"
-)
 type
   monitor2 struct {
                   mon.Monitor

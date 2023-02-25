@@ -1,6 +1,6 @@
 package time
 
-// (c) Christian Maurer   v. 220713 - license see µU.go
+// (c) Christian Maurer   v. 230110 - license see µU.go
 
 func Sleep (s uint) { sleep(s) }
 func Msleep (s uint) { msleep(s) }
@@ -13,7 +13,7 @@ func Secmsec() uint { return secmsec() }
 func Secµsec() uint { return secµsec() }
 func Secnsec() uint { return secnsec() }
 
-func UpdateTime() (uint, uint, uint) { return uTime() }
-func UpdateDate() (uint, uint, uint) { return uDate() }
+func UpdateTime() (uint, uint, uint) { return updateTime() }
+func UpdateDate() (uint, uint, uint) { return updateDate() }
 
-func SecondsSinceUnix() (s, us uint) { return sSU() }
+func SecondsSinceUnix() (s, us uint) { return secondsSinceUnix() }

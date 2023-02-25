@@ -2,7 +2,7 @@ package lr
 
 // (c) Christian Maurer   v. 171019 - license see µU.go
 
-// >>> left/right problem
+// >>> bounded left/right problem
 
 import
   "µU/cr"

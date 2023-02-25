@@ -1,10 +1,11 @@
 package text
 
-// (c) Christian Maurer   v. 220831 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
+  "µU/fontsize"
   "µU/font"
 )
 type
@@ -17,8 +18,8 @@ type
   Printer
 
   Transparence (t bool)
+  SetFontsize (s fontsize.Size)
   SetFont (f font.Font) // only to print
-  SetFontsize (s font.Size)
 
 // Specs see str/def.go.
   Equiv (Y Text) bool

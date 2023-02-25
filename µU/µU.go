@@ -1,6 +1,6 @@
 package main
 
-/* (c) 1986-2022  Christian Maurer       maurer-berlin.eu proprietary - all rights reserved
+/* (c) 1986-2023  Christian Maurer       maurer-berlin.eu proprietary - all rights reserved
 
   Das Mikrouniversum µU ist nur zum Einsatz in der Lehre konstruiert  und hat deshalb einen
   rein akademischen Charakter. Es liefert u. a. eine Reihe von Beispielen für mein Lehrbuch
@@ -33,14 +33,14 @@ import (
   "µU/br"; "µU/bytes"; "µU/car"; "µU/char"; "µU/cdrom"; "µU/col"; "µU/collop"; "µU/cntry"
   "µU/comp"; "µU/day"; "µU/date"; "µU/dgra"; "µU/dlock"; "µU/enum"; "µU/env"; "µU/errh"
   "µU/euro"; "µU/fig2"; "µU/fig3"; "µU/files"; "µU/gram"; "µU/host"; "µU/ieee"; "µU/kbd"
-  "µU/li"; "µU/lock2"; "µU/lr"; "µU/macc"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"
-  "µU/masks"; "µU/mol"; "µU/mstk"; "µU/pbar"; "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"
+  "µU/li"; "µU/lock2"; "µU/lr"; "µU/macc"; "µU/masks"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"
+  "µU/menue"; "µU/mol"; "µU/mstk"; "µU/pbar"; "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"
   "µU/pstk"; "µU/Q"; "µU/qmat"; "µU/R"; "µU/reg"; "µU/rpc"; "µU/rw"; "µU/scale"; "µU/schan"
   "µU/scr"; "µU/smok"; "µU/stru"; "µU/term"; "µU/texts"; "µU/time"; "µU/vnset"; "µU/Z"
 )
 const (
-  yy = 2022
-  mm =   12
+  yy = 2023
+  mm =    2
   dd =   23
 )
 var (
@@ -163,7 +163,7 @@ func main() { // gets all packages compiled and shows the license
   cl, cf, cb := col.LightWhite(), col.WhiteBlue(), col.DarkBlue()
   circ (ht / 2, cf); circ (wd - ht / 2, cl)
   errh.MuLicense ("µU", v.String(),
-                  "1986-2022  Christian Maurer   https://maurer-berlin.eu/mU", cl, cf, cb)
+                  "1986-2023  Christian Maurer   https://maurer-berlin.eu/mU", cl, cf, cb)
   scr.ScrColourB (cb)
   done := make(chan int)
   go drive (cl, cf, cb, done)

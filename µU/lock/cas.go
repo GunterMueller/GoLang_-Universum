@@ -1,8 +1,9 @@
 package lock
 
-// (c) Christian Maurer   v. 190811 - license see µU.go
+// (c) Christian Maurer   v. 230207 - license see µU.go
 
 import (
+  . "sync"
   "µU/obj"
   . "µU/atomic"
 )

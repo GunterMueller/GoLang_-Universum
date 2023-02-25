@@ -4,9 +4,8 @@ package lr
 
 // >>> bounded left/right problem
 
-import (
+import
   "µU/fmon"
-)
 type
   farMonitorBounded struct {
                            fmon.FarMonitor

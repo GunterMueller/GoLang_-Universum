@@ -1,22 +1,16 @@
 package li
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
-//
-// >>> lots of things TODO, particularly new packages lnat and lreal (and lrat (?)
+// (c) Christian Maurer   v. 230217 - license see µU.go
 
 import (
-//  "math"
   . "math/big"
-//  "strconv"
   . "µU/obj"
-
   "µU/col"
   "µU/scr"
   "µU/box"
   "µU/errh"
   "µU/font"
   "µU/prt"
-//  "µU/pbox"
 )
 type (
   longInteger struct {
@@ -31,7 +25,6 @@ var (
   max32, max = New(1 << 32 - 1).(*longInteger), New(1 << 63 - 1).(*longInteger)
   tmp, tmp1 = New(0).(*longInteger), New(0).(*longInteger)
   bx = box.New()
-//  px = pbox.New()
 )
 
 func init() {
@@ -44,15 +37,6 @@ func new_(n int) LongInteger {
   x.cF, x.cB = col.StartCols()
   return x
 }
-
-/*
-func newNat (n uint) LongInteger {
-  x := new(longInteger)
-  x.n = NewInt(int64(n))
-  x.cF, x.cB = col.StartCols()
-  return x
-}
-*/
 
 func (x *longInteger) imp (Y any) *Int {
   x, ok := Y.(*longInteger)
@@ -108,20 +92,12 @@ func (x *longInteger) Encode() Stream {
   return x.n.Bytes()
 }
 
-func (x *longInteger) Decode (b Stream) {
-  x.n.SetBytes (b)
+func (x *longInteger) Decode (s Stream) {
+  x.n.SetBytes (s)
 }
 
 func (x *longInteger) SetVal (n uint) {
   x.n.SetInt64(int64(n))
-}
-
-func (x *longInteger) SetInt (n int) {
-  x.n.SetInt64 (int64(n))
-}
-
-func (x *longInteger) SetInt64 (n int64) {
-  x.n.SetInt64 (int64(n))
 }
 
 func (x *longInteger) Cols() (col.Colour, col.Colour) {
@@ -192,62 +168,35 @@ func (x *longInteger) Print (l, c uint) {
   prt.GoPrint()
 }
 
-func (x *longInteger) Len() uint {
-  return uint(len (x.String()))
-}
-
 func (x *longInteger) Odd() bool {
   return x.n.Bit (0) == 1
 }
 
-func (x *longInteger) Val() int {
-  n := x.n.Int64()
-  if Codelen(int(0)) == 4 {
-    if n < 1<<32 - 1 && n > -1<<32 {
-      return int(n)
-    }
-  } else { // 8
-    if n < int64(1<<63 - 1) && n > int64(-1<<63) { // XXX
-      return int(n)
-    }
-  }
-  return 0
+/*/
+// Abs sets z to |x| (the absolute value of x) and returns z.
+func (z *Int) Abs(x *Int) *Int {
+	z.Set(x)
+	z.neg = false
+	return z
+}
+/*/
+
+func (x *longInteger) Abs0() {
+  x.n.Abs (x.n)
 }
 
-func (x *longInteger) ValInt() int {
+func (x *longInteger) Abs() LongInteger {
+  x.n.Abs (x.n)
+  return x
+}
+
+func (x *longInteger) Val() int {
   n := x.n.Int64()
-  if n < 1<<32 - 1 {
+  if n <= int64(1<<63 - 1) && n >= int64(-1<<63) {
     return int(n)
   }
   return 0
 }
-
-/* deprecated, has to be moved into a package lreal !
-
-func newReal (r float64) LongInteger {
-  x := New(0)
-  x.SetReal(r)
-  return x
-}
- 
-func (x *longInteger) ValReal() float64 {
-  r, err := strconv.ParseFloat (x.n.String(), 64)
-  if err != nil { return math.NaN() }
-  if x.n.Sign() < 0 { r = -r }
-  return r
-}
-
-func (x *longInteger) SetReal (r float64) {
-  i, _ := math.Modf (r + 0.5)
-  s := strconv.FormatFloat (i, 'f', -1, 64)
-  if p, ok := str.Pos (s, '.'); ok {
-    s = str.Part (s, 0, p)
-  }
-  if _, ok := x.n.SetString (s, 10); ! ok {
-    x.n.SetInt64 (0)
-  }
-}
-*/
 
 func (x *longInteger) Defined (s string) bool {
   _, ok := x.n.SetString (s, 10)
@@ -270,6 +219,9 @@ func (x *longInteger) SumDigits() uint {
   }
   return a
 }
+// func sumDigits (x LongInteger) uint {
+//   return uint(len(x.(*longInteger).n.String()))
+// }
 
 func (x *longInteger) Zero() bool {
   return x.n.Sign() == 0
@@ -463,26 +415,4 @@ func (x *longInteger) Stirl2 (n, k uint) {
     ii.Inc()
   }
   x.n.Div (x.n, tmp.n.MulRange (1, int64(k)))
-}
-
-func (x *longInteger) Bitlen() uint {
-  return uint(x.n.BitLen())
-}
-
-func (x *longInteger) Bit (i int) uint {
-  return x.n.Bit (i)
-}
-
-func (x *longInteger) SetBit (i int, b bool) {
-  u := uint(0)
-  if b { u++ }
-  x.n.SetBit (x.n, i, u)
-}
-
-func string_(x LongInteger) string {
-  return x.(*longInteger).n.String()
-}
-
-func sumDigits (x LongInteger) uint {
-  return uint(len(x.(*longInteger).n.String()))
 }

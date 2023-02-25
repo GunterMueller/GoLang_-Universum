@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/Xlib.h>
@@ -12,6 +12,7 @@ import (
   "µU/mode"
   "µU/scr/shape"
   "µU/linewd"
+  . "µU/fontsize"
   "µU/font"
   "µU/col"
 )
@@ -84,8 +85,8 @@ func Transparence (t bool) { s().Transparence(t) }
 
 func ActFont() font.Font { return s().ActFont() }
 func SetFont (f font.Font) { s().SetFont(f) }
-func ActFontsize() font.Size { return s().ActFontsize() }
-func SetFontsize (f font.Size) { s().SetFontsize(f) }
+func ActFontsize() Size { return s().ActFontsize() }
+func SetFontsize (f Size) { s().SetFontsize(f) }
 
 func ActLinewidth() linewd.Linewidth { return s().ActLinewidth() }
 func SetLinewidth (w linewd.Linewidth) { s().SetLinewidth(w) }

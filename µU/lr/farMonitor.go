@@ -4,9 +4,8 @@ package lr
 
 // >>> 1st left/right problem
 
-import (
+import
   "µU/fmon"
-)
 type
   farMonitor struct {
                     fmon.FarMonitor

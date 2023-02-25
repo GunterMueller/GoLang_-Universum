@@ -1,6 +1,1 @@
-  Polygon
-  Curve // Bezier curve
-  InfLine // given by two different points
-  Rectangle // borders parallel to the screen borders
-  Circle
-  Ellipse // main axes parallel to the screen borders
+  Shift = 1; Strg = 4; Alt = 8; AltGr = 128

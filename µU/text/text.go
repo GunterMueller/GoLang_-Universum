@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 221003 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 import (
   "µU/rand"
@@ -10,6 +10,7 @@ import (
   "µU/str"
   "µU/col"
   "µU/box"
+  "µU/fontsize"
   "µU/font"
   "µU/pbox"
 )
@@ -18,8 +19,8 @@ type
               uint "length of string"
               string
          f, b col.Colour
+              fontsize.Size
               font.Font
-              font.Size
               }
 var (
   bx = box.New()
@@ -33,8 +34,8 @@ func new_(n uint) Text {
   x.uint = n
   x.string = str.New (n)
   x.f, x.b = col.StartCols()
+  x.Size = fontsize.Normal
   x.Font = font.Roman
-  x.Size = font.Normal
   return x
 }
 
@@ -174,7 +175,7 @@ func (x *text) SetFont (f font.Font) {
   x.Font = f
 }
 
-func (x *text) SetFontsize (s font.Size) {
+func (x *text) SetFontsize (s fontsize.Size) {
   x.Size = s
 }
 

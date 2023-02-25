@@ -1,10 +1,11 @@
 package date
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/str"
+  "µU/fontsize"
   "µU/font"
   "µU/prt"
   "µU/col"
@@ -129,8 +130,8 @@ func (x *daytime) SetFont (f font.Font) {
 }
 
 func (x *daytime) printMask (l, c uint) {
+  prt.SetFontsize (fontsize.Normal)
   prt.SetFont (font.Roman)
-  prt.SetFontsize (font.Normal)
   prt.Print1 (separator, l, c + 10) // TODO depends on Format
 }
 

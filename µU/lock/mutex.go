@@ -1,14 +1,14 @@
 package lock
 
-// (c) Christian Maurer   v. 161216 - license see µU.go
+// (c) Christian Maurer   v. 230207 - license see µU.go
 
-// >>> Implementation with sync.Mutex
+// >>> Implementation with Mutex
 
 import
-  "sync"
+  . "sync"
 type
   mutex struct {
-               sync.Mutex
+               Mutex
                }
 
 func newMutex() Locker {

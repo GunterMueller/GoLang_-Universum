@@ -1,12 +1,13 @@
 package sel
 
-// (c) Christian Maurer   v. 220815 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 import (
   "µU/ker"
   "µU/kbd"
   "µU/str"
   "µU/col"
+  "µU/fontsize"
   "µU/font"
   "µU/scr"
   "µU/box"
@@ -172,13 +173,13 @@ func colours (l, c, w uint, cols ...col.Colour) (col.Colour, bool) {
   return cols[i], true
 }
 
-func fontsize (f, b col.Colour) font.Size {
+func size (f, b col.Colour) fontsize.Size {
   n := uint(0)
   scr.MousePointer (true)
   z, s := scr.MousePos()
-  Select1 (font.Name, uint(font.NSizes), font.M, &n, z, s, f, b)
-  if n < uint(font.NSizes) {
-    return font.Size (n)
+  Select1 (font.Name, uint(fontsize.NSizes), font.M, &n, z, s, f, b)
+  if n < uint(fontsize.NSizes) {
+    return fontsize.Size (n)
   }
-  return font.Normal
+  return fontsize.Normal
 }

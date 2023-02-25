@@ -1,6 +1,6 @@
 package R
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 import (
   "math"
@@ -194,6 +194,9 @@ func string_(x float64) string {
   case 3:
     s2 := ""; if s[ps[2]-1] == '-' { s2 = "-" }
     s = s0 + ss[0] + "." + ss[1] + "e" + s2 + ss[2]
+  }
+  if _, ok := str.Pos (s, '.'); ! ok {
+    s += "."
   }
   return s
 }

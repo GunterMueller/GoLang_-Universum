@@ -1,9 +1,9 @@
 package scr
 
-// (c) Christian Maurer   v. 211221 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 import
-  "µU/font"
+  "µU/fontsize"
 var (
   f07[256][ 7]string // ter-d16b
   f10[256][10]string // ter-d18b
@@ -13,19 +13,19 @@ var (
   f32[256][32]string // ter-d32b
 )
 
-func (X *console) pointed (s font.Size, b byte, l, c uint) bool {
+func (X *console) pointed (s fontsize.Size, b byte, l, c uint) bool {
   switch s {
-  case font.Tiny:
+  case fontsize.Tiny:
     return f07[b][l][c] != ' '
-  case font.Small:
+  case fontsize.Small:
     return f10[b][l][c] != ' '
-  case font.Normal:
+  case fontsize.Normal:
     break
-  case font.Big:
+  case fontsize.Big:
     return f24[b][l][c] != ' '
-  case font.Large:
+  case fontsize.Large:
     return f28[b][l][c] != ' '
-  case font.Huge:
+  case fontsize.Huge:
     return f32[b][l][c] != ' '
   }
   return f16[b][l][c] != ' '

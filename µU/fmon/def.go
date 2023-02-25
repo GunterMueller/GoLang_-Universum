@@ -37,18 +37,12 @@ type
 // the needed net channels are opened.
 // The far monitor runs as server, iff s == true; otherwise as client.
 func New (a any, n uint, fs FuncSpectrum, ps PredSpectrum,
-          h string, p uint16, s bool) FarMonitor {
-  return new_(a,n,fs,ps,h,p,s)
-}
+          h string, p uint16, s bool) FarMonitor { return new_(a,n,fs,ps,h,p,s) }
 
 // See above. Additionally, st is executed by the server before it starts serving.
 func New1 (a any, n uint, fs FuncSpectrum, ps PredSpectrum,
-           h string, p uint16, s bool, stmt Stmt) FarMonitor {
-  return new1(a, n, fs, ps, h, p, s, stmt)
-}
+           h string, p uint16, s bool, st Stmt) FarMonitor { return new1(a,n,fs,ps,h,p,s,st) }
 
 // Spec is trade secret.
 func New2 (a, b any, n uint, fs FuncSpectrum, ps PredSpectrum,
-           h string, p uint16, s bool) FarMonitor {
-  return new2(a, b, n, fs, ps, h, p, s)
-}
+           h string, p uint16, s bool) FarMonitor { return new2(a,b,n,fs,ps,h,p,s) }

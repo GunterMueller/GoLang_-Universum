@@ -1,18 +1,18 @@
 package lock
 
-// (c) Christian Maurer   v. 190823 - license see µU.go
+// (c) Christian Maurer   v. 230207 - license see µU.go
 
 // >>> Algorithm of Morris: A starvation-free Solution to the Mutual Exclusion Problem
 //     Inf. Proc. Letters 8 (1979), 76-80
 
 import (
-  "sync"
+  . "sync"
   . "µU/atomic"
 )
 type
   morris struct {
     door0, door,
-          mutex sync.Mutex // to protect n0
+          mutex Mutex // to protect n0
              n0,     // number of processes blocked on door0
               n uint // number of processes blocked on door
                 }

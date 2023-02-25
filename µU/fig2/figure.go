@@ -1,13 +1,13 @@
 package fig2
 
-// (c) Christian Maurer   v. 221110 - license see µU.go
+// (c) Christian Maurer   v. 230112 - license see µU.go
 
 import (
   "math"
   . "µU/obj"
   "µU/str"
   "µU/kbd"
-  "µU/font"
+  "µU/fontsize"
   "µU/col"
   "µU/scr"
   "µU/box"
@@ -45,7 +45,7 @@ var (
                    "Ellipse   ",
                    "Text      ",
                    "Bild      "}
-  fontsize = font.Normal
+  size = fontsize.Normal
 )
 
 func init() {
@@ -208,7 +208,7 @@ func (f *figure2) SetTyp (t typ) {
 
 func (f *figure2) Select() {
   f.Clr()
-  scr.SetFontsize (font.Normal)
+  scr.SetFontsize (fontsize.Normal)
   n := uint(Points)
   y, x := scr.MousePos()
   sel.Select1 (name, Ntypes, lenName, &n, y, x, col.LightWhite(), col.Blue())
@@ -1118,9 +1118,9 @@ func (f *figure2) Change() {
   }
 }
 
-func (f *figure2) SetFont (s font.Size) {
+func (f *figure2) SetFontsize (s fontsize.Size) {
   if f.typ == Text {
-    fontsize = s
+    size = s
   }
 }
 
@@ -1182,7 +1182,7 @@ func (f *figure2) printEllipse (p psp.PostscriptPage) {
 
 func (f *figure2) printText (p psp.PostscriptPage) {
   x, y := p.X (f.x[0]), p.Y (f.y[0])
-  p.SetFontsize (fontsize)
+  p.SetFontsize (size)
   p.Write (f.string, x, y)
 }
 
