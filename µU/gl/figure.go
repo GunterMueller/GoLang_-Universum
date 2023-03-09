@@ -479,23 +479,6 @@ func octahedronC (c []col.Colour, x, y, z, e float64) {
   end()
 }
 
-/*/
-  func frustum (x, y, z, r, h, h1 float64) { TODO
-  if h1 > h { fail() }
-  v, n := vectors(N + 2)
-  v[0] = vect.New3 (x, y, h)
-  n[0] = vect.New3 (0, 0, 1)
-  begin (TriangleFan)
-  for l := 0; l <= N; l++ {
-    v[l+1] = vect.New3 (x + r * cos[l], y + r * sin[l], z)
-    n[l+1] = vect.New3 (cos[l], sin[l], r / (h - z))
-    n[l+1].Norm()
-  }
-  end()
-  circle (x, y, z, -r)
-}
-*/
-
 func circle (x, y, z, r float64) {
 //  circleSegment (x, y, z, r, 0, 360)
   if r == 0 { ker.PrePanic() }
@@ -560,25 +543,6 @@ func sphere (x, y, z, r float64) {
     vertex (x + r0 * cos[i], y + r0 * sin[i], z0)
   }
   end()
-/*
-  n := vectors(N + 2)
-  n[0] = vect.New3 (0, 0, 1)
-  for l := 0; l <= N; l++ {
-    n[1 + l] = vect.New3 (sin[1] * cos[l], sin[1] * sin[l], cos[1])
-  }
-  n = vectors(2 * (N + 1))
-  for i := 1; i <= N / 2 - 2; i++ {
-    for j := 0; j <= N; j++ {
-      n[2 * j] = vect.New3 (sin[i] * c, sin[i] * s, cos[i])
-      n[2 * j + 1].Set3 (sin[i+1] * c, sin[i+1] * s, cos[i+1])
-    }
-  }
-  n = vectors(N + 2)
-  n[0] = vect.New3 (0, 0, -1)
-  for l := N; l >= 0; l -= 1 {
-    n[1 + N-l] = vect.New3 (sin[b] * cos[l], sin[b] * sin[l], cos[b])
-  }
-*/
 }
 
 func cone (x, y, z, r, h float64) {
@@ -684,9 +648,7 @@ func torus (x, y, z, R, r float64) {
       vertex (x + s1 * cos[j+1], y + s1 * sin[j+1], z1)
       vertex (x + s1 * cos[j],   y + s1 * sin[j],   z1)
       vertex (x + s0 * cos[j],   y + s0 * sin[j],   z0)
-//      n[2*j].Set3 (1., 1., 1.)
       vertex (x + s0 * cos[j+1], y + s0 * sin[j+1], z0)
-//      n[2*j+1].Set3 (1, 1, 1)
     }
   }
   end()

@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 220206 - license see µU.go
+// (c) Christian Maurer   v. 230228 - license see µU.go
 //
 // >>> Pre: The preconditions of mouse are met.
 
@@ -74,12 +74,9 @@ type
 //   - Navigate:                3d-mouse used
 
    commands of depth > 0 by combination with metakeys:
-   - depth 1:                 Shift- or Strg-key (or both),
-   - depth 2:                 Alt- or AltGr-key,
-   - depth 3:                 Alt- or AltGr-key + other metakey(s).
-
-   >>> Under X some meta-key/key-combinations are eaten up
-       by the window-manager, e.g. with Esc, Tab and Back. */
+   - depth 1:                 Shift-key,
+   - depth 2:                 Strg-key,
+   - depth 3:                 Alt(Gr)-key */
 
 // The calling process was blocked, until the keyboard buffer was not empty.
 // Returns a tripel (b, c, d) with the following properties:

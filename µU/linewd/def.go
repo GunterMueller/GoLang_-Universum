@@ -1,6 +1,6 @@
 package linewd
 
-// (c) Christian Maurer   v. 230112 - license see µU.go
+// (c) Christian Maurer   v. 230226 - license see µU.go
 
 type
   Linewidth byte; const (
@@ -9,4 +9,6 @@ type
   Thicker
   VeryThick
   Fat
+  Fatter
+  VeryFat
 )

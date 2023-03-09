@@ -88,6 +88,9 @@ func Error() string { return error() }
 // A point is created at (x[0], x[1], x[2]).
 func Point (x ...float64) { point(x...) }
 
+//
+func Linewidth (w float64) { linewidth(w) }
+
 // Pre: len(x) == 6.
 // A line is created from (x[0], x[1], x[2]) to (x[3], x[4], x[5]).
 func Line (x ...float64) { line(x...) }

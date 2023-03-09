@@ -1,11 +1,11 @@
 package spc
 
-// (c) Christian Maurer   v. 230213 - license see µU.go
+// (c) Christian Maurer   v. 230302 - license see µU.go
 
 // The package maintains the following 5 vectors:
 // origin, focus and an orthogonal right-handed trihedron (right, front, top)
 // with len(right) = len(front) = len(top) = 1, s.t. front = focus - origin normed to len 1.
-// Maintains furthermore two stacks of those quintupels.
+// Maintains furthermore a stack of the trihedron-vectors.
 
 // origin = (ox, oy, oz), focus = (fx, fy, fz), top = (tx, ty, tz),
 // front = focus - origin normed to len 1 and right = cross-product front x top.
@@ -37,23 +37,21 @@ func Roll (a float64) { roll(a) }
 func Turn (a float64) { turn(a) }
 // right is rotated around top by angle a, front is adjusted.
 
-// TODO Spec
+// The trihedron is rotated around the vector right by angle a.
 func TurnAroundFocusR (a float64) { turnAroundFocusR(a) }
 
-// TODO Spec
+// The trihedron is rotated around the vector top by angle a.
 func TurnAroundFocusT (a float64) { turnAroundFocusT(a) }
 
-// Returns true, iff the corresponding stack is empty.
+// Returns true, iff the stack is empty.
 func Empty() bool { return empty() }
-func Empty1() bool { return empty1() }
 
-// The quintuple is pushed onto the corresponding stack.
+// origin, focus and top are pushed onto the stack.
 func Push() { push() }
-func Push1() { push1() }
 
-// The quintuple is popped from the corresponding stack.
+// origin, focus and top are popped from the stack
+// and front and right are computed to maintain the invariants.
 func Pop() { pop() }
-func Pop1() { pop1() }
 
 // TODO Spec
 func SetLight (n uint) { setLight(n) }

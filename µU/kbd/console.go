@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 220816 - license see µU.go
+// (c) Christian Maurer   v. 230228 - license see µU.go
 
 import (
   "os"
@@ -102,11 +102,14 @@ func inputC (B *byte, C *Comm, D *uint) {
       case mouse.Thither:
         *C = Thither
       }
-      if shift || ctrl {
+      if shift {
         *D = 1
       }
-      if alt || altGr {
+      if ctrl {
         *D = 2
+      }
+      if alt || altGr {
+        *D = 3
       }
       break loop
 /*/

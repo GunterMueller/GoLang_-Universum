@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 230222 - license see µU.go
+// (c) Christian Maurer   v. 230225 - license see µU.go
 
 // #cgo LDFLAGS: -lGL -lGLU
 // #include <GL/gl.h>
@@ -74,6 +74,10 @@ func colour (c col.Colour) {
 func clearColour (c col.Colour) {
   r, g, b := c.Float64()
   C.glClearColor (l(r), l(g), l(b), l(0))
+}
+
+func linewidth (w float64) {
+  C.glLineWidth (F(w))
 }
 
 func begin (f Figure) {

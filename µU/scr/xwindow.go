@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 230223 - license see µU.go
+// (c) Christian Maurer   v. 230303 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -502,17 +502,17 @@ func (X *xwindow) Restore1() {
 var
   finishedW bool
 
-func (w *xwindow) blink() {
+func (X *xwindow) blink() {
   var s shape.Shape
   for {
-    w.blinkMutex.Lock()
-    if w.cursorShape == shape.Off {
-      s = w.blinkShape
+    X.blinkMutex.Lock()
+    if X.cursorShape == shape.Off {
+      s = X.blinkShape
     } else {
       s = shape.Off
     }
-    w.cursor (w.blinkX, w.blinkY, s)
-    w.blinkMutex.Unlock()
+    X.cursor (X.blinkX, X.blinkY, s)
+    X.blinkMutex.Unlock()
     if finishedW {
       break
     }
@@ -699,6 +699,10 @@ func (X *xwindow) SetLinewidth (w linewd.Linewidth) {
     cw = C.uint(4)
   case linewd.Fat:
     cw = C.uint(5)
+  case linewd.Fatter:
+    cw = C.uint(6)
+  case linewd.VeryFat:
+    cw = C.uint(7)
   }
   C.XSetLineAttributes (dpy, X.gc, cw, C.LineSolid, C.CapRound, C.JoinRound)
 }
@@ -1383,16 +1387,19 @@ const (
 )
 type
   d = C.GLdouble
-/*/
 var
-  help = []string{ // TODO
-// 0         1         2         3         4         5         6         7
-// 01234567890123456789012345678901234567890123456789012345678901234567890123456789
-  "                                                                                ",
-  "                                                                                ",
-  "                                                                                ")
-                 }
-/*/
+  helpstring = []string{
+  " Betrachtung beenden: Fluchttaste (Esc)                    ",
+  "nach   vorne bewegen: Eingabetaste (Enter)                 ",
+  "      hinten bewegen: Rücktaste                            ",
+  "links/rechts bewegen: Pfeiltaste links/rechts              ",
+  "  oben/unten bewegen: Pfeiltaste auf-/abwärts              ",
+  " links/rechts drehen: Umschalt- und Pfeiltaste links/rechts", 
+  " vorne/hinten neigen: Umschalt- und Pfeiltaste ab-/aufwärts",
+  " links/rechts kippen: Str- und Pfeiltaste links/rechts     ",
+  "um den Fokus nach                                          ",
+  " links/rechts drehen: Alt- und Pfeiltaste links/rechts     ",
+  "   oben/unten drehen: Strg- und Pfeiltaste auf-/abwärts    "}
 
 /*/
 func (X *xwindow) fly() {
@@ -1403,6 +1410,22 @@ func (X *xwindow) fly() {
   }
 }
 /*/
+
+func (X *xwindow) help() {
+  h, w := uint(len(helpstring)), uint(len(helpstring[0]))
+  if h > NLines() || w > NColumns() { return }
+  l, c := (NLines() - h) / 2, (NColumns() - w) / 2
+  Save (l, c, w, h)
+  Lock()
+  Colours (col.HintF(), col.HintB())
+  for i := uint(0); i < h; i++ {
+    Write (helpstring[i], l + i, c)
+  }
+  Unlock()
+  var xev C.XEvent
+  C.XNextEvent (dpy, &xev)
+  Restore (l, c, w, h)
+}
 
 func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz float64) {
   X.origin.Set3 (ox, oy, oz)
@@ -1439,6 +1462,7 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
     switch et {
     case C.KeyPress:
       c, t := C.kCode (&xev), C.kState (&xev)
+//      t -= 16 // very strange XXX sometimes necessary, sometimes wrong
       depth := uint(0)
       switch t {
       case 0:
@@ -1446,11 +1470,9 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
       case Shift:
         depth = 1
       case Strg, Shift + Strg:
-        depth = 1
-      case Alt, AltGr:
         depth = 2
-      case Shift + Alt, Strg + Alt, Shift + Strg + Alt,
-           Shift + AltGr, Strg + AltGr, Shift + Strg + AltGr:
+      case Alt, Shift + Alt, Strg + Alt, Shift + Strg + Alt,
+           AltGr, Shift + AltGr, Strg + AltGr, Shift + Strg + AltGr:
         depth = 3
       }
       switch c {
@@ -1459,16 +1481,26 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
       case Enter:
         switch m {
         case Look:
-          if depth == 0 {
+          switch depth {
+          case 0:
             spc.MoveFront (delta)
-          } else {
-            spc.MoveFront (-delta)
+          case 1:
+            spc.MoveFront (5 * delta)
+          case 2:
+            spc.MoveFront (10 * delta)
+          case 3:
+            spc.MoveFront (20 * delta)
           }
         case Walk:
-          if depth == 0 {
+          switch depth {
+          case 0:
             spc.MoveFront (delta)
-          } else {
-            spc.MoveFront (-delta)
+          case 1:
+            spc.MoveFront (5 * delta)
+          case 2:
+            spc.MoveFront (10 * delta)
+          case 3:
+            spc.MoveFront (20 * delta)
           }
         case Fly:
           // TODO increase speed
@@ -1476,18 +1508,26 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
       case Back:
         switch m {
         case Look:
-          if depth == 0 {
-            spc.Turn (180)
-          } else {
-            d := X.origin.Distance (X.focus)
-            spc.MoveFront (2 * d)
-            spc.Turn (180)
+          switch depth {
+          case 0:
+            spc.MoveFront (-delta)
+          case 1:
+            spc.MoveFront (-5 * delta)
+          case 2:
+            spc.MoveFront (-10 * delta)
+          case 3:
+            spc.MoveFront (-20 * delta)
           }
         case Walk:
-          if depth == 0 {
-            spc.Turn (180)
-          } else {
-            spc.MoveFront (delta)
+          switch depth {
+          case 0:
+            spc.MoveFront (-delta)
+          case 1:
+            spc.MoveFront (-5 * delta)
+          case 2:
+            spc.MoveFront (-10 * delta)
+          case 3:
+            spc.MoveFront (-20 * delta)
           }
         case Fly:
           // TODO decrease speed
@@ -1497,20 +1537,20 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
         case Look:
           switch depth {
           case 0:
-            spc.Turn (-phi)
+            spc.MoveRight (-delta)
           case 1:
-            spc.MoveRight (delta)
+            spc.Turn (phi)
           case 2:
-            spc.TurnAroundFocusT (phi)
-          case 3:
             spc.Roll (phi)
+          case 3:
+            spc.TurnAroundFocusT (phi)
           }
         case Walk:
           switch depth {
           case 0:
-            spc.Turn (phi)
-          case 1:
             spc.MoveRight (-phi)
+          case 1:
+            spc.Turn (phi)
           case 2:
             spc.Roll (phi)
           }
@@ -1526,13 +1566,13 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
         case Look:
           switch depth {
           case 0:
-            spc.Turn (phi)
+            spc.MoveRight (delta)
           case 1:
-            spc.MoveRight (-delta)
+            spc.Turn (-phi)
           case 2:
-            spc.TurnAroundFocusT (-phi)
-          case 3:
             spc.Roll (-phi)
+          case 3:
+            spc.TurnAroundFocusT (-phi)
           }
         case Walk:
           switch depth {
@@ -1555,20 +1595,18 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
         case Look:
           switch depth {
           case 0:
-            spc.Tilt (phi)
-          case 1:
             spc.MoveTop (delta)
-          case 2:
-            spc.TurnAroundFocusR (phi)
-          case 3:
+          case 1:
             spc.Tilt (phi)
+          case 2, 3:
+            spc.TurnAroundFocusR (phi)
           }
         case Walk:
           switch depth {
           case 0:
-            spc.Tilt (phi)
-          case 1:
             spc.MoveTop (phi)
+          case 1:
+            spc.Tilt (phi)
           }
         case Fly:
           spc.Tilt (phi)
@@ -1578,28 +1616,26 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
         case Look:
         switch depth {
           case 0:
-            spc.Tilt (-phi)
+            spc.MoveTop (-delta)
           case 1:
-            spc.MoveTop (-phi / 10)
-          case 2:
-            spc.TurnAroundFocusR (-phi)
-          case 3:
             spc.Tilt (-phi)
+          case 2, 3:
+            spc.TurnAroundFocusR (-phi)
           }
         case Walk:
           switch depth {
           case 0:
-            spc.Tilt (-phi)
-          case 1:
             spc.MoveTop (-phi)
+          case 1:
+            spc.Tilt (-phi)
           }
         case Fly:
           spc.Tilt (-phi)
         }
       case F1:
-        // TODO help
-//      case F9:
-//        spc.SetLight (0)
+        X.help()
+//    case F9:
+//      spc.SetLight (0)
       default:
         redraw = false
       }

@@ -1,6 +1,6 @@
 package spc
 
-// (c) Christian Maurer   v. 230213 - license see µU.go
+// (c) Christian Maurer   v. 230302 - license see µU.go
 
 import (
   "µU/vect"
@@ -30,11 +30,6 @@ func set (ox, oy, oz, fx, fy, fz, tx, ty, tz float64) {
   right.Ext (front, top)
   right.Ext (front, top)
   right.Norm(); front.Norm(); top.Norm()
-/*/
-x, y, z := getFront(); println ("set front =", x, y, z)
-x, y, z  = getTop();   println ("set top   =", x, y, z)
-x, y, z  = getRight(); println ("set right =", x, y, z); println()
-/*/
 }
 
 func getOrigin() (float64, float64, float64) {
@@ -156,31 +151,21 @@ func empty() bool {
 }
 
 func push() {
-  ox, oy, oz := origin.Coord3()
-  fx, fy, fz := focus.Coord3()
-  tx, ty, tz := top.Coord3()
-  stack.Push (ox, oy, oz, fx, fy, fz, tx, ty, tz)
+  stack.Push (origin)
+  stack.Push (focus)
+  stack.Push (top)
 }
 
 func pop() {
-  x := stack.Pop()
-  set (x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8])
-}
-
-func empty1() bool {
-  return stack.Empty1()
-}
-
-func push1() {
-  ox, oy, oz := origin.Coord3()
-  fx, fy, fz := focus.Coord3()
-  tx, ty, tz := top.Coord3()
-  stack.Push1 (ox, oy, oz, fx, fy, fz, tx, ty, tz)
-}
-
-func pop1() {
-  x := stack.Pop1()
-  set (x[0], x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8])
+  top = stack.Pop().(vect.Vector)
+  top.Norm()
+  focus = stack.Pop().(vect.Vector)
+  origin = stack.Pop().(vect.Vector)
+  front.Copy (focus)
+  front.Sub (origin)
+  front.Norm()
+  right.Ext (front, top)
+  right.Norm()
 }
 
 func setLight (n uint) {

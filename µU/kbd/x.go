@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 220530 - license see µU.go
+// (c) Christian Maurer   v. 230228 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -71,10 +71,12 @@ loop:
     mouseL := isSet (mouseBitL, event.S)
     mouseM := isSet (mouseBitM, event.S)
     mouseR := isSet (mouseBitR, event.S)
-    if shift || ctrl {
+    if shift {
       *D = 1
-    } else if alt {
+    } else if ctrl {
       *D = 2
+    } else if alt || altGr {
+      *D = 3
     }
     switch event.T {
 /*/
