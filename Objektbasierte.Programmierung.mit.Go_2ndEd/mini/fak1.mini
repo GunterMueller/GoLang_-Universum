@@ -1,0 +1,11 @@
+A lda a
+  mul b
+  sta a
+  stb c
+  lda d
+  mul b
+  add c
+  sta d
+  dec b
+  jne A
+  ret

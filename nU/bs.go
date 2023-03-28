@@ -37,7 +37,7 @@ func main() {
   w (col.LightMagenta())
   w (col.Gray())
   w (col.White())
-  w (col.LightWhite())
+  w (col.FlashWhite())
   scr.ColourF (col.Red())
   scr.Line (1, 1, 25, 1)
   scr.Write ("*", 1, 1); scr.Write ("*", 25, 1)

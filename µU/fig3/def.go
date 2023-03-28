@@ -7,7 +7,7 @@ import (
   "µU/col"
 )
 
-// The spezifications of all functions are found in the file µU/gl/def.go.
+// The specifications of all functions are found in the file µU/gl/def.go.
 
 func Point (c col.Colour, x, y, z float64) { point(c,x,y,z) }
 func Line (c col.Colour, x ...float64) { line(c,x...) }

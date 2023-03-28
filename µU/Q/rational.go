@@ -1,6 +1,6 @@
 package Q
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   "math"
@@ -36,7 +36,7 @@ func init() {
 func new_() Rational {
   x := new(rational)
   x.f, x.b = col.StartCols()
-  if x.f.IsWhite() && x.b.IsBlack() { x.f = col.LightWhite() } // firlefanz
+  if x.f.IsWhite() && x.b.IsBlack() { x.f = col.FlashWhite() } // firlefanz
   x.geq0 = true
   return x
 }

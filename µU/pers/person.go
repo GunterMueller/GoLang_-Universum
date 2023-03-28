@@ -29,10 +29,6 @@ type (
                 sex.Sex
                 day.Calendarday "birthday"
           title text.Text
-/*/
-  Prof.
-  
-/*/
           field []any // to [En|De]code
              cl []uint
                 Format

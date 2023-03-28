@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 171227 - license see nU.go
+// (c) Christian Maurer   v. 230326 - license see nU.go
 
 import . "nU/obj"
 
@@ -41,4 +41,4 @@ func Magenta() Colour        { return new3 (170,   0, 170) }
 func LightMagenta() Colour   { return new3 (255,  85, 255) }
 func Gray() Colour           { return new3 ( 85,  85,  85) }
 func White() Colour          { return new3 (170, 170, 170) }
-func LightWhite() Colour     { return new3 (255, 255, 255) }
+func FlashWhite() Colour     { return new3 (255, 255, 255) }

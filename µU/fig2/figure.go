@@ -1,6 +1,6 @@
 package fig2
 
-// (c) Christian Maurer   v. 230112 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   "math"
@@ -211,7 +211,7 @@ func (f *figure2) Select() {
   scr.SetFontsize (fontsize.Normal)
   n := uint(Points)
   y, x := scr.MousePos()
-  sel.Select1 (name, Ntypes, lenName, &n, y, x, col.LightWhite(), col.Blue())
+  sel.Select1 (name, Ntypes, lenName, &n, y, x, col.FlashWhite(), col.Blue())
   if n < Ntypes {
     f.typ = typ (n)
   }

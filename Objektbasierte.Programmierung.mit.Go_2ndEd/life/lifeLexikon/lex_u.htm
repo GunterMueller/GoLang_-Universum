@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Life Lexicon (U)</TITLE>
+<META NAME=Author CONTENT="Stephen A. Silver">
+<META NAME=Description CONTENT="Part of Stephen Silver's Life Lexicon.">
+</HEAD>
+<BODY BGCOLOR="#99CCFF">
+<CENTER><B><FONT COLOR="#006600" SIZE=6
+FACE="Comic Sans MS,Comic Sans">Life Lexicon</FONT></B></CENTER>
+<CENTER><A HREF="http://www.argentum.freeserve.co.uk/lex_home.htm">Life Lexicon Home Page</A></CENTER>
+<HR>
+<CENTER>
+<A HREF="lex.htm">Introduction</A> |
+<A HREF="lex_1.htm">1-9</A> |
+<A HREF="lex_a.htm">A</A> |
+<A HREF="lex_b.htm">B</A> |
+<A HREF="lex_c.htm">C</A> |
+<A HREF="lex_d.htm">D</A> |
+<A HREF="lex_e.htm">E</A> |
+<A HREF="lex_f.htm">F</A> |
+<A HREF="lex_g.htm">G</A> |
+<A HREF="lex_h.htm">H</A> |
+<A HREF="lex_i.htm">I</A> |
+<A HREF="lex_j.htm">J</A> |
+<A HREF="lex_k.htm">K</A> |
+<A HREF="lex_l.htm">L</A> |
+<A HREF="lex_m.htm">M</A> |
+<A HREF="lex_n.htm">N</A> |
+<A HREF="lex_o.htm">O</A> |
+<A HREF="lex_p.htm">P</A> |
+<A HREF="lex_q.htm">Q</A> |
+<A HREF="lex_r.htm">R</A> |
+<A HREF="lex_s.htm">S</A> |
+<A HREF="lex_t.htm">T</A> |
+<A HREF="lex_u.htm">U</A> |
+<A HREF="lex_v.htm">V</A> |
+<A HREF="lex_w.htm">W</A> |
+<A HREF="lex_x.htm">X</A> |
+<A HREF="lex_y.htm">Y</A> |
+<A HREF="lex_z.htm">Z</A> |
+<A HREF="lex_bib.htm">Bibliography</A>
+</CENTER>
+<HR>
+<P>:<B>underpopulation</B><A NAME=mk></A> Death of cell caused by it having fewer than two
+<A HREF="lex_n.htm#ed">neighbour</A>s.
+<P>:<B>unit Life cell</B> A rectangular pattern, of size greater than 1&times;1,
+that can simulate Life in the following sense. The pattern
+by itself represents a dead Life cell, and some other pattern
+represents a live Life cell. When the plane is tiled by these
+two patterns (which then represent the state of a whole Life
+universe) they evolve, after a fixed amount of time, into another
+tiling of the plane by the same two patterns which correctly
+represents the Life generation following the one they initially
+represented. It is usual to use capital letters for the simulated
+things, so, for example, for the first known unit Life cell
+(constructed by David Bell in January 1996), one Generation is
+5760 generations, and one Cell is 500&times;500 cells.
+<P>:<B>universal computer</B><A NAME=z7></A> A computer that can compute anything that is
+computable. (The concept of computability can be defined in terms
+of Turing machines, or by Church's lambda calculus, or by a number
+of other methods, all of which can be shown to lead to equivalent
+definitions.) The relevance of this to Life is that both Bill
+Gosper and John Conway proved early on that it is possible to
+construct a universal computer in the Life universe. (To prove
+the universality of a <A HREF="lex_c.htm#g6">cellular automaton</A> with simple rules was
+in fact Conway's aim in Life right from the start.) Conway's proof
+is outlined in <A HREF="lex_w.htm#v3">Winning Ways</A>, and also in <A HREF="lex_t.htm#lb">The Recursive Universe</A>.
+<P>No universal Life computer has ever been built in practice, because
+it would be enormous, even with the improvements that have since been
+devised.
+<P>See also <A HREF="lex_s.htm#oy">sliding block memory</A> and <A HREF="#c5">universal constructor</A>.
+<P>:<B>universal constructor</B><A NAME=c5></A> A pattern that is capable of constructing
+almost any pattern that has a <A HREF="lex_g.htm#vr">glider synthesis</A>. This definition is
+a bit vague. A precise definition seems impossible because it has
+not been proved that all possible glider fleets are constructible.
+In any case, a universal constructor ought to be able to construct
+itself in order to qualify as such. An outline of Conway's proof
+that such a pattern exists can be found in <A HREF="lex_w.htm#v3">Winning Ways</A>, and also
+in <A HREF="lex_t.htm#lb">The Recursive Universe</A>. The key mechanism for the production
+of gliders with any given path and timing is known as side-tracking,
+and is based on the <A HREF="lex_k.htm#nt">kickback reaction</A>. A universal constructor
+designed in this way can also function as a universal destructor
+- it can delete almost any pattern that can be deleted by gliders.
+<P>A universal constructor is most useful when attached to a
+<A HREF="#z7">universal computer</A>, which can be programmed to control the
+constructor to produce the desired pattern of gliders. In what
+follows I will assume that a universal constructor always includes
+this computer.
+<P>The existence of a universal constructor/destructor has a number of
+theoretical consequences.
+<P>For example, the constructor could be programmed to make copies of
+itself. This is a <A HREF="lex_r.htm#uz">replicator</A>.
+<P>The constructor could even be programmed to make just one copy
+of itself translated by a certain amount and then delete itself.
+This would be a (very large, very high period) <A HREF="lex_s.htm#f4">spaceship</A>. Any
+translation is possible (except that it must not be too small), so
+that the spaceship could travel in any direction. It could also
+travel slower than any given speed, since we could program it to
+perform some time-wasting task (such as repeatedly constructing and
+deleting a block) before copying itself. Of course, we could also
+choose for it to leave some debris behind, thus making a <A HREF="lex_p.htm#z6">puffer</A>.
+<P>It is also possible to show that the existence of a universal
+constructor implies the existence of a <A HREF="lex_s.htm#h3">stable</A> <A HREF="lex_r.htm#wk">reflector</A>. This
+proof is not so easy, however, and is no longer of much significance
+now that explicit examples of such reflectors are known.
+<P>:<B>universal destructor</B> See <A HREF="#c5">universal constructor</A>.
+<P>:<B>unix</B><A NAME=ya></A> (p6) Two <A HREF="lex_b.htm#k1">block</A>s eating a <A HREF="lex_l.htm#ar">long barge</A>. This is a useful
+<A HREF="lex_s.htm#w7">sparker</A>, found by Dave Buckingham in February 1976. The name
+derives from the fact that it was for some time the mascot of the
+Unix lab of the mathematics faculty at the University of Waterloo.
+<PRE>
+	.OO.....
+	.OO.....
+	........
+	.O......
+	O.O.....
+	O..O..OO
+	....O.OO
+	..OO....
+</PRE>
+<P>:<B>up boat with tail</B> = <A HREF="lex_t.htm#ae">trans-boat with tail</A>
+<P>:<B>U-pentomino</B> Conway's name for the following <A HREF="lex_p.htm#m7">pentomino</A>, which
+rapidly dies.
+<PRE>
+	O.O
+	OOO
+</PRE>
+<HR>
+<CENTER>
+<A HREF="lex.htm">Introduction</A> |
+<A HREF="lex_1.htm">1-9</A> |
+<A HREF="lex_a.htm">A</A> |
+<A HREF="lex_b.htm">B</A> |
+<A HREF="lex_c.htm">C</A> |
+<A HREF="lex_d.htm">D</A> |
+<A HREF="lex_e.htm">E</A> |
+<A HREF="lex_f.htm">F</A> |
+<A HREF="lex_g.htm">G</A> |
+<A HREF="lex_h.htm">H</A> |
+<A HREF="lex_i.htm">I</A> |
+<A HREF="lex_j.htm">J</A> |
+<A HREF="lex_k.htm">K</A> |
+<A HREF="lex_l.htm">L</A> |
+<A HREF="lex_m.htm">M</A> |
+<A HREF="lex_n.htm">N</A> |
+<A HREF="lex_o.htm">O</A> |
+<A HREF="lex_p.htm">P</A> |
+<A HREF="lex_q.htm">Q</A> |
+<A HREF="lex_r.htm">R</A> |
+<A HREF="lex_s.htm">S</A> |
+<A HREF="lex_t.htm">T</A> |
+<A HREF="lex_u.htm">U</A> |
+<A HREF="lex_v.htm">V</A> |
+<A HREF="lex_w.htm">W</A> |
+<A HREF="lex_x.htm">X</A> |
+<A HREF="lex_y.htm">Y</A> |
+<A HREF="lex_z.htm">Z</A> |
+<A HREF="lex_bib.htm">Bibliography</A>
+</CENTER>
+</BODY>

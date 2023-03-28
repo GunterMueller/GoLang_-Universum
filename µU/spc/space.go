@@ -1,11 +1,10 @@
 package spc
 
-// (c) Christian Maurer   v. 230302 - license see µU.go
+// (c) Christian Maurer   v. 230317 - license see µU.go
 
 import (
   "µU/vect"
   "µU/spc/stack"
-  "µU/gl"
 )
 const
   epsilon = 1e-6
@@ -168,7 +167,9 @@ func pop() {
   right.Norm()
 }
 
+/*/
 func setLight (n uint) {
   x, y, z := origin.Coord3()
   gl.PosLight (n, x, y, z)
 }
+/*/

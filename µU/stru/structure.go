@@ -1,6 +1,6 @@
 package stru
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   . "µU/obj"
@@ -18,7 +18,7 @@ type
 func new_() Structure {
   x := new(structure)
   x.int = 0 // typ atom.String
-  x.f, x.b = col.LightWhite(), col.Black()
+  x.f, x.b = col.FlashWhite(), col.Black()
   return x
 }
 

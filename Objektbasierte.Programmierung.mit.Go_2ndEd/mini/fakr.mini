@@ -1,0 +1,17 @@
+  lda a
+  sta d
+  push b
+  cmp b
+  jne F
+  pop b
+  ret
+F pop b
+  cmp d
+  jne A
+  ret
+A stb c
+  mul b
+  sta c
+  dec b
+  push b
+  call F

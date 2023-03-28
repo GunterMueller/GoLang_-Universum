@@ -1,6 +1,6 @@
 package atom
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   "µU/ker"
@@ -59,7 +59,7 @@ var (
 func new_() Atom {
   x := new (atom)
   x.int = String
-  x.f, x.b = col.LightWhite(), col.Blue()
+  x.f, x.b = col.FlashWhite(), col.Blue()
   x.w = 1
   return x
 }
@@ -105,8 +105,8 @@ func (x *atom) IsIndex() bool {
 func z (t string, max, l uint) uint {
   scr.Clr (l, 0, scr.NColumns(), 1)
   c := uint(len(t))
-  bx.Colours (col.LightWhite(), col.Black())
-  bx.Colours (col.Black(), col.LightWhite())
+  bx.Colours (col.FlashWhite(), col.Black())
+  bx.Colours (col.Black(), col.FlashWhite())
   bx.Wd (c)
   bx.Write (t, l, 0)
   w := uint(2); if max < 10 { w = uint(1) }
@@ -124,7 +124,7 @@ func z (t string, max, l uint) uint {
           if nn <= max {
             n0 := scr.NColumns()
             bx.Wd (n0)
-            bx.Colours (col.LightWhite(), col.Black())
+            bx.Colours (col.FlashWhite(), col.Black())
             bx.Write (str.New (n0), l, 0)
             return nn
           }
@@ -138,7 +138,7 @@ func z (t string, max, l uint) uint {
 }
 
 func (x *atom) SelectColF() {
-  if c, ok := sel.Colours (x.l, x.c, x.w, col.LightWhite(), col.Yellow()); ok {
+  if c, ok := sel.Colours (x.l, x.c, x.w, col.FlashWhite(), col.Yellow()); ok {
     x.f.Copy (c)
   }
 }
@@ -172,7 +172,7 @@ func (x *atom) Select() {
   n := uint(0)
   l, c := scr.MousePos()
   for {
-    sel.Select1 (w, Ntypes, wlen, &n, l, c, col.Black(), col.LightWhite())
+    sel.Select1 (w, Ntypes, wlen, &n, l, c, col.Black(), col.FlashWhite())
     if n < Ntypes {
       break
     }

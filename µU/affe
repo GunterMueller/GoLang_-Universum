@@ -1,1 +1,10 @@
-  Shift = 1; Strg = 4; Alt = 8; AltGr = 128
+
+func quad (x ...float64) {
+  if len(x) != 12 { fail() }
+  begin (Quads)
+  for i := 0; i < 12; i += 3 {
+    vertex (x[i], x[i+1], x[i+2])
+  }
+  end()
+}
+

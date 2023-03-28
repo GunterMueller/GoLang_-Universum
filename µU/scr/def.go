@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 220923 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 /* Pre: For use in a (tty)-console:
           The framebuffer is usable, i.e. one of the options "vga=..."
@@ -12,7 +12,7 @@ package scr
           X is installed.
         Programs for execution on far hosts are only called under X.
    Fore-/background colour of the screen and actual fore-/backgroundcolour
-   are LightWhite and Black. The screen is cleared and the cursor is off.
+   are FlashWhite and Black. The screen is cleared and the cursor is off.
    In a console SIGUSR1 and SIGUSR2 are used internally and not any more available.
    GNo process is in the exclusive possession of the screen. */
 
@@ -38,11 +38,6 @@ type
         }
 var
   Eventpipe chan Event = make (chan Event) // only for XWindow
-const (
-  Look = iota
-  Walk
-  Fly
-)
 const ( // mousepointer representations (see /usr/include/X11/cursorfont.h)
   Crosshair =  34
   Gumby     =  56
@@ -492,8 +487,7 @@ type
 
 // openGL //////////////////////////////////////////////////////////////
 
-// Pre: m <= Fly
-  Go (m int, draw func(), ex, ey, ez, fx, fy, fz, nx, ny, nz float64)
+  Go (draw func(), ex, ey, ez, fx, fy, fz, nx, ny, nz float64)
 }
 
 func UnderC() bool {
@@ -555,6 +549,9 @@ func Ok (m mode.Mode) bool {
 // in another colour, that was meanwhile changed by another process).
 func Lock() { lock() }
 func Unlock() { unlock() }
+
+func Lock1() { lock1() }
+func Unlock1() { unlock1() }
 
 func Act() Screen {
   if env.UnderX() {

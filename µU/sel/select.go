@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 230112 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   "µU/ker"
@@ -138,7 +138,7 @@ func colour (l, c, w uint) (col.Colour, bool) {
                            col.Cyan(), col.FlashCyan(), col.LightBlue(), col.FlashBlue(),
                            col.Blue(), col.Magenta(), col.FlashMagenta(), col.LightMagenta(),
                            col.White(), col.LightGray(), col.Gray(), col.DarkGray(),
-                           col.DarkBrown(), col.Brown(), col.LightBrown(), col.LightWhite())
+                           col.DarkBrown(), col.Brown(), col.LightBrown(), col.FlashWhite())
 }
 
 func colours (l, c, w uint, cols ...col.Colour) (col.Colour, bool) {

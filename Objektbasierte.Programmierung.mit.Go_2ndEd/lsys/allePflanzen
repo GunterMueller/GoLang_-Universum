@@ -1,0 +1,5 @@
+#!/bin/bash
+
+for k in baum3 busch zweig krautA krautB krautC krautD krautE krautF; do
+  lsys $k
+done

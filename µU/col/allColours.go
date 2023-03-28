@@ -1,0 +1,41 @@
+package col
+
+// (c) Christian Maurer   v. 230326 - license see µU.go
+
+func allColours() []Colour {
+  return []Colour {Black(),
+                   FlashBrown(),
+                     DarkerBrown(), DarkBrown(), Brown(), LightBrown(), LighterBrown(),
+                     RedBrown(), RoseBrown(), OliveBrown(), LightOliveBrown(),
+                   Umber(), DarkOchre(), Ochre(), LightOchre(),
+                   LightBeige(), Beige1(),
+                   FlashRed(),
+                     DarkerRed(), DarkRed(), Red(), LightRed(), LighterRed(),
+                     PompejiRed(), CinnabarRed(), Carmine(), BrickRed(), Siena(), LightSiena(),
+                   DarkRose(), Rose1(), LightRose(),
+                   FlashOrange(),
+                     DarkerOrange(), DarkOrange(), Orange(), LightOrange(), LighterOrange(),
+                     BloodOrange(),
+                   FlashYellow(),
+                     DarkerYellow(), DarkYellow(), Yellow(), LightYellow(), LighterYellow(),
+                     SandYellow(), LemonYellow(),
+                   FlashGreen(),
+                     DarkerGreen(), DarkGreen(), Green(), LightGreen(), LighterGreen(),
+                     BirchGreen(), GrassGreen(), OliveGreen(), LightOliveGreen(),
+                     YellowGreen(), MeadowGreen(),
+                   FlashCyan(),
+                     DarkerCyan(), DarkCyan(), Cyan(), LightCyan(), LighterCyan(),
+                   FlashBlue(),
+                     DarkerBlue(), DarkBlue(), Blue(), LightBlue(), LighterBlue(),
+                     PrussianBlue(), GentianBlue(), SkyBlue(), SkyLightBlue(), Ultramarine(),
+                   FlashMagenta(),
+                     DarkerMagenta(), DarkMagenta(), Magenta(), LightMagenta(), LighterMagenta(),
+                   Pink(), DeepPink(),
+                   FlashGray(),
+                     DarkerGray(), DarkGray(), Gray(), LightGray(), LighterGray(),
+                   Silver(),
+                   FlashWhite(),
+                     White(), RedWhite(), OrangeWhite(), YellowWhite(),
+                     GreenWhite(), CyanWhite(), BlueWhite(), MagentaWhite(),
+                   }
+}

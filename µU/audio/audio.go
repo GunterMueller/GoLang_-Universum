@@ -1,6 +1,6 @@
 package audio
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   . "µU/obj"
@@ -66,10 +66,10 @@ func new_() Audio {
   x.soloist = text.New (len0)
   x.composer.Colours (col.Yellow(), col.Red())
   x.composer1.Colours (col.Yellow(), col.Red())
-  x.work.Colours (col.LightWhite(), col.DarkGreen())
-  x.work1.Colours (col.LightWhite(), col.DarkGreen())
-  x.orchestra.Colours (col.LightWhite(), col.DarkGray())
-  x.conductor.Colours (col.LightWhite(), col.DarkGray())
+  x.work.Colours (col.FlashWhite(), col.DarkGreen())
+  x.work1.Colours (col.FlashWhite(), col.DarkGreen())
+  x.orchestra.Colours (col.FlashWhite(), col.DarkGray())
+  x.conductor.Colours (col.FlashWhite(), col.DarkGray())
   x.soloist.Colours (col.Yellow(), col.Red())
   return x
 }

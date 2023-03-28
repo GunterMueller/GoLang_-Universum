@@ -1,6 +1,6 @@
 package book
 
-// (c) Christian Maurer   v. 221025 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   . "µU/obj"
@@ -73,19 +73,19 @@ func new_() Book {
               )
   x.field.Setk ("äg", "ab", "gt", "lt", "rr", "rk", "nl", "ir", "th", "ho", "ik", "kr",
                 "jb", "en", "fr", "it", "gr", "la", "sb", "pf", "sf", "kl", "hr")
-  x.field.Colours (col.LightWhite(), col.Blue())
+  x.field.Colours (col.FlashWhite(), col.Blue())
   x.author = text.New (lena)
   x.coauthor = text.New (lena)
   x.Natural = bn.New (lenc)
   x.title = text.New (lent)
   x.cupboard = text.New (3)
   x.floor = text.New (3)
-  x.Natural.Colours (col.LightWhite(), col.DarkGray())
+  x.Natural.Colours (col.FlashWhite(), col.DarkGray())
   x.author.Colours (col.Yellow(), col.Red())
   x.coauthor.Colours (col.Yellow(), col.Red())
-  x.title.Colours (col.LightWhite(), col.DarkGreen())
-  x.cupboard.Colours (col.LightWhite(), col.Brown())
-  x.floor.Colours (col.LightWhite(), col.Brown())
+  x.title.Colours (col.FlashWhite(), col.DarkGreen())
+  x.cupboard.Colours (col.FlashWhite(), col.Brown())
+  x.floor.Colours (col.FlashWhite(), col.Brown())
   return x
 }
 

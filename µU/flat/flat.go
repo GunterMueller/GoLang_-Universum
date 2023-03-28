@@ -1,6 +1,6 @@
 package flat
 
-// (c) Christian Maurer   v. 221113 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   "math"
@@ -11,7 +11,7 @@ import (
 const
   p = math.Pi / 180
 var (
-  cWall col.Colour = col.LightWhite()
+  cWall col.Colour = col.FlashWhite()
   xx, yy, height0, alpha float64
   height float64 = 2.75
 )

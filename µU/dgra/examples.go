@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 211213 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   "µU/env"
@@ -15,7 +15,7 @@ import (
 )
 
 func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
-  cf, ca, cb := col.Blue(), col.Red(), col.LightWhite()
+  cf, ca, cb := col.Blue(), col.Red(), col.FlashWhite()
   k := uint(len(l))
   if k != uint(len(es)) || k != uint(len(c)) { panic("len's different") }
   wd := N.Wd (k)

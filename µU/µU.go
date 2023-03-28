@@ -41,7 +41,7 @@ import (
 const (
   yy = 2023
   mm =    3
-  dd =    3
+  dd =   26
 )
 var (
   red, green = col.FlashRed(), col.FlashGreen()
@@ -142,7 +142,7 @@ func drive (cl, cf, cb col.Colour, d chan int) {
 func input() { for { _, _ = kbd.Command() } }
 
 func main() { // gets all packages compiled and shows the license
-  scr.NewMax(); defer scr.Fin()
+  scr.NewWH (0, 0, 1250, 800); defer scr.Fin()
   scr.Name (string(char.Mu)[1:] + "U")
   wd, ht = int(scr.Wd()), int(scr.Ht())
   wd1, ht1 = int(scr.Wd1()), int(scr.Ht1())
@@ -160,7 +160,7 @@ func main() { // gets all packages compiled and shows the license
   wdtext = 91 * wd1 // 91 == width of license text lines + 2
   files.Cd (env.Gosrc() + "/µU")
   go input()
-  cl, cf, cb := col.LightWhite(), col.WhiteBlue(), col.DarkBlue()
+  cl, cf, cb := col.FlashWhite(), col.LightGreen(), col.DarkGreen()
   circ (ht / 2, cf); circ (wd - ht / 2, cl)
   errh.MuLicense ("µU", v.String(),
                   "1986-2023  Christian Maurer   https://maurer-berlin.eu/mU", cl, cf, cb)

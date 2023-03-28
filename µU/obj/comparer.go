@@ -9,6 +9,9 @@ type
 // Returns true, iff the calling object is smaller than x.
   Less (x any) bool
 
+// Pre: x is of the same type as the calling object.
+// Returns true, iff the calling object is smaller than x
+// or equals x.
   Leq (x any) bool
 }
 

@@ -1,6 +1,6 @@
 package mask
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   . "µU/obj"
@@ -16,7 +16,7 @@ type
               }
 var (
   bx = box.New()
-  colF, colB = col.LightWhite(), col.Black()
+  colF, colB = col.FlashWhite(), col.Black()
 )
 
 func new_() Mask {

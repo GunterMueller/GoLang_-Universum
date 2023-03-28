@@ -1,8 +1,8 @@
 package scr
 
-// (c) Christian Maurer   v. 230112 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
-// #cgo LDFLAGS: -lX11
+//#cgo LDFLAGS: -lX11
 //#include <stdlib.h>
 //#include <fcntl.h>
 //#include <unistd.h>
@@ -1749,7 +1749,7 @@ func wh (p uint) (int, int) {
 }
 
 var
-  cb, cw, cg = col.Black().EncodeInv(), col.LightWhite().EncodeInv(), col.LightGray().EncodeInv()
+  cb, cw, cg = col.Black().EncodeInv(), col.FlashWhite().EncodeInv(), col.LightGray().EncodeInv()
 
 func (X *console) writePointer (x, y int) {
   w, h := wh (X.pointer)
@@ -1999,7 +1999,7 @@ func framebufferOk() bool {
   return true
 }
 
-func (X *console) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz float64) {
+func (X *console) Go (draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz float64) {
   ker.Panic ("the method Go does not work on a console")
 }
 

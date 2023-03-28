@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   "µU/ker"
@@ -41,7 +41,7 @@ func new_(w uint) Enum {
   x.w = w
   x.wk = 0
   x.string = str.New (x.w)
-  x.f, x.b = col.LightWhite(), col.Black()
+  x.f, x.b = col.FlashWhite(), col.Black()
   return x
 }
 
@@ -91,7 +91,7 @@ func (x *enumerator) SetEdit (name string, l, c uint) {
   }
   x.w = w
   bx.Wd (w)
-  bx.Colours (col.LightWhite(), col.Black())
+  bx.Colours (col.FlashWhite(), col.Black())
   errh.Hint ("Zeichenketten eingeben")
   for {
     s := str.New (x.w)

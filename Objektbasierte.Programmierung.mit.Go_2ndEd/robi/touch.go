@@ -1,0 +1,3 @@
+package robi
+
+func Touch() { }

@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 220609 - license see µU.go
+// (c) Christian Maurer   v. 230308 - license see µU.go
 
 import
   . "µU/obj"
@@ -9,7 +9,7 @@ import
 // TODO spec
 func (x *graph) Sort() {
   if x.nVertices < 2 || ! x.bool { return }
-  x.Dfs1 (AllTrue)
+  x.dfs (AllTrue)
 // sort list of vertices due to decrementing times, for which we supply a slice von *vertex:
   f := make ([]*vertex, 2 * x.nVertices)
   for i := uint32(0); i < 2 * x.nVertices; i++ {
@@ -46,7 +46,7 @@ func (x *graph) Isolate() {
   x.Inv()
 // and now once more depth first search,
 // starting with the highest time of the first depth first search:
-  x.Dfs1 (AllTrue)
+  x.dfs (AllTrue)
 // the depth first search trees are now the strongly connected components with common repr
 // finally again invert the directions of all edges
   x.Inv()
@@ -90,7 +90,7 @@ func (x *graph) totallyConnected() bool {
   if x.bool {
     x.Isolate()
   } else {
-    x.Dfs1 (AllTrue)
+    x.dfs (AllTrue)
   }
   v := x.vAnchor.nextV
   e0 := v.repr

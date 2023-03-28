@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 221115 - license see µU.go
+// (c) Christian Maurer   v. 230311 - license see µU.go
 
 //     latin-1-strings (without any UTF-8-stuff)
 
@@ -202,3 +202,6 @@ func StartsWithVar (s string) (string, uint, bool) { return startsWithVar(s) }
 
 // TODO Spec
 func TeX (s string) string { return tex(s) }
+
+// Returns true, iff s contains only letters, digits and spaces.
+func Alphanumeric (s string) bool { return alphanumeric(s) }

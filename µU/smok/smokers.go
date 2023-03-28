@@ -1,6 +1,6 @@
 package smok
 
-// (c) Christian Maurer   v. 221223 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   "µU/time"
@@ -26,7 +26,7 @@ var
   Hölzer = str.Lat1("Hölzer")
 var (
   text   = [3]string     {"Papier",         " Tabak",         Hölzer}
-  colour = [3]col.Colour {col.LightWhite(), col.LightBrown(), col.SandYellow()}
+  colour = [3]col.Colour {col.FlashWhite(), col.LightBrown(), col.SandYellow()}
 )
 var (
   xm, ym, r0, r1 int
@@ -53,7 +53,7 @@ func init() {
 }
 
 func table() {
-  scr.ColourF (col.LightWhite())
+  scr.ColourF (col.FlashWhite())
   scr.Circle (xm, ym, r)
 }
 

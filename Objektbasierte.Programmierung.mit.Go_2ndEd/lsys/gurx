@@ -1,0 +1,5 @@
+#!/bin/bash
+
+for k in 3baum 3tree 3blume 3busch; do
+  lsys $k
+done

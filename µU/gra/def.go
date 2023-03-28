@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 221210 - license see µU.go
+// (c) Christian Maurer   v. 230308 - license see µU.go
 
 import (
   . "µU/obj"
@@ -486,10 +486,6 @@ type
 // Pre: x.Name was called.
 // x is stored in the corresponding file.
   Store()
-
-// TODO Spec
-  Dfs1 (p Pred)
-  Dfs (o Op, p Pred, f Stmt)
 }
 
 // Pre: v is atomic or imlements Object.
@@ -498,5 +494,5 @@ type
 // x is directed, iff d (i.e. otherwise undirected).
 // v is the pattern vertex of x defining the vertex type of x.
 // For e == nil, e is replaced by uint(1) and all edges of x have the value 1.
-// otherwise e is the pattern edge of x defining the edgetype of x.
+// Otherwise e is the pattern edge of x defining the edgetype of x.
 func New (d bool, v, e any) Graph { return new_(d,v,e) }

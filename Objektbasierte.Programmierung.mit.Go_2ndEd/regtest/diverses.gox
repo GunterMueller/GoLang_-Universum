@@ -1,0 +1,83 @@
+func Zwei() Register {
+  z := Null()
+  z.Inc()
+  z.Inc()
+  return z
+}
+
+func Summe (a, b Register) Register {
+  if b.Gt0() { goto A }
+  return a
+A:
+  a.Inc()
+  b.Dec()
+  if b.Gt0() { goto A }
+  return a
+}
+
+func Sechs() Register {
+  return Mal3(Zwei())
+}
+
+func Hundertzweiundneunzig() Register {
+  return Mal3(Summe(Vier(),Summe(Sechs(),Mal3(Mal3(Sechs())))))
+}
+
+func Mal2 (a Register) Register {
+  return Summe (a, a)
+}
+
+// Liefert ein Register, dessen Wert um 1 größer ist
+// als der Wert von a.
+func Succ (a Register) Register {
+  b := Kopie (a)
+  b.Inc()
+  return b
+}
+
+func next (a Register, z, n uint) uint {
+  if a.Gt0() {
+    return z
+  }
+  return n + 1
+}
+
+func d (i, n Register) Register {
+  i1 := Kopie (i)
+  if i1.Gt0() { goto A }
+  return F (n)
+A:
+  i1.Dec()
+  return d (i1, n)
+}
+
+func D (i, n Register) Register {
+  i1 := Kopie (i)
+  if i1.Gt0() { goto A }
+  return E (n)
+A:
+  i1.Dec()
+  if i1.Gt0() { goto B }
+  return E (F (n))
+B:
+  return d (i1, F (n))
+}
+
+func Kopie (a Register) Register {
+  n := 1
+  for n > 0 {
+    for n == 1 { b := Null(); n++ }
+    for n == 2 { n = next (a, 4, n) }
+    for n == 3 { return b }
+    for n == 4 { h := Null(); n++ }
+    for n == 5 { a.Dec(); n++ }
+    for n == 6 { b.Inc(); n++ }
+    for n == 7 { h.Inc(); n++ }
+    for n == 8 { n = next (a, 5, n) }
+    for n == 9 { a.Inc(); n++ }
+    for n == 10 { h.Dec(); n++ }
+    for n == 11 { n = next (h, 9, n) }
+    for n == 12 { return b }
+  }
+  return b
+}

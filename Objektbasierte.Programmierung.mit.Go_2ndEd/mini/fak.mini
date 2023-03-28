@@ -1,0 +1,6 @@
+  lda a
+A mul b
+  sta a
+  dec b
+  jne A
+  ret

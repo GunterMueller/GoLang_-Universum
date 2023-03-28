@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 230303 - license see µU.go
+// (c) Christian Maurer   v. 230316 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -254,6 +254,9 @@ func init() {
   cutbuffer = make([]string, 0)
   if env.UnderX() {
     go sendEvents()
+  }
+  for i, h := range helpstring {
+    helpstring[i] = str.Lat1 (h)
   }
 }
 
@@ -1388,28 +1391,20 @@ const (
 type
   d = C.GLdouble
 var
-  helpstring = []string{
-  " Betrachtung beenden: Fluchttaste (Esc)                    ",
-  "nach   vorne bewegen: Eingabetaste (Enter)                 ",
-  "      hinten bewegen: Rücktaste                            ",
-  "links/rechts bewegen: Pfeiltaste links/rechts              ",
-  "  oben/unten bewegen: Pfeiltaste auf-/abwärts              ",
-  " links/rechts drehen: Umschalt- und Pfeiltaste links/rechts", 
-  " vorne/hinten neigen: Umschalt- und Pfeiltaste ab-/aufwärts",
-  " links/rechts kippen: Str- und Pfeiltaste links/rechts     ",
-  "um den Fokus nach                                          ",
-  " links/rechts drehen: Alt- und Pfeiltaste links/rechts     ",
-  "   oben/unten drehen: Strg- und Pfeiltaste auf-/abwärts    "}
-
-/*/
-func (X *xwindow) fly() {
-  for {
-    time.Sleep (1e8)
-    spc.Move (1, 1)
-    X.write()
-  }
-}
-/*/
+  helpstring = []string {
+  "                                                                  ",
+  "       Betrachtung beenden: Fluchttaste (Esc)                     ",
+  " nach        vorne bewegen: Eingabetaste (Enter)                  ",
+  "            hinten bewegen: Rücktaste                             ",
+  "      links/rechts bewegen: Pfeiltaste links/rechts               ",
+  "        oben/unten bewegen: Pfeiltaste auf-/abwärts               ",
+  "       links/rechts drehen: Umschalt- und Pfeiltaste links/rechts ", 
+  "       vorne/hinten neigen: Umschalt- und Pfeiltaste ab-/aufwärts ",
+  "       links/rechts kippen: Str- und Pfeiltaste links/rechts      ",
+  " um den Fokus nach                                                ",
+  "       links/rechts drehen: Alt- und Pfeiltaste links/rechts      ",
+  "         oben/unten drehen: Strg- und Pfeiltaste auf-/abwärts     ",
+  "                                                                  "}
 
 func (X *xwindow) help() {
   h, w := uint(len(helpstring)), uint(len(helpstring[0]))
@@ -1427,19 +1422,18 @@ func (X *xwindow) help() {
   Restore (l, c, w, h)
 }
 
-func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz float64) {
+func (X *xwindow) Go (draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz float64) {
   X.origin.Set3 (ox, oy, oz)
   X.focus.Set3 (fx, fy, fz)
   X.top.Set3 (tx, ty, tz)
   X.top.Norm()
   gl.Enable (gl.Depthtest)
-  gl.ShadeModel (gl.Flat)
+  gl.ShadeModel (gl.Smooth)
 //  gl.ShowLight (true) // XXX
   spc.Set (ox, oy, oz, fx, fy, fz, tx, ty, tz)
   phi, delta := 1.0, 0.1
   var xev C.XEvent
   redraw := true
-//  if m == Fly { go X.fly() }
   for {
     if redraw {
       gl.Clear()
@@ -1479,158 +1473,66 @@ func (X *xwindow) Go (m int, draw func(), ox, oy, oz, fx, fy, fz, tx, ty, tz flo
       case Esc:
         return
       case Enter:
-        switch m {
-        case Look:
-          switch depth {
-          case 0:
-            spc.MoveFront (delta)
-          case 1:
-            spc.MoveFront (5 * delta)
-          case 2:
-            spc.MoveFront (10 * delta)
-          case 3:
-            spc.MoveFront (20 * delta)
-          }
-        case Walk:
-          switch depth {
-          case 0:
-            spc.MoveFront (delta)
-          case 1:
-            spc.MoveFront (5 * delta)
-          case 2:
-            spc.MoveFront (10 * delta)
-          case 3:
-            spc.MoveFront (20 * delta)
-          }
-        case Fly:
-          // TODO increase speed
+        switch depth {
+        case 0:
+          spc.MoveFront (delta)
+        case 1:
+          spc.MoveFront (5 * delta)
+        case 2:
+          spc.MoveFront (10 * delta)
+        case 3:
+          spc.MoveFront (20 * delta)
         }
       case Back:
-        switch m {
-        case Look:
-          switch depth {
-          case 0:
-            spc.MoveFront (-delta)
-          case 1:
-            spc.MoveFront (-5 * delta)
-          case 2:
-            spc.MoveFront (-10 * delta)
-          case 3:
-            spc.MoveFront (-20 * delta)
-          }
-        case Walk:
-          switch depth {
-          case 0:
-            spc.MoveFront (-delta)
-          case 1:
-            spc.MoveFront (-5 * delta)
-          case 2:
-            spc.MoveFront (-10 * delta)
-          case 3:
-            spc.MoveFront (-20 * delta)
-          }
-        case Fly:
-          // TODO decrease speed
+        switch depth {
+        case 0:
+          spc.MoveFront (-delta)
+        case 1:
+          spc.MoveFront (-5 * delta)
+        case 2:
+          spc.MoveFront (-10 * delta)
+        case 3:
+          spc.MoveFront (-20 * delta)
         }
       case Left:
-        switch m {
-        case Look:
-          switch depth {
-          case 0:
-            spc.MoveRight (-delta)
-          case 1:
-            spc.Turn (phi)
-          case 2:
-            spc.Roll (phi)
-          case 3:
-            spc.TurnAroundFocusT (phi)
-          }
-        case Walk:
-          switch depth {
-          case 0:
-            spc.MoveRight (-phi)
-          case 1:
-            spc.Turn (phi)
-          case 2:
-            spc.Roll (phi)
-          }
-        case Fly:
-          if depth == 0 {
-            spc.Turn (phi)
-          } else {
-            spc.Roll (phi)
-          }
+        switch depth {
+        case 0:
+          spc.MoveRight (-delta)
+        case 1:
+          spc.Turn (phi)
+        case 2:
+          spc.Roll (phi)
+        case 3:
+          spc.TurnAroundFocusT (phi)
         }
       case Right:
-        switch m {
-        case Look:
-          switch depth {
-          case 0:
-            spc.MoveRight (delta)
-          case 1:
-            spc.Turn (-phi)
-          case 2:
-            spc.Roll (-phi)
-          case 3:
-            spc.TurnAroundFocusT (-phi)
-          }
-        case Walk:
-          switch depth {
-          case 0:
-            spc.Turn (-phi)
-          case 1:
-            spc.MoveRight (phi)
-          case 2:
-            spc.Roll (-phi)
-          }
-        case Fly:
-          if depth == 0 {
-            spc.Turn (-phi)
-          } else {
-            spc.Roll (-phi)
-          }
+        switch depth {
+        case 0:
+          spc.MoveRight (delta)
+        case 1:
+          spc.Turn (-phi)
+        case 2:
+          spc.Roll (-phi)
+        case 3:
+          spc.TurnAroundFocusT (-phi)
         }
       case Up:
-        switch m {
-        case Look:
-          switch depth {
-          case 0:
-            spc.MoveTop (delta)
-          case 1:
-            spc.Tilt (phi)
-          case 2, 3:
-            spc.TurnAroundFocusR (phi)
-          }
-        case Walk:
-          switch depth {
-          case 0:
-            spc.MoveTop (phi)
-          case 1:
-            spc.Tilt (phi)
-          }
-        case Fly:
+        switch depth {
+        case 0:
+          spc.MoveTop (delta)
+        case 1:
           spc.Tilt (phi)
+        case 2, 3:
+          spc.TurnAroundFocusR (phi)
         }
       case Down:
-        switch m {
-        case Look:
         switch depth {
-          case 0:
-            spc.MoveTop (-delta)
-          case 1:
-            spc.Tilt (-phi)
-          case 2, 3:
-            spc.TurnAroundFocusR (-phi)
-          }
-        case Walk:
-          switch depth {
-          case 0:
-            spc.MoveTop (-phi)
-          case 1:
-            spc.Tilt (-phi)
-          }
-        case Fly:
+        case 0:
+          spc.MoveTop (-delta)
+        case 1:
           spc.Tilt (-phi)
+        case 2, 3:
+          spc.TurnAroundFocusR (-phi)
         }
       case F1:
         X.help()

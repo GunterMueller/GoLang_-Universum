@@ -1,6 +1,6 @@
 package medium
 
-// (c) Christian Maurer   v. 220809 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   . "µU/obj"
@@ -25,7 +25,7 @@ var tx = [nMedien]string {"   ",
                           "DVD",
                           "BR "}
 var
-  cF, cB = col.LightWhite(), col.Blue()
+  cF, cB = col.FlashWhite(), col.Blue()
 type
   medium struct {
                 int

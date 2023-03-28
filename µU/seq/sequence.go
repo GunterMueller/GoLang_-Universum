@@ -130,30 +130,32 @@ func (x *sequence) Codelen() uint {
   return n
 }
 
-func (x *sequence) Encode() []byte {
-  b := make ([]byte, x.Codelen())
+func (x *sequence) Encode() Stream {
+  s := make ([]byte, x.Codelen())
   i, a := uint32(0), uint32(4)
-  copy (b[i:a], Encode (uint32(x.num)))
-  i += 4
+  copy (s[i:a], Encode (uint32(x.num)))
+  i += a
   for l := x.anchor.next; l != x.anchor; l = l.next {
     n := uint32(Codelen (l.any))
-    copy (b[i:i+a], Encode (n))
+    copy (s[i:i+a], Encode (n))
     i += a
-    copy (b[i:i+n], Encode (l.any))
+    copy (s[i:i+n], Encode (l.any))
     i += n
   }
-  return b
+  return s
 }
 
-func (x *sequence) Decode (bs []byte) {
+func (x *sequence) Decode (s Stream) {
   x.Clr()
   i, a := uint32(0), uint32(4)
-  x.num = uint(Decode (uint32(0), bs[i:a]).(uint32))
+  x.num = uint(Decode (uint32(0), s[i:a]).(uint32))
   i += a
   for j := uint32(0); j < uint32(x.num); j++ {
-    n := Decode (uint32(0), bs[i:i+a]).(uint32)
+    n := Decode (uint32(0), s[i:i+a]).(uint32)
     i += a
-    x.insert (Decode (Clone (x.anchor.any), bs[i:i+n]))
+    c := Clone(x.anchor.any)
+    d := Decode (c, s[i:i+n])
+    x.insert (d)
     i += n
   }
   return

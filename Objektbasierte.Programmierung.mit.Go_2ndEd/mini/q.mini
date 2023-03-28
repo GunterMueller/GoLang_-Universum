@@ -1,0 +1,3 @@
+  lda a
+  div b
+  ret

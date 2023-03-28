@@ -1,6 +1,6 @@
 package mol
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   . "µU/obj"
@@ -251,7 +251,7 @@ func (x *molecule) Construct (name string) {
       i++
     case kbd.Go:
       l0 := scr.NLines() - 1
-      scr.Colours (col.LightWhite(), col.Black())
+      scr.Colours (col.FlashWhite(), col.Black())
       scr.Write ("       ", l0, 0)
       scr.WriteNat (l, l0, 0)
       scr.WriteNat (c, l0, 4)

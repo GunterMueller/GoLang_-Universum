@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 230305 - license see µU.go
 
 import (
   "µU/ker"
@@ -255,7 +255,7 @@ func (x *graph) Decode (s Stream) {
     }
     e.nbPtr0.to = v0
     dir := s[i] == 1
-
+    i++
     d := e.nbPtr0.outgoing != dir
     if d != x.bool {
       t := "decoded Graph is "; if x.bool { t += "not " }; ker.Panic (t + "directed")

@@ -53,5 +53,5 @@ func Push() { push() }
 // and front and right are computed to maintain the invariants.
 func Pop() { pop() }
 
-// TODO Spec
-func SetLight (n uint) { setLight(n) }
+// TODO
+// func SetLight (n uint) { setLight(n) }

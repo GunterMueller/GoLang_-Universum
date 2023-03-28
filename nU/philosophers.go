@@ -35,7 +35,7 @@ func main() {
   scr.New(); defer scr.Fin()
   term.New(); defer term.Fin()
   Start()
-  scr.ColourF (col.LightWhite())
+  scr.ColourF (col.FlashWhite())
   scr.Write ("Philosoph", 0, 0)
   loop: for {
     scr.Switch (true)

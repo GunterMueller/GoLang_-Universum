@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 230222 - license see µU.go
+// (c) Christian Maurer   v. 230322 - license see µU.go
 //
 // >>> At the moment, nothing has been said about the orientation of the figures. TODO
 
@@ -32,25 +32,13 @@ type
 //  Start
 )
 const (
-  MaxL = 16 // <= GL.GL_MAX_LIGHTS
   RGB = C.GL_RGB
   Double = C.GL_DOUBLE
   Projection = C.GL_PROJECTION
   Modelview = C.GL_MODELVIEW
   Depthtest = C.GL_DEPTH_TEST
-  ColourMaterial = C.GL_COLOR_MATERIAL
   Flat = C.GL_FLAT
   Smooth = C.GL_SMOOTH
-  Lighting = C.GL_LIGHTING
-  Light0 = C.GL_LIGHT0
-  Front = C.GL_FRONT
-  FrontAndBack = C.GL_FRONT_AND_BACK
-  Position = C.GL_POSITION
-  Specular = C.GL_SPECULAR
-  Ambient = C.GL_AMBIENT
-  Diffuse = C.GL_DIFFUSE
-  AmbientAndDiffuse = C.GL_AMBIENT_AND_DIFFUSE
-  Shininess = C.GL_SHININESS
 )
 
 // For the specification of the following functions,
@@ -78,7 +66,6 @@ func PushMatrix() { pushMatrix() }
 func PopMatrix() { popMatrix() }
 func Enable (i uint) { enable(i) }
 func ShadeModel (m uint) { shadeModel(m) }
-func ColorMaterial (f, m int) { colorMaterial(f,m) }
 func Flush() { flush() }
 func Error() string { return error() }
 
@@ -308,23 +295,3 @@ func Paraboloid (x0, y0, z0, a, wx, wy float64) { paraboloid(x0,y0,z0,a,wx,wy) }
 // The bounded surface within the area -wx <= x <= wx and -wy <= y <= wy,
 // given by the function f is created.
 func Surface (f obj.Fxy2z, wx, wy float64) { surface (f,wx,wy) }
-
-// Light ///////////////////////////////////////////////////////////////////
-
-// Pre: n < MaxL, 0 <= a0, a1, a2 <= 1.
-// If Light n is already switched on, nothing has happened.
-// Otherwise it is now switched on at position x, y, z in the colour defined
-// by r, g and b with ambience a0, a1, a2 and diffusion defined by r, g, b.
-func InitLight (n uint, x, y, z, a0, a1, a2 float64, r, g, b byte) {
-  initLight(n,x,y,z,a0,a1,a2,r,g,b)
-}
-
-// Pre: n < MaxL; Light n is switched on.
-// Light n has position x, y, z.
-func PosLight (n uint, x, y, z float64) { posLight(n,x,y,z) }
-
-// Pre: n < MaxL.
-func ActualizeLight (n uint) { actLight(n) }
-
-// Pre: n < MaxL.
-func Lamp (n uint) { lamp(n) }

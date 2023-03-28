@@ -1,0 +1,2 @@
+µU.go:  "µU/achan"; "µU/atom"; "µU/audio"; "µU/barb"; "µU/barr"; "µU/bbuf"; "µU/book"; "µU/bpqu"
+µU.go:  achan.New(0); atom.New(); audio.New(); barb.NewDir(); barr.New(2); bbuf.New(nil, 0)

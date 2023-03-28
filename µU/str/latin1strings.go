@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 221115 - license see µU.go
+// (c) Christian Maurer   v. 230311 - license see µU.go
 
 import
   "µU/char"
@@ -643,4 +643,15 @@ func tex (s string) string {
     }
   }
   return s
+}
+
+func alphanumeric (s string) bool {
+  offSpc (&s)
+  n := len(s)
+  for i := 0; i < n; i++ {
+    if ! char.IsLetterOrDigit (s[i]) {
+      return false
+    }
+  }
+  return true
 }

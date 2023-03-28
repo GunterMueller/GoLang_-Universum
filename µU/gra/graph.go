@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 221013 - license see µU.go
+// (c) Christian Maurer   v. 230308 - license see µU.go
 //
 // >>>  References:
 // >>>  CLR  = Cormen, Leiserson, Rivest        (1990)
@@ -24,7 +24,7 @@ import (
   |   nbPtr---|-----------\                                  /-----------|---nbPtr   |
   |___________|    /       |                                |        \   |___________|
   |           |   |        |                                |         |  |           |
-  |   bool    |   |        v              edge              V         |  |   bool    |
+  |   bool    |   |        v              edge              v         |  |   bool    |
   |___________|   |    _________        ________        _________     |  |___________|
   |     |     |   |   /         \      /        \      /         \    |  |     |     |
   |dist | time|   |  | edgePtr---|--->|   any    |<---|--edgePtr  |   |  |dist | time|
@@ -67,7 +67,7 @@ import (
 
   Semantics of some variables, that are "hidden" in fields of vAnchor:
     vAnchor.time0: in that the "time" is incremented for each search step
-    vAnchor.acyclic: (after call of search) == true <=> graph has no cycles. */
+    vAnchor.acyclic: (after call of search1) == true <=> graph has no cycles. */
 
 const (
   suffix = "gra"
@@ -117,7 +117,7 @@ type (
        colocal,
          local *vertex
        eAnchor *edge
-          path []*vertex // XXX
+          path []*vertex
      eulerPath []*neighbour
           demo Demoset
         writeV,

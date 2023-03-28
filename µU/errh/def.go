@@ -31,7 +31,7 @@ func DelHintPos (s string, l, c uint) { delHintPos(s,l,c) }
 // func Proceed0 (s string) { proceed0(s) }
 // func Proceed (s string, n uint) { proceed(s,n) }
 
-// s (and n resp.) is written to the last line of the screen.
+// The s's (and n's resp.) are written to the last line of the screen.
 // The calling process is blocked, until Escape or Backspace is pressed;
 // then the former content of the last line of the screen is restored.
 func Error0 (s string) { error0(s) }

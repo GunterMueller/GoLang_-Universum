@@ -1,0 +1,73 @@
+package bahnhof
+
+// (c) Christian Maurer   v. 230109 - license see µU.go
+
+import (
+  . "bahn/kilo"
+  . "bahn/richtung"
+  b "bahn/block"
+  s "bahn/signal"
+  "bahn/netz"
+)
+
+func (x *bahnhof) eisenheim() {
+/*
+00  02  04  06  08  10  12  14  16  18  20  22  24  26  28  30  32  34  36  38  40    Y0 +
+  01  03  05  07  09  11  13  15  17  19  21  23  25  27  29  31  33  35  37  39  41
+
+   [------13-----------2-------------------3---------------------7------23--------]      5
+Bahnstadt             /                                         /
+----------12---------1-3-------------------2-----------------5-6--------22--------]      6
+                        \                                   / 
+                         \-----------------1---------------4------------21--------]      7
+*/
+
+const (
+  m = Mit; g = Gegen; k = NK
+  L = Links; G = Gerade; R = Rechts
+)
+
+//  Gleis  Nr   Art   Lage Zeile Spalte
+//         |     |    | Länge|   | Nummers.NSpalte
+//         |     |    |   |  |   |   |
+//         |     |    |   |  |   |   | Signal Gegen
+//         |     |    |   |  |   |   |   Typ     Stellung    
+//         |     |    |   |  |   |   |    |   |    |   Spalte
+//         |     |    |   |  |   |   |    |   |    |     |  Signal Mit
+//         |     |    |   |  |   |   |    |   |    |     |   Typ     Stellung
+//         |     |    |   |  |   |   |    |   |    |     |    |   |    |   Spalte
+//         |     |    |   |  |   |   |    |   |    |     |    |   |    |     |
+
+  x.gleis ( 1, b.Dfg, G, 16, 7, 13, 21, s.T1, g, s.Hp0, 14, s.T2, m, s.Hp0, 29)
+  x.gleis ( 2, b.Dfg, G, 18, 6, 12, 21, s.T2, g, s.Hp0, 14, s.T2, m, s.Hp0, 29)
+  x.gleis ( 3, b.Dfg, G, 20, 5, 12, 21, s.T1, g, s.Hp0, 12, s.NT, k, s.Hp0,  0)
+  x.gleis (12, b.EAG, G, 10, 6,  0,  5, s.T1, g, s.Hp0,  0, s.T1, m, s.Hp0, 11)
+  x.gleis (13, b.AsG, G,  9, 5,  2,  5, s.T2, m, s.Hp0, 10, s.NT, k, s.Hp0,  0)
+  x.gleis (21, b.AsM, G, 11, 7, 30, 36, s.T1, g, s.Hp0, 31, s.NT, k, s.NS,   0)
+  x.gleis (22, b.AsM, G,  9, 6, 32, 36, s.T1, g, s.Hp0, 33, s.NT, k, s.NS,   0)
+  x.gleis (23, b.AsM, G,  8, 5, 33, 36, s.T2, g, s.Hp0, 32, s.NT, k, s.NS,   0)
+
+  x.knick ( 1, g, R,     7, 12)
+
+  x.gleisBesetzen (2)
+  x.gleisBesetzen (3)
+
+  nachbar[12] = netz.Bahnstadt
+
+//  Weiche  Nr  Kilometrierung
+//           |  | Lage
+//           |  |  | Richtung
+//           |  |  |  | Stellung
+//           |  |  |  |  | Zeile
+//           |  |  |  |  |  | Spalte
+//           |  |  |  |  |  |   | 
+  x.weiche ( 1, m, G, L, G, 6, 10)
+  x.weiche ( 2, g, G, L, G, 5, 11)
+  x.weiche ( 3, m, G, R, G, 6, 11)
+  x.weiche ( 4, m, G, L, G, 7, 29)
+  x.weiche ( 5, g, G, L, G, 6, 30)
+  x.weiche ( 6, m, G, L, G, 6, 31)
+  x.weiche ( 7, g, G, L, G, 5, 32)
+
+  x.verbinden()
+}

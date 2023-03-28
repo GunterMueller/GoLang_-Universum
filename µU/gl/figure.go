@@ -1,6 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 221113 - license see µU.go
+// (c) Christian Maurer   v. 230313 - license see µU.go
 
 import (
   "math"
@@ -119,19 +119,9 @@ func quadstrip (x ...float64) {
 
 func horRectangle (x, y, z, x1, y1 float64, up bool) {
   if up {
-    begin (Quads)
-    vertex (x,  y,  z)
-    vertex (x1, y,  z)
-    vertex (x1, y1, z)
-    vertex (x,  y1, z)
-    end()
+    quad (x, y, z, x1, y, z, x1, y1, z, x, y1, z) 
   } else {
-    begin (Quads)
-    vertex (x,  y1, z)
-    vertex (x1, y1, z)
-    vertex (x1, y,  z)
-    vertex (x,  y,  z)
-    end()
+    quad (x, y1, z, x1, y1, z, x1, y, z, x, y, z)
   }
 }
 
@@ -139,12 +129,7 @@ func vertRectangle (x ...float64) {
   if len(x) != 6 { fail() }
   if x[2] == x[5] { ker.PrePanic() }
 //  if x[0] == x[3] && x[1] == x[4] { ker.PrePanic() }
-  begin (Quads)
-  vertex (x[0], x[1], x[2])
-  vertex (x[3], x[4], x[2])
-  vertex (x[3], x[4], x[5])
-  vertex (x[0], x[1], x[5])
-  end()
+  quad (x[0], x[1], x[2], x[3], x[4], x[2], x[3], x[4], x[5], x[0], x[1], x[5])
 }
 
 func parallelogram (x ...float64) {
@@ -246,18 +231,12 @@ func prism (x ...float64) {
   for i := 0; i < n; i++ {
     y[i] = x[i] + x[i%3]
   }
-  begin (Quads)
   for i := 3; i < n - 3; i += 3 {
-    vertex (x[i],   x[i+1], x[i+2])
-    vertex (x[i+3], x[i+4], x[i+5])
-    vertex (y[i+3], y[i+4], y[i+5])
-    vertex (y[i],   y[i+1], y[i+2])
+    quad (x[i],   x[i+1], x[i+2], x[i+3], x[i+4], x[i+5],
+          y[i+3], y[i+4], y[i+5], y[i],   y[i+1], y[i+2])
   }
-  vertex (x[n-3], x[n-2], x[n-1])
-  vertex (x[3],   x[4],   x[5])
-  vertex (y[3],   y[4],   y[5])
-  vertex (y[n-3], y[n-2], y[n-1])
-  end()
+  quad (x[n-3], x[n-2], x[n-1], x[3],   x[4],   x[5],
+        y[3],   y[4],   y[5],   y[n-3], y[n-2], y[n-1])
 }
 
 func prismC (c []col.Colour, x ...float64) {
@@ -267,49 +246,51 @@ func prismC (c []col.Colour, x ...float64) {
   for i := 0; i < n; i++ {
     y[i] = x[i] + x[i%3]
   }
-  begin (Quads)
   for i := 3; i < n - 3; i += 3 {
     colour (c[i/3-1])
-    vertex (x[i],   x[i+1], x[i+2])
-    vertex (x[i+3], x[i+4], x[i+5])
-    vertex (y[i+3], y[i+4], y[i+5])
-    vertex (y[i],   y[i+1], y[i+2])
+    quad (x[i],   x[i+1], x[i+2], x[i+3], x[i+4], x[i+5],
+          y[i+3], y[i+4], y[i+5], y[i],   y[i+1], y[i+2])
   }
   colour (c[n/3-2])
-  vertex (x[n-3], x[n-2], x[n-1])
-  vertex (x[3],   x[4],   x[5])
-  vertex (y[3],   y[4],   y[5])
-  vertex (y[n-3], y[n-2], y[n-1])
-  end()
+  quad (x[n-3], x[n-2], x[n-1], x[3], x[4], x[5],
+        y[3], y[4], y[5], y[n-3], y[n-2], y[n-1])
 }
 
 func parallelepiped (x ...float64) {
   if len(x) != 12 { fail() }
-  colour (col.Red())
-  quad (x[3], x[4], x[5], x[3] + x[9], x[4] + x[10], x[5] + x[11],
-        x[3] + x[6] + x[9] - x[0], x[4] + x[7] + x[10] - x[1],
-        x[5] + x[8] + x[11] - x[2], x[3] + x[6], x[4] + x[7], x[5] + x[8])
-  prism (x[3] - x[0], x[4] - x[1], x[5] - x[2], x[0], x[1], x[2],
-         x[9], x[10], x[11], x[6] + x[9] - x[0], x[7] + x[10] - x[1],
-         x[8] + x[11] - x[2], x[6], x[7], x[8])
-  quad (x[0], x[1], x[2], x[6], x[7], x[8], x[6] + x[9] - x[0],
-        x[7] + x[10] - x[1], x[8] + x[11] - x[2], x[9], x[10], x[11])
+  quad (x[0],                      x[1],                       x[2],
+        x[0] + x[6],               x[1] + x[7],                x[2] + x[8],
+        x[0] + x[6] + x[9],        x[1] + x[7] + x[10],        x[2] + x[8] + x[11],
+        x[0] + x[9],               x[1]+ x[10],                x[2] + x[11])
+  prism (x[3],                     x[4],                       x[5],
+         x[0],                     x[1],                       x[2],
+         x[0] + x[9],              x[1] + x[10],               x[2] + x[11],
+         x[0] + x[6] + x[9],       x[1] + x[7] + x[10],        x[2] + x[8] + x[11],
+         x[0] + x[6],              x[1] + x[7],                x[2] + x[8])
+  quad (x[0] + x[3],               x[1] + x[4],                x[2] + x[5],
+        x[0] + x[3] + x[9],        x[1] + x[4] + x[10],        x[2] + x[5] + x[11],
+        x[0] + x[3] + x[6] + x[9], x[1] + x[4] + x[7] + x[10], x[2] + x[5] + x[8] + x[11],
+        x[0] + x[3] + x[6],        x[1] + x[4] + x[7],         x[2] + x[5] + x[8])
 }
 
 func parallelepipedC (c []col.Colour, x ...float64) {
   if len(x) != 12 || len(c) != 6 { fail() }
-  colour (c[1])
-  quad (x[3], x[4], x[5],
-        x[3] + x[9], x[4] + x[10], x[5] + x[11],
-        x[3] + x[6] + x[9] - x[0], x[4] + x[7] + x[10] - x[1],
-        x[5] + x[8] + x[11] - x[2], x[3] + x[6], x[4] + x[7], x[5] + x[8])
-  prismC ([]col.Colour { c[0], c[4], c[2], c[5] },
-          x[3] - x[0], x[4] - x[1], x[5] - x[2], x[0], x[1], x[2],
-          x[9], x[10], x[11], x[6] + x[9] - x[0], x[7] + x[10] - x[1],
-          x[8] + x[11] - x[2], x[6], x[7], x[8])
-  colour (c[3])
-  quad (x[0], x[1], x[2], x[6], x[7], x[8], x[6] + x[9] - x[0],
-        x[7] + x[10] - x[1], x[8] + x[11] - x[2], x[9], x[10], x[11])
+  colour (c[4])
+  quad (x[0],                      x[1],                       x[2],
+        x[0] + x[6],               x[1] + x[7],                x[2] + x[8],
+        x[0] + x[6] + x[9],        x[1] + x[7] + x[10],        x[2] + x[8] + x[11],
+        x[0] + x[9],               x[1]+ x[10],                x[2] + x[11])
+  prismC ([]col.Colour {c[0], c[1], c[2], c[3]},
+          x[3],                    x[4],                       x[5],
+          x[0],                    x[1],                       x[2],
+          x[0] + x[9],             x[1] + x[10],               x[2] + x[11],
+          x[0] + x[6] + x[9],      x[1] + x[7] + x[10],        x[2] + x[8] + x[11],
+          x[0] + x[6],             x[1] + x[7],                x[2] + x[8])
+  colour (c[5])
+  quad (x[0] + x[3],               x[1] + x[4],                x[2] + x[5],
+        x[0] + x[3] + x[9],        x[1] + x[4] + x[10],        x[2] + x[5] + x[11],
+        x[0] + x[3] + x[6] + x[9], x[1] + x[4] + x[7] + x[10], x[2] + x[5] + x[8] + x[11],
+        x[0] + x[3] + x[6],        x[1] + x[4] + x[7],         x[2] + x[5] + x[8])
 }
 
 func pyramid (x, y, z, a, h float64) {
@@ -406,7 +387,7 @@ func octopus (x ...float64) {
 
 func octopusC (c []col.Colour, x ...float64) {
   n := len(x)
-  if n % 3 != 0 || n < 12 || len(c) != n / 3 + 1 { fail() }
+  if n % 3 != 0 || n < 12 || len(c) != n / 3 { fail() }
   for i := 1; i < n / 3 - 1; i++ {
     j, k := 3 * i, 3 * (i + 1)
     colour (c[i-1])

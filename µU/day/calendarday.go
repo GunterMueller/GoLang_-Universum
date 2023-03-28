@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 230111 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   . "µU/ker"
@@ -87,7 +87,7 @@ var (
 func init() {
   WeekdayF, WeekdayB = col.StartCols()
   HolidayF, HolidayB = col.StartColsA()
-  YearnumberF, YearnumberB = col.LightWhite(), col.Magenta()
+  YearnumberF, YearnumberB = col.FlashWhite(), col.Magenta()
   WeekdayNameF, WeekdayNameB = col.Magenta(), WeekdayB
   MonthF, MonthB = YearnumberF, YearnumberB
   today.Update()

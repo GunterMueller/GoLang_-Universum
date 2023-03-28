@@ -7,10 +7,7 @@ import
 type
   Sequence interface {
 
-//  Object
-  Clearer
   Equaler
-//  Comparer
   Coder
   Seeker // hence Collector, hence Clearer
   Predicator

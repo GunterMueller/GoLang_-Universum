@@ -1,13 +1,13 @@
 package smok
 
-// (c) Christian Maurer   v. 180101 - license see nU.go
+// (c) Christian Maurer   v. 230326 - license see nU.go
 
 import ("time"; "nU/col"; "nU/scr")
 
 const raucher = "Raucher mit"
 var (
   text   = [3]string     {"Papier",         " Tabak",         "Hölzer" }
-  colour = [3]col.Colour {col.LightWhite(), col.LightBrown(), col.Yellow()}
+  colour = [3]col.Colour {col.FlashWhite(), col.LightBrown(), col.Yellow()}
   cm, lm, r0, r1 uint
   la, ca, r uint
   lsm [3]uint
@@ -26,7 +26,7 @@ func init_() {
 }
 
 func table() {
-  scr.ColourF (col.LightWhite())
+  scr.ColourF (col.FlashWhite())
   scr.Circle (lm, cm, r)
 }
 

@@ -1,6 +1,6 @@
 package flat
 
-// (c) Christian Maurer   v. 221113 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   "µU/col"
@@ -12,9 +12,9 @@ func SetHt (f, c float64) { setHt(f,c) }
 
 func SetAng (a float64) { alpha = a }
 
-func SetPos (x, y float64) { xx, yy = x, y }
+func SetXY (x, y float64) { xx, yy = x, y }
 
-func Pos() (float64, float64) { return xx, yy }
+func XY() (float64, float64) { return xx, yy }
 
 func Move (x, y float64) { xx += x; yy += y }
 

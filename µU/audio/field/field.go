@@ -1,6 +1,6 @@
 package field
 
-// (c) Christian Maurer   v. 220809 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 import (
   . "µU/obj"
@@ -44,7 +44,7 @@ type
                 text.Text
                 }
 var
-  cF, cB = col.LightWhite(), col.Blue()
+  cF, cB = col.FlashWhite(), col.Blue()
 
 func new_() Field {
   x := new(field)
