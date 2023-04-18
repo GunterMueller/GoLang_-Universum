@@ -1,3 +1,3 @@
 package reg
 
-func Touch() { }
+func Touch() {}

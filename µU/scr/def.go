@@ -14,7 +14,7 @@ package scr
    Fore-/background colour of the screen and actual fore-/backgroundcolour
    are FlashWhite and Black. The screen is cleared and the cursor is off.
    In a console SIGUSR1 and SIGUSR2 are used internally and not any more available.
-   GNo process is in the exclusive possession of the screen. */
+   No process is in the exclusive possession of the screen. */
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/Xlib.h>

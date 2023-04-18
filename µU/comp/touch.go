@@ -1,3 +1,3 @@
 package comp
 
-func Touch() { }
+func Touch() {}

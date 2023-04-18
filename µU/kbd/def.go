@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 230228 - license see µU.go
+// (c) Christian Maurer   v. 230330 - license see µU.go
 //
 // >>> Pre: The preconditions of mouse are met.
 
@@ -39,7 +39,6 @@ type
   Drag; Drop; Move        // to move them around with a mouse
   To; There; Thither      // and to drag and drop them
   ScrollUp; ScrollDown    // for the mouse wheel
-//  Nav                     // to navigate in space with a 3d-mouse
   NComms                  // number of commands
 )
 
@@ -71,7 +70,6 @@ type
    - Here, This, That:        left, right, middle button pressed
    - Drag, Drop, Move:        mouse moved with corresponding button pressed
    - To, There, Thither:      corresponding button released
-//   - Navigate:                3d-mouse used
 
    commands of depth > 0 by combination with metakeys:
    - depth 1:                 Shift-key,
@@ -98,10 +96,6 @@ func Command() (Comm, uint) { return command() }
 
 // Returns a string, describing the calling Command.
 func (c Comm) String() string { return text[c] }
-
-// Returns the movement- and rotationvalues of the last command Navigate.
-// The velues are all 0, if there is no 3d-mouse or this command was not given,.
-// func ReadNavi() (spc.GridCoord, spc.GridCoord) { return readNavi() }
 
 // Precondition: A byte or command was read.
 // Returns the last read byte, if there is one, otherwise 0.

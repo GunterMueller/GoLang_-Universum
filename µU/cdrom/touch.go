@@ -1,3 +1,3 @@
 package cdrom
 
-func Touch() { }
+func Touch() {}

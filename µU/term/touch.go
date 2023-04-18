@@ -1,3 +1,3 @@
 package term
 
-func Touch() { }
+func Touch() {}

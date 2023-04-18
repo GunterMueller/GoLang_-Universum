@@ -1,3 +1,3 @@
 package smok
 
-func TouchSmok() {}
+func Touch() {}

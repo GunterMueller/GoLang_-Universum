@@ -29,19 +29,19 @@ package main
   Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen. */
 
 import (
-  "µU/achan"; "µU/atom"; "µU/audio"; "µU/barb"; "µU/barr"; "µU/bbuf"; "µU/book"; "µU/bpqu"
-  "µU/br"; "µU/bytes"; "µU/car"; "µU/char"; "µU/cdrom"; "µU/col"; "µU/collop"; "µU/cntry"
-  "µU/comp"; "µU/day"; "µU/date"; "µU/dgra"; "µU/dlock"; "µU/enum"; "µU/env"; "µU/errh"
-  "µU/euro"; "µU/fig2"; "µU/fig3"; "µU/files"; "µU/gram"; "µU/host"; "µU/ieee"; "µU/kbd"
-  "µU/li"; "µU/lock2"; "µU/lr"; "µU/macc"; "µU/masks"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"
-  "µU/menue"; "µU/mol"; "µU/mstk"; "µU/pbar"; "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"
-  "µU/pstk"; "µU/Q"; "µU/qmat"; "µU/R"; "µU/reg"; "µU/rpc"; "µU/rw"; "µU/scale"; "µU/schan"
-  "µU/scr"; "µU/smok"; "µU/stru"; "µU/term"; "µU/texts"; "µU/time"; "µU/vnset"; "µU/Z"
+  "µU/achan"; "µU/audio"; "µU/barb"; "µU/barr"; "µU/book"; "µU/bpqu"; "µU/br"; "µU/bytes"
+  "µU/car"; "µU/cdrom"; "µU/char"; "µU/col"; "µU/collop"; "µU/comp"; "µU/date"; "µU/day"
+  "µU/dgra"; "µU/dlock"; "µU/env"; "µU/errh"; "µU/fig2"; "µU/fig3"; "µU/files"; "µU/gram"
+  "µU/ieee"; "µU/kbd"; "µU/li"; "µU/lock"; "µU/lock2"; "µU/lockn"; "µU/lr"; "µU/macc"
+  "µU/masks"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"; "µU/mol"; "µU/mstk"; "µU/pbar"
+  "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/pstk"; "µU/qmat"; "µU/reg"; "µU/rpc"; "µU/rw"
+  "µU/scale"; "µU/schan"; "µU/scr"; "µU/smok"; "µU/term"; "µU/texts"; "µU/time"; "µU/vnset"
+  "µU/Z"
 )
 const (
   yy = 2023
-  mm =    3
-  dd =   26
+  mm =    4
+  dd =    1
 )
 var (
   red, green = col.FlashRed(), col.FlashGreen()
@@ -141,20 +141,19 @@ func drive (cl, cf, cb col.Colour, d chan int) {
 
 func input() { for { _, _ = kbd.Command() } }
 
-func main() { // gets all packages compiled and shows the license
+func main() {
   scr.NewWH (0, 0, 1250, 800); defer scr.Fin()
   scr.Name (string(char.Mu)[1:] + "U")
   wd, ht = int(scr.Wd()), int(scr.Ht())
   wd1, ht1 = int(scr.Wd1()), int(scr.Ht1())
-  achan.New(0); atom.New(); audio.New(); barb.NewDir(); barr.New(2); bbuf.New(nil, 0)
-  book.New(); bpqu.New(0, 1); br.New(3); bytes.Touch(); cdrom.Touch(); cntry.New()
-  collop.Touch(); comp.Touch(); date.New(); enum.Touch(); euro.New(); dgra.Touch()
-  dlock.New(0, nil, 0); fig2.Touch(); fig3.Touch(); gram.Touch(); host.New(); ieee.New()
-  li.New(0); lock2.NewPeterson(); lr.NewMutex(); macc.New(); masks.New(); mbbuf.New(nil, 2)
-  mbuf.New(0); mcorn.New(0); menue.Touch(); mol.New(); mstk.New(0); pbar.Touch()
-  pat.New(); piset.Touch(); pos.Touch(); pstk.Touch(); Q.Touch(); qmat.Touch()
-  R.String(0); reg.Touch(); rpc.Touch(); rw.New1(); scale.Touch(); schan.New(0)
-  smok.TouchSmok(); stru.New(); term.Touch(); texts.Touch(); vnset.EmptySet(); Z.String(0)
+  achan.New(0); audio.New(); barb.NewDir(); barr.New(2); book.New(); bpqu.New(0, 1)
+  br.New(3); bytes.Touch(); cdrom.Touch(); char.Touch(); collop.Touch(); comp.Touch()
+  date.New(); dgra.Touch(); dlock.New(0, nil, 0); fig2.Touch(); fig3.Touch(); gram.Touch()
+  ieee.New(); li.New(0); lock.NewChannel(); lock2.NewPeterson(); lockn.NewDijkstra(0)
+  lr.NewMutex(); macc.New(); masks.New(); mbbuf.New(nil, 2); mbuf.New(0); mcorn.New(0)
+  menue.Touch(); mol.New(); mstk.New(0); pbar.Touch(); pat.New(); piset.Touch(); pos.Touch()
+  pstk.Touch(); qmat.Touch(); reg.Touch(); rpc.Touch(); rw.New1(); scale.Touch()
+  schan.New(0); smok.Touch(); term.Touch(); texts.Touch(); vnset.EmptySet(); Z.String(0)
   var v day.Calendarday = day.New()
   v.Set (dd, mm, yy); v.SetFormat (day.Yymmdd)
   wdtext = 91 * wd1 // 91 == width of license text lines + 2

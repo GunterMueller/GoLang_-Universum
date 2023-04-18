@@ -1,3 +1,3 @@
 package piset
 
-func Touch() { }
+func Touch() {}

@@ -1,3 +1,3 @@
 package gram
 
-func Touch () {}
+func Touch() {}

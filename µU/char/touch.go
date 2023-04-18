@@ -1,3 +1,3 @@
-package rpc
+package char
 
 func Touch() {}

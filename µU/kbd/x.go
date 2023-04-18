@@ -285,8 +285,6 @@ loop:
         *C = Go
       }
       break loop
-    case C.ClientMessage:
-      ; // break loop // navi
     default:
       *B, *C, *D = 0, None, 0
       break loop

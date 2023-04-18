@@ -1,3 +1,3 @@
 package bytes
 
-func Touch() { }
+func Touch() {}

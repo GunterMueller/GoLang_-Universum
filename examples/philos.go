@@ -1,6 +1,6 @@
 package main
 
-// (c) Christian Maurer   v. 230105 - license see µU.go
+// (c) Christian Maurer   v. 230326 - license see µU.go
 
 // >>> E. W. Dijkstra, Hierarchical Ordering of Sequential Processes
 //     Acta Informatica 1 (1971), p. 115-138 (section 6.)
@@ -57,7 +57,7 @@ func run (ph Philos) {
 }
 
 func main() {
-  fg, bg := col.LightWhite(), col.Blue(); scr.Colours (fg, bg)
+  fg, bg := col.FlashWhite(), col.Blue(); scr.Colours (fg, bg)
 // choose one of the following implementations (see µU/phil/def.go):
 /*/
   run (NewNaive())

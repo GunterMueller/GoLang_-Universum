@@ -1,3 +1,3 @@
 package pos
 
-func Touch() { }
+func Touch() {}

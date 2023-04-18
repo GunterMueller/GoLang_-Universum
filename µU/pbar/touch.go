@@ -1,3 +1,3 @@
 package pbar
 
-func Touch() { }
+func Touch() {}

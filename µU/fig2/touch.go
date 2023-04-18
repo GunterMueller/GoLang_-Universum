@@ -1,3 +1,3 @@
 package fig2
 
-func Touch() { }
+func Touch() {}

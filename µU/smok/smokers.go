@@ -1,12 +1,12 @@
 package smok
 
-// (c) Christian Maurer   v. 230326 - license see µU.go
+// (c) Christian Maurer   v. 230401 - license see µU.go
 
 import (
   "µU/time"
   "µU/env"
   "µU/str"
-//  "µU/mode"
+  "µU/mode"
   "µU/col"
   "µU/scr"
 )
@@ -26,7 +26,7 @@ var
   Hölzer = str.Lat1("Hölzer")
 var (
   text   = [3]string     {"Papier",         " Tabak",         Hölzer}
-  colour = [3]col.Colour {col.FlashWhite(), col.LightBrown(), col.SandYellow()}
+  colour = [3]col.Colour {col.FlashWhite(), col.LightBrown(), col.Pastellgelb()}
 )
 var (
   xm, ym, r0, r1 int
@@ -41,7 +41,7 @@ func others (u uint) (uint, uint) {
 
 func init() {
   if env.Call() == "smokers" {
-    scr.NewMax() // XXX  scr.New(0, 50, mode.VGA)
+    scr.New (0, 0, mode.VGA)
     xm, ym, r = int(scr.Wd()) / 2, int(scr.Ht()) / 2, scr.Wd() / 4
     la, ca = scr.NLines() / 2, scr.NColumns() / 2
     r0, r1 = int (r), (866 * int(r)) / 1000
@@ -106,7 +106,7 @@ func smoke (u uint, a uint) {
     case <-ready:
       return
     default:
-    }
+  }
   }
 }
 

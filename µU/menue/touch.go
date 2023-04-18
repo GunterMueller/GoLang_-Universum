@@ -1,3 +1,3 @@
 package menue
 
-func Touch() { }
+func Touch() {}

@@ -1,3 +1,3 @@
 package dgra
 
-func Touch () { }
+func Touch() {}

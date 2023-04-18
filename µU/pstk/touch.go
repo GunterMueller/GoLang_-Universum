@@ -1,3 +1,3 @@
 package pstk
 
-func Touch () {}
+func Touch() {}

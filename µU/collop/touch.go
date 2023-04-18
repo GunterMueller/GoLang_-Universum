@@ -1,3 +1,3 @@
 package collop
 
-func Touch() { }
+func Touch() {}

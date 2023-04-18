@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 230316 - license see µU.go
+// (c) Christian Maurer   v. 230330 - license see µU.go
 
 // #cgo LDFLAGS: -lX11 -lXext -lGL -lGLU
 // #include <stdio.h>
@@ -45,19 +45,8 @@ void fullscreen (Display *d, Window w, Window w0, int on) {
   XFlush (d);
 }
 
-// void navi (Display *d, Window w, Atom a) {
-//   XEvent e;
-//   e.type = ClientMessage;
-//   e.xclient.display = d;
-//   e.xclient.window = w;
-//   e.xclient.message_type = a;
-//   e.xclient.send_event = False;
-//   e.xclient.format = 16; // doesn't matter
-//   if (XSendEvent (d, w, False, 0L, &e) < 0) ;
-//   if (XSync (d, False) < 0) ;
-// }
-
-void getPixelColour (Display *d, XImage *i, Colormap m, int x, int y, int16_t *r, int16_t *g, int16_t *b) {
+void getPixelColour (Display *d, XImage *i, Colormap m, int x, int y,
+                     int16_t *r, int16_t *g, int16_t *b) {
   XColor c;
   c.pixel = XGetPixel (i, x, y);
   XFree (i);
@@ -171,7 +160,6 @@ import (
   "µU/mode"
   "µU/linewd"
   "µU/scr/shape"
-//  "µU/navi"
   "µU/vect"
   "µU/gl"
   "µU/glu"
@@ -228,11 +216,6 @@ var (
   monitorWd, monitorHt uint // full screen
   fullScreenW mode.Mode
   planes C.uint
-/*/
-  fdNavi uint
-  naviAtom C.Atom
-  navipipe chan navi.Command
-/*/
   actualW *xwindow
   first bool = true // to start goSendEvents only once
   winList []*xwindow
@@ -245,7 +228,7 @@ var (
                   "ReparentNotify", "ConfigureNotify", "ConfigureRequest", "GravityNotify",
                   "ResizeRequest", "CirculateNotify", "CirculateRequest",
                   "PropertyNotify", "SelectionClear", "SelectionRequest", "SelectionNotify",
-                  "ColormapNotify", "ClientMessage", "MappingNotify", "GenericEvent", "LASTEvent"}
+                  "ColormapNotify", "ClientMessage", "MappingNotify", "GenericEvent", "LastEvent"}
   startSendEvents = make(chan int)
   xMouse, yMouse int
 )
@@ -1630,14 +1613,6 @@ func NewWHW (x, y, w, h uint) Screen {
     wm_protocols := C.XInternAtom (dpy, p, C.False)
     C.XSetWMProtocols (dpy, X.win, &wm_protocols, 1)
 /*/
-/*/
-    m := C.CString ("navi"); defer C.free (unsafe.Pointer(m))
-    naviAtom = C.XInternAtom (dpy, m, C.False)
-    if navi.Exists() {
-      navipipe = navi.Channel()
-      go X.catchNavi()
-    }
-/*/
     startSendEvents <- 0
   }
   C.XMapWindow (dpy, X.win)
@@ -1714,6 +1689,7 @@ func Win (i uint) *xwindow {
     return winList[i]
   }
   ker.Panic ("µU/xwin.Win: there is no xwindow there with number" + strconv.Itoa(int(i)))
+  return nil
 }
 /*/
 
@@ -1729,12 +1705,6 @@ func (X *xwindow) Sub (n uint) C.Window {
   }
   return C.Window(0)
 }
-
-// func (X *xwindow) catchNavi() {
-//   for {
-//     C.navi (dpy, X.win, naviAtom)
-//   }
-// }
 
 func (X *xwindow) Win2buf() {
   X.win2buf()
@@ -1877,11 +1847,8 @@ func sendEvents() {
         ;
       case C.ColormapNotify:
         ;
-/*/
       case C.ClientMessage:
-        mT := C.mT (&xev)
-        if mT != naviAtom { println ("unknown xclient.message_type ", uint32(mT)) }
-/*/
+        ;
       case C.MappingNotify:
         ;
       case C.GenericEvent:
@@ -1896,7 +1863,7 @@ func sendEvents() {
       case C.ButtonPress, C.ButtonRelease, C.MotionNotify:
         Eventpipe <- event
       default:
-//        println (txt[eventtype])
+//        println ("SendEvents", txt[eventtype])
       }
     }
   }

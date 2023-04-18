@@ -1,18 +1,15 @@
 package kbd
 
-// (c) Christian Maurer   v. 230228 - license see µU.go
+// (c) Christian Maurer   v. 230330 - license see µU.go
 
 import (
   "os"
   "µU/ker"
   "µU/kbd/internal"
   "µU/mouse"
-//  "µU/navi"
 )
-var (
+var
   keypipe chan byte
-//  navipipe chan navi.Command
-)
 
 func catch() {
   shift, ctrl, alt, altGr = false, false, false, false
@@ -71,7 +68,6 @@ func inputC (B *byte, C *Comm, D *uint) {
     b0 byte
     k, k1 uint
     mc mouse.Command
-//    nc navi.Command
     ok bool
   )
   loop:
@@ -112,17 +108,6 @@ func inputC (B *byte, C *Comm, D *uint) {
         *D = 3
       }
       break loop
-/*/
-    case nc = <-navi.Pipe:
-      *C, *D = Go + Comm (nc), 0
-      if shift || ctrl {
-        *D = 1
-      }
-      if alt || altGr {
-        *D = 2
-      }
-      break loop
-/*/
     case b0, ok = <-keypipe:
       if ok {
         k = uint(b0)
@@ -198,6 +183,5 @@ func initConsole() {
   terminal.New()
   ker.InstallTerm (func() { terminal.Fin() } )
   keypipe = make (chan byte, 256)
-//  navipipe = navi.Channel()
   go catch()
 }

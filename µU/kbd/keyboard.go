@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 220530 - license see µU.go
+// (c) Christian Maurer   v. 230330 - license see µU.go
 
 import (
   "µU/env"
@@ -8,7 +8,6 @@ import (
   . "µU/obj"
   "µU/char"
   "µU/scr"
-//  "µU/navi"
 )
 const (
 // control keys
@@ -277,12 +276,6 @@ func command() (Comm, uint) {
   }
   return c, d
 }
-
-/*
-func readNavi() (spc.GridCoord, spc.GridCoord) {
-  return navi.Read()
-}
-*/
 
 func lastByte() byte {
   return lastbyte

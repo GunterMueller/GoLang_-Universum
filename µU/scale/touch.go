@@ -1,3 +1,3 @@
 package scale
 
-func Touch() { }
+func Touch() {}

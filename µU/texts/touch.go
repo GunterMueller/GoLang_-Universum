@@ -1,3 +1,3 @@
 package texts
 
-func Touch() { }
+func Touch() {}
