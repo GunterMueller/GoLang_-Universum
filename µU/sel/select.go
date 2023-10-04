@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 230326 - license see µU.go
+// (c) Christian Maurer   v. 230926 - license see µU.go
 
 import (
   "µU/ker"
@@ -28,13 +28,6 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
     h = scr.NLines() - l - 1
   }
   if *i >= n { *i = n - 1 }
-  MouseOn := scr.MousePointerOn()
-  var x, y int
-  if MouseOn {
-    scr.MousePointer (false)
-    x, y = scr.MousePosGr()
-  }
-  scr.WarpMouse (l + *i, c)
   scr.Save (l, c, w, h)
   i0, n0 := uint(0), uint(0)
   if *i == 0 { n0 = 1 } // else { n0 = 0 }
@@ -94,19 +87,6 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
       *i = 0
     case kbd.End:
       *i = n - 1
-    case kbd.Go:
-      _, yM := scr.MousePosGr()
-      if uint(yM) <= l * scr.Ht1() + scr.Ht1() / 2 {
-        if *i > 0 {
-          *i --
-        }
-      } else if uint(yM) >= (l + h) * scr.Ht1() {
-        if *i < n - 1 {
-          *i ++
-        }
-      } else {
-        *i = i0 + uint(yM) / scr.Ht1() - l
-      }
 /*/
     case kbd.Help:
       errh.Hint (errh.ToSelect)
@@ -116,10 +96,6 @@ func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colou
     }
   }
   scr.Restore (l, c, w, h)
-  if MouseOn {
-    scr.MousePointer (true)
-    scr.WarpMouseGr (x, y)
-  }
 }
 
 func select1 (s []string, h, w uint, n *uint, l, c uint, f, b col.Colour) {

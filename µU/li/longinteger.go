@@ -310,23 +310,18 @@ func (x *longInteger) Invert() {
   x.Copy (e)
 }
 
-func (x *longInteger) div (Y, Z Multiplier) {
+func (x *longInteger) Div (Y, Z Multiplier) {
   z := Z.(*longInteger)
   if ! z.Invertible() { DivBy0Panic() }
   x.n.Quo (x.imp (Y), z.imp (Z))
 }
 
 func (x *longInteger) DivBy (Y Multiplier) {
-  x.div (x, Y)
+  x.Div (x, Y)
 }
 
-func (x *longInteger) Mod (Y LongInteger) {
-  x.n.Mod (x.n, x.imp (Y))
-}
-
-func (x *longInteger) MulMod (Y, M LongInteger) {
-  x.n.Mul (x.n, x.imp (Y)) // not efficient
-  x.n.Mod (x.n, x.imp (M))
+func (x *longInteger) Mod (Y, Z Multiplier) {
+  x.n.Mod (x.imp(Y), x.imp (Z))
 }
 
 func (x *longInteger) Div2 (Y, R LongInteger) {

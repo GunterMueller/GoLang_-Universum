@@ -1,11 +1,12 @@
 package prt
 
-// (c) Christian Maurer   v. 230112 - license see µU.go
+// (c) Christian Maurer   v. 230923 - license see µU.go
 
 import (
   "os/exec"
   "µU/time"
   "µU/str"
+  "µU/errh"
   . "µU/fontsize"
   . "µU/font"
   "µU/N"
@@ -22,8 +23,8 @@ var (
   tex, dvi, log, ps pseq.PersistentSequence
   texname, dviname, logname, psname, patternname string
   page [][]string // only for one page TODO allow more pages
-  nC = [S]uint {136, 102, 85, 74, 50, 40} // XXX 40
-  nL = [S]uint {108,  80, 60, 48, 33, 24} // XXX 24
+  nC = [S]uint {142, 106, 86, 73, 62, 51}
+  nL = [S]uint { 96,  72, 58, 48, 42, 34}
   dH, dW [S]string
   actualFont = Roman
   actualSize = Normal
@@ -33,16 +34,23 @@ var (
 
 //                        6 pt                  8 pt                  10 pt      12 pt                  14pt                   17 pt
 func init() { //          Tiny                  Small                 Normal     Big                    Large                  Huge
-  cm[Roman]  = [S]string {"cmtt8 scaled 750",   "cmtt8",              "cmtt10",  "cmtt12",              "cmtt12 scaled 1200",  "cmtt12 scaled 1440"}
-  cm[Bold]   = [S]string {"cmbtt10 scaled 600", "cmbtt8",             "cmbtt10", "cmbtt10 scaled 1200", "cmbtt10 scaled 1440", "cmbtt10 scaled 1728"}
-  cm[Italic] = [S]string {"cmitt10 scaled 600", "cmitt10 scaled 800", "cmitt10", "cmitt10 scaled 1200", "cmitt10 scaled 1440", "cmitt10 scaled 1728"}
-  dH         = [S]string {"7.2",                "9.6",                "12",      "14.4",                "17.28",               "20.74"} // 246.2 / nL * 72.27 / 25.4
-  dW         = [S]string {"3.661",              "4.446",              "5.412",   "6.224",               "7.629",               "9.352"} // 159.2 / nC * 72.27 / 25.4
-//                                                                                                       ^^^^^^ XXX
+  cm[Roman]  = [S]string {"cmtt8 scaled 750",   "cmtt8",              "cmtt10",  "cmtt12",              "cmtt12 scaled 1167",  "cmtt12 scaled 1417"}
+  cm[Bold]   = [S]string {"cmbtt10 scaled 600", "cmbtt8",             "cmbtt10", "cmbtt10 scaled 1200", "cmbtt10 scaled 1400", "cmbtt10 scaled 1700"}
+  cm[Italic] = [S]string {"cmitt10 scaled 600", "cmitt10 scaled 800", "cmitt10", "cmitt10 scaled 1200", "cmitt10 scaled 1400", "cmitt10 scaled 17ßß"}
+  dH         = [S]string {"7.2",                "9.6",                "12",      "14.4",                "16.8",                "20.4"}
+  dW         = [S]string {"3.661",              "4.446",              "5.412",   "6.224",               "7.629",               "9.352"} // XXX
 }
 
 func setFont (f Font) {
   actualFont = f
+}
+
+func possible() bool {
+  p := files.IsFile ("/usr/bin/tex")
+  if ! p {
+    errh.Error0 ("Es kann nicht gedruckt werden, weil TeX nicht installiert ist.")
+  }
+  return p
 }
 
 func setFontsize (s Size) {
@@ -50,7 +58,9 @@ func setFontsize (s Size) {
 }
 
 func print1 (b byte, l, c uint) {
-  if l >= nL[actualSize] || c >= nC[actualSize] { return }
+  if l >= nL[actualSize] || c >= nC[actualSize] {
+    return
+  }
   if ! initialized {
     _init()
     initialized = true
@@ -169,8 +179,8 @@ func goPrint() {
   exec.Command ("dvips", dviname, "-o", psname).Run()
   time.Msleep (100)
   exec.Command (PrintCommand, psname, "-o", "fit-to-page").Run()
-//  tex.Clr(); log.Clr(); dvi.Clr(); ps.Clr()
-//  pseq.Erase (texname); pseq.Erase (logname); pseq.Erase (dviname); pseq.Erase (psname) // TODO
+  log.Clr(); dvi.Clr(); ps.Clr()
+  pseq.Erase (logname); pseq.Erase (dviname); pseq.Erase (psname)
 }
 
 func printImage (n string) {

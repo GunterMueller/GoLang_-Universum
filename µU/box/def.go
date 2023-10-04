@@ -1,6 +1,6 @@
 package box
 
-// (c) Christian Maurer   v. 220804 - license see µU.go
+// (c) Christian Maurer   v. 220820 - license see µU.go
 
 import (
   . "µU/obj"

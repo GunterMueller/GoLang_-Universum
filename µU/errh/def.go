@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 220811 - license see µU.go
+// (c) Christian Maurer   v. 230925 - license see µU.go
 
 import
   "µU/col"
@@ -24,12 +24,6 @@ func Hint2 (s string, n uint, s1 string, n1 uint) { hint2(s,n,s1,n1) }
 // The hints are deleted, the former content of the screen is restored.
 func DelHint() { delHint() }
 func DelHintPos (s string, l, c uint) { delHintPos(s,l,c) }
-
-// s (and n resp.) is written to the last line of the screen.
-// The calling process is blocked, until Enter or left mouse button is pressed;
-// then the former content of the last line of the screen is restored.
-// func Proceed0 (s string) { proceed0(s) }
-// func Proceed (s string, n uint) { proceed(s,n) }
 
 // The s's (and n's resp.) are written to the last line of the screen.
 // The calling process is blocked, until Escape or Backspace is pressed;

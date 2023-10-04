@@ -1,10 +1,11 @@
 package Q
 
-// (c) Christian Maurer   v. 230326 - license see µU.go
+// (c) Christian Maurer   v. 230924 - license see µU.go
 
 import (
   "math"
   . "µU/obj"
+  "µU/ker"
   "µU/str"
   "µU/col"
   "µU/box"
@@ -479,6 +480,14 @@ func (x *rational) DivBy (Y Multiplier) {
   inv := y.Clone().(*rational)
   inv.Invert()
   x.Mul (inv)
+}
+
+func (x *rational) Div (Y, Z Multiplier) {
+  ker.PrePanic()
+}
+
+func (x *rational) Mod (Y, Z Multiplier) {
+  ker.PrePanic()
 }
 
 func (x *rational) Quot (Y, Z Multiplier) {

@@ -1,6 +1,6 @@
 package main
 
-// (c) Christian Maurer   v. 230105 - license see µU.go
+// (c) Christian Maurer   v. 230924 - license see µU.go
 
 // >>> Start the first competitor with "lr 0", the second with "lr 1", and so on
 

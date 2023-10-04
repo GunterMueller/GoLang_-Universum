@@ -299,9 +299,9 @@ func wait (b bool) bool {
   for {
     c, d = Command()
     if b {
-      if c == Enter /* || c == Here */ { break }
+      if c == Enter { break }
     } else {
-      if c == Esc || c == Back /* || c == There */ { break }
+      if c == Esc || c == Back { break }
     }
   }
   lastcommand, lastdepth = c0, d0

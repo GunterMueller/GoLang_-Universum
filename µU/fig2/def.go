@@ -1,6 +1,6 @@
 package fig2
 
-// (c) Christian Maurer   v. 230112 - license see µU.go
+// (c) Christian Maurer   v. 230823 - license see µU.go
 
 import (
   . "µU/obj"
@@ -86,8 +86,8 @@ type
 // x is interactively changed by the user.
   Change()
 
-// If x is a text, it has the font size f. // TODO
-SetFontsize (fontsize.Size)
+// If x is a text, it has the font size s.
+  SetFontsize (s fontsize.Size)
 
 // x is printed (see package µU/psp).
   Print (psp.PostscriptPage)

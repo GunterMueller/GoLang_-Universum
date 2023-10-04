@@ -1,6 +1,6 @@
 package qmat
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 220924 - license see µU.go
 
 // >>> matrices with rational fractions as entries
 
@@ -398,6 +398,14 @@ func (x *qmatrix) Invert() {
   e := unit (x.nl, x.nc /* , x.d */).(*qmatrix)
   e.DivBy (x)
   x.Copy (e)
+}
+
+func (x *qmatrix) Div (Y, Z Multiplier) {
+  ker.PrePanic()
+}
+
+func (x *qmatrix) Mod (Y, Z Multiplier) {
+  ker.PrePanic()
 }
 
 func (x *qmatrix) Quot (Y, Z Multiplier) {

@@ -1,6 +1,6 @@
 package scr
 
-// (c) Christian Maurer   v. 230112 - license see µU.go
+// (c) Christian Maurer   v. 230925 - license see µU.go
 
 import
   "µU/fontsize"
@@ -713,9 +713,9 @@ func initConsoleFonts() {
 
   f10[ 35][1] = " != #  "
   f10[ 35][2] = " != #  "
-  f10[ 35][3] = "##### "
+  f10[ 35][3] = "###### "
   f10[ 35][4] = " != #  "
-  f10[ 35][5] = "##### "
+  f10[ 35][5] = "###### "
   f10[ 35][6] = " != #  "
   f10[ 35][7] = " != #  "
 
@@ -4025,8 +4025,8 @@ func initConsoleFonts() {
   f24[181][21] = " mm         "
   f24[181][22] = " mm         "
 
-  f24[223][ 4] = "  ssssss    "
-  f24[223][ 5] = " ss    ss   "
+  f24[223][ 4] = "   sssss    "
+  f24[223][ 5] = "  ss   ss   "
   f24[223][ 6] = " ss     ss  "
   f24[223][ 7] = " ss     ss  "
   f24[223][ 8] = " ss     ss  "

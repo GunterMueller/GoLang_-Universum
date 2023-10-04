@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 230917 - license see µU.go
 
 import (
   "os"
@@ -18,7 +18,7 @@ const (
   RWX = 7 * 8 * 8
   worldRX = RWX + 7 * 8 + 7 // = rwxrwxrwx, which is changed to rwxr-xr-x
                             // by & with ~umask for the default umask = 022
-  tmp = "/tmp"
+  print = ".print"
 )
 var (
   pa = pair.New()
@@ -67,20 +67,20 @@ func isPath (p string) bool {
   return true
 }
 
-func isFile (s string) bool {
-  fi, r := os.Stat (s)
-  if r != nil {
-    return false
-  }
-  return fi.Mode().IsRegular()
-}
-
 func isDir (s string) bool {
   fi, r := os.Stat (s)
   if r != nil {
     return false
   }
   return fi.Mode().IsDir()
+}
+
+func isFile (s string) bool {
+  fi, r := os.Stat (s)
+  if r != nil {
+    return false
+  }
+  return fi.Mode().IsRegular()
 }
 
 func less (i, j int) bool {
@@ -154,19 +154,6 @@ func cds() {
   cd (env.Gosrc() + "/" + env.Call())
 }
 
-/*/
-func Temp (filename *string) {
-  path, name := path.Split (*filename)
-  str.OffSpc (&name)
-  n := uint(len (name))
-  if n == 0 { return }
-  if n + 11 > maxN {
-    name = str.Part (name, 0, maxN - 11)
-  }
-  *filename = path + "." + tmp + ".µU" + "." + name
-}
-/*/
-
 func sub (d string) {
   os.Mkdir (d, 7 * 8 * 8 + 5 * 8 + 5)
 }
@@ -229,14 +216,13 @@ func typ (n string) Type {
   return Unknown
 }
 
-func TmpDir() string {
-  d := "µU" + "-" + env.User()
-  ins (tmp, d)
-  return tmp + "/" + d + "/"
+func tmpDir() string {
+  d := env.Home() + "/" + print
+  return d
 }
 
-func Tmp() string {
-  return TmpDir() + N.StringFmt (uint(os.Getpid()), 5, true) + "."
+func tmp() string {
+  return tmpDir() + "/" + N.StringFmt (uint(os.Getpid()), 5, true) + "."
 }
 
 var (
@@ -260,4 +246,10 @@ func namePred (p Pred, i uint) string {
     return seqPred[i].Name()
   }
   return ""
+}
+
+func init() {
+  if ! isDir (env.Home() + print) {
+    ins (env.Home(), print)
+  }
 }

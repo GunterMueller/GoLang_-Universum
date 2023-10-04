@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 220828 - license see µU.go
+// (c) Christian Maurer   v. 230917 - license see µU.go
 
 import
   . "µU/obj"
@@ -120,6 +120,12 @@ func Names1 (t Type) []string { return names() }
 // Returns the type of the entry and true, iff there is an entry
 // with name n in the actual directory; otherwise Unknown and false.
 func Typ (n string) Type { return typ(n) }
+
+// Returns $HOME/.print
+func TmpDir() string { return tmpDir() }
+
+// Returns TmpDir()/
+func Tmp() string { return tmp() }
 
 // Returns the number of nonempty files in the actual directory,
 // that have names, for which p returns true.

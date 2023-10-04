@@ -1,6 +1,6 @@
 package bn
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 220924 - license see µU.go
 
 import (
   "math"
@@ -260,7 +260,7 @@ func (x *natural) One() bool {
 func (x *natural) Mul (Y ...Multiplier) {
   n := len(Y)
   y := make([]*natural, n)
-  for i:= 0; i < n; i++ {
+  for i := 0; i < n; i++ {
     y[i] = x.imp(Y[i])
     x.uint*= y[i].uint
   }
@@ -272,10 +272,26 @@ func (x *natural) Prod (Y, Z Multiplier) {
   x.Mul (z)
 }
 
-func (x *natural) Quot (Y, Z Multiplier) {
+func (x *natural) Div (Y, Z Multiplier) {
   y, z := x.imp(Y), x.imp(Z)
   x.Copy (y)
   x.DivBy (z)
+}
+
+func (x *natural) Mod (Y, Z Multiplier) {
+  q, z := x.imp(Y).uint, x.imp(Z).uint
+  for q > z {
+    q -= z
+  }
+  x.uint = q
+}
+
+func (x *natural) Quot (Y, Z Multiplier) {
+  if Z.One() {
+    x.Copy (Y)
+  } else {
+    ker.PrePanic()
+  }
 }
 
 func (x *natural) Sqr() {
@@ -303,8 +319,8 @@ func (x *natural) Invertible() bool {
 }
 
 func (x *natural) Invert() {
-  if x.uint != 1 {
-    ker.Panic ("cannot invert")
+  if ! x.Invertible() {
+    ker.PrePanic()
   }
 }
 

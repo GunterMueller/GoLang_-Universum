@@ -1,23 +1,22 @@
 package internal
 
-// (c) Christian Maurer   v. 220715 - license see µU.go
+// (c) Christian Maurer   v. 230917 - license see µU.go
 
 import (
   "os"
-//  . "µU/ker"
+//  "math"
   . "µU/obj"
   "µU/str"
-//  "µU/env"
 //  "µU/errh"
 )
 const
   rights = 0644
-/*
+/*/
 type
   clients byte; const (user = iota; group; world)
 type
   accesses byte; const (readable = iota; writable; executable)
-*/
+/*/
 type
   file struct {
          file *os.File
@@ -27,40 +26,39 @@ type
        isOpen bool
               error
               }
-/*
 var (
-  statuscode [3][3]uint // accesses, clients
+//  statuscode [3][3]uint // accesses, clients
   caller, callerGroup uint // uid, gid of the calling process
 )
-*/
-/*
+/*/
+/*/
+
+/*/
 func Owner (N string) uint {
-  fi, err := Stat (N)
-  if err != nil {
-    return MaxCard
-  }
-  return uint(fi.Gid)
-}
-*/
-/*
-func FileGroup (N string) uint {
-  fi, err := Stat (N)
+  fi, err := os.Stat (N)
   if err == nil {
-    return uint(fi.Uid)
+    return uint(fi.Gid) // fi.Gid undefined
   }
-  return MaxCard
+  return math.MaxUint32
 }
-*/
-/*
+
+func FileGroup (N string) uint {
+  fi, err := os.Stat (N)
+  if err == nil {
+    return uint(fi.Uid) // fi.Uid undefined
+  }
+  return math.MaxUint32
+}
+
 func accessible (N string, a accesses) bool {
-  fi, err := Stat (N)
+  fi, err := os.:qStat (N)
   if err == nil {
     return caller == Owner (N)       && statuscode [a, user]  IN fi.Mode ||
            callerGroup == Gruppe (N) && statuscode [a, group] IN fi.Mode
   }
   return false
 }
-*/
+/*/
 
 func directLength (N string) uint {
   fi, err := os.Stat (N)
@@ -72,7 +70,7 @@ func directLength (N string) uint {
 
 func erase (N string) {
   _, err := os.Stat (N)
-  if err != nil {
+  if err == nil {
     os.Remove (N)
   }
 }
@@ -98,8 +96,6 @@ func (f *file) Name (N string) {
   fi, f.error = os.Stat (N)
   f.exists = f.error == nil
   if f.exists {
-//    if ! fi.IsRegular() { errh.Error0(N + " is no regular file"); Fin(); Exit (1) } // nothing goes
-//    if fi.Permission() != rights { errh.Error0(N + " has no rights"); Fin(); Exit (1) } // nothing goes
     f.file, f.error = os.OpenFile (N, os.O_RDWR, rights)
     if f.error == nil {
       f.endoffset = uint(fi.Size())
@@ -200,22 +196,14 @@ func (f *file) flush() {
   }
 }
 
-/*
+/*/
 func init() {
-// nonsense - only some ideas
-  for access := readable; access <= executable; access++ {
-    for client := user; client <= world; client++ {
-      statuscode [access, client] = 3 * (2 - client) + (2 - access)
-    }
-  }
-  callingProgram := env.Parameter (0)
-  fi, err := Stat (callingProgram)
+  callingProgram := os.Args[0]
+  fi, err := os.Stat (callingProgram)
   if err == nil {
-    caller = MaxCard
-    callerGroup = MaxCard
+    caller, callerGroup = math.MaxUint32, math.MaxUint32 // see above
   } else {
-    caller = uint(fi.Uid)
-    callerGroup = uint(fi.Gid)
+    caller, callerGroup = uint(fi.Uid), uint(fi.Gid)
   }
 }
-*/
+/*/

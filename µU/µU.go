@@ -6,12 +6,14 @@ package main
   rein akademischen Charakter. Es liefert u. a. eine Reihe von Beispielen für mein Lehrbuch
   "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2019) und dessen
   Übersetzung  "Nonsequential and Distributed Programming with Go"  (Springer Nature 2021).
+  Auch alle Projekte im Buch  "Objektbasierte Programmierung mit Go" (Springer-Vieweg 2023)
+  machen intensiven Gebrauch von diversen Paketen aus dem Mikrouniversum.
   Für Zwecke der Lehre an Universitäten und in Schulen sind die Quellen des Mikrouniversums
   uneingeschränkt verwendbar; jede Form weitergehender Nutzung ist jedoch strikt untersagt.
 
-  THIS SOFTWARE IS PROVIDED BY the authors  "AS IS"  AND ANY EXPRESS OR IMPLIED WARRANTIES,
+  THIS SOFTWARE  IS PROVIDED BY THE AUTHOR  "AS IS"  AND ANY EXPRESS OR IMPLIED WARRANTIES,
   INCLUDING,  BUT NOT LIMITED TO,  THE IMPLIED WARRANTIES  OF MERCHANTABILITY  AND  FITNESS
-  FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL the authors BE LIABLE FOR ANY
+  FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL  THE AUTHOR BE LIABLE FOR ANY
   DIRECT, INDIRECT,  INCIDENTAL, SPECIAL,  EXEMPLARY, OR CONSEQUENTIAL DAMAGES  (INCLUDING,
   BUT NOT LIMITED TO,  PROCUREMENT OF SUBSTITUTE GOODS  OR SERVICES;  LOSS OF USE, DATA, OR
   PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
@@ -33,15 +35,15 @@ import (
   "µU/car"; "µU/cdrom"; "µU/char"; "µU/col"; "µU/collop"; "µU/comp"; "µU/date"; "µU/day"
   "µU/dgra"; "µU/dlock"; "µU/env"; "µU/errh"; "µU/fig2"; "µU/fig3"; "µU/files"; "µU/gram"
   "µU/ieee"; "µU/kbd"; "µU/li"; "µU/lock"; "µU/lock2"; "µU/lockn"; "µU/lr"; "µU/macc"
-  "µU/masks"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"; "µU/mol"; "µU/mstk"; "µU/pbar"
-  "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/pstk"; "µU/qmat"; "µU/reg"; "µU/rpc"; "µU/rw"
-  "µU/scale"; "µU/schan"; "µU/scr"; "µU/smok"; "µU/term"; "µU/texts"; "µU/time"; "µU/vnset"
-  "µU/Z"
+  "µU/masks"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"; "µU/mol"; "µU/mstk"
+  "µU/pbar"; "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/pstk"; "µU/qmat"; "µU/reg"
+  "µU/rpc"; "µU/rn"; "µU/rw"; "µU/scale"; "µU/schan"; "µU/scr"; "µU/smok"; "µU/term"
+  "µU/texts"; "µU/time"; "µU/vnset"; "µU/Z"
 )
 const (
   yy = 2023
-  mm =    4
-  dd =    1
+  mm =    9
+  dd =   26
 )
 var (
   red, green = col.FlashRed(), col.FlashGreen()
@@ -152,7 +154,7 @@ func main() {
   ieee.New(); li.New(0); lock.NewChannel(); lock2.NewPeterson(); lockn.NewDijkstra(0)
   lr.NewMutex(); macc.New(); masks.New(); mbbuf.New(nil, 2); mbuf.New(0); mcorn.New(0)
   menue.Touch(); mol.New(); mstk.New(0); pbar.Touch(); pat.New(); piset.Touch(); pos.Touch()
-  pstk.Touch(); qmat.Touch(); reg.Touch(); rpc.Touch(); rw.New1(); scale.Touch()
+  pstk.Touch(); qmat.Touch(); reg.Touch(); rpc.Touch(); rn.New0(); rw.New1(); scale.Touch()
   schan.New(0); smok.Touch(); term.Touch(); texts.Touch(); vnset.EmptySet(); Z.String(0)
   var v day.Calendarday = day.New()
   v.Set (dd, mm, yy); v.SetFormat (day.Yymmdd)

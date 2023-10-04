@@ -1,0 +1,4 @@
+  if ! files.IsFile ("/usr/bin/tex") {
+    errh.Error0 ("Es kann nicht gedruckt werden, weil TeX nicht installiert ist")
+    return
+  }

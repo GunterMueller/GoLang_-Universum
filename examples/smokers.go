@@ -53,7 +53,7 @@ func main() {
   smokers = NewConditionedMonitor()
   smokers = NewChannel()
 /*/
-  smokers = NewNaive()
+  smokers = NewParnas()
 
   go agent()
   for u := uint(0); u < 3; u++ {

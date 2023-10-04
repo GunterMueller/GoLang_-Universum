@@ -1,6 +1,6 @@
 package N
 
-// (c) Christian Maurer   v. 2r0418 - license see µU.go
+// (c) Christian Maurer   v. 220418 - license see µU.go
 
 import (
   "µU/ker"
@@ -14,6 +14,7 @@ const
 var (
   bx = box.New()
   width uint
+  wdSet bool
 )
 
 func init() {
@@ -118,8 +119,10 @@ func colours (f, b col.Colour) {
 
 func write (n uint, l, c uint) {
   w := wd (n)
-  if width > w { w = width }
-  if w > c + 1 { return }
+  if wdSet {
+    if width > w { w = width }
+    if w > c + 1 { return }
+  }
   bx.Wd (w)
   bx.Write (str.New(w), l, c)
   bx.Write (string_(n), l, c)
@@ -127,14 +130,18 @@ func write (n uint, l, c uint) {
 
 func writeGr (n uint, x, y int) {
   w := wd (n)
-  if width > w { w = width }
-//  if w > c + 1 { return } // TODO
+  if wdSet {
+    if width > w { w = width }
+//    if w > TODO { return }
+  }
   bx.Wd (w)
   bx.WriteGr (str.New(w), x, y)
   bx.WriteGr (string_(n), x, y)
 }
 
+
 func setWd (w uint) {
+  wdSet = true
   if w == 0 {
     width = 1
   } else if w > max {

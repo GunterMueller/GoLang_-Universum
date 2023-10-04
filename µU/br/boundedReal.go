@@ -1,6 +1,6 @@
 package br
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 220924 - license see µU.go
 
 import (
   "µU/ker"
@@ -239,12 +239,6 @@ func (x *breal) Prod (Y, Z Multiplier) {
   x.Mul (z)
 }
 
-func (x *breal) Quot (Y, Z Multiplier) {
-  y, z := x.imp(Y), x.imp(Z)
-  x.Copy (y)
-  x.DivBy (z)
-}
-
 func (x *breal) Sqr() {
   q := x.float64 * x.float64
   x.float64 = q
@@ -279,4 +273,18 @@ func (x *breal) DivBy (Y Multiplier) {
   y := x.imp(Y)
   if ! y.Invertible() { DivBy0Panic() }
   x.float64 /= y.float64
+}
+
+func (x *breal) Div (Y, Z Multiplier) {
+  ker.PrePanic()
+}
+
+func (x *breal) Mod (Y, Z Multiplier) {
+  ker.PrePanic()
+}
+
+func (x *breal) Quot (Y, Z Multiplier) {
+  y, z := x.imp(Y), x.imp(Z)
+  x.Copy (y)
+  x.DivBy (z)
 }

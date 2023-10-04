@@ -1,6 +1,6 @@
 package li
 
-// (c) Christian Maurer   v. 230217 - license see µU.go
+// (c) Christian Maurer   v. 230924 - license see µU.go
 
 import (
   . "µU/obj"
@@ -25,9 +25,7 @@ type
   Inc()
   Dec()
   Abs() LongInteger
-  Mod (y LongInteger)
   Div2 (y, r LongInteger)
-  MulMod (y, m LongInteger)
   PowMod (y, m LongInteger)
   ProbabylPrime (n int) bool
 

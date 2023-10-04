@@ -70,13 +70,13 @@ func (x *menue) selected (l, c uint) bool {
     x.uint = i
     x.next = x.nextLevel[i]
   }
-  errh.DelHead()
   errh.DelHint()
+  errh.DelHead()
   return i < n
 }
 
 func (x *menue) Exec() {
-  depth ++
+  depth++
   if x.isMenu {
     for {
       if x.selected (0, 0) {
@@ -93,6 +93,6 @@ func (x *menue) Exec() {
     x.Stmt()
     scr.Cls()
   }
-  depth --
+  depth--
   if depth == 0 { scr.Fin() }
 }

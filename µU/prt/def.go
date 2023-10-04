@@ -1,6 +1,6 @@
 package prt
 
-// (c) Christian Maurer   v. 230112 - license see µU.go
+// (c) Christian Maurer   v. 230923 - license see µU.go
 
 // >>> Pre: TeX is installed.
 
@@ -10,6 +10,8 @@ import (
 )
 var
   PrintCommand = "lp"
+
+func Possible() bool { return possible() }
 
 // The actual font is f.
 func SetFont (f font.Font) { setFont(f) }

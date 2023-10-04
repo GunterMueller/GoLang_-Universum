@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 221223 - license see µU.go
+// (c) Christian Maurer   v. 230926 - license see µU.go
 
 import (
   "strconv"
@@ -20,7 +20,7 @@ var (
   " rein akademischen Charakter. Es liefert u. a. eine Reihe von Beispielen für mein Lehrbuch ",
   " \"Nichtsequentielle und Verteilte Programmierung mit Go\" (Springer Vieweg 2019) und dessen ",
   " Übersetzung  \"Nonsequential and Distributed Programming with Go\"  (Springer Nature 2021). ",
-  " Auch alle Projekte im Buch  \"Objektbasierte Programmierung mit Go\" (Springer Vieweg 2022) ",
+  " Auch alle Projekte im Buch  \"Objektbasierte Programmierung mit Go\" (Springer Vieweg 2023) ",
   " machen intensiven Gebrauch von diversen Paketen aus dem Mikrouniversum.                   ",
   " Für Zwecke der Lehre an Universitäten und in Schulen sind die Quellen des Mikrouniversums ",
   " uneingeschränkt verwendbar; jede Form weitergehender Nutzung ist jedoch strikt untersagt. ",
@@ -44,20 +44,19 @@ var (
   " Zwecken AUSDRÜCKLICH GEWARNT! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.) ",
   "                                                                                           ",
   " Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen. "}
+  ok = true
 )
 
 func init() {
   for i, l := range (license) { license[i] = str.Lat1 (l) }
-//  pre() TODO theScreen not yet defined
-//  post() TODO theScreen not yet defined
 //                                         1         2         3         4         5         6         7
 //                               012345678901234567890123456789012345678901234567890123456789012345678901234567
   ToWait            = str.Lat1 ("bitte etwas Geduld ...")
   ToContinue        = str.Lat1 ("weiter: Enter")
   ToContinueOrNot   = str.Lat1 ("weiter: Enter                                                      fertig: Esc")
-  ToCancel          = str.Lat1 ("                                                                abbrechen: Esc")
+  ToCancel          = str.Lat1 ("abbrechen: Esc")
   ToScroll          = str.Lat1 ("blättern: Pfeiltasten                                           abbrechen: Esc")
-  ToSelect          = str.Lat1 ("blättern/auswählen/abbrechen: Pfeiltasten/Enter/Esc, Maus bewegen/links/rechts")
+  ToSelect          = str.Lat1 ("blättern: Pfeiltasten              auswählen: Enter             abbrechen: Esc")
   ToChange          = str.Lat1 ("blättern: Pfeiltasten       ändern: Enter       abbrechen: Esc")
   ToSwitch          = str.Lat1 ("blättern: Pfeiltasten    auswählen: Enter    umschalten: Tab    abbrechen: Esc")
   ToSelectWithPrint = str.Lat1 ("blättern: Pfeiltasten    auswählen: Enter    drucken: Druck     abbrechen: Esc")
@@ -67,17 +66,10 @@ func init() {
 func pre() {
   transparent = Transparent()
   if transparent { Transparence (false) }
-//  actualFontsize = ActFontsize()
-//  if actualFontsize != Normal {
-//    SwitchFontsize (Normal)
-//  }
 }
 
 func post() {
   if transparent { Transparence (true) }
-//  if actualFontsize # Normal {
-//    SwitchFontsize (Normal)
-//  }
 }
 
 func delHead() {
@@ -91,6 +83,7 @@ func head (s string) {
   w := NColumns()
   Save (0, 0, w, 1)
   Lock()
+  s = str.Lat1 (s)
   str.Norm (&s, w)
   Colours (col.HeadF(), col.HeadB())
   Write (s, 0, 0)
@@ -99,16 +92,24 @@ func head (s string) {
 }
 
 func delHint() {
+  if ok {
+    return
+  }
+  ok = true
   pre()
   Restore (NLines() - 1, 0, NColumns(), 1)
   post()
 }
 
 func hint (s string) {
+  s = str.Lat1 (s)
+  if ! ok {
+    delHint()
+  }
+  ok = false
   pre()
   l, w := NLines() - 1, NColumns()
   Save (l, 0, w, 1)
-  s = str.Lat1 (s)
   str.Center (&s, w)
   Lock()
   Colours (col.HintF(), col.HintB())
