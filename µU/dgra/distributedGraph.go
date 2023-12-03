@@ -3,6 +3,7 @@ package dgra
 // (c) Christian Maurer   v. 221213 - license see µU.go
 
 import (
+  "sync"
   "µU/ker"
   . "µU/obj"
   "µU/env"
@@ -15,6 +16,7 @@ import (
   "µU/vtx"
   "µU/edg"
   "µU/nchan"
+  "µU/mcorn"
   "µU/fmon"
   "µU/gra"
   "µU/adj"
@@ -22,41 +24,46 @@ import (
 )
 type
   distributedGraph struct {
-                   gra.Graph // neighbourhood of the current vertex
-                             // must not be changed by any application
-          tmpGraph gra.Graph // for several temporary usages
-                   bool "Graph.Directed"
-         actVertex vtx.Vertex // the vertex representing the actual process
-                me uint // and its identity
-           actHost string // the name of the host running the actual process
-                 n, // the number of neighbours and
-           in, out uint // the number of incoming resp. outgoing edges
-                        // to resp. from the actual vertex
-                nb []vtx.Vertex // the neighbour vertices
-                nr []uint // and their identities
-              host []string // the names of the hosts running the neighbour processes
-                ch []nchan.NetChannel // the channels to the neighbours
-              port []uint16 // ports to connect the vertices pairwise
-       tree, cycle gra.Graph // temporary graphs for the algorithms to work with
-              root uint
-         tmpVertex vtx.Vertex
-           tmpEdge edg.Edge
-             chan1 chan uint // internal channel
-   visited, sendTo []bool
-               mon []fmon.FarMonitor
-            parent uint
-             child []bool
-       time, time1 uint
-       demo, blink bool
-            matrix adj.AdjacencyMatrix
-              size uint // number of lines/colums of matrix
-           labeled bool
-          diameter,
-          distance,
-            leader uint
-                   HeartbeatAlg; ElectAlg; TravAlg
-                   Op
-                   }
+                          gra.Graph // neighbourhood of the current vertex
+                                    // must not be changed by any application
+                 tmpGraph gra.Graph // for several temporary usages
+                          bool "Graph.Directed"
+                actVertex vtx.Vertex // the vertex representing the actual process
+                       me uint // and its identity
+                  actHost string // the name of the host running the actual process
+                        n, // the number of neighbours and
+                  in, out uint // the number of incoming resp. outgoing edges
+                               // to resp. from the actual vertex
+                       nb []vtx.Vertex // the neighbour vertices
+                       nr []uint // and their identities
+                     host []string // the names of the hosts running the neighbour processes
+                       ch []nchan.NetChannel // the channels to the neighbours
+                     port []uint16 // ports to connect the vertices pairwise
+              tree, cycle gra.Graph // temporary graphs for the algorithms to work with
+                     root uint
+                tmpVertex vtx.Vertex
+                  tmpEdge edg.Edge
+                    chan1 chan uint // internal channel
+          visited, sendTo []bool
+                      mon []fmon.FarMonitor
+                   parent uint
+                    child []bool
+              time, time1 uint
+              demo, blink bool
+                   matrix adj.AdjacencyMatrix
+                     size uint // number of lines/colums of matrix
+                  labeled bool
+       diameter, distance,
+                   leader uint
+                          HeartbeatAlg
+                          ElectAlg
+                          TravAlg
+                          Op
+                     esel [][]uint
+                     C, D uint
+                     corn mcorn.MCornet
+                    mutex sync.Mutex
+                          }
 const (
   p0 = nchan.Port0
   inf = uint(1<<16)
@@ -111,7 +118,8 @@ func new_(g gra.Graph) DistributedGraph {
   x.HeartbeatAlg, x.ElectAlg, x.TravAlg = HeartbeatGraph, ChangRoberts, DFS
   x.leader = x.me
   x.Op = Ignore
-//  x.corn = mcorn.New(uint(0))
+  x.corn = mcorn.New(uint(0))
+  x.esel = make([][]uint, 0)
   return x
 }
 
@@ -147,6 +155,12 @@ func (x *distributedGraph) setSize (n uint) {
 func (x *distributedGraph) connect (a any) {
   for i := uint(0); i < x.n; i++ {
     x.ch[i] = nchan.New (a, x.me, x.nr[i], x.host[i], x.port[i])
+  }
+}
+
+func (x *distributedGraph) connectN (a any, s bool) {
+  for i := uint(0); i < x.n; i++ {
+    x.ch[i] = nchan.NewN (a, x.host[i], x.port[i], s)
   }
 }
 

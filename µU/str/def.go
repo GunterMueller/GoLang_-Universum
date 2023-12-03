@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 230311 - license see µU.go
+// (c) Christian Maurer   v. 231005 - license see µU.go
 
 //     latin-1-strings (without any UTF-8-stuff)
 
@@ -46,6 +46,12 @@ func ToLower (s *string) { toLower(s) }
 
 // Returns true, iff the first character of s is no letter or a capital 'A'..'Z'.
 func Cap0 (s string) bool { return cap0(s) }
+
+// Returns true, iff s contains only letters.
+func AllLetters (s string) bool { return allLetters(s) }
+
+// Returns true, iff s contains only digits.
+func AllDigits (s string) bool { return allLetters(s) }
 
 // Returns true, iff s and t are equal up to trailing spaces and
 // up to the difference between small letters and corresponding capitals.

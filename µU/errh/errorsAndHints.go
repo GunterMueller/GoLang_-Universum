@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 230926 - license see µU.go
+// (c) Christian Maurer   v. 231005 - license see µU.go
 
 import (
   "strconv"
@@ -250,6 +250,24 @@ func error2Pos (s string, n uint, s1 string, n1 uint, l, c uint) {
 func confirmed() bool {
   pre()
   s := "Sind Sie sicher?  j(a / n(ein"
+  w := NColumns()
+  str.Center (&s, w)
+  l := NLines() - 1
+  Save (l, 0, w, 1)
+  Lock()
+  Colours (col.ErrorF(), col.ErrorB())
+  Write (s, l, 0)
+  Unlock()
+  b, _, _ := kbd.Read()
+  a := char.Lower(b) == 'j'
+  Restore (l, 0, w, 1)
+  post()
+  return a
+}
+
+func confirmedYou() bool {
+  pre()
+  s := "Bist Du sicher?  j(a / n(ein"
   w := NColumns()
   str.Center (&s, w)
   l := NLines() - 1

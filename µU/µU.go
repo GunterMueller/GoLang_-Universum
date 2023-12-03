@@ -33,7 +33,7 @@ package main
 import (
   "µU/achan"; "µU/audio"; "µU/barb"; "µU/barr"; "µU/book"; "µU/bpqu"; "µU/br"; "µU/bytes"
   "µU/car"; "µU/cdrom"; "µU/char"; "µU/col"; "µU/collop"; "µU/comp"; "µU/date"; "µU/day"
-  "µU/dgra"; "µU/dlock"; "µU/env"; "µU/errh"; "µU/fig2"; "µU/fig3"; "µU/files"; "µU/gram"
+  "µU/dgra"; "µU/dlock"; "µU/env"; "µU/errh"; "µU/fig2"; "µU/fig3"; "µU/files"; // "µU/gram"
   "µU/ieee"; "µU/kbd"; "µU/li"; "µU/lock"; "µU/lock2"; "µU/lockn"; "µU/lr"; "µU/macc"
   "µU/masks"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"; "µU/mol"; "µU/mstk"
   "µU/pbar"; "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/pstk"; "µU/qmat"; "µU/reg"
@@ -42,8 +42,8 @@ import (
 )
 const (
   yy = 2023
-  mm =    9
-  dd =   26
+  mm =   11
+  dd =   11
 )
 var (
   red, green = col.FlashRed(), col.FlashGreen()
@@ -150,7 +150,7 @@ func main() {
   wd1, ht1 = int(scr.Wd1()), int(scr.Ht1())
   achan.New(0); audio.New(); barb.NewDir(); barr.New(2); book.New(); bpqu.New(0, 1)
   br.New(3); bytes.Touch(); cdrom.Touch(); char.Touch(); collop.Touch(); comp.Touch()
-  date.New(); dgra.Touch(); dlock.New(0, nil, 0); fig2.Touch(); fig3.Touch(); gram.Touch()
+  date.New(); dgra.Touch(); dlock.New(0, nil, 0); fig2.Touch(); fig3.Touch() // ; gram.Touch()
   ieee.New(); li.New(0); lock.NewChannel(); lock2.NewPeterson(); lockn.NewDijkstra(0)
   lr.NewMutex(); macc.New(); masks.New(); mbbuf.New(nil, 2); mbuf.New(0); mcorn.New(0)
   menue.Touch(); mol.New(); mstk.New(0); pbar.Touch(); pat.New(); piset.Touch(); pos.Touch()

@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 231108 - license see µU.go
 
 const
 //  Port0 = uint16(1<<16 - 1<<14) // == 49152 (first private port)
@@ -62,4 +62,5 @@ func NewN (a any, h string, p uint16, s bool) NetChannel { return newn(a,h,p,s) 
 // Pre: i, j < n; a < 2.
 // Returns different port numbers 0..NPorts(n,a).
 func Port (n, i, j, a uint) uint16 { return port(n,i,j,a) }
+func Port1 (n, i, j, a uint) uint16 { return port1(n,i,j,a) }
 func NPorts (n, a uint) uint { return nPorts(n,a) }

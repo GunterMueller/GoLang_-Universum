@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 230917 - license see µU.go
+// (c) Christian Maurer   v. 231009 - license see µU.go
 
 import
   . "µU/obj"
@@ -124,7 +124,7 @@ func Typ (n string) Type { return typ(n) }
 // Returns $HOME/.print
 func TmpDir() string { return tmpDir() }
 
-// Returns TmpDir()/
+// Returns "x/y.", where x = TmpDir and y = pid of the calling process.
 func Tmp() string { return tmp() }
 
 // Returns the number of nonempty files in the actual directory,

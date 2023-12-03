@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 230326 - license see µU.go
+// (c) Christian Maurer   v. 231104 - license see µU.go
 
 import (
   "µU/env"
@@ -17,6 +17,7 @@ import (
 func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
   cf, ca, cb := col.Blue(), col.Red(), col.FlashWhite()
   k := uint(len(l))
+// println ("fuck", k)
   if k != uint(len(es)) || k != uint(len(c)) { panic("len's different") }
   wd := N.Wd (k)
   g := gra.New (dir, vtx.New (bn.New(wd), wd, 1), edg.New(dir, uint32(nchan.Port0)))
@@ -41,11 +42,28 @@ func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
       }
     }
   }
-//  if id >= 16 { ker.Panic ("no id as parameter") }
   g.Ex (v[id])
   g.SetWrite (vtx.W, edg.W)
   g = g.Star()
   d := new_(g).(*distributedGraph)
+  d.esel = make([][]uint, k)
+  for i := uint(0); i < k; i++ {
+    n := uint(len(es[i]))
+// println (i, n)
+//       0  2
+//       1  1
+//       2  1
+//       3  3
+//       4  2
+//       5  2
+//       6  1
+//       7  1
+//       8  1
+    d.esel[i] = make([]uint, n)
+    for j := uint(0); j < n; j++ {
+      d.esel[i][j] = es[i][j]
+    }
+  }
   d.setSize (k)
   h := make([]string, k)
   for i := uint(0); i < k; i++ {
@@ -53,7 +71,12 @@ func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
   }
   d.setHosts (h)
   d.diameter = m
+// println ("shit", d.Num())
   return d
+}
+
+func (x *distributedGraph) Esel() [][]uint {
+  return x.esel
 }
 
 // Returns the number of a in the ring
@@ -438,73 +461,6 @@ func g8dir (i uint) DistributedGraph {
   return newg (true, l, c, e, 3, i)
 }
 
-func g9dir (i uint) DistributedGraph {
-/*
-2      2 ----> 4 ----> 6 ----> 8
-3     * \               \            
-4    /   \-------\       \            
-5   /             *       *
-6  0 ----> 3 ----> 5 ----> 7
-7   \     *               *
-8    \   /               /            
-9     * /               /
-10     1 --------------/
-
-            1         2         3
-  012345678901234567890123456789012
-*/
-//  l := []int { 6, 10,  0,  6,  0,  6,  0,  6,  0 }
-  l := []int { 4,  7,  1,  4,  1,  4,  1,  4,  1 }
-  c := []int { 1,  5,  5,  9, 13, 17, 21, 25, 29 }
-  e := [][]uint { []uint { 1, 2, 3 },
-                  []uint { 3, 7 },
-                  []uint { 4, 5 },
-                  []uint { 5 },
-                  []uint { 6 },
-                  []uint { 7 },
-                  []uint { 7, 8 },
-                  []uint { },
-                  []uint { } }
-  return newg (true, l, c, e, 4, i)
-}
-
-func g9a (i uint) DistributedGraph {
-/*
-2      2 ----> 4 ----> 6 ----> 8
-3     * \               \            
-4    /   \-------\       \            
-5   /             *       *
-6  0               5       7
-*/
-  l := []int { 4,      1,      1,  4,  1,  4,  1 }
-  c := []int { 1,      5,     13, 17, 21, 25, 29 }
-  e := [][]uint { []uint { 2 },
-                  []uint { 4, 5 },
-                  []uint { 6 },
-                  []uint { },
-                  []uint { 7, 8 },
-                  []uint { },
-                  []uint { } }
-  return newg (true, l, c, e, 4, i)
-}
-
-func g9b (i uint) DistributedGraph {
-/*
-6  0       3               7
-7   \     *               *
-8    \   /               /            
-9     * /               /
-10     1 --------------/
-*/
-  l := []int { 4,  7,      4,              4     }
-  c := []int { 1,  5,      9,             25     }
-  e := [][]uint { []uint { 1 },
-                  []uint { 3, 7 },
-                  []uint { },
-                  []uint { } }
-  return newg (true, l, c, e, 2, i)
-}
-
 func g8cyc (i uint) DistributedGraph {
   l := []int { 4, 1, 7,  4,  1,  7,  4,  4 }
   c := []int { 1, 6, 6, 11, 16, 16, 21, 28 }
@@ -589,6 +545,102 @@ func g8full (i uint) DistributedGraph {
     }
   }
   return newg (false, l, c, e, 1, i)
+}
+
+func g9dir (i uint) DistributedGraph {
+/*
+2      2 ----> 4 ----> 6 ----> 8
+3     * \               \            
+4    /   \-------\       \            
+5   /             *       *
+6  0 ----> 3 ----> 5 ----> 7
+7   \     *               *
+8    \   /               /            
+9     * /               /
+10     1 --------------/
+
+            1         2         3
+  012345678901234567890123456789012
+*/
+//  l := []int { 6, 10,  0,  6,  0,  6,  0,  6,  0 }
+  l := []int { 4,  7,  1,  4,  1,  4,  1,  4,  1 }
+  c := []int { 1,  5,  5,  9, 13, 17, 21, 25, 29 }
+  e := [][]uint { []uint { 1, 2, 3 },
+                  []uint { 3, 7 },
+                  []uint { 4, 5 },
+                  []uint { 5 },
+                  []uint { 6 },
+                  []uint { 7 },
+                  []uint { 7, 8 },
+                  []uint { },
+                  []uint { } }
+  return newg (true, l, c, e, 4, i)
+}
+
+func g9dsdir (i uint) DistributedGraph {
+/*
+2  0 --------> 1 <-------------- 2
+3  |           |               * ^
+4  |           |           /--/  |
+5  v           V          /      |
+6  3 --------> 4 ------> 5       |
+7  |\          |          \      |
+8  | \------\  |           \--\  |
+9  v         * V               * |
+10 6 --------> 7 --------------> 8
+
+            1         2         3
+  012345678901234567890123456789012
+*/
+  l := []int { 2,  2,  2,  6,  6,  6, 10, 10, 10 }
+  c := []int { 1, 13, 31,  1, 13, 23,  1, 13, 31 }
+  e := [][]uint { []uint { 1, 3 },
+                  []uint { 4 },
+                  []uint { 1 },
+                  []uint { 4, 6, 7 },
+                  []uint { 5, 7 },
+                  []uint { 2, 8 },
+                  []uint { 7 },
+                  []uint { 8 },
+                  []uint { 2 } }
+  return newg (true, l, c, e, 4, i)
+}
+
+func g9a (i uint) DistributedGraph {
+/*
+2      2 ----> 4 ----> 6 ----> 8
+3     * \               \            
+4    /   \-------\       \            
+5   /             *       *
+6  0               5       7
+*/
+  l := []int { 4,      1,      1,  4,  1,  4,  1 }
+  c := []int { 1,      5,     13, 17, 21, 25, 29 }
+  e := [][]uint { []uint { 2 },
+                  []uint { 4, 5 },
+                  []uint { 6 },
+                  []uint { },
+                  []uint { 7, 8 },
+                  []uint { },
+                  []uint { } }
+  return newg (true, l, c, e, 4, i)
+}
+
+func g9b (i uint) DistributedGraph {
+/*
+6  0       3               7
+7   \     *               *
+8    \   /               /            
+9     * /               /
+10     1 --------------/
+*/
+  l := []int { 4,  7,      4,              4     }
+  c := []int { 1,  5,      9,             25     }
+  e := [][]uint { []uint { 1 },
+                  []uint { 3, 7 },
+                  []uint { },
+                  []uint { } }
+  return newg (true, l, c, e, 2, i)
 }
 
 func g10 (i uint) DistributedGraph {

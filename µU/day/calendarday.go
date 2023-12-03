@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 230326 - license see µU.go
+// (c) Christian Maurer   v. 231030 - license see µU.go
 
 import (
   . "µU/ker"
@@ -997,7 +997,7 @@ func (x *calendarday) String() string {
         N.StringFmt (x.year, 4, false)
   case Wn, WN, WNyyyy:
     s = N.StringFmt (x.Weeknumber(), 2, false)
-    if x.Format > Wn { s += " .Woche" }
+    if x.Format > Wn { s += ". Woche" }
     if x.Format == WNyyyy {
       s += " " + N.StringFmt (x.year, 4, false)
     }

@@ -3,7 +3,6 @@ package nchan
 // (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
-//  "reflect"
   "errors"
   "net"
   "µU/ker"
@@ -47,18 +46,16 @@ func new_(a any, me, i uint, n string, p uint16) NetChannel {
   } else {
     x.any, x.uint = Clone (a), Codelen (a)
   }
-  x.port = p
-  x.in, x.out = make(chan any), make(chan any)
-  x.Stream = make(Stream, x.uint)
+  x.port, x.Stream, x.in, x.out = p, make(Stream, x.uint), make(chan any), make(chan any)
   x.oneOne = true
   x.isServer = me < i
-  h, port := host.NewS(n), Port0 + p
+  ht, port := host.NewS (n), Port0 + p
   if x.isServer {
-    x.Listener, x.error = net.Listen (network, naddr.New2 (h, port).String())
+    x.Listener, x.error = net.Listen (network, naddr.New2 (ht, port).String())
     x.panicIfErr()
     x.Conn, x.error = x.Listener.Accept()
   } else { // client
-    dialaddr := naddr.New2 (h, port).String()
+    dialaddr := naddr.New2 (ht, port).String()
     for {
       if x.Conn, x.error = net.Dial (network, dialaddr); x.error == nil {
         break
@@ -67,7 +64,6 @@ func new_(a any, me, i uint, n string, p uint16) NetChannel {
       time.Msleep (500)
     }
   }
-// println ("nchan new_: a has type", reflect.TypeOf(a).String(), " me ==", me, " i ==", i, " port ==", x.port)
   return x
 }
 

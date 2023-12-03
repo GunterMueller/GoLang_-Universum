@@ -1,61 +1,61 @@
 package dgra
 
-<<<<<<< HEAD
-// (c) Christian Maurer   v. 201009 - license see µU.go
-=======
-// (c) Christian Maurer   v. 200724 - license see µU.go
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
+// (c) Christian Maurer   v. 231105 - license see µU.go
 //
 // >>> Dijkstra-Scholten: Termination Detection for Diffusing Computations
 //     Inf. Proc. Letters 11 (1980) 1-4
 
 import (
-  "reflect"
-  . "µU/obj"; . "µU/atomic";
-  "µU/col"; "µU/scr"
+//  "µU/ker"
+  . "µU/obj"
+  "µU/time"
+  "µU/ego"
+  "µU/rand"
+  "µU/atomic";
   "µU/perm"
-//  "µU/time"
-  "µU/errh"
-  "µU/gra"
+//  "µU/errh"
 )
 const (
   message = uint(iota)
   signal
 )
-const
-  withTree = true
 
-func c(){scr.ScrColours(col.Blue(),col.LightWhite());scr.Cls()}
+func sleep() {
+  time.Msleep (rand.Natural (500))
+}
 
 func (x *distributedGraph) DijkstraScholten (o Op) {
-  if withTree {
-    x.connect (nil)
-  } else {
-    x.connect (Encode(uint(0)))
-  }
+//  x.connect (uint(0)) // the messages have type uint
   x.Op = o
-  if withTree {
-x.tree = x.Clone().(gra.Graph)
-    x.tree.Clr()
-    x.tree.Ins (x.actVertex)
-    x.tree.Write()
+  me := ego.Me()
+  n := uint(len(x.Esel()[me]))
+  for i := uint(0); i < n; i++ {
+    e := x.Esel()[me][i]
+    println (e, " ")
+/*/
+  0 -> 1, 0 -> 3
+  conn (
+  1 -> 4
+  2 -> 1
+  3 -> 4, 3 -> 6, 3 -> 7
+  4 -> 5, 4 -> 6
+  5 -> 3, 5 -> 8
+  6 -> 7
+  7 -> 8
+  8 -> 2
+/*/
+//    x.connectN (uint(0), true) // the messages have type uint
   }
   for i := uint(0); i < x.n; i++ {
     go x.do (i)
   }
   if x.me == x.root {
-    bs := Encode(message)
-    if withTree { bs = append (bs, x.tree.Encode()...) }
     p := perm.New (x.n)
     for i := uint(0); i < x.n; i++ {
-      j := p.F(i)
-//      x.ch[j].Send (bs)
-      x.send (j, bs)
-<<<<<<< HEAD
-      Inc1 (&x.D)
-=======
-      Inc (&x.D)
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
+      x.ch[p.F(i)].Send (x.me + inf * message)
+      atomic.Inc1 (&x.D)
+// println ("sent ", x.me + inf * message)
+      sleep()
     }
     x.Op (x.actVertex)
   }
@@ -64,139 +64,75 @@ x.tree = x.Clone().(gra.Graph)
 
 func (x *distributedGraph) do (i uint) {
   for {
-    a := x.ch[i].Recv()
-    t := reflect.TypeOf (a)
-    if t == nil { errh.Error0 ("nil"); break }
-    bs := a.(Stream)
-    ms := Decode(uint(0), bs)
-
-    if ms == message {
-      if withTree {
-        x.tree = x.decodedGraph(bs[c0:])
-        x.tree.Write()
-      }
-<<<<<<< HEAD
-      Inc1 (&x.C)
-=======
-      Inc (&x.C)
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
-      x.Mutex.Lock()
-      if x.C == 1 { // insert actVertex and perform x.Op only once
-        if withTree {
-          x.tree.Ex (x.nb[i])
-          x.tree.Ins (x.actVertex)
-          x.tree.Edge (x.directedEdge(x.nb[i], x.actVertex))
-          x.tree.Write()
-        }
+    n := x.ch[i].Recv().(uint)
+// println ("rcvd ", n)
+    if n / inf == message {
+      atomic.Inc1 (&x.C)
+      x.mutex.Lock()
+      if x.C == 1 { // perform x.Op only once
         x.Op (x.actVertex)
       }
-      x.Mutex.Unlock()
+      x.mutex.Unlock()
       x.corn.Ins (i)
       if x.NumNeighboursOut() == 0 {
-        x.Mutex.Lock()
-        if x.C == x.NumNeighboursIn() {
-//        received a message from all predecessors
-          bs = Encode(signal)
-          if withTree {
-            bs = append (bs, x.tree.Encode()...)
-          }
+        x.mutex.Lock()
+        if x.C == x.NumNeighboursIn() { // received a message from all predecessors
           for x.C > 0 {
             j := x.corn.Get().(uint)
-//            x.ch[j].Send (bs)
-            x.send (j, bs)
-            Dec (&x.C)
+            x.ch[j].Send (x.me + inf * signal)
+            atomic.Dec (&x.C)
+// println ("sent ", x.me + inf * signal)
+            sleep()
           }
-          x.Mutex.Unlock()
+          x.mutex.Unlock()
           break
-        } else { // x.C < x.NumNeighboursIn()
-          x.Mutex.Unlock()
-//        wait for the outstanding messages
+        } else { // x.C < x.NumNeighboursIn(); wait for outstanding messages
+          x.mutex.Unlock()
         }
       } else { // x.Outgoing (i) > 0
-        x.Mutex.Lock()
+        x.mutex.Lock()
         if x.C == x.NumNeighboursIn() {
-          bs = Encode(message)
-          if withTree {
-            bs = append (bs, x.tree.Encode()...)
-          }
           p := perm.New (x.n)
           for j := uint(0); j < x.n; j++ {
             k := p.F(j)
             if x.Outgoing (k) {
-//              x.ch[k].Send (bs)
-              x.send (k, bs)
-<<<<<<< HEAD
-              Inc1 (&x.D)
-=======
-              Inc (&x.D)
->>>>>>> a13d69ba2d9c50112f2390abda13b4352cfd3a84
+              x.ch[k].Send (x.me + inf * message)
+// println ("sent ", x.me + inf * message)
+              atomic.Inc1 (&x.D)
+              sleep()
             }
           }
-//        all messages received, wait for the corresponding signals
+//        wait for the corresponding signals
         } else { // x.C < x.NumNeighboursIn()
-//        wait for the outstanding messages
+//        wait for outstanding messages
         }
-        x.Mutex.Unlock()
+        x.mutex.Unlock()
       }
-
-
-
-    } else { // ms == signal
-      if withTree {
-        c()
-/*/
-        const zeit = 0
-        x.tree.Write()
-errh.Hint ("tree"); time.Sleep(zeit)
-        g := x.decodedGraph(bs[c0:])
-        g.Write()
-errh.Hint ("received tree"); time.Sleep(zeit)
-        x.tree.Add (g)
-        x.tree.Write()
-errh.Hint ("joined tree"); time.Sleep(zeit); errh.DelHint()
-/*/
-        x.tree.Write()
-      }
-      Dec (&x.D)
-      if x.me == x.root { // environment
+    } else { // n / inf == signal
+      atomic.Dec (&x.D)
+      if x.me == x.root {
         if x.D == 0 {
           break
         }
-      } else { // inner node
-        x.Mutex.Lock()
+      } else {
+        x.mutex.Lock()
         if x.D == 0 {
-          if withTree {
-            bs = append (Encode(signal), x.tree.Encode()...)
-          } else {
-            bs = Encode(signal)
-          }
-          j := x.corn.Get().(uint)
-//          x.ch[j].Send (bs)
-          x.send (j, bs)
-          Dec (&x.C)
           for x.C > 0 {
             j := x.corn.Get().(uint)
-            gg := x.Clone().(gra.Graph)
-            gg.Clr()
-//            x.ch[j].Send (append (Encode(signal), gg.Encode()...))
-            x.send (j, append (Encode(signal), gg.Encode()...))
-            Dec (&x.C)
+            x.ch[j].Send (x.me + inf * signal)
+            atomic.Dec (&x.C)
+// println ("sent ", x.me + inf * signal)
+            sleep()
           }
-          x.Mutex.Unlock()
+          x.mutex.Unlock()
           break
         } else { // x.D > 0
-          x.Mutex.Unlock()
-//        to keep the invariant C = 0 => D = 0
-//        do not send any signals, before D = 0,
-//        i.e. signals from all successors received,
-//        so wait for those
+          x.mutex.Unlock()
+//        to keep the invariant C = 0 => D = 0 do not send any signals, before D = 0,
+//        i.e. signals from all successors received, so wait for those
         }
       }
     }
-  }
-  if withTree {
-    c()
-    x.tree.Write()
   }
   done <- 0
 }

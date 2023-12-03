@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 230311 - license see µU.go
+// (c) Christian Maurer   v. 231005 - license see µU.go
 
 import
   "µU/char"
@@ -132,6 +132,24 @@ func toLower0 (s *string) {
 func cap0 (s string) bool {
   if s == "" { return false }
   return s[0] == char.Upper (s[0])
+}
+
+func allLetters (s string) bool {
+  for i := 0; i < len(s); i++ {
+    if ! char.IsLetter(s[i]) {
+      return false
+    }
+  }
+  return true
+}
+
+func allDigits (s string) bool {
+  for i := 0; i < len(s); i++ {
+    if ! char.IsDigit(s[i]) {
+      return false
+    }
+  }
+  return true
 }
 
 func equiv (s, t string) bool {

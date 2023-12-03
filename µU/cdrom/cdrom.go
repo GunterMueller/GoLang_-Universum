@@ -152,13 +152,13 @@ var (
 
 func cstatus (d int) (uint32, int32) {
   var f C.uint
-  i:= C.status (C.int(d), &f)
+  i := C.status (C.int(d), &f)
 //  if i == C.int(-1) { ker.Panic ("cdrom status == -1") }
   return uint32(f), int32(i)
 }
 
 func inTrack (f uint32) uint8 {
-  t:= nTracks
+  t := nTracks
   if f >= startFrame[0] && f < startFrame[t] - offset {
     t --
     for f < startFrame[t] {
@@ -177,9 +177,9 @@ func ms (f uint32) (uint, uint) {
 func actTrack() uint8 {
   var f uint32
   f, status = cstatus (cdd)
-  m, s:= ms (f - offset)
+  m, s := ms (f - offset)
   Time.Set (m / 60, m % 60, s)
-  a:= inTrack (f)
+  a := inTrack (f)
   m, s = ms (f - startFrame[a])
   TrackTime.Set (m / 60, m % 60, s)
   return a
@@ -190,33 +190,28 @@ func string_() string {
 }
 
 func soundfile() *os.File {
-  dev:= env.Arg(1)
+  dev := env.Arg(1)
   if dev == "" { dev = "sr0" }
   if dev == "" { dev = "dvd" }
-  if dev == "" { dev = "cdrom" }
   var e error
   cdfile, e = os.OpenFile ("/dev/" + dev, syscall.O_RDONLY | syscall.O_NONBLOCK, 0440)
   if e != nil {
-    ker.Panic ("cdrom.Soundfile: OpenFile went schief")
+    ker.Panic ("cdrom.soundfile: OpenFile error")
     return nil
   }
   cdd = int(cdfile.Fd())
-// println ("Klappe zu ?", cdd)
-  for jj:= 0; jj < 10; jj++ {
-    // kkk:= C.closeTray (C.int(cdd))
+  for jj := 0; jj < 10; jj++ {
+    // kkk := C.closeTray (C.int(cdd))
 //    println (int(kkk))
     time.Msleep(100)
   }
-// println ("Klappe zu ???", cdd)
-  counter:= 0
+  counter := 0
   for { // anfangs dauert's manchmal 'ne Weile ...
     counter ++
     if counter > 30 {
       return nil
     }
     _, status = cstatus (cdd)
-//    println ("f ==", f, "status ==", status)
-//    println ("tracks ==", uint8(C.nTracks (C.int(cdd))))
     if status <= invalid { // invalid || -1
       time.Msleep (1000)
     } else {
@@ -224,24 +219,24 @@ func soundfile() *os.File {
     }
   }
   nTracks = uint8(C.nTracks (C.int(cdd)))
-  n1:= nTracks + 1
+  n1 := nTracks + 1
   startFrame = make ([]uint32, n1)
   StartTime = make ([]clk.Clocktime, nTracks)
   Length = make ([]clk.Clocktime, nTracks)
-  for t:= uint8(0); t <= nTracks; t++ {
+  for t := uint8(0); t <= nTracks; t++ {
     startFrame[t] = uint32(C.startFrame (C.int(cdd), C.uchar(t)))
     if t < nTracks {
       StartTime[t] = clk.New()
       Length[t] = clk.New()
-      m, s:= ms (startFrame[t] - offset)
+      m, s := ms (startFrame[t] - offset)
       StartTime[t].Set (m / 60, m % 60, s)
     }
     if t > 0 {
-      m, s:= ms (startFrame[t] - startFrame[t - 1] - offset)
+      m, s := ms (startFrame[t] - startFrame[t - 1] - offset)
       Length[t - 1].Set (m / 60, m % 60, s)
     }
   }
-  m, s:= ms (startFrame[nTracks] - 2 * offset)
+  m, s := ms (startFrame[nTracks] - 2 * offset)
   TotalTime.Set (m / 60, m % 60, s)
   var l, r C.uchar
   C.volRead (C.int(cdd), &l, &r)
@@ -257,20 +252,22 @@ func playTrack (t uint8)() {
     ker.Panic ("playTrack C.start (cdd) == 0")
     return
   }
-  iii:= C.play (C.int(cdd), C.uint(startFrame[t]), C.uint(startFrame[nTracks] - offset))
+  iii := C.play (C.int(cdd), C.uint(startFrame[t]), C.uint(startFrame[nTracks] - offset))
   if iii == C.int(-1) { ker.Panic ("playTrack iii = -1") }
+println ("affe playTrack")
 }
 
 func playTrack0() {
   var f uint32
   f, status = cstatus (cdd)
   playTrack (inTrack (f))
+println ("affe playTrack0")
 }
 
 func playTrack1 (fwd bool) {
   var f uint32
   f, status = cstatus (cdd)
-  t:= inTrack (f)
+  t := inTrack (f)
   if fwd {
     if t + 1 < nTracks {
       playTrack (t + 1)
@@ -284,7 +281,7 @@ func posTime1 (fwd bool, sec uint)() {
   if sec == 0 { return }
   var f uint32
   f, status = cstatus (cdd)
-  s:= f / frames
+  s := f / frames
   if fwd {
     s += uint32(sec)
   } else {
@@ -298,9 +295,9 @@ func posTime1 (fwd bool, sec uint)() {
 }
 
 func posTime (all bool, sec uint) {
-  f, t:= uint32(frames * sec), uint8(0)
+  f, t := uint32(frames * sec), uint8(0)
   if ! all {
-    f1, _:= cstatus (cdd)
+    f1, _ := cstatus (cdd)
     t = inTrack (f1)
   }
   f += startFrame[t]
@@ -328,8 +325,8 @@ func fin1() {
 }
 
 func volume (c Controller) uint8 {
-  l, r:= uint(volume_left), uint(volume_right)
-  sum:= l + r
+  l, r := uint(volume_left), uint(volume_right)
+  sum := l + r
   switch c {
   case Left:
     return volume_left
@@ -373,15 +370,15 @@ func ctrl1 (c Controller, lauter bool) {
       if volume_right > 0 { volume_right -- }
     }
   }
-  iii:= C.volCtrl (C.int(cdd), C.uchar(volume_left), C.uchar(volume_right))
+  iii := C.volCtrl (C.int(cdd), C.uchar(volume_left), C.uchar(volume_right))
   if iii == C.int(-1) { ker.Panic ("ctrl1: iii = -1") }
   balance = Volume (Balance)
 }
 
 func ctrl (c Controller, i uint8) {
-  l, r, j:= uint(volume_left), uint(volume_right), uint(i)
-  sum:= l + r
-  mid:= sum / 2
+  l, r, j := uint(volume_left), uint(volume_right), uint(i)
+  sum := l + r
+  mid := sum / 2
   switch c {
   case Left:
     l = j

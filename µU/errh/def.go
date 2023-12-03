@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 230925 - license see µU.go
+// (c) Christian Maurer   v. 231005 - license see µU.go
 
 import
   "µU/col"
@@ -50,6 +50,7 @@ func Error2Pos (s string, n uint, s1 string, n1 uint, l, c uint) { error2Pos(s,n
 
 // The calling process is blocked, until the user has confirmed by some action.
 func Confirmed () bool { return confirmed() }
+func ConfirmedYou () bool { return confirmedYou() }
 
 // TODO Spec
 func WriteLicense (p, v, a string, f, l, b col.Colour, g []string, t *string) {

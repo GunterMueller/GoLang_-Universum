@@ -180,7 +180,6 @@ func goPrint() {
   time.Msleep (100)
   exec.Command (PrintCommand, psname, "-o", "fit-to-page").Run()
   log.Clr(); dvi.Clr(); ps.Clr()
-  pseq.Erase (logname); pseq.Erase (dviname); pseq.Erase (psname)
 }
 
 func printImage (n string) {

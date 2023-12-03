@@ -1,0 +1,3 @@
+package dgra
+
+func Touch() {}

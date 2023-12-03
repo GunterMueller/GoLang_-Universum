@@ -7,6 +7,7 @@ import (
   "µU/ker"
   "µU/time"
   . "µU/obj"
+//  "µU/ego"
   "µU/host"
   "µU/naddr"
 )
@@ -37,16 +38,14 @@ func (x *netChannel) serve (c net.Conn) {
 
 func newn (a any, h string, p uint16, s bool) NetChannel {
   x := new(netChannel)
-  x.any = Clone(a)
-  x.uint = Codelen(a)
-  x.port = p
   if a == nil {
-    x.uint = maxWidth
+    x.any, x.uint = Clone(a), maxWidth
+  } else {
+    x.any, x.uint = Clone(a), Codelen(a)
   }
-  x.Stream = make(Stream, x.uint)
-  x.in, x.out = make(chan any), make(chan any)
+  x.port, x.Stream, x.in, x.out = p, make(Stream, x.uint), make(chan any), make(chan any)
   x.isServer = s
-  if x.isServer {
+  if x.isServer { // println ("server", ego.Me())
     x.Listener, x.error = net.Listen (network, naddr.New (p).String())
     x.panicIfErr()
     go func() {
@@ -58,7 +57,7 @@ func newn (a any, h string, p uint16, s bool) NetChannel {
         }
       }
     }()
-  } else { // x is client
+  } else { // println ("client", ego.Me())
     ht := host.NewS (h)
     for {
       if x.Conn, x.error = net.Dial (network, naddr.New2 (ht, p).String()); x.error == nil {

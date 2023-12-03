@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 230228 - license see µU.go
+// (c) Christian Maurer   v. 230929 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -210,6 +210,8 @@ loop:
           }
         case event.C == 127:
           *B = backslash
+        case event.C == 58:
+          // nixtun
         default:
           println ("kbd/x.go C.KeyPress: keycode ", event.C, "/ state ", event.S) // XXX
         }
