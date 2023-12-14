@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 231104 - license see µU.go
+// (c) Christian Maurer   v. 231213 - license see µU.go
 
 import (
   . "µU/obj"
@@ -32,13 +32,11 @@ type
 
   SetTravAlgorithm (a TravAlg) // see travAlgorithms.go
   TravAlgorithm() TravAlg
+  Trav (o Op)
 
   SetElectAlgorithm (a ElectAlg) // see electAlgorithms.go
   ElectAlgorithm() ElectAlg
   Leader() uint
-
-  Esel() [][]uint  
-  DijkstraScholten (o Op)
 }
 
 // Pre: The values of the edges of g + nchan.Port0 are the ports

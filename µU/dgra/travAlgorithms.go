@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171203 - license see µU.go
+// (c) Christian Maurer   v. 231213 - license see µU.go
 
 import
   . "µU/obj"
@@ -30,7 +30,7 @@ func (x *distributedGraph) TravAlgorithm() TravAlg {
 }
 
 func (x *distributedGraph) Trav (o Op) {
-//  if x.Directed() { panic("forget it: Graph is directed") }
+  if x.Directed() { panic("forget it: Graph is directed") }
   switch x.TravAlg {
   case DFS:
     x.dfs (o)

@@ -59,7 +59,6 @@ type
                           ElectAlg
                           TravAlg
                           Op
-                     esel [][]uint
                      C, D uint
                      corn mcorn.MCornet
                     mutex sync.Mutex
@@ -119,7 +118,6 @@ func new_(g gra.Graph) DistributedGraph {
   x.leader = x.me
   x.Op = Ignore
   x.corn = mcorn.New(uint(0))
-  x.esel = make([][]uint, 0)
   return x
 }
 

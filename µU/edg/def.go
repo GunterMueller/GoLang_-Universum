@@ -43,7 +43,7 @@ type
   Write1 (a bool)
 
 // x has the name and the value edited by the user.
-  Edit (/* x, y, x1, y1 int */)
+  Edit()
 }
 
 // Pre: a == nil or a is of type uint or of type Valuator.

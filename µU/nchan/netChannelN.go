@@ -1,13 +1,12 @@
 package nchan
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 231213 - license see µU.go
 
 import (
   "net"
   "µU/ker"
   "µU/time"
   . "µU/obj"
-//  "µU/ego"
   "µU/host"
   "µU/naddr"
 )

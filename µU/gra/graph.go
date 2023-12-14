@@ -1,26 +1,26 @@
 package gra
 
-// (c) Christian Maurer   v. 231111 - license see µU.go
+// (c) Christian Maurer   v. 231213 - license see µU.go
 //
 // >>>  References:
 // >>>  CLR  = Cormen, Leiserson, Rivest        (1990)
 // >>>  CLRS = Cormen, Leiserson, Rivest, Stein (2001)
 
 import (
+//  "sort"
   "µU/ker"
   . "µU/obj"
   "µU/kbd"
-  "µU/vtx"
   "µU/pseq"
 //  "µU/time"
 )
 
-/*    vertex           neighbour                        neighbour            vertex
+/*/   vertex           neighbour                        neighbour            vertex
     _________                                                              _________  
-   /         \             /--------------------------------------------> /         \
-  |    any    |          /                                               |    any    |
-  |___________|<------------------------------------------------\        |___________|
-  |           |       /                                           \      |           |
+   /         \          /-----------------------------------------------> /         \
+  |    any    |        /                                                 |    any    |
+  |___________|<--------------------------------------------------\      |___________|
+  |           |      /                                             \     |           |
   |   nbPtr---|-----------\                                  /-----------|---nbPtr   |
   |___________|    /       |                                |        \   |___________|
   |           |   |        |                                |         |  |           |
@@ -67,7 +67,8 @@ import (
 
   Semantics of some variables, that are "hidden" in fields of vAnchor:
     vAnchor.time0: in that the "time" is incremented for each search step
-    vAnchor.acyclic: (after call of search1) == true <=> graph has no cycles. */
+    vAnchor.acyclic: (after call of search1) == true <=> graph has no cycles.
+/*/
 
 const (
   suffix = "gra"
@@ -385,97 +386,34 @@ func (x *graph) CoEdged() bool {
   return x.connection (x.local, x.colocal) != nil
 }
 
-// Returns (nil, false), iff there is no vertex in x with content a;
+// Returns (nil, false), iff a there is no vertex in x with content a;
 // returns otherwise (n, true), where n is the pointer to that vertex
 // (which is unique because of effect of Ins).
 func (x *graph) found (a any) (*vertex, bool) {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     if Eq (v.any, a) {
       return v, true
+    } else {
     }
   }
   return nil, false
 }
 
-func (x *graph) Ex (v any) bool {
-  if w, ok := x.found (v); ok {
-    x.local = w
+func (x *graph) Ex (a any) bool {
+  if v, ok := x.found (a); ok {
+    x.local = v
     return true
   }
   return false
 }
 
-func (x *graph) Ex2 (v, v1 any) bool {
-  if Eq (v, v1) {
+func (x *graph) Ex2 (a, a1 any) bool {
+  if Eq (a, a1) {
     return false
   }
-  if w, ok := x.found (v); ok {
-    if w1, ok1 := x.found (v1); ok1 {
-      x.colocal, x.local = w, w1
-      return true
-    }
-  }
-  return false
-}
-
-/*/
-func (x *graph) Ex2out (v, v1 any) bool {
-  if ! x.bool {
-    return false
-  }
-  if Eq (v, v1) {
-    return false
-  }
-  if w, ok := x.found (v); ok {
-    if w1, ok := x.found (v1); ok {
-      n := w
-      for {
-        if n.nbPtr.to == w1 { println ("found v1"); return true }
-        if n.nbPtr.to == nil { println ("n.nbPtr == nil"); return false }
-        if n.nbPtr.outgoing && n.nbPtr.to == w1 {
-          println ("outgoint")
-          x.colocal, x.local = w, w1
-          return true
-        }
-        if n == w1 {
-          println ("oops")
-          return false
-        }
-        n = n.nextV
-      }
-    }
-  }
-  return false
-}
-/*/
-
-// Returns (nil, false), iff there is no vertex in x with content a;
-// returns otherwise (n, true), where n is the pointer to that vertex
-// (which is unique because of effect of Ins).
-func (x *graph) foundCont (v any) (*vertex, bool) {
-  for w := x.vAnchor.nextV; w != x.vAnchor; w = w.nextV {
-    if Eq (w.any.(vtx.Vertex).Content(), v) {
-      return w, true
-    }
-  }
-  return nil, false
-}
-
-func (x *graph) ExCont (v any) bool {
-  if w, ok := x.foundCont (v); ok {
-    x.local = w
-    return true
-  }
-  return false
-}
-
-func (x *graph) Ex2Cont (v, v1 any) bool {
-  if Eq (v, v1) {
-    return false
-  }
-  if w, ok := x.foundCont (v); ok {
-    if w1, ok1 := x.foundCont (v1); ok1 {
-      x.colocal, x.local = w, w1
+  if v, ok := x.found (a); ok {
+    if v1, ok1 := x.found (a1); ok1 {
+      x.colocal, x.local = v, v1
       return true
     }
   }
@@ -502,6 +440,10 @@ func (x *graph) ExPred (p Pred) bool {
   return false
 }
 
+func (x *graph) Ex1 (e any) bool {
+  return x.ExPred1 (func (a any) bool { return Eq (a, e) })
+}
+
 func (x *graph) ExPred1 (p Pred) bool {
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
     if p (e.any) {
@@ -516,10 +458,6 @@ func (x *graph) ExPred1 (p Pred) bool {
     }
   }
   return false
-}
-
-func (x *graph) Ex1 (e any) bool {
-  return x.ExPred1 (func (a any) bool { return Eq (a, e) })
 }
 
 func (x *graph) ExPred2 (p, p1 Pred) bool {
@@ -551,14 +489,14 @@ func (x *graph) Get2() (any, any) {
 
 func (x *graph) Get1() any {
   if x.local == x.vAnchor || x.local == x.colocal {
-    return Clone (x.eAnchor.any)
+    return Clone (x.eAnchor.any) // XXX
   }
   e := x.connection (x.colocal, x.local)
   if e == nil {
     e = x.connection (x.local, x.colocal)
   }
   if e == nil || e.any == nil {
-    return Clone (x.eAnchor.any)
+    return Clone (x.eAnchor.any) // XXX
   }
   return Clone (e.any)
 }

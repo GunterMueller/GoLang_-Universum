@@ -42,28 +42,11 @@ func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
       }
     }
   }
+//  if id >= 16 { ker.Panic ("no id as parameter") }
   g.Ex (v[id])
   g.SetWrite (vtx.W, edg.W)
   g = g.Star()
   d := new_(g).(*distributedGraph)
-  d.esel = make([][]uint, k)
-  for i := uint(0); i < k; i++ {
-    n := uint(len(es[i]))
-// println (i, n)
-//       0  2
-//       1  1
-//       2  1
-//       3  3
-//       4  2
-//       5  2
-//       6  1
-//       7  1
-//       8  1
-    d.esel[i] = make([]uint, n)
-    for j := uint(0); j < n; j++ {
-      d.esel[i][j] = es[i][j]
-    }
-  }
   d.setSize (k)
   h := make([]string, k)
   for i := uint(0); i < k; i++ {
@@ -73,10 +56,6 @@ func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
   d.diameter = m
 // println ("shit", d.Num())
   return d
-}
-
-func (x *distributedGraph) Esel() [][]uint {
-  return x.esel
 }
 
 // Returns the number of a in the ring
@@ -582,11 +561,11 @@ func g9dsdir (i uint) DistributedGraph {
 2  0 --------> 1 <-------------- 2
 3  |           |               * ^
 4  |           |           /--/  |
-5  v           V          /      |
+5  v           v          /      |
 6  3 --------> 4 ------> 5       |
 7  |\          |          \      |
 8  | \------\  |           \--\  |
-9  v         * V               * |
+9  v         * v               * |
 10 6 --------> 7 --------------> 8
 
             1         2         3

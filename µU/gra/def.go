@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 231110 - license see µU.go
+// (c) Christian Maurer   v. 230308 - license see µU.go
 
 import (
   . "µU/obj"
@@ -134,16 +134,6 @@ type
 // and do not coincide. In this case now
 // v is the colocal and v1 the local vertex of x.
   Ex2 (v, v1 any) bool
-
-// Returns true, iff there is a vertex v in x with content a.
-// In this case v is now the local vertex of x.
-// The colocal vertex of x is the same as before.
-  ExCont (a any) bool
-
-// Returns true, iff there is a vertex v in x with content a
-// and a vertex v1 with content a1. In this case now
-// v is the colocal and v1 the local vertex of x.
-  Ex2Cont (a, a1 any) bool
 
 // Pre: p is defined on vertices.
 // Returns true, iff there is a vertex in x, for which p returns true.

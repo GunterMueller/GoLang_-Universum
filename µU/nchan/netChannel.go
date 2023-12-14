@@ -76,9 +76,6 @@ func (x *netChannel) Send (a any) error {
     bs = append (Encode(Codelen(a)), bs...)
     _, x.error = x.Conn.Write (bs)
   } else {
-// print ("Send on port ", x.port, ", ")
-// ta, ts := reflect.TypeOf(x.any).String(), reflect.TypeOf(a).String()
-// println ("pattern has type", ta, "and object to send has type", ts)
     CheckTypeEq (x.any, a)
     _, x.error = x.Conn.Write (Encode(a))
   }

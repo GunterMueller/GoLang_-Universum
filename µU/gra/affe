@@ -1,1 +1,13 @@
-  ExVtx (a any) any
+
+// Returns nil, iff there is no edge from n to n1;
+// returns otherwise the corresponding pointer.
+func (x *graph) connection (v, v1 *vertex) *edge {
+  for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
+    if n.outgoing && n.to == v1 {
+      return n.edgePtr
+bluse
+    }
+  }
+  return nil
+}
+

@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 231110 - license see µU.go
+// (c) Christian Maurer   v. 220804 - license see µU.go
 
 import (
 //  "µU/ker"
@@ -10,7 +10,7 @@ import (
 )
 type
   vertex struct {
-        content EditorGr
+                EditorGr
        valuable bool
           width,
          height uint
@@ -20,8 +20,8 @@ type
 
 func new_(e EditorGr, w, h uint) Vertex {
   x := new (vertex)
-  x.content = e.Clone().(EditorGr) // is Valuator, if of type *bnat.Natural
-  switch x.content.(type) {
+  x.EditorGr = e.(Object).Clone().(EditorGr) // is Valuator, if of type *bnat.Natural
+  switch x.EditorGr.(type) {
   case Valuator:
     x.valuable = true
   default:
@@ -40,7 +40,7 @@ func (x *vertex) imp (Y any) *vertex {
 }
 
 func (x *vertex) Content() EditorGr {
-  return x.content.Clone().(EditorGr)
+  return x.EditorGr.(Object).Clone().(EditorGr)
 }
 
 func (x *vertex) Wd() uint {
@@ -68,34 +68,26 @@ func (x *vertex) Contour() (uint, uint) {
 }
 
 func (x *vertex) Empty() bool {
-  return x.content.(Object).Empty()
+  return x.EditorGr.(Object).Empty()
 }
 
 func (x *vertex) Clr() {
-  x.content.(Object).Clr()
+  x.EditorGr.(Object).Clr()
 }
 
 func (x *vertex) Eq (Y any) bool {
   y := x.imp(Y)
-//  return x.content.(Object).Eq (y.content) &&
-  return x.content.Eq (y.content) &&
+  return x.EditorGr.(Object).Eq (y.EditorGr) &&
          x.x == y.x && x.y == y.y
 }
 
 func (x *vertex) Less (Y any) bool {
-//  return x.content.(Object).Less (x.imp(Y).content)
-  return x.content.Less (x.imp(Y).content)
-}
-
-func (x *vertex) Leq (Y any) bool {
-//  return x.content.(Object).Leq (x.imp(Y).content)
-  return x.content.Leq (x.imp(Y).content)
+  return x.EditorGr.(Object).Less (x.imp(Y).EditorGr)
 }
 
 func (x *vertex) Copy (Y any) {
   y := x.imp(Y)
-//  x.content.(Object).Copy (y.content.(Object))
-  x.content.Copy (y.content.(Object))
+  x.EditorGr.(Object).Copy (y.EditorGr.(Object))
   x.width, x.height = y.width, y.height
   x.x, x.y = y.x, y.y
   x.f, x.b = y.f, y.b
@@ -103,7 +95,7 @@ func (x *vertex) Copy (Y any) {
 }
 
 func (x *vertex) Clone() any {
-  y := new_(x.content, x.width, x.height).(*vertex)
+  y := new_(x.EditorGr, x.width, x.height).(*vertex)
   y.Copy (x)
   return y
 }
@@ -140,23 +132,21 @@ func (x *vertex) ColoursA (f, b col.Colour) {
   x.fa, x.ba = f, b
 }
 
-/*/
-func (x *vertex) Defined (s string) bool {
-  switch x.content.(type) {
+/* func (x *vertex) Defined (s string) bool {
+  switch x.EditorGr.(type) {
   case Stringer:
-    return x.content.(Stringer).Defined (s)
+    return x.EditorGr.(Stringer).Defined (s)
   }
   return false
 }
 
 func (x *vertex) String() string {
-  switch x.content.(type) {
+  switch x.EditorGr.(type) {
   case Stringer:
-    return x.content.(Stringer).String()
+    return x.EditorGr.(Stringer).String()
   }
   return ""
-}
-/*/
+} */
 
 func (x *vertex) Write() {
   x.Write1 (false)
@@ -180,18 +170,18 @@ func (x *vertex) Write1 (a bool) {
       scr.Ellipse (x.x, x.y, w1 * 7 / 10, h1 * 8 / 10)
     }
   }
-  x.content.(col.Colourer).Colours (f, b)
-  x.content.WriteGr (x.x - int(w1) / 2 - int(scr.Wd1()), x.y - int(h1) / 2)
+  x.EditorGr.(col.Colourer).Colours (f, b)
+  x.EditorGr.WriteGr (x.x - int(w1) / 2 - int(scr.Wd1()), x.y - int(h1) / 2)
 }
 
 func (x *vertex) Edit() {
   x.Write()
   w1, h1  := scr.Wd1() * x.width, scr.Ht1() * x.height
-  x.content.EditGr (x.x - int(w1) / 2 - int(scr.Wd1()), x.y - int(h1) / 2)
+  x.EditorGr.EditGr (x.x - int(w1) / 2 - int(scr.Wd1()), x.y - int(h1) / 2)
 }
 
 func (x *vertex) Codelen() uint {
-  return x.content.(Object).Codelen() +
+  return x.EditorGr.(Object).Codelen() +
          2 +               // width, height
          2 * C0 +          // x, y
          4 * x.f.Codelen()
@@ -199,8 +189,8 @@ func (x *vertex) Codelen() uint {
 
 func (x *vertex) Encode() Stream {
   bs := make (Stream, x.Codelen())
-  i, a  := uint(0), x.content.(Object).Codelen()
-  copy (bs[i:i+a], x.content.(Object).Encode())
+  i, a  := uint(0), x.EditorGr.(Object).Codelen()
+  copy (bs[i:i+a], x.EditorGr.(Object).Encode())
   i += a
   bs[i] = uint8(x.width)
   i++
@@ -223,9 +213,9 @@ func (x *vertex) Encode() Stream {
 }
 
 func (x *vertex) Decode (bs Stream) {
-  i, a  := uint(0), x.content.(Object).Codelen()
+  i, a  := uint(0), x.EditorGr.(Object).Codelen()
 //  if a + 2 + 2 * C0 + 4 * col.Codelen() >= uint(len(bs)) { return false }
-  x.content.(Object).Decode (bs[i:i+a])
+  x.EditorGr.(Object).Decode (bs[i:i+a])
   i += a
   x.width = uint(bs[i])
   i++
@@ -248,13 +238,13 @@ func (x *vertex) Decode (bs Stream) {
 
 func (x *vertex) Val() uint {
   if x.valuable {
-    return x.content.(Valuator).Val()
+    return x.EditorGr.(Valuator).Val()
   }
   return 0
 }
 
 func (x *vertex) SetVal (n uint) {
   if x.valuable {
-    x.content.(Valuator).SetVal (n)
+    x.EditorGr.(Valuator).SetVal (n)
   }
 }

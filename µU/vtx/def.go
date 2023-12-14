@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 231213 - license see µU.go
 
 import (
   . "µU/obj"
@@ -25,13 +25,13 @@ type
 // Returns the width and height of x.
   Size() (uint, uint)
 
-// x has the the center (x, y).
+// x has the the center coordinates (x, y).
   Set (x, y int)
 
-// Returns the coordinates of x.
+// Returns the center coordinates of x.
   Pos() (int, int)
 
-// TODO Spec
+// Returns the width and height of x.
   Contour() (uint, uint)
 
 // The center of x has the position of the mouse.
