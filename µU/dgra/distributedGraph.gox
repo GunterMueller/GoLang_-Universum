@@ -55,7 +55,11 @@ type
                   labeled bool
        diameter, distance,
                    leader uint
+                          HeartbeatAlg
+                          ElectAlg
+                          TravAlg
                           Op
+//                     esel [][]uint
                      C, D []uint
                      corn mcorn.MCornet
                     mutex sync.Mutex
@@ -111,9 +115,11 @@ func new_(g gra.Graph) DistributedGraph {
   x.parent, x.child = inf, make([]bool, x.n)
   x.mon = make([]fmon.FarMonitor, x.n)
   g.Ex (x.actVertex)
+  x.HeartbeatAlg, x.ElectAlg, x.TravAlg = HeartbeatGraph, ChangRoberts, DFS
   x.leader = x.me
   x.Op = Ignore
   x.corn = mcorn.New(uint(0))
+//  x.esel = make([][]uint, 0)
   return x
 }
 
@@ -200,7 +206,7 @@ func (x *distributedGraph) send (i uint, a any) {
     for t := 0.2; t < 0.9; t+= 0.1 {
       xm, ym := point (x0, y0, x1, y1, t)
       scr.ColourF (f); scr.CircleFull (xm, ym, 4)
-      time.Msleep (5)
+      time.Msleep (500)
       scr.ColourF (b); scr.CircleFull (xm, ym, 4)
     }
 // errh.DelHint ()
@@ -326,8 +332,4 @@ func (x *distributedGraph) ParentChildren() string {
     }
   }
   return s
-}
-
-func (x *distributedGraph) Leader() uint {
-  return x.leader
 }

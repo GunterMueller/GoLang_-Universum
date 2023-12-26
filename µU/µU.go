@@ -1,6 +1,6 @@
 package main
-
-/* (c) 1986-2023  Christian Maurer       maurer-berlin.eu proprietary - all rights reserved
+/*/
+  (c) 1986-2023  Christian Maurer        maurer-berlin.eu proprietary - all rights reserved
 
   Das Mikrouniversum µU ist nur zum Einsatz in der Lehre konstruiert  und hat deshalb einen
   rein akademischen Charakter. Es liefert u. a. eine Reihe von Beispielen für mein Lehrbuch
@@ -20,7 +20,7 @@ package main
   IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
   WAY OUT OF THE USE OF THIS SOFTWARE,  EVEN IF ADVISED  OF THE POSSIBILITY OF SUCH DAMAGE.
 
-  APART FROM THIS  THE TEXT IN GERMAN ABOVE AND BELOW  IS A MANDATORY PART  OF THE LICENSE.
+  APART FROM THE ABOVE, THE GERMAN TEXT ABOVE AND BELOW IS A MANDATORY PART OF THE LICENSE.
 
   Die Quelltexte von µU sind äußerst sorgfältig entwickelt und werden laufend überarbeitet.
   ABER: Es gibt keine fehlerfreie Weichware - dies gilt natürlich auch für _diese_ Quellen.
@@ -28,8 +28,8 @@ package main
   zur Entgleisung von Eisenbahnen, zum GAU in Atomkraftwerken  oder zum Absturz des Mondes.
   Deshalb wird vor der Verwendung irgendwelcher Quellen von µU in Programmen zu ernsthaften
   Zwecken ausdrücklich gewarnt! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.)
-  Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen. */
-
+  Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angenommen.
+/*/
 import (
   "µU/achan"; "µU/audio"; "µU/barb"; "µU/barr"; "µU/book"; "µU/bpqu"; "µU/br"; "µU/bytes"
   "µU/car"; "µU/cdrom"; "µU/char"; "µU/col"; "µU/collop"; "µU/comp"; "µU/date"; "µU/day"
@@ -43,7 +43,7 @@ import (
 const (
   yy = 2023
   mm =   12
-  dd =   13
+  dd =   20
 )
 var (
   red, green = col.FlashRed(), col.FlashGreen()

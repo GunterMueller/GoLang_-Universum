@@ -5,7 +5,7 @@ package dgra
 import
   . "µU/obj"
 
-func (x *distributedGraph) heartbeatgraph() {
+func (x *distributedGraph) HeartbeatGraph() {
   x.connect (nil)
   defer x.fin()
   x.tmpGraph.Copy (x.Graph)

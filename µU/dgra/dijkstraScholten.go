@@ -9,11 +9,14 @@ import (
 //  "µU/ker"
   . "µU/obj"
   "µU/time"
-  "µU/ego"
+//  "µU/ego"
   "µU/rand"
   "µU/atomic";
-  "µU/perm"
 //  "µU/errh"
+  "µU/vtx"
+//  "µU/edg"
+//  "µU/host"
+  "µU/nchan"
 )
 const (
   message = uint(iota)
@@ -25,41 +28,39 @@ func sleep() {
 }
 
 func (x *distributedGraph) DijkstraScholten (o Op) {
-//  x.connect (uint(0)) // the messages have type uint
   x.Op = o
-  me := ego.Me()
-  n := uint(len(x.Esel()[me]))
-  for i := uint(0); i < n; i++ {
-    e := x.Esel()[me][i]
-    println (e, " ")
-/*/
-  0 -> 1, 0 -> 3
-  conn (
-  1 -> 4
-  2 -> 1
-  3 -> 4, 3 -> 6, 3 -> 7
-  4 -> 5, 4 -> 6
-  5 -> 3, 5 -> 8
-  6 -> 7
-  7 -> 8
-  8 -> 2
-/*/
+  x.Trav (func (a any) { v := a.(vtx.Vertex)
+                         x.Ex (v)
+                         n := v.Val()
+//                         ch := make ([]nchan.NetChannel, 0)
+                         for i := uint(0); i < x.NumNeighboursIn(); i++ {
+                           nb := x.NeighbourIn(i).(vtx.Vertex)
+                           if nb != nil {
+                             nn := nb.(vtx.Vertex).Val()
+                             println (nn, "->", n)
+                             x.ch = append (x.ch, nchan.NewN (uint(0), "jupiter",
+                                                              nchan.Port (uint(0), n, nn, 1),
+                                                              true))
+                           }
+                         }
+                       })
 //    x.connectN (uint(0), true) // the messages have type uint
+/*/
   }
   for i := uint(0); i < x.n; i++ {
     go x.do (i)
   }
   if x.me == x.root {
-    p := perm.New (x.n)
     for i := uint(0); i < x.n; i++ {
-      x.ch[p.F(i)].Send (x.me + inf * message)
-      atomic.Inc1 (&x.D)
+      x.ch[i].Send (x.me + inf * message)
+      atomic.Inc1 (&x.D[i])
 // println ("sent ", x.me + inf * message)
       sleep()
     }
     x.Op (x.actVertex)
   }
   <-done
+/*/
 }
 
 func (x *distributedGraph) do (i uint) {
@@ -67,66 +68,64 @@ func (x *distributedGraph) do (i uint) {
     n := x.ch[i].Recv().(uint)
 // println ("rcvd ", n)
     if n / inf == message {
-      atomic.Inc1 (&x.C)
+      atomic.Inc1 (&x.C[i])
       x.mutex.Lock()
-      if x.C == 1 { // perform x.Op only once
+      if x.C[i] == 1 { // perform x.Op only once
         x.Op (x.actVertex)
       }
       x.mutex.Unlock()
       x.corn.Ins (i)
       if x.NumNeighboursOut() == 0 {
         x.mutex.Lock()
-        if x.C == x.NumNeighboursIn() { // received a message from all predecessors
-          for x.C > 0 {
+        if x.C[i] == x.NumNeighboursIn() { // received a message from all predecessors
+          for x.C[i] > 0 {
             j := x.corn.Get().(uint)
             x.ch[j].Send (x.me + inf * signal)
-            atomic.Dec (&x.C)
+            atomic.Dec (&x.C[i])
 // println ("sent ", x.me + inf * signal)
             sleep()
           }
           x.mutex.Unlock()
           break
-        } else { // x.C < x.NumNeighboursIn(); wait for outstanding messages
+        } else { // x.C[i] < x.NumNeighboursIn(); wait for outstanding messages
           x.mutex.Unlock()
         }
       } else { // x.Outgoing (i) > 0
         x.mutex.Lock()
-        if x.C == x.NumNeighboursIn() {
-          p := perm.New (x.n)
+        if x.C[i] == x.NumNeighboursIn() {
           for j := uint(0); j < x.n; j++ {
-            k := p.F(j)
-            if x.Outgoing (k) {
-              x.ch[k].Send (x.me + inf * message)
+            if x.Outgoing (j) {
+              x.ch[j].Send (x.me + inf * message)
 // println ("sent ", x.me + inf * message)
-              atomic.Inc1 (&x.D)
+              atomic.Inc1 (&x.D[i])
               sleep()
             }
           }
 //        wait for the corresponding signals
-        } else { // x.C < x.NumNeighboursIn()
+        } else { // x.C[i] < x.NumNeighboursIn()
 //        wait for outstanding messages
         }
         x.mutex.Unlock()
       }
     } else { // n / inf == signal
-      atomic.Dec (&x.D)
+      atomic.Dec (&x.D[i])
       if x.me == x.root {
-        if x.D == 0 {
+        if x.D[i] == 0 {
           break
         }
       } else {
         x.mutex.Lock()
-        if x.D == 0 {
-          for x.C > 0 {
+        if x.D[i] == 0 {
+          for x.C[i] > 0 {
             j := x.corn.Get().(uint)
             x.ch[j].Send (x.me + inf * signal)
-            atomic.Dec (&x.C)
+            atomic.Dec (&x.C[i])
 // println ("sent ", x.me + inf * signal)
             sleep()
           }
           x.mutex.Unlock()
           break
-        } else { // x.D > 0
+        } else { // x.D[i] > 0
           x.mutex.Unlock()
 //        to keep the invariant C = 0 => D = 0 do not send any signals, before D = 0,
 //        i.e. signals from all successors received, so wait for those

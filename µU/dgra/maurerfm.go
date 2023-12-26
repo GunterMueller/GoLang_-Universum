@@ -1,13 +1,13 @@
 package dgra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 231215 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/fmon"
 )
 
-func (x *distributedGraph) maurerfm() {
+func (x *distributedGraph) Maurerfm() {
   in, out := uint(1), uint(0); if x.Outgoing(1) { in, out = out, in }
   go func() {
     fmon.New (nil, 1, x.m, AllTrueSp,

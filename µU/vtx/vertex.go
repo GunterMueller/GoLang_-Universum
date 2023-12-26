@@ -171,7 +171,7 @@ func (x *vertex) Write1 (a bool) {
     }
   }
   x.EditorGr.(col.Colourer).Colours (f, b)
-  x.EditorGr.WriteGr (x.x - int(w1) / 2 - int(scr.Wd1()), x.y - int(h1) / 2)
+  x.EditorGr.WriteGr (x.x - int(w1) / 2 - 0 * int(scr.Wd1()), x.y - int(h1) / 2)
 }
 
 func (x *vertex) Edit() {

@@ -5,7 +5,7 @@ package dgra
 // >>> D. Dolev, M. Klawe, M. Rodeh: An O(n log n) Unidirectional Algorithm
 //     for Extrema Finding in a Circle. J. Algorithms 3 (1982), 245-260
 
-func (x *distributedGraph) dolevKlaweRodeh() {
+func (x *distributedGraph) DolevKlaweRodeh() {
   x.connect(uint(0))
   defer x.fin()
   var left uint

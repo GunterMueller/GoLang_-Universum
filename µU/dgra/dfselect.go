@@ -2,7 +2,7 @@ package dgra
 
 // (c) Christian Maurer   v. 200728 - license see µU.go
 
-func (x *distributedGraph) dfselect() {
+func (x *distributedGraph) Dfselect() {
   x.connect (x.leader)
   defer x.fin()
   if x.me == x.root { // root sends the first message

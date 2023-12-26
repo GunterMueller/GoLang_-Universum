@@ -1,119 +1,103 @@
 package nchan
 
-// (c) Christian Maurer   v. 171213 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "errors"
   "net"
-  . "µU/ker"
+  "µU/ker"
+  "µU/time"
+
   . "µU/obj"
   "µU/errh"
-//  "µU/nat"
   "µU/host"
   "µU/naddr"
 )
+
 const (
   maxWidth = uint(1<<16)
   network = "tcp"
 )
 type
   netChannel struct {
-                    Any "type of objects in the channel"
+                    any "type of objects in the channel"
+               port uint16
                     uint "byte capacity of the channel"
-            in, out chan Any
+            in, out chan any
                     FuncSpectrum
                     PredSpectrum
            isServer,
              oneOne bool
                     net.Conn
-           nClients uint
                     net.Listener
-                buf []byte
-                    int "number of sent/received bytes"
-    err, errS, errR error
+                    Stream "buffer"
+                    error
                     }
 
 func (x *netChannel) panicIfErr() {
-  if x.errS != nil { Panic (x.errS.Error()) }
-  if x.errR != nil { Panic (x.errR.Error()) }
-  if x.err != nil { Panic (x.err.Error()) }
+  if x.error != nil {
+    ker.Panic (x.error.Error())
+  }
 }
 
-func new_(a Any, me, i uint, n string, p uint16) NetChannel {
-  if me == i { Panic("nchan.New: me == i") }
+func new_(a any, me, i uint, n string, p uint16) NetChannel {
+  if me == i { ker.Panic ("me == i") }
   x := new(netChannel)
   if a == nil {
-    x.Any, x.uint = nil, maxWidth
+    x.any, x.uint = nil, maxWidth
   } else {
-    x.Any, x.uint = Clone(a), Codelen(a)
+    x.any, x.uint = Clone (a), Codelen (a)
   }
-  x.in, x.out = make(chan Any), make(chan Any)
-  x.buf = make([]byte, x.uint)
+  x.port, x.Stream, x.in, x.out = p, make(Stream, x.uint), make(chan any), make(chan any)
   x.oneOne = true
   x.isServer = me < i
-  h, port := host.NewS(n), Port0 + p
-  if x.isServer {
-    x.Listener, x.err = net.Listen (network, naddr.New2 (h, port).String())
+
+  ht, port := host.NewS (n), Port0 + p
+  if x.isServer { print ("server ", me, " ", i, " ")
+    x.Listener, x.error = net.Listen (network, naddr.New2 (ht, port).String())
     x.panicIfErr()
-    x.Conn, x.err = x.Listener.Accept()
-  } else { // client
-    dialaddr := naddr.New2 (h, port).String()
+
+    x.Conn, x.error = x.Listener.Accept()
+  } else { // print ("client ", me, " ", i, " ")
+    dialaddr := naddr.New2 (ht, port).String()
     for {
-      if x.Conn, x.err = net.Dial (network, dialaddr); x.err == nil {
+      if x.Conn, x.error = net.Dial (network, dialaddr); x.error == nil {
         break
       }
-      errh.Hint(x.err.Error())
-      Msleep (500)
+      errh.Hint (x.error.Error())
+      time.Msleep (500)
     }
-  }
+  } // println()
   return x
 }
 
-func (x *netChannel) Send (a Any) error {
-  if x.Conn == nil { Shit() }
-  if x.Any == nil {
-    x.uint = Codelen(a)
-    if x.uint > maxWidth { Panic ("object to send is too large") }
-    x.int, x.errS = x.Conn.Write (append (Encode (x.uint), Encode(a)...))
+func (x *netChannel) Send (a any) error {
+  if x.Conn == nil { return errors.New ("no Connection:") }
+  if x.any == nil {
+    _, x.error = x.Conn.Write (append (Encode(Codelen(a)), Encode(a)...))
   } else {
-    CheckTypeEq (x.Any, a)
-    x.int, x.errS = x.Conn.Write(Encode(a))
+    CheckTypeEq (x.any, a)
+    _, x.error = x.Conn.Write (Encode(a))
   }
-//  if x.error != nil { println (x.error.Error()) }
-  return x.errS
+  return x.error
 }
 
-func (x *netChannel) Recv() Any {
-  if x.Conn == nil {
-    x.errR = errors.New("no Connection")
-    return Clone(x.Any)
+func (x *netChannel) Recv() any {
+  if x.Conn == nil { ker.Panic ("no Conn") }
+  if x.any == nil {
+    _, x.error = x.Conn.Read (x.Stream[:C0])
+    if x.error == nil { return Clone (x.any) }
+    x.uint = Decode (uint(0), x.Stream[:C0]).(uint)
+    _, x.error = x.Conn.Read (x.Stream[C0:C0+x.uint])
+    if x.error != nil { return Clone (x.any) }
+    return x.Stream[C0:C0+x.uint]
   }
-  if x.Any == nil {
-    x.int, x.errR = x.Conn.Read(x.buf[:C0])
-    if x.errR != nil {
-      return Clone(x.Any)
-    }
-    x.uint = Decode (uint(0), x.buf[:C0]).(uint)
-    x.int, x.errR = x.Conn.Read(x.buf[C0:C0+x.uint])
-    u, v := uint(x.int), x.uint // + C0
-    if u != v {
-      println("shit: u ==", u, "!= v ==", v)
-    }
-    return x.buf[C0:C0+x.uint]
-  }
-  x.int, x.errR = x.Conn.Read(x.buf)
-  if x.errR != nil {
-    return Clone(x.Any)
-  }
-  return Decode(Clone(x.Any), x.buf)
-}
-
-func (x *netChannel) RecvError() error {
-  return x.errR
+  _, x.error = x.Conn.Read (x.Stream)
+  return Decode (Clone(x.any), x.Stream)
 }
 
 func (x *netChannel) Fin() {
-  x.Conn.Close()
+  if x.Conn != nil { x.Conn.Close() }
   if x.isServer {
     x.Listener.Close()
     if ! x.oneOne {

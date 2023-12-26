@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 231108 - license see µU.go
+// (c) Christian Maurer   v. 220420 - license see µU.go
 
 import (
   "net"
@@ -23,7 +23,7 @@ func new1 (a any, me, i uint, n string, p uint16, s bool) NetChannel {
   x.port = p
   x.in, x.out = make(chan any), make(chan any)
   x.Stream = make(Stream, x.uint)
-  x.oneOne = true
+  x.oneOne = true // ? XXX
   x.isServer = s
   ht, port := host.NewS(n), Port0 + p
   if x.isServer {

@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 230308 - license see µU.go
+// (c) Christian Maurer   v. 231220 - license see µU.go
 
 import (
   . "µU/obj"
@@ -486,6 +486,19 @@ type
 // Pre: x.Name was called.
 // x is stored in the corresponding file.
   Store()
+
+// Returns the values of all vertices.1 
+  Vals() []uint
+
+// Pre: x is directed.
+// Returns the values of the sources of all edges
+// (the source of a directed edge is the vertex from which the edge is outcoming).
+  Sources() []uint
+
+// Pre: x is directed.
+// Returns the values of the sinks of all edges
+// (the sink of a directed edge is the vertex to which the edge is incoming).
+  Sinks() []uint
 }
 
 // Pre: v is atomic or imlements Object.

@@ -2,13 +2,9 @@ package dgra
 
 // (c) Christian Maurer   v. 171206 - license see µU.go
 
-import
-  . "µU/obj"
-
-func (x *distributedGraph) dfs (o Op) {
+func (x *distributedGraph) Dfs() {
   x.connect (x.time) // Netzkanäle sind vom Typ uint
   defer x.fin()
-  x.Op = o
   if x.me == x.root {
     x.parent = x.root
     x.time = 0
@@ -73,5 +69,4 @@ func (x *distributedGraph) dfs (o Op) {
   for i := uint(0); i < x.n; i++ { // Beendigung aller
     <-done                         // Goroutinen abwarten
   }
-  x.Op(x.me) // übergebene Operation ausführen
 }

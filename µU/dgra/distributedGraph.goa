@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 231215 - license see µU.go
 
 import (
   "sync"
@@ -32,19 +32,21 @@ type
                        me uint // and its identity
                   actHost string // the name of the host running the actual process
                         n, // the number of neighbours and
-                  in, out uint // the number of incoming resp. outgoing edges
+                       in, // the number of ingoing
+                      out uint // resp. outgoing edges
                                // to resp. from the actual vertex
-                       nb []vtx.Vertex // the neighbour vertices
                        nr []uint // and their identities
                      host []string // the names of the hosts running the neighbour processes
                        ch []nchan.NetChannel // the channels to the neighbours
                      port []uint16 // ports to connect the vertices pairwise
-              tree, cycle gra.Graph // temporary graphs for the algorithms to work with
+                     tree, 
+                    cycle gra.Graph // temporary graphs for the algorithms to work with
                      root uint
                 tmpVertex vtx.Vertex
                   tmpEdge edg.Edge
                     chan1 chan uint // internal channel
-          visited, sendTo []bool
+                  visited,
+                   sendTo []bool
                       mon []fmon.FarMonitor
                    parent uint
                     child []bool
@@ -53,8 +55,12 @@ type
                    matrix adj.AdjacencyMatrix
                      size uint // number of lines/colums of matrix
                   labeled bool
-       diameter, distance,
+                 diameter,
+                 distance,
                    leader uint
+                          HeartbeatAlg
+                          ElectAlg
+                          TravAlg
                           Op
                      C, D []uint
                      corn mcorn.MCornet
@@ -71,36 +77,60 @@ func value (a any) uint {
   return a.(vtx.Vertex).Content().(Valuator).Val()
 }
 
+var global vtx.Vertex
+
+func (x *distributedGraph) foundMe (a any) bool {
+  g := x.Graph
+  return g.ExPred (func (a any) bool {
+                         v := a.(vtx.Vertex)
+                         f := v.Val() == ego.Me()
+                         if f {
+                           if g.Ex (v) {
+//                             errh.Error ("found", v.Val())
+                             global = v
+                           }
+                         }
+                         return f
+                       }) 
+}
+
 func new_(g gra.Graph) DistributedGraph {
   x := new(distributedGraph)
   x.Graph = g
   x.Graph.SetWrite (vtx.W, edg.W)
   x.tmpGraph = Clone(x.Graph).(gra.Graph)
   x.bool = x.Graph.Directed()
-  x.actVertex = x.Graph.Get().(vtx.Vertex)
-  x.me = value(x.actVertex)
+  if x.Graph.ExPred ( x.foundMe ) { } else { errh.Error0 ("Mist") }
+  x.actVertex = global // XXX für alle außer root != x.Graph.Get().(vtx.Vertex)
+  x.me = x.actVertex.Val()
   if x.me != ego.Me() { errh.Error2 ("x.me ==", x.me, "!= Me ==", ego.Me()) }
   x.actHost = env.Localhost()
   x.n = x.Graph.Num() - 1
-  x.nb = make([]vtx.Vertex, x.n)
   x.nr = make([]uint, x.n)
   x.host = make([]string, x.n)
   x.port = make([]uint16, x.n)
   x.ch = make([]nchan.NetChannel, x.n)
-  for i := uint(0); i < x.n; i++ {
-    g.Ex (x.actVertex)
-    x.nb[i] = g.Neighbour(i).(vtx.Vertex)
-    x.nr[i] = x.nb[i].(Valuator).Val()
-    x.Graph.Ex2 (x.actVertex, x.nb[i])
+  nn := x.Graph.NumNeighbours()
+  errh.Error2 ("me ==", x.me,"NumNeighbours ==", nn)
+  for i := uint(0); i < nn; i++ {
+    if ! g.Ex (global) { errh.Error0 ("! g.Ex(global)") }
+    v := g.Get().(vtx.Vertex)
+    if ! v.Eq (global) { errh.Error0 ("! v.Eq (global)") }
+    if v.Val() != x.me { errh.Error2 ("v.Val ==", v.Val(), "!= x.me ==", x.me) }
+    nbi := g.Neighbour(i) // XXX nbi == nil
+    if nbi == nil { ker.Panic1 ("nbi == nil for i ==", i) }
+    nbix := nbi.(vtx.Vertex) // therefore XXX crash
+    x.nr[i] = nbix.(Valuator).Val()
+    x.Graph.Ex2 (x.actVertex, nbix)
     x.port[i] = nchan.Port0 + uint16(x.Graph.Get1().(edg.Edge).(Valuator).Val())
   }
   x.tmpVertex = vtx.New (x.actVertex.Content(), x.actVertex.Wd(), x.actVertex.Ht())
-  v0 := g.Neighbour(0).(vtx.Vertex)
-  g.Ex2 (x.actVertex, v0)
+  nb0 := g.Neighbour(0).(vtx.Vertex)
+  g.Ex2 (x.actVertex, nb0)
   if g.Edged() {
     x.tmpEdge = g.Get1().(edg.Edge)
   } else {
-    g.Ex2 (v0, x.actVertex)
+    g.Ex2 (nb0, x.actVertex)
     x.tmpEdge = g.Get1().(edg.Edge)
   }
   x.tree = gra.New (false, x.tmpVertex, x.tmpEdge); x.tree.SetWrite (x.Graph.Writes())
@@ -111,8 +141,11 @@ func new_(g gra.Graph) DistributedGraph {
   x.parent, x.child = inf, make([]bool, x.n)
   x.mon = make([]fmon.FarMonitor, x.n)
   g.Ex (x.actVertex)
+  x.HeartbeatAlg, x.ElectAlg, x.TravAlg = HeartbeatGraph, ChangRoberts, DFS
   x.leader = x.me
   x.Op = Ignore
+  x.C = make([]uint, 0)
+  x.D = make([]uint, 0)
   x.corn = mcorn.New(uint(0))
   return x
 }
@@ -190,8 +223,10 @@ func point (x0, y0, x1, y1 int, t float64) (int, int) {
 func (x *distributedGraph) send (i uint, a any) {
   if x.blink {
     scr.Save1()
-    x0, y0 := x.actVertex.Pos()
-    x1, y1 := x.nb[i].Pos()
+    actV := x.Graph.Get().(vtx.Vertex)
+    x0, y0 := actV.Pos()
+    x1, y1 := x.Graph.Neighbour(i).(vtx.Vertex).Pos()
+///////////////////////////////////////////////////////////////////////////////////////////////
     f, b := scr.ScrColF(), scr.ScrColB()
     f = col.LightRed()
     scr.ColourF (f)
@@ -200,7 +235,7 @@ func (x *distributedGraph) send (i uint, a any) {
     for t := 0.2; t < 0.9; t+= 0.1 {
       xm, ym := point (x0, y0, x1, y1, t)
       scr.ColourF (f); scr.CircleFull (xm, ym, 4)
-      time.Msleep (5)
+      time.Msleep (500)
       scr.ColourF (b); scr.CircleFull (xm, ym, 4)
     }
 // errh.DelHint ()
@@ -210,7 +245,7 @@ func (x *distributedGraph) send (i uint, a any) {
 }
 
 // Returns a new empty graph of the type of the underlying graph of x.
-func (x *distributedGraph) emptyGraph() gra.Graph {
+   func (x *distributedGraph) emptyGraph() gra.Graph {
   g := gra.New (x.tmpGraph.Directed(), x.tmpVertex, x.tmpEdge)
   g.SetWrite (vtx.W, edg.W)
   return g
@@ -218,7 +253,7 @@ func (x *distributedGraph) emptyGraph() gra.Graph {
 
 func (x *distributedGraph) decodedGraph (bs Stream) gra.Graph {
   g := x.emptyGraph()
-  g.Decode(bs)
+  g.Decode (bs)
   return g
 }
 
@@ -326,8 +361,4 @@ func (x *distributedGraph) ParentChildren() string {
     }
   }
   return s
-}
-
-func (x *distributedGraph) Leader() uint {
-  return x.leader
 }

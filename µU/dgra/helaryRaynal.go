@@ -15,10 +15,9 @@ const (
 var
   chanus = make(chan UintStream)
 
-func (x *distributedGraph) helaryRaynal (o Op) {
+func (x *distributedGraph) HelaryRaynal() {
   x.connect (nil)
   defer x.fin()
-  x.Op = o
   if x.me == x.root {
     x.parent = x.root
     us := append(UintStream {DISCOVER}, x.me)
@@ -92,7 +91,6 @@ func (x *distributedGraph) helaryRaynal (o Op) {
         x.child[k] = true
       } else { // ! existUnvisitedNeighbours
         if x.parent == x.me {
-          x.Op(x.me)
           return
         } else {
           x.log("send RETURN to", x.parent)
@@ -102,5 +100,4 @@ func (x *distributedGraph) helaryRaynal (o Op) {
       }
     }
   }
-  x.Op(x.me)
 }

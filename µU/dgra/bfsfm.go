@@ -1,13 +1,13 @@
 package dgra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 231215 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/fmon"
 )
 
-func (x *distributedGraph) bfsfm (o Op) {
+func (x *distributedGraph) Bfsfm() {
   go func() {
     fmon.New (uint(0), 1, x.b, AllTrueSp,
               x.actHost, p0 + uint16(x.me), true)
@@ -18,7 +18,6 @@ func (x *distributedGraph) bfsfm (o Op) {
   }
   defer x.finMon()
   x.awaitAllMonitors()
-  x.Op = o
   x.parent = inf
   if x.me == x.root {
     x.parent = x.root
@@ -40,7 +39,6 @@ func (x *distributedGraph) bfsfm (o Op) {
       }
       x.distance++
     }
-    x.Op (x.actVertex)
   } else {
     <-done // wait until root finished
   }
@@ -57,7 +55,7 @@ func (x *distributedGraph) b (a any, i uint) any {
       return inf
     }
     x.parent = s // == x.nr[j]
-    x.Op (x.actVertex)
+    x.Op (x.me)
     return x.me
   }
   c := uint(0)

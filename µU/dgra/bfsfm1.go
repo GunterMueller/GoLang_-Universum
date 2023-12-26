@@ -1,13 +1,13 @@
 package dgra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 231215 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/fmon"
 )
 
-func (x *distributedGraph) bfsfm1 (o Op) {
+func (x *distributedGraph) Bfsfm1() {
   go func() {
     fmon.New (nil, 2, x.b1, AllTrueSp,
               x.actHost, p0 + uint16(2 * x.me), true)
@@ -18,7 +18,6 @@ func (x *distributedGraph) bfsfm1 (o Op) {
   }
   defer x.finMon()
   x.awaitAllMonitors()
-  x.Op = o
   x.parent = inf
   x.tree.Clr()
   x.tree.Ins (x.actVertex)
@@ -32,7 +31,7 @@ func (x *distributedGraph) bfsfm1 (o Op) {
         if ! x.visited[k] {
           x.tree.Ex (x.actVertex)
           bs := append(Encode(x.distance), x.tree.Encode()...)
-          bs = x.mon[k].F(bs, 0).(Stream)
+          bs = x.mon[k].F(bs, 0).(Stream) // crash XXX interface {} is nil, not Stream
           if len(bs) == 0 {
             x.visited[k] = true
           } else {
@@ -54,7 +53,6 @@ func (x *distributedGraph) bfsfm1 (o Op) {
         x.mon[k].F(bs, 1)
       }
     }
-    x.Op (x.actVertex)
   } else {
     <-done // wait until root finished
   }
@@ -81,7 +79,7 @@ func (x *distributedGraph) b1 (a any, i uint) any {
       x.tree.Edge (x.edge(x.nb[j], x.actVertex)) // XXX colocal == local
       x.tree.Ex (x.actVertex)
       x.tree.Write()
-      x.Op (x.actVertex)
+      x.Op (x.me)
       return append(Encode(x.distance), x.tree.Encode()...)
     }
     c := uint(0) // x.distance > 0

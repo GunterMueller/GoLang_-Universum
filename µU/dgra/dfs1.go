@@ -1,14 +1,15 @@
 package dgra
 
-// (c) Christian Maurer   v. 200728 - license see µU.go
+// (c) Christian Maurer   v. 231215 - license see µU.go
 
-import
+import (
   . "µU/obj"
+  "µU/errh"
+)
 
-func (x *distributedGraph) dfs1 (o Op) {
+func (x *distributedGraph) Dfs1() {
   x.connect (nil)
   defer x.fin()
-  x.Op = o
   x.tree.Clr()
   x.parent = inf
   if x.me == x.root { // root sends the first message
@@ -25,7 +26,11 @@ func (x *distributedGraph) dfs1 (o Op) {
   for i := uint(0); i < x.n; i++ {
     go func (j uint) {
       bs := x.ch[j].Recv().(Stream)
-      x.tree = x.decodedGraph(bs)
+if len(bs) == 0 { errh.Error0 ("esel")
+      x.tree.Clr()
+} else {
+      x.tree = x.decodedGraph (bs)
+}
       if x.distance == j && x.tree.Eq (x.tmpGraph) { // tree unchanged back
         x.child[j] = false // from j-th netchannel, so assumption refused
       }
@@ -96,6 +101,5 @@ func (x *distributedGraph) dfs1 (o Op) {
       x.send (k, bs)
     }
   }
-  x.Op (x.actVertex)
   x.tree.Write()
 }

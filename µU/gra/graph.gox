@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 231220 - license see µU.go
+// (c) Christian Maurer   v. 230308 - license see µU.go
 //
 // >>>  References:
 // >>>  CLR  = Cormen, Leiserson, Rivest        (1990)
@@ -8,22 +8,19 @@ package gra
 
 import (
 //  "sort"
-//  "reflect"
   "µU/ker"
   . "µU/obj"
   "µU/kbd"
   "µU/pseq"
-  "µU/vtx"
-  "µU/edg"
 //  "µU/time"
 )
 
-/*/   vertex           neighbour                        neighbour            vertex
+/*    vertex           neighbour                        neighbour            vertex
     _________                                                              _________  
-   /         \          /-----------------------------------------------> /         \
-  |    any    |        /                                                 |    any    |
-  |___________|<--------------------------------------------------\      |___________|
-  |           |      /                                             \     |           |
+   /         \             /--------------------------------------------> /         \
+  |    any    |          /                                               |    any    |
+  |___________|<------------------------------------------------\        |___________|
+  |           |       /                                           \      |           |
   |   nbPtr---|-----------\                                  /-----------|---nbPtr   |
   |___________|    /       |                                |        \   |___________|
   |           |   |        |                                |         |  |           |
@@ -70,8 +67,7 @@ import (
 
   Semantics of some variables, that are "hidden" in fields of vAnchor:
     vAnchor.time0: in that the "time" is incremented for each search step
-    vAnchor.acyclic: (after call of search1) == true <=> graph has no cycles.
-/*/
+    vAnchor.acyclic: (after call of search1) == true <=> graph has no cycles. */
 
 const (
   suffix = "gra"
@@ -126,9 +122,6 @@ type (
           demo Demoset
         writeV,
         writeE CondOp
-           val,
-       sources,
-         sinks []uint
                }
 )
 type
@@ -163,8 +156,6 @@ func new_(d bool, v, e any) Graph {
   x.eAnchor = newEdge (e)
   x.colocal, x.local = x.vAnchor, x.vAnchor
   x.writeV, x.writeE = CondIgnore, CondIgnore
-  x.val = make([]uint, 0)
-  x.sources, x.sinks = make([]uint, 0), make([]uint, 0)
   return x
 }
 
@@ -398,12 +389,18 @@ func (x *graph) CoEdged() bool {
 // returns otherwise (n, true), where n is the pointer to that vertex
 // (which is unique because of effect of Ins).
 func (x *graph) found (a any) (*vertex, bool) {
+//  println ("look for", a.(Stringer).String())
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
+//    s := v.any.(Stringer).String()
     if Eq (v.any, a) {
+//      println (s + " found")
       return v, true
     } else {
+//      println (s + " not found")
     }
+//    time.Msleep (1)
   }
+//  println ("nothing found")
   return nil, false
 }
 
@@ -431,11 +428,14 @@ func (x *graph) Ex2 (a, a1 any) bool {
 // Returns true, iff there is no vertex in x, for which p returns true,
 // Returns otherwise a pointer to such a vertex.
 func (x *graph) foundPred (p Pred) (*vertex, bool) {
+//  print ("foundPred ")
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     if p (v.any) {
+//      println (v.any.(Stringer).String()); time.Msleep (100)
       return v, true
     }
   }
+//  println()
   return nil, false
 }
 
@@ -991,49 +991,4 @@ func (x *graph) Writes() (CondOp, CondOp) {
 func (x *graph) Write() {
   x.Trav1Cond (x.writeE)
   x.TravCond (x.writeV)
-}
-
-func (x *graph) vals (a any) {
-  x.val = append (x.val, a.(vtx.Vertex).Content().(Valuator).Val())
-}
-
-func (x *graph) Vals() []uint {
-  x.Trav (x.vals)
-  return x.val
-}
-
-func (g *graph) source (a any) {
-  x0, y0 := a.(any).(edg.Edge).Pos1()
-  if g.ExPred (func (a any) bool { x, y := a.(vtx.Vertex).Pos(); return x == x0 && y == y0 }) {
-    v := g.Get()
-    n := v.(vtx.Vertex).(Valuator).Val()
-    g.sources = append (g.sources, n)
-    println (n)
-  } else {
-    ker.Oops()
-  }
-}
-
-func (x *graph) Sources() []uint {
-  if ! x.bool { ker.PrePanic() }
-  x.Trav1 (x.source)
-  return x.sources
-}
-
-func (g *graph) sink (a any) {
-  x1, y1 := a.(any).(edg.Edge).Pos1()
-  if g.ExPred (func (a any) bool { x, y := a.(vtx.Vertex).Pos(); return x == x1 && y == y1 }) {
-    _, v := g.Get2()
-    n := v.(vtx.Vertex).(Valuator).Val()
-    g.sinks = append (g.sinks, n)
-    println (n)
-  } else {
-    ker.Oops()
-  }
-}
-
-func (x *graph) Sinks() []uint {
-  if ! x.bool { ker.PrePanic() }
-  x.Trav1 (x.sink)
-  return x.sinks
 }

@@ -1,14 +1,12 @@
 package dgra
 
-// (c) Christian Maurer   v. 200728 - license see µU.go
+// (c) Christian Maurer   v. 231215 - license see µU.go
 
 // >>> Algorithmus von Zhu, Y., Cheung, T.-Y.: A New Distributed Breadth-First-Seach Algorithm
 //     Inform. Proc. Letters 25 (1987), 329-333
 //
 // >>> "visited" used for "echoed"
 
-import
-  . "µU/obj"
 const (
   label = uint(iota)
   keepon
@@ -36,10 +34,9 @@ func (x *distributedGraph) allSendTosVisited() bool {
   return true
 }
 
-func (x *distributedGraph) bfs (o Op) {
+func (x *distributedGraph) Bfs() {
   x.connect (uint(0))
   defer x.fin()
-  x.Op = o
   m := inf * x.me
   if x.me == x.root {
     x.labeled, x.parent, x.distance = true, x.root, 0
@@ -121,7 +118,6 @@ if x.numSendTos() > 0 { panic ("oops") }
 // x.log("stop to", x.nr[k])
           }
         }
-        x.Op (x.actVertex)
         for k := uint(0); k < x.n; k++ {
 //          x.ch[k].Send (term)
           x.send (k, term)
@@ -168,7 +164,6 @@ if x.numSendTos() > 0 { panic ("oops") }
 // x.log("stop to", x.nr[k])
           }
         }
-        x.Op (x.actVertex)
         for k := uint(0); k < x.n; k++ {
 //          x.ch[k].Send (term)
           x.send (k, term)

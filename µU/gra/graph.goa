@@ -1,20 +1,16 @@
 package gra
 
-// (c) Christian Maurer   v. 231220 - license see µU.go
+// (c) Christian Maurer   v. 231213 - license see µU.go
 //
 // >>>  References:
 // >>>  CLR  = Cormen, Leiserson, Rivest        (1990)
 // >>>  CLRS = Cormen, Leiserson, Rivest, Stein (2001)
 
 import (
-//  "sort"
-//  "reflect"
   "µU/ker"
   . "µU/obj"
   "µU/kbd"
   "µU/pseq"
-  "µU/vtx"
-  "µU/edg"
 //  "µU/time"
 )
 
@@ -126,9 +122,6 @@ type (
           demo Demoset
         writeV,
         writeE CondOp
-           val,
-       sources,
-         sinks []uint
                }
 )
 type
@@ -163,8 +156,6 @@ func new_(d bool, v, e any) Graph {
   x.eAnchor = newEdge (e)
   x.colocal, x.local = x.vAnchor, x.vAnchor
   x.writeV, x.writeE = CondIgnore, CondIgnore
-  x.val = make([]uint, 0)
-  x.sources, x.sinks = make([]uint, 0), make([]uint, 0)
   return x
 }
 
@@ -354,37 +345,6 @@ func (x *graph) Edge2 (v, v1, e any) {
 func (ns nSeq) Less (i, j int) bool {
   return ns[i].to.any.(Valuator).Val() < ns[j].to.any.(Valuator).Val()
 }
-
-/*
-func (x *graph) SortNeighbours() {
-  switch x.vAnchor.any.(type) {
-  case Valuator:
-    // see below
-  default:
-    return
-  }
-  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    c := x.numEdges (v)
-    if c > 1 {
-      ns := make(nSeq, c)
-      for n, i := v.nbPtr.nextNb, 0; n != v.nbPtr; n, i = n.nextNb, i + 1 {
-        ns[i] = n
-      }
-      sort.Slice (ns, ns.Less)
-      v.nbPtr.nextNb = ns[0]
-      for i := uint(0); i < c - 1; i++ {
-        ns[i].nextNb = ns[i + 1]
-      }
-      ns[c - 1].nextNb = v.nbPtr
-      v.nbPtr.prevNb = ns[c - 1]
-      ns[0].prevNb = v.nbPtr
-      for i := uint(1); i < c; i++ {
-        ns[i].prevNb = ns[i - 1]
-      }
-    }
-  }
-}
-*/
 
 func (x *graph) Edged() bool {
   return x.connection (x.colocal, x.local) != nil
@@ -930,7 +890,8 @@ func (x *graph) Star() Graph {
   if ! x.bool {
     for n, i := x.local.nbPtr.nextNb, uint(0); n != x.local.nbPtr; n, i = n.nextNb, i + 1 {
       y.Ins (Clone(n.to.any)) // a now colocal
-      y.edgeMarked (Clone(n.edgePtr.any), true) // edge from a to local inserted vertex with same content as in x
+      y.edgeMarked (Clone(n.edgePtr.any), true) // edge from a to local inserted vertex
+                                                // with same content as in x
       y.local = local // a now again local in y
     }
   } else { // x.bool
@@ -991,49 +952,4 @@ func (x *graph) Writes() (CondOp, CondOp) {
 func (x *graph) Write() {
   x.Trav1Cond (x.writeE)
   x.TravCond (x.writeV)
-}
-
-func (x *graph) vals (a any) {
-  x.val = append (x.val, a.(vtx.Vertex).Content().(Valuator).Val())
-}
-
-func (x *graph) Vals() []uint {
-  x.Trav (x.vals)
-  return x.val
-}
-
-func (g *graph) source (a any) {
-  x0, y0 := a.(any).(edg.Edge).Pos1()
-  if g.ExPred (func (a any) bool { x, y := a.(vtx.Vertex).Pos(); return x == x0 && y == y0 }) {
-    v := g.Get()
-    n := v.(vtx.Vertex).(Valuator).Val()
-    g.sources = append (g.sources, n)
-    println (n)
-  } else {
-    ker.Oops()
-  }
-}
-
-func (x *graph) Sources() []uint {
-  if ! x.bool { ker.PrePanic() }
-  x.Trav1 (x.source)
-  return x.sources
-}
-
-func (g *graph) sink (a any) {
-  x1, y1 := a.(any).(edg.Edge).Pos1()
-  if g.ExPred (func (a any) bool { x, y := a.(vtx.Vertex).Pos(); return x == x1 && y == y1 }) {
-    _, v := g.Get2()
-    n := v.(vtx.Vertex).(Valuator).Val()
-    g.sinks = append (g.sinks, n)
-    println (n)
-  } else {
-    ker.Oops()
-  }
-}
-
-func (x *graph) Sinks() []uint {
-  if ! x.bool { ker.PrePanic() }
-  x.Trav1 (x.sink)
-  return x.sinks
 }

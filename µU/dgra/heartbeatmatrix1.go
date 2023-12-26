@@ -11,7 +11,7 @@ import (
   "µU/adj"
 )
 
-func (x *distributedGraph) heartbeatmatrix1() {
+func (x *distributedGraph) HeartbeatMatrix1() {
   x.connect (nil)
   defer x.fin()
   active := make([]bool, x.n)

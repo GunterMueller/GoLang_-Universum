@@ -5,7 +5,7 @@ package dgra
 import
   "µU/adj"
 
-func (x *distributedGraph) heartbeatmatrix() {
+func (x *distributedGraph) HeartbeatMatrix() {
   x.connect (x.matrix)
   defer x.fin()
   if x.demo { x.matrix.Write(0, 0) }

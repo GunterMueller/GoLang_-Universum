@@ -1,13 +1,20 @@
 
-// Returns nil, iff there is no edge from n to n1;
-// returns otherwise the corresponding pointer.
-func (x *graph) connection (v, v1 *vertex) *edge {
-  for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
-    if n.outgoing && n.to == v1 {
-      return n.edgePtr
-bluse
-    }
+func (g *graph) vals1 (a any) {
+  x0, y0 := a.(any).(edg.Edge).Pos0()
+  x1, y1 := a.(any).(edg.Edge).Pos1()
+  if g.ExPred2 (func (a any) bool { x, y := a.(vtx.Vertex).Pos(); return x == x0 && y == y0 },
+                func (a any) bool { x, y := a.(vtx.Vertex).Pos(); return x == x1 && y == y1 }) {
+    v0, v1 := g.Get2()
+    n0, n1 := v0.(vtx.Vertex).(Valuator).Val(), v1.(vtx.Vertex).(Valuator).Val()
+    g.val0 = append (g.val0, n0)
+    g.val1 = append (g.val1, n1)
+    println (n0, n1)
+  } else {
+    ker.Oops()
   }
-  return nil
 }
 
+func (x *graph) Vals1() ([]uint, []uint) {
+  x.Trav1 (x.vals1)
+  return x.val0, x.val1
+}

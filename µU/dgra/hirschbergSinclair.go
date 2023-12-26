@@ -3,7 +3,7 @@ package dgra
 // (c) Christian Maurer   v. 220816 - license see µU.go
 //
 // >>> D.S. Hirschberg, J. B. Sinclair: Decentralized Extrema-Finding in
-//     Circular Configuations of Processes. CACM 23 (1980), 627 - 628
+//     Circular Configurations of Processes. CACM 23 (1980), 627 - 628
 
 import (
   "sync"
@@ -15,7 +15,7 @@ const (
   won
 )
 
-func (x *distributedGraph) hirschbergSinclair() {
+func (x *distributedGraph) HirschbergSinclair() {
   x.connect (msg.New())
   defer x.fin()
   status := candidate

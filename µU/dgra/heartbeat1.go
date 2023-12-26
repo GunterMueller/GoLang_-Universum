@@ -1,11 +1,13 @@
 package dgra
 
-// (c) Christian Maurer   v. 200728 - license see µU.go
+// (c) Christian Maurer   v. 231215 - license see µU.go
 
-import
+import (
   . "µU/obj"
+  "µU/vtx"
+)
 
-func (x *distributedGraph) heartbeatgraph1() {
+func (x *distributedGraph) HeartbeatGraph1() {
   x.connect (nil)
   defer x.fin()
   ready := make([]bool, x.n)
@@ -15,7 +17,6 @@ func (x *distributedGraph) heartbeatgraph1() {
   for r := uint(1); true; r++ {
     bs := x.tmpGraph.Encode()
     for i := uint(0); i < x.n; i++ {
-//      x.ch[i].Send(append(Encode(false), bs...)) // not ready
       x.send (i, append(Encode(false), bs...)) // not ready
     }
     for i := uint(0); i < x.n; i++ {
@@ -26,7 +27,9 @@ func (x *distributedGraph) heartbeatgraph1() {
       g := x.emptyGraph()
       g.Decode (bs[1:])
       x.tmpGraph.Add (g)
-      x.tmpGraph.Mark2 (x.actVertex, x.nb[i])
+//      x.tmpGraph.Mark2 (x.actVertex, x.nb[i])
+      nbi := x.Graph.Neighbour(i).(vtx.Vertex)
+      x.tmpGraph.Mark2 (x.actVertex, nbi)
       if x.demo { x.tmpGraph.Write() }
     }
     if x.tmpGraph.AllMarked() {
@@ -37,7 +40,6 @@ func (x *distributedGraph) heartbeatgraph1() {
   }
   for i := uint(0); i < x.n; i++ {
     if ! ready[i] {
-//      x.ch[i].Send(append(Encode(true), x.tmpGraph.Encode()...)) // ready
       x.send (i, append(Encode(true), x.tmpGraph.Encode()...)) // ready
     }
   }

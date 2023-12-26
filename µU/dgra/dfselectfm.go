@@ -10,7 +10,7 @@ import (
   "µU/fmon"
 )
 
-func (x *distributedGraph) dfselectfm() {
+func (x *distributedGraph) Dfselectfm() {
   go func() {
     fmon.New (uint(0), 3, x.s, AllTrueSp,
               x.actHost, p0 + uint16(3 * x.me), true)
