@@ -2,11 +2,12 @@ package sem
 
 // (c) Christian Maurer   v. 171229 - license see nU.go
 
-import "nU/cs"
-
-type semaphoreCS struct {
-  cs.CriticalSection
-}
+import
+  "nU/cs"
+type
+  semaphoreCS struct {
+                     cs.CriticalSection
+                     }
 
 func newCS (n uint) Semaphore {
   val := n

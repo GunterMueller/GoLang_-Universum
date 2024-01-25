@@ -2,11 +2,12 @@ package rw
 
 // (c) Christian Maurer   v. 171016 - license see nU.go
 
-import "nU/cmon"
-
-type conditionedMonitor struct {
-  cmon.Monitor
-}
+import
+  "nU/cmon"
+type
+  conditionedMonitor struct {
+                            cmon.Monitor
+                            }
 
 func newCM() ReaderWriter {
   x := new(conditionedMonitor)

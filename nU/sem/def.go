@@ -2,7 +2,8 @@ package sem
 
 // (c) Christian Maurer   v. 210123 - license see nU.go
 
-type Semaphore interface {
+type
+  Semaphore interface {
 // Ganzzahlige Werte als Zugangsprotokolle zu kritischen Abschnitten
 // zum nebenläufigen Zugriff mehrerer Prozesse auf gemeinsame Daten.
 // Die Methoden P und V sind durch Aufrufe von P oder V

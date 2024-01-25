@@ -2,9 +2,10 @@ package obj
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import "reflect"
-
-type Valuator interface {
+import
+  "reflect"
+type
+  Valuator interface {
 
 // Liefert den Wert von x.
   Val() uint

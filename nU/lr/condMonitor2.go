@@ -2,11 +2,12 @@ package lr
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-import "nU/cmon"
-
-type conditionedMonitor2 struct {
-  cmon.Monitor
-}
+import
+  "nU/cmon"
+type
+  conditionedMonitor2 struct {
+                             cmon.Monitor
+                             }
 
 func newCM2() LeftRight {
   x := new(conditionedMonitor2)

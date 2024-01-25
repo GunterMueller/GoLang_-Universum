@@ -1,13 +1,10 @@
 package dgra
 
-// (c) Christian Maurer   v. 171206 - license see nU.go
+// (c) Christian Maurer   v. 231220 - license see nU.go
 
-import . "nU/obj"
-
-func (x *distributedGraph) dfs (o Op) {
+func (x *distributedGraph) Dfs() {
   x.connect (x.time) // Netzkanäle sind vom Typ uint
   defer x.fin()
-  x.Op = o
   if x.me == x.root {
     x.parent = x.root
     x.time = 0
@@ -38,7 +35,7 @@ func (x *distributedGraph) dfs (o Op) {
           }
           k = x.channel(x.parent) // (b) t == x.time1, Echo zum Vater
         } else {
-          // (c) k == u < x.n, t unverändert als Probe an x.nr[u]
+          // k == u < x.n, t unverändert als Probe an x.nr[u]
         }
       } else { // ! x.visited[j], d.h. Probe
         x.visited[j] = true
@@ -48,11 +45,10 @@ func (x *distributedGraph) dfs (o Op) {
                  // undefiniert (nicht für root!)
           x.parent = x.nr[j]
           t++
-          x.time = t // if u < x.n:
-                     //   (e) k == u, Probe x.time weiter an x.nr[u]
+          x.time = t // wenn u < x.n Probe x.time weiter an x.nr[u]
           if u == x.n { // alle Netzkanäle markiert
             t++
-            x.time1 = t // (f) Echo zum Absender (Vater)
+            x.time1 = t // Echo x.time1 zum Absender (Vater)
             k = j
           }
         }
@@ -70,5 +66,4 @@ func (x *distributedGraph) dfs (o Op) {
   for i := uint(0); i < x.n; i++ { // Beendigung aller
     <-done                         // Goroutinen abwarten
   }
-  x.Op(x.me) // übergebene Operation ausführen
 }

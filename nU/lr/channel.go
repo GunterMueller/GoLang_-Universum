@@ -2,8 +2,10 @@ package lr
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-type channel struct {
-  inL, outL, inR, outR chan int
+type
+  channel struct {
+       inL, outL,
+       inR, outR chan int
 }
 
 func newCh() LeftRight {

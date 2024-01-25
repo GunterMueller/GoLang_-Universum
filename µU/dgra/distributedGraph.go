@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 240103 - license see µU.go
 
 import (
   "sync"
@@ -27,7 +27,7 @@ type
                           gra.Graph // neighbourhood of the current vertex
                                     // must not be changed by any application
                  tmpGraph gra.Graph // for several temporary usages
-                          bool "Graph.Directed"
+                 directed bool // Graph.Directed
                 actVertex vtx.Vertex // the vertex representing the actual process
                        me uint // and its identity
                   actHost string // the name of the host running the actual process
@@ -57,7 +57,7 @@ type
                    leader uint
                           Op
                      C, D []uint
-                     corn mcorn.MCornet
+                     corn []mcorn.MCornet
                     mutex sync.Mutex
                           }
 const (
@@ -76,7 +76,7 @@ func new_(g gra.Graph) DistributedGraph {
   x.Graph = g
   x.Graph.SetWrite (vtx.W, edg.W)
   x.tmpGraph = Clone(x.Graph).(gra.Graph)
-  x.bool = x.Graph.Directed()
+  x.directed = x.Graph.Directed()
   x.actVertex = x.Graph.Get().(vtx.Vertex)
   x.me = value(x.actVertex)
   if x.me != ego.Me() { errh.Error2 ("x.me ==", x.me, "!= Me ==", ego.Me()) }
@@ -113,12 +113,17 @@ func new_(g gra.Graph) DistributedGraph {
   g.Ex (x.actVertex)
   x.leader = x.me
   x.Op = Ignore
-  x.corn = mcorn.New(uint(0))
+  x.corn = make ([]mcorn.MCornet, 99)
+  for i := 0; i < 99; i++ {
+    x.corn[i] = mcorn.New (uint(0))
+  }
+  x.C = make ([]uint, 99)
+  x.D = make ([]uint, 99)
   return x
 }
 
 func (x *distributedGraph) setHosts (h []string) {
-  if uint(len(h)) != x.size { ker.Shit() }
+  if uint(len(h)) != x.size { ker.Oops() }
   for i := uint(0); i < x.n; i++ {
     if str.Empty (h[i]) { ker.Oops() }
     x.host[i] = h[x.nr[i]]
@@ -126,7 +131,7 @@ func (x *distributedGraph) setHosts (h []string) {
 }
 
 func (x *distributedGraph) setHostnames (h []string) {
-  if uint(len(h)) != x.size { ker.Shit() }
+  if uint(len(h)) != x.size { ker.Oops() }
   for i := uint(0); i < x.n; i++ {
     if str.Empty(h[i]) { ker.Oops() }
     x.host[i] = h[i]
@@ -149,12 +154,14 @@ func (x *distributedGraph) setSize (n uint) {
 func (x *distributedGraph) connect (a any) {
   for i := uint(0); i < x.n; i++ {
     x.ch[i] = nchan.New (a, x.me, x.nr[i], x.host[i], x.port[i])
+println (i, x.nr[i], x.port[i])
   }
 }
 
 func (x *distributedGraph) connectN (a any, s bool) {
   for i := uint(0); i < x.n; i++ {
     x.ch[i] = nchan.NewN (a, x.host[i], x.port[i], s)
+println (i, x.nr[i], x.port[i])
   }
 }
 
@@ -196,17 +203,24 @@ func (x *distributedGraph) send (i uint, a any) {
     f = col.LightRed()
     scr.ColourF (f)
     scr.Line (x0, y0, x1, y1)
-// errh.Hint2 ("from", x.me, "to", x.nr[i])
     for t := 0.2; t < 0.9; t+= 0.1 {
       xm, ym := point (x0, y0, x1, y1, t)
       scr.ColourF (f); scr.CircleFull (xm, ym, 4)
       time.Msleep (5)
       scr.ColourF (b); scr.CircleFull (xm, ym, 4)
     }
-// errh.DelHint ()
     scr.Restore1()
   }
+println ("will send", a, "on ch", i)
   x.ch[i].Send (a)
+println ("sent", a, "on ch", i)
+}
+
+func (x *distributedGraph) recv (i uint) any {
+println ("wait on ch", i)
+  r := x.ch[i].Recv()
+println ("received", r, "on ch", i)
+  return r
 }
 
 // Returns a new empty graph of the type of the underlying graph of x.
@@ -216,9 +230,9 @@ func (x *distributedGraph) emptyGraph() gra.Graph {
   return g
 }
 
-func (x *distributedGraph) decodedGraph (bs Stream) gra.Graph {
+func (x *distributedGraph) decodedGraph (s Stream) gra.Graph {
   g := x.emptyGraph()
-  g.Decode(bs)
+  g.Decode(s)
   return g
 }
 
@@ -326,8 +340,4 @@ func (x *distributedGraph) ParentChildren() string {
     }
   }
   return s
-}
-
-func (x *distributedGraph) Leader() uint {
-  return x.leader
 }

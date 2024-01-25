@@ -2,8 +2,10 @@ package rpc
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/fmon")
-
+import (
+  . "nU/obj"
+  "nU/fmon"
+)
 type
   rpc struct {
              fmon.FarMonitor

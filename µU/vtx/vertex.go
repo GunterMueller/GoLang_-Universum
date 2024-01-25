@@ -3,7 +3,6 @@ package vtx
 // (c) Christian Maurer   v. 220804 - license see µU.go
 
 import (
-//  "µU/ker"
   . "µU/obj"
   "µU/col"
   "µU/scr"

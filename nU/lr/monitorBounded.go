@@ -2,11 +2,12 @@ package lr
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import "nU/mon"
-
-type monitorBounded struct {
-  mon.Monitor
-}
+import
+  "nU/mon"
+type
+  monitorBounded struct {
+                        mon.Monitor
+                        }
 
 func newMB (mL, mR uint) LeftRight {
   x := new(monitorBounded)

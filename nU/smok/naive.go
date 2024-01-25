@@ -4,12 +4,13 @@ package smok
 
 // >>> Naive solution with deadlock danger
 
-import "sync"
-
-type naive struct {
-  smokerOut sync.Mutex
-  avail [3]sync.Mutex
-}
+import
+  "sync"
+type
+  naive struct {
+     smokerOut sync.Mutex
+         avail [3]sync.Mutex
+               }
 
 func new_() Smokers {
   x := new (naive)

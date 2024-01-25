@@ -2,11 +2,12 @@ package sem
 
 // (c) Christian Maurer   v. 171019 - license see nU.go
 
-import "nU/cmon"
-
-type conditionedMonitor struct {
-  cmon.Monitor
-}
+import
+  "nU/cmon"
+type
+  conditionedMonitor struct {
+                            cmon.Monitor
+                            }
 
 func newCM (n uint) Semaphore {
   val := n

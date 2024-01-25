@@ -2,9 +2,10 @@ package fmon
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import . "nU/obj"
-
-type FarMonitor interface {
+import
+  . "nU/obj"
+type
+  FarMonitor interface {
 
 // Vor.: i < Anzahl der Monitorfunktionen von x.
 // Der Wert von a ist mit dem Aufruf zum Anbieter gesendet.

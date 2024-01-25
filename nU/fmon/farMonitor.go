@@ -2,15 +2,20 @@ package fmon
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import ("time"; . "nU/obj"; "nU/nchan")
-
-type farMonitor struct {
-  any "Musterobjekt für das Argument"
-  result any "Musterobjekt für das Ergebnis"
-  uint "Anzahl der Monitorfunctionen"
-  ch []nchan.NetChannel
-  FuncSpectrum; PredSpectrum
-  bool "true gdw. Monitor der Anbieter ist"
+import (
+  "time"
+  . "nU/obj"
+  "nU/nchan"
+)
+type
+  farMonitor struct {
+                    any "Musterobjekt für das Argument"
+             result any "Musterobjekt für das Ergebnis"
+                    uint "Anzahl der Monitorfunctionen"
+                 ch []nchan.NetChannel
+                    FuncSpectrum
+                    PredSpectrum
+                    bool "true gdw. Monitor der Anbieter ist"
 }
 
 func new_(a any, n uint, fs FuncSpectrum, ps PredSpectrum,

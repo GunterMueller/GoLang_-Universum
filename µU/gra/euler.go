@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 231228 - license see µU.go
 
 import (
   "µU/ker"
@@ -19,7 +19,7 @@ func existsnb (s []*neighbour, p Pred) (*neighbour, bool) {
 
 func notTraversedNeighbour (v *vertex) *neighbour {
   for n := v.nbPtr.nextNb; n != v.nbPtr; n = n.nextNb {
-    if n.outgoing && ! n.edgePtr.bool {
+    if n.outgoing && ! n.edgePtr.marked {
       return n
     }
   }
@@ -62,7 +62,7 @@ func (x *graph) Euler() bool {
       }
       nb = nb.nextNb
     }
-    if x.bool {
+    if x.directed {
       if z == z1 + 1 {
         if x.colocal == x.vAnchor {
           x.colocal = v
@@ -113,13 +113,13 @@ func (x *graph) Euler() bool {
   case 2: // Euler path from colocal to local vertex
     ;
   default:
-    ker.Shit()
+    ker.Oops()
   }
   x.ClrMarked()
   x.eulerPath = nil
-  x.colocal.bool = true
+  x.colocal.marked = true
   v := x.colocal
-  v.bool = true
+  v.marked = true
 //  for j := 0; j <= 9; j** { for a := false TO true { writeE (E.any, a); ker.Msleep (100) } }
 // attempt, to find an Euler path/cycle "by good luck":
   var nb *neighbour
@@ -128,9 +128,9 @@ func (x *graph) Euler() bool {
     if nb == nil { ker.Oops() }
     // writeE (N.edgePtr.any, true)
     //  for j := 0; j <= 9; j++ { for a := false; a <= true; a++ { writVe (N.to.any, a); ker.Msleep (100) } } };
-    nb.edgePtr.bool = true
+    nb.edgePtr.marked = true
     v = nb.to
-    v.bool = true
+    v.marked = true
     x.eulerPath = append (x.eulerPath, nb)
     if v == x.local { break }
   }
@@ -150,9 +150,9 @@ func (x *graph) Euler() bool {
       if nb == nil { ker.Oops() }
     // writeE (N.edgePtr.any, true)
     // for j := 0 TO 9 { for a := false TO true { writeV (N.to.any, a); ker.Msleep (100) } }
-      nb.edgePtr.bool = true
+      nb.edgePtr.marked = true
       v = nb.to
-      v.bool = true
+      v.marked = true
       x.eulerPath = append (x.eulerPath, nb)
       if v == v1 { break } // found one mor cycle
     // errh.Error0("weiterer Teil eines Eulerwegs gefunden")

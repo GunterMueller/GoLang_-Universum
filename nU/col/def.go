@@ -2,9 +2,10 @@ package col
 
 // (c) Christian Maurer   v. 230326 - license see nU.go
 
-import . "nU/obj"
-
-type Colour interface {
+import
+  . "nU/obj"
+type
+  Colour interface {
 
   Object
 

@@ -2,11 +2,12 @@ package lr
 
 // (c) Christian Maurer   v. 171126 - license see nU.go
 
-import "nU/cs"
-
-type criticalSectionBounded struct {
-  cs.CriticalSection
-}
+import
+  "nU/cs"
+type
+  criticalSectionBounded struct {
+                                cs.CriticalSection
+                                }
 
 func newCSB (mL, mR uint) LeftRight {
   x := new(criticalSectionBounded)

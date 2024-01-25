@@ -2,7 +2,8 @@ package qu
 
 // (c) Christian Maurer   v. 220801 - license see nU.go
 
-type Queue interface {
+type
+   Queue interface {
 
 // Liefert genau dann true, wenn x leer ist,
 // dh. keine Objekte enthält.

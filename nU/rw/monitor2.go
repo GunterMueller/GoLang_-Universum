@@ -2,11 +2,12 @@ package rw
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import "nU/mon"
-
-type monitor2 struct {
-  mon.Monitor
-}
+import
+  "nU/mon"
+type
+  monitor2 struct {
+                  mon.Monitor
+                  }
 
 func newM2() ReaderWriter {
   x := new(monitor2)

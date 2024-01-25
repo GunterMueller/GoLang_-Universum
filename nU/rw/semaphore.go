@@ -2,12 +2,13 @@ package rw
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-import "nU/sem"
-
-type semaphore struct {
-  nR uint
-  m, rw sem.Semaphore
-}
+import
+  "nU/sem"
+type
+  semaphore struct {
+                nR uint
+             m, rw sem.Semaphore
+                   }
 
 func newS() ReaderWriter {
   x := new(semaphore)

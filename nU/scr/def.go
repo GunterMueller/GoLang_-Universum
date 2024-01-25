@@ -2,12 +2,17 @@ package scr
 
 // (c) Christian Maurer   v. 171229 - license see nU.go
 
-import "nU/col"
+import
+  "nU/col"
 
 // Zeichenbreite/-höhe des Standardfonts
-const (Wd1 = uint(8); Ht1 = uint(16)) // ggf. anpassen
+const (
+  Wd1 = uint(8)
+  Ht1 = uint(16)
+) // ggf. anpassen
 
-type Screen interface {
+type
+  Screen interface {
 
 // Liefert die Pixelbreite/-höhe von x.
   Wd() uint; Ht() uint

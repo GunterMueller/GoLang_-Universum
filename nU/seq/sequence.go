@@ -2,12 +2,13 @@ package seq
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import . "nU/obj"
-
-type sequence struct {
-  any "Musterobjekt"
-  ss []any
-}
+import
+  . "nU/obj"
+type
+  sequence struct {
+                  any "Musterobjekt"
+               ss []any
+                  }
 
 func new_(a any) Sequence {
   x := new(sequence)

@@ -1,8 +1,11 @@
 package dgra
 
-import "nU/adj"
+// (c) Christian Maurer   v. 231220 - license see nU.go
 
-func (x *distributedGraph) heartbeatmatrix() {
+import
+  "nU/adj"
+
+func (x *distributedGraph) HeartbeatMatrix() {
   x.connect (x.matrix)
   defer x.fin()
   x.matrix.Write()

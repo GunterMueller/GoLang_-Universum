@@ -2,18 +2,23 @@ package mon
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import ("sync"; . "nU/obj"; "nU/perm")
+import (
+  "sync";
+  . "nU/obj"
+  "nU/perm"
+)
 
-type monitor struct {
-  uint "Anzahl der Monitorfunktionen"
-  sync.Mutex "Eintrittswarteschlange"
-  s []sync.Mutex "Bedingungswarteschlangen"
-  ns []uint "Anzahl der darauf blockierten Prozesse"
-  u sync.Mutex "Dringlichkeitswarteschlange"
-  nu uint "Anzahl der auf sie blockierten Prozesse"
-  FuncSpectrum "Monitorfunktionen"
-  perm.Permutation "Indeterminismus"
-}
+type
+  monitor struct {
+                 uint "Anzahl der Monitorfunktionen"
+                 sync.Mutex "Eintrittswarteschlange"
+               s []sync.Mutex "Bedingungswarteschlangen"
+              ns []uint "Anzahl der darauf blockierten Prozesse"
+               u sync.Mutex "Dringlichkeitswarteschlange"
+              nu uint "Anzahl der auf sie blockierten Prozesse"
+                 FuncSpectrum "Monitorfunktionen"
+                 perm.Permutation "Indeterminismus"
+                 }
 
 func new_(n uint, f FuncSpectrum) Monitor {
   x := new(monitor)

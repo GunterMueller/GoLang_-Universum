@@ -4,13 +4,17 @@ package mbbuf
 
 // >>> Implementation with a Go-Monitor
 
-import ("sync"; "nU/bbuf")
-
-type condition struct {
-  bbuf.BoundedBuffer
-  notFull, notEmpty *sync.Cond
-  sync.Mutex
-}
+import (
+  "sync"
+  "nU/bbuf"
+)
+type
+  condition struct {
+                   bbuf.BoundedBuffer
+           notFull,
+          notEmpty *sync.Cond
+                   sync.Mutex
+                   }
 
 func newGo (a any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }

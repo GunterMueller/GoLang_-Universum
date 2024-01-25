@@ -4,13 +4,14 @@ package sem
 //
 // (c) Go-Authors
 
-import "sync"
-
-type semaphoreGo struct {
-  int "value"
-  mutex *sync.Mutex
-  wakeup *sync.Cond
-}
+import
+  "sync"
+type
+  semaphoreGo struct {
+                 int "value"
+               mutex *sync.Mutex
+              wakeup *sync.Cond
+                     }
 
 func newGo (n int) Semaphore {
   x := new(semaphoreGo)

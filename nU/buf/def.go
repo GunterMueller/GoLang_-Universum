@@ -2,7 +2,8 @@ package buf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-type Buffer interface { // Fifo-Queues
+type
+  Buffer interface { // Fifo-Queues
 
 // Liefert genau dann true, wenn x keine Objekte enthält.
   Empty() bool

@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 220713 - license see µU.go
+// (c) Christian Maurer   v. 231220 - license see µU.go
 
 import (
   "math"
@@ -50,6 +50,8 @@ func codelen (a any) uint {
       y += uint(codelen(b))
     }
     return y
+  case Coder:
+    return (a.(Coder)).Codelen()
   case Object:
     return (a.(Object)).Codelen()
   }
@@ -212,6 +214,8 @@ func encode (a any) Stream {
       copy(s[i:i+k], encode(as[j]))
       i += k
     }
+  case Coder:
+    return a.(Coder).Encode()
   case Object:
     return a.(Object).Encode()
   default:

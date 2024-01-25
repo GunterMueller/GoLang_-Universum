@@ -1,12 +1,12 @@
 package nchan
 
-// (c) Christian Maurer   v. 220702 - license see nU.go
+// (c) Christian Maurer   v. 231230 - license see nU.go
 
 import (
+  "strconv"
   "net"
   "µU/ker"
   "µU/time"
-  "strconv"
   . "µU/obj"
   "µU/errh"
 )
@@ -17,11 +17,8 @@ const (
 type
   netChannel struct {
                     any "Musterobjekt"
-//               port uint16       
                     uint "Kapazität des Kanals"
-            in, out chan any
-                    FuncSpectrum
-                    PredSpectrum
+            in, out chan any // nur für netChannelN
            isServer,
              oneOne bool
                     net.Conn
@@ -36,7 +33,7 @@ func (x *netChannel) panicIfErr() {
   }
 }
 
-func new_(a any, me, i uint, n string, p uint16) NetChannel {
+func new_(a any, me, i uint, h string, p uint16) NetChannel {
   if me == i { ker.Panic ("me == i") }
   x := new(netChannel)
   if a == nil {
@@ -44,19 +41,18 @@ func new_(a any, me, i uint, n string, p uint16) NetChannel {
   } else {
     x.any, x.uint = Clone (a), Codelen (a)
   }
+//  x.in, x.out bleibt undefiniert, weil nur für netChannelN gebraucht
   x.Stream = make(Stream, x.uint)
-  x.in, x.out = make(chan any), make(chan any)
-//  x.port = p
   x.oneOne = true
   x.isServer = me < i
   ps := ":" + strconv.Itoa(int(Port0 + p))
   if x.isServer {
-    x.Listener, x.error = net.Listen (network, n + ps)
-    if x.error != nil { println ("Listen error", n, ps) }
+    x.Listener, x.error = net.Listen (network, h + ps)
+    x.panicIfErr()
     x.Conn, x.error = x.Listener.Accept()
   } else { // client
     for {
-      if x.Conn, x.error = net.Dial (network, n + ps); x.error == nil {
+      if x.Conn, x.error = net.Dial (network, h + ps); x.error == nil {
         break
       }
       errh.Hint (x.error.Error())
@@ -66,13 +62,45 @@ func new_(a any, me, i uint, n string, p uint16) NetChannel {
   return x
 }
 
-func (x *netChannel) Send (a any) {
+// >>> experimental
+func newd (a any, me, i uint, h string, p uint16, dir bool) NetChannel {
+  if me == i { ker.Panic ("me == i") }
+  x := new(netChannel)
+  if a == nil {
+    x.any, x.uint = nil, maxWidth
+  } else {
+    x.any, x.uint = Clone (a), Codelen (a)
+  }
+  x.in, x.out = make(chan any), make(chan any)
+  x.Stream = make(Stream, x.uint)
+  x.oneOne = true
+  x.isServer = dir
+  ps := ":" + strconv.Itoa(int(Port0 + p))
+  if x.isServer {
+    x.Listener, x.error = net.Listen (network, h + ps)
+    x.panicIfErr()
+    x.Conn, x.error = x.Listener.Accept()
+  } else { // client
+    for {
+      if x.Conn, x.error = net.Dial (network, h + ps); x.error == nil {
+        break
+      }
+      errh.Hint (x.error.Error())
+      time.Msleep (500)
+    }
+  }
+  return x
+}
+
+func (x *netChannel) Send (a any) error {
   if x.Conn == nil { ker.Panic ("no Conn") }
   if x.any == nil {
-    x.Conn.Write (append (Encode (Codelen(a)), Encode(a)...))
+    _, x.error = x.Conn.Write (append (Encode (Codelen(a)), Encode(a)...))
   } else {
-    x.Conn.Write (Encode(a))
+    CheckTypeEq (x.any, a)
+    _, x.error = x.Conn.Write (Encode(a))
   }
+  return x.error
 }
 
 func (x *netChannel) Recv() any {

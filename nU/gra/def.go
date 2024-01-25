@@ -2,9 +2,12 @@ package gra
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/adj")
-
-type Graph interface {
+import (
+  . "nU/obj"
+  "nU/adj"
+)
+type
+  Graph interface {
 
   Object
 

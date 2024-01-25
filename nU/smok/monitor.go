@@ -4,11 +4,12 @@ package smok
 
 // >>> Solution with a universal monitor
 
-import "nU/mon"
-
-type monitor struct {
-                    mon.Monitor
-                    }
+import
+  "nU/mon"
+type
+  monitor struct {
+                 mon.Monitor
+                 }
 
 func newM() Smokers {
   var avail [3]bool

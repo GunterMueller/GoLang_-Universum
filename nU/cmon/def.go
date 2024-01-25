@@ -2,14 +2,13 @@ package cmon
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-import . "nU/obj"
-
-type Monitor interface {
+import
+  . "nU/obj"
+type
+  Monitor interface {
 
   Blocked (i uint) uint
-
   Awaited (i uint) bool
-
   F (i uint) uint
 }
 

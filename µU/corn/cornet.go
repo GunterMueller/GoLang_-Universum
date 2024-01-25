@@ -33,3 +33,16 @@ func (x *cornet) Get() any {
   defer x.Sequence.Del()
   return x.Sequence.Get()
 }
+
+func (x *cornet) All() []any {
+  all := make([]any, 0)
+  n := x.Num()
+  if n == 0 {
+    return all
+  }
+  for i := uint(0); i < n; i++ {
+    x.Sequence.Seek (i)
+    all = append (all, x.Sequence.Get().(any))
+  }
+  return all
+}

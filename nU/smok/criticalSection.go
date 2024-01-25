@@ -2,11 +2,12 @@ package smok
 
 // (c) Christian Maurer   v. 171102 - license see nU.go
 
-import "nU/cs"
-
-type criticalSection struct {
-  cs.CriticalSection
-}
+import
+  "nU/cs"
+type
+  criticalSection struct {
+                         cs.CriticalSection
+                         }
 
 func newCS() Smokers {
   var avail [3]bool

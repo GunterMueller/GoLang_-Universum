@@ -6,9 +6,9 @@ import
   "sync"
 type
   barz struct {
-  cs, mutex sync.Mutex
-  int "value"
-}
+    cs, mutex sync.Mutex
+              int "value"
+              }
 
 func newBarz (n uint) Semaphore {
   x:= new (barz)

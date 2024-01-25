@@ -4,12 +4,16 @@ package lockn
 
 // >>> Algorithm of Kessels
 
-import (. "nU/obj"; . "nU/atomic")
-
-type kessels struct {
-  uint "number of processes"
-  interested, favoured [][2]uint
-  e []uint // < 2
+import (
+  . "nU/obj"
+  . "nU/atomic"
+)
+type
+  kessels struct {
+                 uint "Anzahl der beteiligten Prozesse"
+      interested,
+        favoured [][2]uint
+               e []uint // < 2
 }
 
 func newKessels (n uint) LockerN {

@@ -1,64 +1,64 @@
 package dgra
 
-// (c) Christian Maurer   v. 231217 - license see µU.go
+// (c) Christian Maurer   v. 231229 - license see µU.go
 
 // >>> Gary L. Peterson: An O(n log n) Unidirectional Algorithm
 //     for the Circular Extrema Problem. ACM TOPLAS (1982), 758-762
 
-func (x *distributedGraph) Peterson() uint {
+func (x *distributedGraph) Peterson() {
   x.connect(uint(0))
   defer x.fin()
   out, in := uint(0), uint(1)
-  if x.Outgoing(1) { in, out = out, in }
+  if x.Graph.Outgoing(0) { in, out = out, in }
   tid := x.me
-  for {
-    x.ch[out].Send (tid); println ("sent tid ==", tid)
-    ntid := x.ch[in].Recv().(uint); println ("recv ntid ==", ntid)
+  for { // active
+    x.send (out, tid)
+    ntid := x.recv (in).(uint)
     if ntid == x.me {
+      x.send (out, ntid + inf)
       x.leader = x.me
-      x.ch[out].Send (x.leader + inf)
-      return x.leader
+      return
     }
     if ntid >= inf {
       x.leader = ntid - inf
-      x.ch[out].Send (ntid); println ("sent tid ==", tid)
-      return x.leader
+      x.send (out, ntid)
+      return
     }
-    if tid > ntid {
-      x.ch[out].Send (tid); println ("sent tid ==", tid)
+    if tid > ntid { // tid < inf
+      x.send (out, tid)
     } else {
-      x.ch[out].Send (ntid)
+      x.send (out, ntid)
     }
-    nntid := x.ch[in].Recv().(uint); println ("recv nntid ==", nntid)
+    nntid := x.recv (in).(uint)
     if nntid == x.me {
+      x.send (out, nntid + inf)
       x.leader = x.me
-      x.ch[out].Send (x.leader + inf); println ("sent x.leader + inf ==", x.leader + inf)
-      return x.leader
+      return
     }
     if nntid >= inf {
       x.leader = nntid - inf
-      x.ch[out].Send (nntid); println ("sent nntid == ", nntid)
-      return x.leader
+      x.send (out, nntid)
+      return
     }
-    if ntid >= tid && ntid >= nntid {
+    if ntid >= tid && ntid >= nntid { // ntid < inf
       tid = ntid
     } else {
       break
     }
   }
-  for {
-    n := x.ch[in].Recv().(uint); println ("recv n ==", n)
+  for { // relay
+    n := x.recv (in).(uint)
     if n == x.me {
       x.leader = x.me
-      x.ch[out].Send (x.leader + inf); println ("sent", x.leader + inf)
-      r := x.ch[in].Recv().(uint); println ("recv r ==", r)
-      return x.leader
+      x.send (out, x.leader + inf)
+      x.recv (in)
+      return
     }
     if n >= inf {
       x.leader = n - inf
-      x.ch[out].Send (n); print ("sent n = =", n)
-      return x.leader
+      x.send (out, n)
+      return
     }
-    x.ch[out].Send (n); print ("sent n == ", n)
+    x.send (out, n)
   }
 }

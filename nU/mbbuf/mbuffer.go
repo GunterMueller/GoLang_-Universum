@@ -2,12 +2,15 @@ package mbbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import ("sync"; "nU/bbuf")
-
-type mbuffer struct {
-  bbuf.BoundedBuffer
-  sync.Mutex
-}
+import (
+  "sync"
+  "nU/bbuf"
+)
+type
+  mbuffer struct {
+                 bbuf.BoundedBuffer
+                 sync.Mutex
+                 }
 
 func new_(a any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }

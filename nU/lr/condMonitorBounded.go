@@ -2,11 +2,12 @@ package lr
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-import "nU/cmon"
-
-type condMonitorBounded struct {
-  cmon.Monitor
-}
+import
+  "nU/cmon"
+type
+  condMonitorBounded struct {
+                            cmon.Monitor
+                            }
 
 func newCMB (mL, mR uint) LeftRight {
   x := new(condMonitorBounded)

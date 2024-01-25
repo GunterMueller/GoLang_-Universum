@@ -1,12 +1,11 @@
 package dgra
 
-// (c) Christian Maurer   v. 231215 - license see µU.go
+// (c) Christian Maurer   v. 240102 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/gra"
 )
-
 type
   DistributedGraph interface {
 
@@ -44,13 +43,15 @@ type
   Bfsfm1() // breadth first search showing the BFS-tree, with far monitors
 
   ChangRoberts()
-  Peterson() uint
+  Peterson()
   DolevKlaweRodeh()
   HirschbergSinclair()
-  Maurerfm()
   Dfselect()
   Dfselectfm()
   Leader() uint
+
+//  Successor (i uint) uint
+//  Predecessor (i uint) uint
 
   DijkstraScholten (o Op)
 }
@@ -66,29 +67,30 @@ func New (g gra.Graph) DistributedGraph { return new_(g) }
 func G3 (i uint) DistributedGraph { return g3(i) }
 func G3dir (i uint) DistributedGraph { return g3dir(i) }
 func G4 (i uint) DistributedGraph { return g4(i) }
-func G4ds (i uint) DistributedGraph { return g4ds(i) }
 func G4flat (i uint) DistributedGraph { return g4flat(i) }
+func G4ring (i uint) DistributedGraph { return g4ring(i) }
+func G4ringdir (i uint) DistributedGraph { return g4ringdir(i) }
 func G4full (i uint) DistributedGraph { return g4full(i) }
 func G4star (i uint) DistributedGraph { return g4star(i) }
+func G4ds (i uint) DistributedGraph { return g4ds(i) }
 func G5 (i uint) DistributedGraph { return g5(i) }
 func G5ring (i uint) DistributedGraph { return g5ring(i) }
 func G5ringdir (i uint) DistributedGraph { return g5ringdir(i) }
-func G5ds (i uint) DistributedGraph { return g5ds(i) }
 func G5full (i uint) DistributedGraph { return g5full(i) }
+func G5ds (i uint) DistributedGraph { return g5ds(i) }
 func G6 (i uint) DistributedGraph { return g6(i) }
 func G6full (i uint) DistributedGraph { return g6full(i) }
 func G6ds (i uint) DistributedGraph { return g6ds(i) }
-func G8a (i uint) DistributedGraph { return g8a(i) }
 func G8 (i uint) DistributedGraph { return g8(i) }
+func G8a (i uint) DistributedGraph { return g8a(i) }
 func G8dir (i uint) DistributedGraph { return g8dir(i) }
-func G8cyc (i uint) DistributedGraph { return g8cyc(i) }
 func G8ring (i uint) DistributedGraph { return g8ring(i) }
 func G8ringdir (i uint) DistributedGraph { return g8ringdir(i) }
 func G8full (i uint) DistributedGraph { return g8full(i) }
-func G9dir (i uint) DistributedGraph { return g9dir(i) }
-func G9ds (i uint) DistributedGraph { return g9ds(i) }
+func G8ds (i uint) DistributedGraph { return g8ds(i) }
 func G9a (i uint) DistributedGraph { return g9a(i) }
 func G9b (i uint) DistributedGraph { return g9b(i) }
+func G9dir (i uint) DistributedGraph { return g9dir(i) }
 func G10 (i uint) DistributedGraph { return g10(i) }
 func G12 (i uint) DistributedGraph { return g12(i) }
 func G12ringdir (i uint) DistributedGraph { return g12ringdir(i) }

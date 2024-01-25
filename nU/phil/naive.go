@@ -4,11 +4,12 @@ package phil
 
 // >>> Naive solution with deadlock
 
-import "sync"
-
-type naive struct {
-  fork []sync.Mutex
-}
+import
+  "sync"
+type
+  naive struct {
+          fork []sync.Mutex
+               }
 
 func new_() Philos {
   x := new(naive)

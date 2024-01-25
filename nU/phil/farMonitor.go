@@ -4,11 +4,12 @@ package phil
 
 // >>> Solution with far monitor
 
-import "nU/fmon"
-
-type farMonitor struct {
-  fmon.FarMonitor
-}
+import
+  "nU/fmon"
+type
+  farMonitor struct {
+                    fmon.FarMonitor
+                    }
 
 func newFM (h string, port uint16, s bool) Philos {
   nForks := make([]uint, 5)

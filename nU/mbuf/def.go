@@ -2,9 +2,10 @@ package mbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-type MBuffer interface { // Synchronisierte Buffer.
-                         // Die exportierten Funktionen können nicht von Aufrufen
-                         // dieser Funktionen von anderen Goroutinen unterbrochen werden.
+type
+   MBuffer interface { // Synchronisierte Buffer.
+                       // Die exportierten Funktionen können nicht von Aufrufen
+                       // dieser Funktionen von anderen Goroutinen unterbrochen werden.
 
 // a ist als letztes Objekt in x eingefügt.
 // Der aufrufende Prozess war ggf. solange blockiert, bis x nicht voll war.

@@ -4,11 +4,12 @@ package phil
 
 // >>> Fair Algorithm of Dijkstra
 
-import "sync"
-
-type semaphoreFair struct {
-  plate []sync.Mutex
-}
+import
+  "sync"
+type
+  semaphoreFair struct {
+                 plate []sync.Mutex
+                       }
 
 func (x *semaphoreFair) test (p uint) {
   if status[p] == hungry &&

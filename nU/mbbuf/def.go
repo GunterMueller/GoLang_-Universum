@@ -2,7 +2,9 @@ package mbbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-type MBoundedBuffer interface {
+type
+  MBoundedBuffer interface {
+
   Ins (a any)
   Get() any
 }

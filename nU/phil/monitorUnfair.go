@@ -2,11 +2,12 @@ package phil
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import "nU/mon"
-
-type monitorUnfair struct {
-  mon.Monitor
-}
+import
+  "nU/mon"
+type
+  monitorUnfair struct {
+                       mon.Monitor
+                       }
 
 func newMU() Philos {
   var m mon.Monitor

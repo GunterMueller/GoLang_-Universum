@@ -1,6 +1,6 @@
 package edg
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 231226 - license see µU.go
 
 import (
   . "µU/obj"
@@ -46,7 +46,7 @@ type
   Edit()
 }
 
-// Pre: a == nil or a is of type uint or of type Valuator.
+// Pre: a == nil or a is of an uint-type or of type Valuator.
 // Returns a new empty edge, that is directed, iff d = true.
 // If a == nil, its value is 1, else it is determined by a.
 func New (d bool, a any) Edge { return new_(d,a) }

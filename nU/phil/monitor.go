@@ -4,11 +4,12 @@ package phil
 
 // >>> Implementation with a universal monitor
 
-import "nU/mon"
-
-type monitor struct {
-  mon.Monitor
-}
+import
+  "nU/mon"
+type
+  monitor struct {
+                 mon.Monitor
+                 }
 
 func newM() Philos {
   var m mon.Monitor

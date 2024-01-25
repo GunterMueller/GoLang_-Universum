@@ -4,11 +4,12 @@ package phil
 
 // >>> Solution with critical sections
 
-import . "nU/cs"
-
-type criticalSection struct {
-  CriticalSection
-}
+import
+  . "nU/cs"
+type
+  criticalSection struct {
+                         CriticalSection
+                         }
 
 func newCS() Philos {
   nForks := make([]uint, 5)

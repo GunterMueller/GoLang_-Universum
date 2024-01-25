@@ -4,11 +4,12 @@ package lock
 
 // >>> Implementation with sync.Mutex
 
-import "sync"
-
-type mutex struct {
-  sync.Mutex
-}
+import
+  "sync"
+type
+  mutex struct {
+               sync.Mutex
+               }
 
 func newMutex() Locker {
   return new(mutex)

@@ -15,7 +15,7 @@ const (
 )
 type
   knuth struct {
-               uint "number of processes"
+               uint "Anzahl der beteiligten Prozesse"
       favoured uint
           flag []uint
                }

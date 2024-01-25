@@ -6,7 +6,6 @@ type
   Barber interface {
 
   Customer()
-
   Barber()
 }
 

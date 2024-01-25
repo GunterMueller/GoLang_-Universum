@@ -2,9 +2,10 @@ package phil
 
 // (c) Christian Maurer   v. 171228 - license see nU.go
 
-type channel struct {
-  ch []chan int
-}
+type
+  channel struct {
+              ch []chan int
+                 }
 
 func newCh() Philos {
   x := new(channel)

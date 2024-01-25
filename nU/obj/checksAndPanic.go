@@ -2,7 +2,10 @@ package obj
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import ("reflect"; "strconv")
+import (
+  "reflect"
+  "strconv"
+)
 
 func TypeEq (a, b any) bool {
   x, y := reflect.TypeOf(a), reflect.TypeOf(b)

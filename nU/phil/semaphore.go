@@ -4,11 +4,12 @@ package phil
 
 // >>> naive solution with semaphores - deadlock
 
-import "nU/sem"
-
-type semaphore struct {
-  fork []sem.Semaphore
-}
+import
+  "nU/sem"
+type
+  semaphore struct {
+              fork []sem.Semaphore
+                   }
 
 func newS() Philos {
   x := new(semaphore)

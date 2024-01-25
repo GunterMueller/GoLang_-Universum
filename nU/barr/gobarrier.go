@@ -2,16 +2,17 @@ package barr
 
 // (c) Christian Maurer   v. 170628 - license see nU.go
 
-import . "sync"
+import
+  . "sync"
+type
+  gobarrier struct {
+              uint "Anzahl der beteiligten Prozesse"
+           waiting uint
+                   *Cond
+                   Mutex "to block"
+                   }
 
-type gobarrier struct {
-  uint "number of involved processes"
-  waiting uint
-  *Cond
-  Mutex "to block"
-}
-
-func newG(m uint) Barrier {
+func newG (m uint) Barrier {
   if m < 2 { return nil }
   x := new(gobarrier)
   x.uint = m

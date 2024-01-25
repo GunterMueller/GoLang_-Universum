@@ -2,11 +2,12 @@ package macc
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import "nU/mon"
-
-type monitor struct {
-  mon.Monitor
-}
+import
+   "nU/mon"
+type
+  monitor struct {
+                 mon.Monitor
+                 }
 
 func newM() MAccount {
   balance := uint(0)

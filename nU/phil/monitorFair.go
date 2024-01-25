@@ -4,11 +4,12 @@ package phil
 
 // >>> Fair solution with a monitor due to Dijkstra
 
-import "nU/mon"
-
-type monitorFair struct {
-  mon.Monitor
-}
+import
+  "nU/mon"
+type
+  monitorFair struct {
+                     mon.Monitor
+                     }
 
 func newMF() Philos {
   var m mon.Monitor

@@ -2,9 +2,10 @@ package cs
 
 // (c) Christian Maurer   v. 171230 - license see nU.go
 
-import . "nU/obj"
-
-type CriticalSection interface {
+import
+  . "nU/obj"
+type
+  CriticalSection interface {
 
 // Vor.: i < Anzahl der Klassen von x.
 //       Die Funktion ist innerhalb der Eintrittsbedingungen

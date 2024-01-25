@@ -2,14 +2,15 @@ package bbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import . "nU/obj"
-
-type boundedBuffer struct {
-  any "Musterobjekt"
-  int "Anzahl der Objekte im Puffer"
-  cap, in, out uint
-  content AnyStream
-}
+import
+  . "nU/obj"
+type
+  boundedBuffer struct {
+                       any "Musterobjekt"
+                       int "Anzahl der Objekte im Puffer"
+          cap, in, out uint
+               content AnyStream
+                       }
 
 func new_(a any, n uint) BoundedBuffer {
   x := new(boundedBuffer)

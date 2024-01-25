@@ -1,8 +1,8 @@
 package dgra
 
-// (c) Christian Maurer   v. 171125 - license see nU.go
+// (c) Christian Maurer   v. 231220 - license see nU.go
 
-func (x *distributedGraph) dolevKlaweRodeh() {
+func (x *distributedGraph) DolevKlaweRodeh() {
   x.connect(uint(0))
   defer x.fin()
   var left uint

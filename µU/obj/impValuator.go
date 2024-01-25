@@ -23,6 +23,7 @@ func val (a any) uint {
   switch a.(type) {
   case Valuator:
     n = (a.(Valuator)).Val()
+/*/
   case int8:
     n = uint(a.(int8))
     if a.(int8) >= 0 {
@@ -54,6 +55,7 @@ func val (a any) uint {
     } else {
       n = uint(-a.(int))
     }
+/*/
   case byte:
     n = uint(a.(byte))
   case uint16:

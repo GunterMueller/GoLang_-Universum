@@ -2,11 +2,12 @@ package col
 
 // (c) Christian Maurer   v. 221021 - license see nU.go
 
-import . "nU/obj"
-
-type colour struct {
-  r, g, b byte
-}
+import
+  . "nU/obj"
+type
+  colour struct {
+        r, g, b byte
+                }
 
 func new_() Colour {
   x := new(colour)

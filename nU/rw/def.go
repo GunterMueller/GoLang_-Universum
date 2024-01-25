@@ -2,7 +2,8 @@ package rw
 
 // (c) Christian Maurer   v. 210123 - license see nU.go
 
-type ReaderWriter interface { // Protokolle für das Leser-Schreiber-Problem
+type
+  ReaderWriter interface { // Protokolle für das Leser-Schreiber-Problem
 
 // Vor.: Der aufrufende Prozess ist weder aktiver Leser
 //       noch aktiver Schreiber.

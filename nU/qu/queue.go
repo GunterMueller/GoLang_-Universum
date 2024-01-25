@@ -2,12 +2,13 @@ package qu
 
 // (c) Christian Maurer   v. 220801 - license see nU.go
 
-import . "nU/obj"
-
-type queue struct {
-  any "Musterobjekt"
-  qs []any
-}
+import
+  . "nU/obj"
+type
+  queue struct {
+               any "Musterobjekt"
+            qs []any
+               }
 
 func new_(a any) Queue {
   x := new(queue)

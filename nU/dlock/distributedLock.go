@@ -2,21 +2,24 @@ package dlock
 
 // (c) Christian Maurer   v. 171202 - license see nU.go
 
-import ("sync"; "nU/nchan")
-
-const ok = uint(1)
-
-type distributedLock struct {
-  uint "number of hosts involved"
-  me uint // Identität des aufrufenden Prozesses
-  host []string
-  request, reply []nchan.NetChannel // 0 für Reqests, 1 für Replies
-  time, time1, // eigene und andere Zeit
-  nReplies uint
-  requesting bool
-  deferred []bool
-  mutex, critSect sync.Mutex
-}
+import (
+  "sync"
+  "nU/nchan"
+)
+const
+  ok = uint(1)
+type
+  distributedLock struct {
+                         uint "Anzahl der beteiligten Hosts"
+                      me uint // Identität des aufrufenden Prozesses
+                    host []string
+          request, reply []nchan.NetChannel // 0 für Reqests, 1 für Replies
+             time, time1, // eigene und andere Zeit
+                nReplies uint
+              requesting bool
+                deferred []bool
+         mutex, critSect sync.Mutex
+                         }
 
 func new_(me uint, hs []string, p uint16) DistributedLock {
   n := uint(len(hs))

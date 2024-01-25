@@ -1,6 +1,6 @@
 package files
 
-// (c) Christian Maurer   v. 230917 - license see µU.go
+// (c) Christian Maurer   v. 231228 - license see µU.go
 
 import (
   "os"
@@ -96,9 +96,9 @@ func actualize (path string) {
   seq = make([]pair.Pair, 0)
   f, e := os.Open (".")
   defer f.Close()
-  if e != nil { ker.Shit() }
+  if e != nil { ker.Oops() }
   fileinfos, ef := f.Readdir (-1)
-  if ef != nil { ker.Shit() }
+  if ef != nil { ker.Oops() }
   var t Type
   n := len(fileinfos)
   for i := 0; i < n; i++ {

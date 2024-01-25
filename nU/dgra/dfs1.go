@@ -1,13 +1,14 @@
 package dgra
 
-// (c) Christian Maurer   v. 171227 - license see nU.go
+// (c) Christian Maurer   v. 231220 - license see nU.go
 
-import . "nU/obj"
+import (
+  . "µU/obj"
+)
 
-func (x *distributedGraph) dfs1 (o Op) {
+func (x *distributedGraph) Dfs1() {
   x.connect (nil)
   defer x.fin()
-  x.Op = o
   x.tree.Clr()
   x.parent = inf
   if x.me == x.root {
@@ -31,7 +32,15 @@ func (x *distributedGraph) dfs1 (o Op) {
       pause()
       u := x.next(j)
       k := u
-      if ! x.visited[j] {
+      if x.visited[j] { // echo
+        if u == x.n {
+          if x.me == x.root {
+            done <- 0
+            return
+          }
+          k = x.channel(x.parent)
+        }
+      } else {
         if ! x.tree.Ex (x.actVertex) {
           x.tree.Ex (x.nb[j])
           x.tree.Ins (x.actVertex)
@@ -48,16 +57,9 @@ func (x *distributedGraph) dfs1 (o Op) {
         } else {
           k = j
         }
-      } else {
-        if u == x.n {
-          if x.me == x.root {
-            done <- 0
-            return
-          }
-          k = x.channel(x.parent)
-        }
       }
       x.visited[k] = true
+//    x.ch[k].Send (x.tree)
       if k == u {
         x.distance = k
         x.tmpGraph.Copy (x.tree)
@@ -74,7 +76,6 @@ func (x *distributedGraph) dfs1 (o Op) {
   var bs Stream
   if x.me == x.root {
     bs = x.tree.Encode()
-//    x.parent = x.me
   } else {
     bs = x.ch[x.channel(x.parent)].Recv().(Stream)
     x.tree = x.decodedGraph (bs)
@@ -86,6 +87,5 @@ func (x *distributedGraph) dfs1 (o Op) {
       x.ch[k].Send (bs)
     }
   }
-  x.Op (x.me)
   x.tree.Write()
 }

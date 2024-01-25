@@ -2,18 +2,22 @@ package cs
 
 // (c) Christian Maurer   v. 171019 - license see nU.go
 
-import ("sync"; . "nU/obj"; "nU/perm")
-
-type criticalSection struct {
-  uint "number of process classes"
-  sync.Mutex "the baton"
-  s []sync.Mutex "on which goroutines are blocked, if ! CondSpectrum"
-  ns []uint "numbers of goroutines, that are blocked on these semaphores"
-  CondSpectrum "conditions to enter the critical section"
-  NFuncSpectrum "functions in the enter protocols"
-  StmtSpectrum "statements in the leave protocols"
-  perm.Permutation "random permutation"
-}
+import (
+  "sync"
+  . "nU/obj"
+  "nU/perm"
+)
+type
+  criticalSection struct {
+                         uint "Anzahl der Prozessklassen"
+                         sync.Mutex "der Staffelstab"
+                       s []sync.Mutex "auf den Goroutinen blockiert sind, wenn ! CondSpectrum"
+                      ns []uint "Anzahl der Goroutinen, die auf diese Semaphoren blockier sind"
+                         CondSpectrum "conditions to enter the critical section"
+                         NFuncSpectrum "Funktionen in den Eintrittsprotokollen"
+                         StmtSpectrum "Aufrufe in den Austrittsprotokollen"
+                         perm.Permutation "Indeterminismus"
+                         }
 
 func new_(n uint, c CondSpectrum, e NFuncSpectrum, l StmtSpectrum) CriticalSection {
   if n == 0 { return nil }

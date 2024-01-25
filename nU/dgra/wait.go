@@ -2,7 +2,10 @@ package dgra
 
 // (c) Christian Maurer   v. 171123 - license see nU.go
 
-import ("time"; "sync")
+import (
+  "time"
+  "sync"
+)
 
 var (
   lock = make(chan int, 1)

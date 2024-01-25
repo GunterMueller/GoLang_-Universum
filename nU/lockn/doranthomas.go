@@ -9,7 +9,7 @@ import
 type
   doranthomas struct {
           interested [2]bool
-                     uint "identity of the favoured process < 2"
+                     uint "Identität der favorisierten Prozesses < 2"
                      }
 
 func newDoranThomas() LockerN {

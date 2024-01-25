@@ -2,14 +2,19 @@ package schan
 
 // (c) Christian Maurer   v. 220801 - license see nU.go
 
-import ("sync"; . "nU/obj")
+import (
+  "sync"
+  . "nU/obj"
+)
 
-type synchronousChannel struct {
-  pattern any
-  any "object in channel"
-  bool "first at rendezvous"
-  mutex, s, r, rendezvous sync.Mutex
-}
+type
+  synchronousChannel struct {
+                    pattern any
+                            any "object in channel"
+                            bool "first at rendezvous"
+                mutex, s, r,
+                            rendezvous sync.Mutex
+                            }
 
 func new_(a any) SynchronousChannel {
   x := new(synchronousChannel)

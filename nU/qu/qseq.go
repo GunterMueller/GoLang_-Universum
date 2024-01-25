@@ -2,12 +2,15 @@ package qu
 
 // (c) Christian Maurer   v. 220801 - license see nU.go
 
-import (. "nU/obj"; "nU/seq")
-
-type queueSeq struct {
-  any "Musterobjekt"
-  seq.Sequence
-}
+import (
+  . "nU/obj"
+  "nU/seq"
+)
+type
+  queueSeq struct {
+                  any "Musterobjekt"
+                  seq.Sequence
+                  }
 
 func news (a any) Queue {
   x := new(queueSeq)

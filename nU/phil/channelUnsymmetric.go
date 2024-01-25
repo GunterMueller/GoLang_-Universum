@@ -4,9 +4,11 @@ package phil
 
 // >>> Unsymmetric solution with synchronous message-passing
 
-type channelUnsymmetric struct {
-  lock, lockLeft, unlock, unlockLeft []chan bool
-}
+type
+  channelUnsymmetric struct {
+             lock, lockLeft,
+         unlock, unlockLeft []chan bool
+                            }
 
 func newChU() Philos {
   x := new(channelUnsymmetric)

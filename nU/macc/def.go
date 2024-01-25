@@ -2,9 +2,10 @@ package macc
 
 // (c) Christian Maurer   v. 210123 - license see nU.go
 
-type MAccount interface { // Ein multitasking-fähiges Konto.
-                          // Die exportierten Funktionen können von Aufrufen dieser Funktionen
-                          // durch andere Goroutinen nicht unterbrochen werden.
+type
+   MAccount interface { // Ein multitasking-fähiges Konto.
+                        // Die exportierten Funktionen können von Aufrufen dieser Funktionen
+                        // durch andere Goroutinen nicht unterbrochen werden.
 
 // Das Guthaben von x ist um a erhöht.
 // Liefert das neue Guthaben von x.

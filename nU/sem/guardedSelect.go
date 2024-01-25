@@ -2,11 +2,12 @@ package sem
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import . "nU/obj"
-
-type guardedSelect struct {
-  p, v chan any
-}
+import
+  . "nU/obj"
+type
+  guardedSelect struct {
+                  p, v chan any
+                       }
 
 func newGS (n uint) Semaphore {
   x := new(guardedSelect)

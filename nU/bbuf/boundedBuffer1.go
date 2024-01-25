@@ -2,16 +2,19 @@ package bbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/buf")
+import (
+  . "nU/obj"
+  "nU/buf"
+)
+type
+  boundedBuffer1 struct {
+                        any "Musterobjekt"
+                        buf.Buffer
+                    num int
+                    cap uint
+                        }
 
-type boundedBuffer1 struct {
-  any "Musterobjekt"
-  buf.Buffer
-  num int
-  cap uint
-}
-
-func new1(a any, n uint) BoundedBuffer {
+func new1 (a any, n uint) BoundedBuffer {
   x := new(boundedBuffer1)
   x.Buffer = buf.New (a)
   x.cap = n

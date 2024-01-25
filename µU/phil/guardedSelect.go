@@ -34,7 +34,7 @@ for j := uint(0); j < NPhilos; j++ { print (nForks[j], " ") }; println("\n")
         select {
         case any, ok := <-when:
           if ok {
-j := any.(uint); if x.lock[i] == nil || j != i { ker.Shit() }
+j := any.(uint); if x.lock[i] == nil || j != i { ker.Oops() }
 println ("lock ok", i)
             nForks[left(i)]--
             nForks[right(i)]--
@@ -46,7 +46,7 @@ println(i, "has", nForks[i])
 //          nForks[right(i)]--
         case any, ok := <-x.unlock[i]:
           if ok {
-j := any.(uint); if x.lock[i] == nil || j != i { ker.Shit() }
+j := any.(uint); if x.lock[i] == nil || j != i { ker.Oops() }
 println ("unlock ok", i)
             nForks[left(i)]++
             nForks[right(i)]++

@@ -2,7 +2,8 @@ package seq
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-type Sequence interface {
+type
+  Sequence interface {
 
 // Liefert genau dann true, wenn x keine Objekte enthält.
   Empty() bool

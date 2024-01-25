@@ -2,9 +2,10 @@ package bbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import "nU/buf"
-
-type BoundedBuffer interface {
+import
+  "nU/buf"
+type
+  BoundedBuffer interface {
 
   buf.Buffer
 

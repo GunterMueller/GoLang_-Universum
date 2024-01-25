@@ -2,7 +2,7 @@ package lockn
 
 // (c) Christian Maurer   v. 190321 - license see nU.go
 
-// >>> Bakery-Algorithm of Lamport
+// >>> Bakery-Algorithm von Lamport
 
 import (
   . "nU/atomic"
@@ -10,7 +10,7 @@ import (
 )
 type
   bakery struct {
-                uint "number of processes"
+                uint "Anzahl der beteiligten Prozesse"
          number,
           draws []uint
                 }

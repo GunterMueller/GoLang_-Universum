@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 231220 - license see µU.go
+// (c) Christian Maurer   v. 240101 - license see µU.go
 
 import (
   . "µU/obj"
@@ -30,7 +30,7 @@ type
 //
 // The edges have a number of type uint as value ("weight");
 // either all edges have the value 1 or their value is given by
-// the function Val (they have to be atomic or of type Valuator).
+// the function Val (they have to be of an uint-type or of type Valuator).
 // The outgoing edges of a vertex are enumerated (starting with 0);
 // the vertex, with which a vertex is connected by its n-th outgoing edge,
 // is denoted as its n-th neighbourvertex.
@@ -62,6 +62,11 @@ type
 
 // Returns true, iff x is directed.
   Directed() bool
+
+  SetDir (b bool)
+
+// Returns a copy of the graph that is not directed.
+  Indir() Graph
 
 // Returns the number of vertices of x.
   Num() uint
@@ -126,7 +131,7 @@ type
   CoEdged() bool
 
 // Returns true, iff v is contained as vertex in x.
-// In this case v is now the local vertex of x.
+// In this case, v is now the local vertex of x.
 // The colocal vertex of x is the same as before.
   Ex (v any) bool
 
@@ -160,6 +165,20 @@ type
 // In this case now some vertex v with p(v) is the colocal vertex
 // and some vertex v1 with p1(v1) is the local vertex of x.
   ExPred2 (p, p1 Pred) bool
+
+// Returns the value of the local vertex of x,
+// if it has the type Valuator; return otherwise 1.
+// Val() uint)
+
+// Returns true, iff x contains a vertex with the value n.
+// In this case, such a vertex is the local vertex of x.
+// The colocal vertex of x is the same as before.
+  ExVal (n uint) bool
+
+// Returns true, iff x contains a vertex v with the value n
+// and a vertex v1 with the value n1. In this case,
+// v is the colocal vertex of x and v1 is the local vertex of x.
+  ExVal2 (n, n1 uint) bool
 
 // Returns the pattern vertex of x, if x is empty;
 // returns otherwise a clone of the local vertex of x.
@@ -279,6 +298,7 @@ type
 // Returns otherwise the number of the outgoing edges of the local vertex of x.
   NumNeighboursOut() uint
 
+// Pre: x is directed.
 // Returns 0, if x is empty.
 // Returns otherwise the number of the incoming edges to the local vertex of x.
   NumNeighboursIn() uint
@@ -487,18 +507,10 @@ type
 // x is stored in the corresponding file.
   Store()
 
-// Returns the values of all vertices.1 
-  Vals() []uint
-
-// Pre: x is directed.
-// Returns the values of the sources of all edges
-// (the source of a directed edge is the vertex from which the edge is outcoming).
-  Sources() []uint
-
-// Pre: x is directed.
-// Returns the values of the sinks of all edges
-// (the sink of a directed edge is the vertex to which the edge is incoming).
-  Sinks() []uint
+// Pre: x is connected.
+// Returns true, iff x is a ring.
+// If x is not connected, true is returned, iff every connected component is a ring.
+  IsRing() bool
 }
 
 // Pre: v is atomic or imlements Object.

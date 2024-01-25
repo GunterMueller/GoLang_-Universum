@@ -2,14 +2,17 @@ package achan
 
 // (c) Christian Maurer   v. 220801 - license see nU.go
 
-import ("sync"; "nU/buf")
-
-type asynchronousChannel struct {
-  any
-  buf.Buffer
-  ch chan any
-  sync.Mutex
-}
+import (
+  "sync"
+  "nU/buf"
+)
+type
+  asynchronousChannel struct {
+                              any
+                              buf.Buffer
+                           ch chan any
+                              sync.Mutex
+                             }
 
 func new_(a any) AsynchronousChannel {
   x := new(asynchronousChannel)

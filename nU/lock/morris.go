@@ -4,13 +4,14 @@ package lock
 
 // >>> Algorithm of Morris
 
-import "sync"
-
-type morris struct {
-  door0, door,
-  mutex sync.Mutex // to protect n0
-  n0,    // number of processes blocked on door0
-  n uint // number of processes blocked on door
+import
+   "sync"
+type
+  morris struct {
+    door0, door,
+          mutex sync.Mutex // zum Schutz von n0
+             n0,     // Anzahl der Prozesse, die auf door0 blockiert sind
+              n uint // Anzahl der Prozesse, die auf door blockiert sind
 }
 
 func newMorris() Locker {

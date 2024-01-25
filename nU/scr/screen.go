@@ -26,18 +26,27 @@ void write_(const void *b) {
 }
 */
 import "C"
-import ("unsafe";
-        // "os/exec";
-        "strconv"; "sync"; . "nU/obj"; "nU/col")
-
-const (null = byte('0'); esc = byte(27))
-
-type screen struct {
-  w, h, nL, nC, lmax uint
-  mutex sync.Mutex
-}
-
-var a *screen
+import (
+  "unsafe";
+  // "os/exec";
+  "strconv"
+  "sync"
+  . "nU/obj"
+  "nU/col"
+)
+const (
+  null = byte('0')
+  esc = byte(27)
+)
+type
+  screen struct {
+           w, h,
+         nL, nC,
+           lmax uint
+          mutex sync.Mutex
+                }
+var
+  a *screen
 
 func new_() Screen {
   x := new(screen)

@@ -10,7 +10,7 @@ import (
 )
 type
   tiebreaker struct {
-                    uint "number of processes"
+                    uint "Anzahl der beteiligten Prozesse"
      achieved, last []uint
                     }
 

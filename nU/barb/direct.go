@@ -2,12 +2,14 @@ package barb
 
 // (c) Christian Maurer   v. 170731 - license see nU.go
 
-import "sync"
-
-type barberD struct {
-  waiting, mutex sync.Mutex
-  int "n"
-}
+import
+  "sync"
+type
+  barberD struct {
+         waiting,
+           mutex sync.Mutex
+                 int "n"
+                 }
 
 func newD() Barber {
   x := new (barberD)

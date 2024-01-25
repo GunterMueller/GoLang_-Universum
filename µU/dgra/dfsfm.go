@@ -1,9 +1,10 @@
 package dgra
 
-// (c) Christian Maurer   v. 231215 - license see µU.go
+// (c) Christian Maurer   v. 231229 - license see µU.go
 
 import (
   . "µU/obj"
+  "µU/scr"
   "µU/fmon"
 )
 const (
@@ -11,7 +12,52 @@ const (
   deliver
 )
 
+func (x *distributedGraph) d1 (a any, i uint) any {
+  x.awaitAllMonitors()
+  s := a.(Stream)
+  x.tree = x.decodedGraph(s)
+  if i == search {
+    j := x.channel(nrLocal(x.tree))
+    if x.tree.Ex (x.actVertex) {
+      return nil
+    }
+    x.parent = x.nr[j]
+    x.tree.Ins (x.actVertex)
+    x.tree.Edge (x.edge(x.nb[j], x.actVertex))
+    x.tree.Write()
+    pause()
+    for k := uint(0); k < x.n; k++ {
+      if k != j {
+        if ! x.tree.Ex (x.nb[k]) {
+          x.tree.Ex (x.actVertex)
+          s = x.mon[k].F(x.tree, search).(Stream)
+          if len(s) == 0 {
+            return nil
+          } else {
+            x.child[k] = true
+            x.tree = x.decodedGraph (s)
+            x.tree.Write()
+            pause()
+          }
+        }
+      }
+    }
+  } else { // deliver
+    x.tree.Ex (x.actVertex)
+    x.tree.Write()
+    for k := uint(0); k < x.n; k++ {
+      if x.child[k] {
+        x.mon[k].F(x.tree, deliver)
+      }
+    }
+    x.Op (x.me)
+    done <- 0
+  }
+  return x.tree.Encode()
+}
+
 func (x *distributedGraph) Dfsfm() {
+  scr.Cls()
   go func() {
     fmon.New (nil, 2, x.d1, AllTrueSp,
               x.actHost, p0 + uint16(2 * x.me), true)
@@ -31,13 +77,11 @@ func (x *distributedGraph) Dfsfm() {
     x.parent = x.me
     for k := uint(0); k < x.n; k++ {
       x.tree.Ex (x.actVertex) // actVertex local in x.tree
-// x.log("search ", x.nr[k])
-      bs := x.mon[k].F(x.tree, search).(Stream) // crash XXX interface is nil, not Stream
-// x.log0(" ok")
-      if len(bs) == 0 {
+      s := x.mon[k].F(x.tree, search).(Stream)
+      if len(s) == 0 {
       } else {
         x.child[k] = true
-        x.tree = x.decodedGraph(bs)
+        x.tree = x.decodedGraph(s)
         x.tree.Write()
         pause()
       }
@@ -47,61 +91,11 @@ func (x *distributedGraph) Dfsfm() {
     pause()
     for k := uint(0); k < x.n; k++ {
       if x.child[k] {
-// x.log("deliver ", x.nr[k])
         x.mon[k].F(x.tree, deliver)
-// x.log0(" ok")
       }
     }
   } else {
     <-done // wait for root's result
   }
   x.tree.Write()
-}
-
-func (x *distributedGraph) d1 (a any, i uint) any {
-  x.awaitAllMonitors()
-  bs := a.(Stream)
-  x.tree = x.decodedGraph(bs)
-  if i == search {
-    j := x.channel(nrLocal(x.tree))
-    if x.tree.Ex (x.actVertex) {
-      return nil
-    }
-    x.parent = x.nr[j]
-    x.tree.Ins (x.actVertex)
-    x.tree.Edge (x.edge(x.nb[j], x.actVertex))
-    x.tree.Write()
-    pause()
-    for k := uint(0); k < x.n; k++ {
-      if k != j {
-        if ! x.tree.Ex (x.nb[k]) {
-          x.tree.Ex (x.actVertex)
-// x.log("search ", x.nr[k])
-          bs = x.mon[k].F(x.tree, search).(Stream)
-// x.log0(" ok")
-          if len(bs) == 0 {
-            return nil
-          } else {
-            x.child[k] = true
-            x.tree = x.decodedGraph (bs)
-            x.tree.Write()
-            pause()
-          }
-        }
-      }
-    }
-  } else { // deliver
-    x.tree.Ex (x.actVertex)
-    x.tree.Write()
-    for k := uint(0); k < x.n; k++ {
-      if x.child[k] {
-// x.log("deliver ", x.nr[k])
-        x.mon[k].F(x.tree, deliver)
-// x.log0(" ok")
-      }
-    }
-    x.Op (x.me)
-    done <- 0
-  }
-  return x.tree.Encode()
 }

@@ -4,9 +4,10 @@ package lock
 
 // >>> Implementation with message passing
 
-type channel struct {
-  c chan bool
-}
+type
+  channel struct {
+               c chan bool
+                 }
 
 func newChan() Locker {
   x := new(channel)

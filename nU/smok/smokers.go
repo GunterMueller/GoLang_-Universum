@@ -2,9 +2,13 @@ package smok
 
 // (c) Christian Maurer   v. 230326 - license see nU.go
 
-import ("time"; "nU/col"; "nU/scr")
-
-const raucher = "Raucher mit"
+import (
+  "time"
+  "nU/col"
+  "nU/scr"
+)
+const
+  raucher = "Raucher mit"
 var (
   text   = [3]string     {"Papier",         " Tabak",         "Hölzer" }
   colour = [3]col.Colour {col.FlashWhite(), col.LightBrown(), col.Yellow()}

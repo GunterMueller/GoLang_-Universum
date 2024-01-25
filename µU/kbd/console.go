@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 230330 - license see µU.go
+// (c) Christian Maurer   v. 231228 - license see µU.go
 
 import (
   "os"
@@ -112,10 +112,10 @@ func inputC (B *byte, C *Comm, D *uint) {
       if ok {
         k = uint(b0)
       } else {
-        ker.Shit()
+        ker.Oops()
       }
     }
-//    if k == 0 { ker.Shit() }
+//    if k == 0 { ker.Oops() }
     k1 = k
     k = k % off
     if shift || ctrl {

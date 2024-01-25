@@ -2,9 +2,10 @@ package sem
 
 // (c) Christian Maurer   v. 170121 - license see nU.go
 
-type semaphore struct {
-  c chan int
-}
+type
+  semaphore struct {
+                 c chan int
+                   }
 
 func new_(n uint) Semaphore {
   x := new(semaphore)

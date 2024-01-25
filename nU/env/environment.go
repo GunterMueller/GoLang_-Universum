@@ -2,7 +2,8 @@ package env
 
 // (c) Christian Maurer   v. 171227 - license see nU.go
 
-import "os"
+import
+  "os"
 
 func arg1() byte {
   if uint(len(os.Args)) > 1 {

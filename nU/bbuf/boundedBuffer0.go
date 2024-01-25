@@ -2,16 +2,17 @@ package bbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import . "nU/obj"
+import
+  . "nU/obj"
+type
+  boundedBuffer0 struct {
+                        any
+                    num int
+           cap, in, out uint
+                content AnyStream
+                        }
 
-type boundedBuffer0 struct {
-  any
-  num int
-  cap, in, out uint
-  content AnyStream
-}
-
-func new0(a any, n uint) BoundedBuffer {
+func new0 (a any, n uint) BoundedBuffer {
   x := new(boundedBuffer0)
   x.any = Clone(a)
   x.cap = n

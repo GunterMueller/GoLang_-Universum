@@ -34,7 +34,6 @@ func (x *netChannel) serve (c net.Conn) {
     } else {
       x.in <- Decode (Clone (x.any), x.Stream[:r])
       _, x.error = c.Write (Encode(<-x.out))
-//      if x.error != nil { ker.Panic (x.error.Error()) } // provisorial
     }
   }
   c.Close()
@@ -49,25 +48,20 @@ func newn (a any, h string, p uint16, s bool) NetChannel {
   }
   x.Stream = make(Stream, x.uint)
   x.in, x.out = make(chan any), make(chan any)
-//  x.port = p
   x.isServer = s
   ps := ":" + strconv.Itoa (int(p))
-  if x.isServer { // println ("server", ego.Me())
-    x.Listener, x.error = net.Listen (network, ps) // net.Listen (network, naddr.New (p).String())
+  if x.isServer {
+    x.Listener, x.error = net.Listen (network, ps)
     x.panicIfErr()
     go func() {
       for {
         if c, e := x.Listener.Accept(); e == nil { // NOT x.Conn, x.error !
           go x.serve (c) // see above remark
-//        } else {
-//          break // Panic(e.Error())
         }
       }
     }()
-  } else { // println ("client", ego.Me())
-//    ht := host.NewS (h)
+  } else {
     for {
-//      if x.Conn, x.error = net.Dial (network, naddr.New2 (ht, p).String()); x.error == nil {
       if x.Conn, x.error = net.Dial (network, h + ps); x.error == nil {
         break
       }

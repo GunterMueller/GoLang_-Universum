@@ -2,12 +2,13 @@ package buf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import . "nU/obj"
-
-type buffer struct {
-  any "Musterobjekt"
-  s []any
-}
+import
+  . "nU/obj"
+type
+  buffer struct {
+            any "Musterobjekt"
+              s []any
+                }
 
 func new_(a any) Buffer {
   x := new(buffer)

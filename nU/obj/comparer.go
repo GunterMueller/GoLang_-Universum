@@ -2,7 +2,8 @@ package obj
 
 // (c) Christian Maurer   v. 221021 - license see nU.go
 
-type Comparer interface {
+type
+  Comparer interface {
 
 // Pre: x is of the same type as the calling object.
 // Returns true, iff the calling object is smaller than x.

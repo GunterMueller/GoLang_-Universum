@@ -2,7 +2,8 @@ package schan
 
 // (c) Christian Maurer   v. 220801 - license see nU.go
 
-type SynchronousChannel interface {
+type
+  SynchronousChannel interface {
 
   Send (a any)
   Recv() any

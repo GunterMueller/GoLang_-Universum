@@ -1,6 +1,6 @@
 package main
 /*/
-  (c) 1986-2023  Christian Maurer        maurer-berlin.eu proprietary - all rights reserved
+  (c) 1986-2024  Christian Maurer        maurer-berlin.eu proprietary - all rights reserved
 
   Das Mikrouniversum µU ist nur zum Einsatz in der Lehre konstruiert  und hat deshalb einen
   rein akademischen Charakter. Es liefert u. a. eine Reihe von Beispielen für mein Lehrbuch
@@ -38,12 +38,12 @@ import (
   "µU/masks"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"; "µU/mol"; "µU/mstk"
   "µU/pbar"; "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/pstk"; "µU/qmat"; "µU/reg"
   "µU/rpc"; "µU/rn"; "µU/rw"; "µU/scale"; "µU/schan"; "µU/scr"; "µU/smok"; "µU/term"
-  "µU/texts"; "µU/time"; "µU/vnset"; "µU/Z"
+  "µU/texts"; "µU/time"; "µU/tval"; "µU/vnset"; "µU/Z"
 )
 const (
-  yy = 2023
-  mm =   12
-  dd =   20
+  yy = 2024
+  mm =    1
+  dd =    4
 )
 var (
   red, green = col.FlashRed(), col.FlashGreen()
@@ -148,14 +148,14 @@ func main() {
   scr.Name (string(char.Mu)[1:] + "U")
   wd, ht = int(scr.Wd()), int(scr.Ht())
   wd1, ht1 = int(scr.Wd1()), int(scr.Ht1())
-  achan.New(0); audio.New(); barb.NewDir(); barr.New(2); book.New(); bpqu.New(0, 1)
-  br.New(3); bytes.Touch(); cdrom.Touch(); char.Touch(); collop.Touch(); comp.Touch()
-  date.New(); dgra.Touch(); dlock.New(0, nil, 0); fig2.Touch(); fig3.Touch(); gram.Touch()
-  ieee.New(); li.New(0); lock.NewChannel(); lock2.NewPeterson(); lockn.NewDijkstra(0)
-  lr.NewMutex(); macc.New(); masks.New(); mbbuf.New(nil, 2); mbuf.New(0); mcorn.New(0)
-  menue.Touch(); mol.New(); mstk.New(0); pbar.Touch(); pat.New(); piset.Touch(); pos.Touch()
-  pstk.Touch(); qmat.Touch(); reg.Touch(); rpc.Touch(); rn.New0(); rw.New1(); scale.Touch()
-  schan.New(0); smok.Touch(); term.Touch(); texts.Touch(); vnset.EmptySet(); Z.String(0)
+  achan.New(0); audio.New(); barb.NewDir(); barr.New(2); book.New(); bpqu.New(0, 1); br.New(3)
+  bytes.Touch(); cdrom.Touch(); char.Touch(); collop.Touch(); comp.Touch(); date.New()
+  dgra.Touch(); dlock.New(0, nil, 0); fig2.Touch(); fig3.Touch(); gram.Touch(); ieee.New()
+  li.New(0); lock.NewChannel(); lock2.NewPeterson(); lockn.NewDijkstra(0); lr.NewMutex()
+  macc.New(); masks.New(); mbbuf.New(nil, 2); mbuf.New(0); mcorn.New(0); menue.Touch()
+  mol.New(); mstk.New(0); pbar.Touch(); pat.New(); piset.Touch(); pos.Touch(); pstk.Touch()
+  qmat.Touch(); reg.Touch(); rpc.Touch(); rn.New0(); rw.New1(); scale.Touch(); schan.New(0)
+  smok.Touch(); term.Touch(); texts.Touch(); tval.New(); vnset.EmptySet(); Z.String(0)
   var v day.Calendarday = day.New()
   v.Set (dd, mm, yy); v.SetFormat (day.Yymmdd)
   wdtext = 91 * wd1 // 91 == width of license text lines + 2

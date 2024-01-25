@@ -2,7 +2,8 @@ package asem
 
 // (c) Christian Maurer   v. 171124 - license see nU.go
 
-type AddSemaphore interface {
+type
+  AddSemaphore interface {
 
   P (n uint)
   V (n uint)

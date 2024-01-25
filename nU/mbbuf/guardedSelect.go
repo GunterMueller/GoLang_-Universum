@@ -4,11 +4,12 @@ package mbbuf
 
 // >>> implementation with synchronous message passing and guarded selective waiting
 
-import . "nU/obj"
-
-type guardedSelect struct {
-  cIns, cGet chan any
-}
+import
+  . "nU/obj"
+type
+  guardedSelect struct {
+            cIns, cGet chan any
+                       }
 
 func newgs (a any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }

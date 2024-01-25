@@ -1,8 +1,8 @@
 package dgra
 
-// (c) Christian Maurer   v. 171229 - license see nU.go
+// (c) Christian Maurer   v. 231220 - license see nU.go
 
-func (x *distributedGraph) changRoberts() {
+func (x *distributedGraph) ChangRoberts() {
   x.connect(uint(0))
   defer x.fin()
   out, in := uint(0), uint(1)

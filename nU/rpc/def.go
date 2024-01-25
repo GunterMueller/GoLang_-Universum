@@ -2,10 +2,11 @@ package rpc
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import . "nU/obj"
-
+import
+  . "nU/obj"
 type
   RPC interface {
+
   F (a any, i uint) any
   Fin()
 }

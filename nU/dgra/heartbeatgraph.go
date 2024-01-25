@@ -1,8 +1,11 @@
 package dgra
 
-import . "nU/obj"
+// (c) Christian Maurer   v. 231220 - license see nU.go
 
-func (x *distributedGraph) heartbeatgraph() {
+import
+  . "nU/obj"
+
+func (x *distributedGraph) HeartbeatGraph() {
   x.connect (nil)
   defer x.fin()
   x.tmpGraph.Copy (x.Graph)

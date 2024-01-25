@@ -2,10 +2,11 @@ package sem
 
 // (c) Christian Maurer   v. 170121 - license see nU.go
 
-import "sync"
-
-type naive struct {
-  int "value"
+import
+  "sync"
+type
+  naive struct {
+               int "value"
   block, mutex sync.Mutex
 }
 

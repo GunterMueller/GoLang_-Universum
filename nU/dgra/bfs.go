@@ -1,10 +1,14 @@
 package dgra
 
-// (c) Christian Maurer   v. 171210 - license see nU.go
+// (c) Christian Maurer   v. 231220 - license see nU.go
 
-import . "nU/obj"
-
-const (label = uint(iota); keepon; stop; end; term)
+const (
+  label = uint(iota)
+  keepon
+  stop
+  end
+  term
+)
 
 // Liefert die Anzahl der Nachbarn, an die
 // noch label-Botschaften gesendet werden müssen.
@@ -30,10 +34,9 @@ func (x *distributedGraph) allSendTosEchoed() bool {
   return true
 }
 
-func (x *distributedGraph) bfs (o Op) {
+func (x *distributedGraph) Bfs() {
   x.connect (uint(0)) // alle Botschaften sind vom Typ uint
   defer x.fin() // Schliessen aller Kanäle am Ende vorbereiten
-  x.Op = o // die auszuführende Operation
   m := inf * x.me // um nicht immer dieses Produkt auszurechnen
   if x.me == x.root {
     x.parent = x.root // root ist sein eigener Vater, der
@@ -41,7 +44,6 @@ func (x *distributedGraph) bfs (o Op) {
     x.distance = 0    // Abstand von sich selbst
     for i := uint(0); i < x.n; i++ { // für alle Nachbarn
       x.child[i] = false // - die sind (noch) kein Kind - eine
-println ("send", x.nr[i])
       x.ch[i].Send (label + 8 * x.distance + m) // label-Botschaft
       x.echoed[i] = false // senden, aber die Reaktion steht noch aus
       x.sendTo[i] = true // später noch weitere label-Botschaften senden
@@ -76,7 +78,6 @@ println ("send", x.nr[i])
         for k := uint(0); k < x.n; k++ { // an alle Nachbarn
           x.sendTo[k] = k != j           // außer dem Absender
         }             // sind noch label-Botschaften zu senden
-println ("send", x.nr[j])
         if x.n == 1 { if x.numSendTos() > 0 { panic("Pisse") }
           x.ch[j].Send (end + m) // keine weiteren Nachbarn mehr
         } else {
@@ -87,13 +88,11 @@ println ("send", x.nr[j])
           for k := uint(0); k < x.n; k++ { // an alle Nachbarn,
             if x.sendTo[k] { // an die noch label-Botschaften
               // zu senden sind, wird eine weitere gesendet
-println ("send", x.nr[k])
               x.ch[k].Send (label + 8 * x.distance + m)
               x.echoed[k] = false // aber deren Reaktion
             }                     // steht noch aus
           }
         } else { // Absender jemand anders als Vater
-println ("send", x.nr[j])
           x.ch[j].Send (stop + m) // Absender: aufhören!
         }
       }
@@ -105,11 +104,9 @@ println ("send", x.nr[j])
       if x.nr[j] == x.parent { // wenn Absender der Vater ist,
         for k := uint(0); k < x.n; k++ { // dann an alle
           if x.child[k] { // Kinder die Botschaft senden:
-println ("send", x.nr[k])
             x.ch[k].Send (stop + m) // aufhören
           }
         }
-        x.Op (x.me) // übergebene Operation ausführen
         for k := uint(0); k < x.n; k++ { // für alle Nachbarn die
           x.ch[k].Send (term) // Beendigung der Goroutine veranlsssen
         }
@@ -130,11 +127,9 @@ println ("send", x.nr[k])
       if x.me == x.root {
         for k := uint(0); k < x.n; k++ {
           if x.child[k] {
-println ("send", x.nr[k])
             x.ch[k].Send (stop + m)
           }
         }
-        x.Op (x.me)
         for k := uint(0); k < x.n; k++ { // s. Fall 3
           x.ch[k].Send(term)
         }
@@ -144,7 +139,6 @@ println ("send", x.nr[k])
         return // Algorithmus terminiert für root
       } else { // aufrufender Prozess ist nicht root
         k := x.channel(x.parent) // Kanal zum Vater
-println ("send", x.nr[k])
         x.ch[k].Send (end + m) // Botschaft an ihn: Ende
       }
     } else { // x.numSendTos() > 0: weiter in der Tiefensuche
@@ -155,14 +149,12 @@ println ("send", x.nr[k])
           for k := uint(0); k < x.n; k++ { // an alle Nachbarn,
             if x.sendTo[k] { // an die noch label-Botschaften
               // zu senden sind, wird eine weitere gesendet
-println ("send", x.nr[k])
               x.ch[k].Send (label + 8 * x.distance + m)
               x.echoed[k] = false // Reaktions steht noch aus
             }
           }
         } else { // aufrufender Prozess ist nicht root
           k := x.channel(x.parent) // Kanal zum Vater
-println ("send", x.nr[k])
           x.ch[k].Send (keepon + m) // Botschaft an ihn: weitermachen
         }
       }

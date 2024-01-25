@@ -2,7 +2,11 @@ package adj
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/col"; "nU/scr")
+import (
+  . "nU/obj"
+  "nU/col"
+  "nU/scr"
+)
 
 func (x *adjacencyMatrix) Num() uint {
   return x.uint

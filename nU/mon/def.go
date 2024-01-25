@@ -2,9 +2,10 @@ package mon
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import . "nU/obj"
-
-type Monitor interface {
+import
+  . "nU/obj"
+type
+  Monitor interface {
 
 // Vor.: i < Funktionszahl von x.
 // Der aufrufende Prozess war ggf. auf i blockiert, bis

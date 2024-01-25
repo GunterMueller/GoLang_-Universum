@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 231215 - license see µU.go
+// (c) Christian Maurer   v. 231229 - license see µU.go
 
 // >>> Algorithmus von Zhu, Y., Cheung, T.-Y.: A New Distributed Breadth-First-Seach Algorithm
 //     Inform. Proc. Letters 25 (1987), 329-333
@@ -42,9 +42,7 @@ func (x *distributedGraph) Bfs() {
     x.labeled, x.parent, x.distance = true, x.root, 0
     for i := uint(0); i < x.n; i++ {
       x.child[i] = false
-//      x.ch[i].Send (label + 8 * x.distance + m)
       x.send (i, label + 8 * x.distance + m)
-// x.log("label to", x.nr[i])
       x.visited[i] = false
       x.sendTo[i] = true
     }
@@ -54,17 +52,14 @@ func (x *distributedGraph) Bfs() {
     go func (i uint) {
       loop:
       for {
-        t := x.ch[i].Recv().(uint)
-// // x.log("recv from", x.nr[i])
+        t := x.recv (i).(uint)
         if t % 8 == term {
-// if x.me == x.root { x.log2(x.me, "recv term from", x.nr[i]) }
           break loop
         } else {
           x.chan1 <- t
         }
       }
       done <- 1
-// x.log2("sent done", i, "/", x.nr[i])
     }(j)
   }
   for {
@@ -82,28 +77,20 @@ func (x *distributedGraph) Bfs() {
           x.sendTo[k] = k != j
         }
         if x.n == 1 { // no neighbours != parent
-if x.numSendTos() > 0 { panic ("oops") }
-//          x.ch[j].Send (end + m)
           x.send (j, end + m)
-// x.log("end to", x.nr[j])
         } else {
-//          x.ch[j].Send (keepon + m)
           x.send (j, keepon + m)
-// x.log("keepon to", x.nr[j])
         }
       } else {
         if x.parent == x.nr[j] {
           for k := uint(0); k < x.n; k++ {
             if x.sendTo[k] {
-//              x.ch[k].Send (label + 8 * x.distance + m)
               x.send (k, label + 8 * x.distance + m)
               x.visited[k] = false
             }
           }
         } else { // x.parent =! x.nr[j]
-//          x.ch[j].Send (stop + m)
           x.send (j, stop + m)
-// x.log("stop to", x.nr[j])
         }
       }
     case keepon:
@@ -113,19 +100,13 @@ if x.numSendTos() > 0 { panic ("oops") }
       if x.nr[j] == x.parent {
         for k := uint(0); k < x.n; k++ {
           if x.child[k] {
-//            x.ch[k].Send (stop + m)
             x.send (k, stop + m)
-// x.log("stop to", x.nr[k])
           }
         }
         for k := uint(0); k < x.n; k++ {
-//          x.ch[k].Send (term)
           x.send (k, term)
-// if x.nr[k] == x.root { x.log2(x.me, "sent term to", x.nr[k]) }
-// x.log("term to", x.nr[k])
         }
         for k := uint(0); k < x.n; k++ {
-// x.logo("got done", k)
           <-done
         }
         return
@@ -143,43 +124,31 @@ if x.numSendTos() > 0 { panic ("oops") }
         if x.me == x.root {
           for k := uint(0); k < x.n; k++ {
             if x.sendTo[k] {
-//              x.ch[k].Send (label + 8 * x.distance + m)
               x.send (k, label + 8 * x.distance + m)
-// x.log("label to", x.nr[k])
               x.visited[k] = false
             }
           }
         } else {
-//          x.ch[x.channel(x.parent)].Send (keepon + m)
           x.send (x.channel(x.parent), keepon + m)
-// x.log("keepon to", x.nr[k])
         }
       }
     } else { // numSendTos() == 0
       if x.me == x.root {
         for k := uint(0); k < x.n; k++ {
           if x.child[k] {
-//            x.ch[k].Send (stop + m)
             x.send (k, stop + m)
-// x.log("stop to", x.nr[k])
           }
         }
         for k := uint(0); k < x.n; k++ {
-//          x.ch[k].Send (term)
           x.send (k, term)
-// x.log2("sent term to", x.nr[k], "on", k)
-// x.log("term to", x.nr[k])
         }
         for k := uint(0); k < x.n; k++ {
-// x.log("got done", k)
           <-done
         }
         return
       } else {
         k := x.channel(x.parent)
-//        x.ch[k].Send (end + m)
         x.send (k, end + m)
-// x.log("end to", x.nr[k])
       }
     }
   }

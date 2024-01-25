@@ -2,12 +2,15 @@ package phil
 
 // (c) Christian Maurer   v. 171229 - license see nU.go
 
-import ("sync"; "nU/sem")
-
-type bounded struct {
-  sem.Semaphore "takeSeat"
-  fork []sync.Mutex
-}
+import (
+  "sync"
+  "nU/sem"
+)
+type
+  bounded struct {
+                 sem.Semaphore "takeSeat"
+            fork []sync.Mutex
+                 }
 
 func newB() Philos {
   x := new(bounded)

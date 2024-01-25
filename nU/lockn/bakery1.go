@@ -8,7 +8,7 @@ import
   . "nU/obj"
 type
   bakery1 struct {
-                 uint "number of processes"
+                 uint "Anzahl der beteiligten Prozesse"
           number,
            draws []uint
                  }

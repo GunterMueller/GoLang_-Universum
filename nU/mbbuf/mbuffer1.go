@@ -2,12 +2,17 @@ package mbbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import ("nU/bbuf"; "nU/sem")
-
-type mBuffer1 struct {
-  bbuf.BoundedBuffer
-  notEmpty, notFull, ins, get sem.Semaphore
-}
+import (
+  "nU/bbuf"
+  "nU/sem"
+)
+type
+  mBuffer1 struct {
+                  bbuf.BoundedBuffer
+         notEmpty,
+          notFull,
+         ins, get sem.Semaphore
+                  }
 
 func new1 (a any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }

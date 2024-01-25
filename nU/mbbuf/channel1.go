@@ -2,12 +2,13 @@ package mbbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import . "nU/obj"
-
-type channel1 struct {
-  any
-  cIns, cGet chan any
-}
+import
+   . "nU/obj"
+type
+  channel1 struct {
+                  any
+       cIns, cGet chan any
+                  }
 
 func newCh1 (a any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }

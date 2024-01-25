@@ -1,6 +1,6 @@
 package tval
 
-// (c) Christian Maurer   v. 220804 - license see µU.go
+// (c) Christian Maurer   v. 231226 - license see µU.go
 
 import (
   . "µU/obj"
@@ -84,6 +84,10 @@ func (x *truthValue) Eq (Y any) bool {
 
 func (x *truthValue) Less (Y any) bool {
   return x.value < x.imp(Y).value
+}
+
+func (x *truthValue) Leq (Y any) bool {
+  return x.value <= x.imp(Y).value
 }
 
 func (x *truthValue) Codelen() uint {

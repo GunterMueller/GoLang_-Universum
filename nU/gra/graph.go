@@ -1,11 +1,170 @@
 package gra
 
-// (c) Christian Maurer   v. 220702 - license see nU.go
+// (c) Christian Maurer   v. 231226 - license see µU.go
 
-import ("sort"; . "nU/obj")
+import
+  . "nU/obj"
+
+/*/   vertex           neighbour                        neighbour            vertex
+    _________                                                              _________  
+   /         \          /-----------------------------------------------> /         \
+  |    any    |        /                                                 |    any    |
+  |___________|<--------------------------------------------------\      |___________|
+  |           |      /                                             \     |           |
+  |   nbPtr---|-----------\                                  /-----------|---nbPtr   |
+  |___________|    /       |                                |        \   |___________|
+  |           |   |        |                                |         |  |           |
+  |  marked   |   |        v              edge              v         |  |  marked   |
+  |___________|   |    _________        ________        _________     |  |___________|
+  |           |   |   /         \      /        \      /         \    |  |           |
+  |   dist    |   |  | edgePtr---|--->|   any    |<---|--edgePtr  |   |  |   dist    |
+  |___________|   |  |___________|    |__________|    |___________|   |  |___________|
+  |           |   |  |           |    |          |    |           |   |  |           |
+  |predecessor|<-----|---from    |<---|--nbPtr0  |    |   from----|----->|predecessor|
+  |___________|   |  |___________|    |__________|    |___________|   |  |___________|
+  |           |   |  |           |    |          |    |           |   |  |           |
+  |   repr    |    \_|____to     |    |  nbPtr1 -|--->|    to_____|__/   |   repr    |
+  |___________|      |___________|    |__________|    |___________|      |___________|
+  |           |      |           |    |          |    |           |      |           |
+  |   nextV---|->    | outgoing  |    |  marked  |    | outgoing  |      |   nextV---|->
+  |___________|      |___________|    |__________|    |___________|      |___________|
+  |           |      |           |    |          |    |           |      |           |
+<-|---prevV   |      |  nextNb---|->  |  nextE---|->  |  nextNb---|->  <-|---prevV   |
+   \_________/       |___________|    |__________|    |___________|       \_________/
+                     |           |    |          |    |           |
+                   <-|---prevNb  |  <-|---prevE  |  <-|---prevNb  |
+                      \_________/      \________/      \_________/
+
+  The vertices of a graph are represented by structs,
+  whose field "any" represents the "real" vertex.
+  All vertices are connected in a doubly linked list with anchor cell,
+  that can be traversed to execute some operation on all vertices of the graph.
+
+  The edges are also represented by structs,
+  whose field "any" is a variable of a type that implements Valuator.
+  Also all edges are connected in a doubly linked list with anchor cell.
+
+  For a vertex v one finds all outgoing and incoming edges
+  with the help of a further doubly linked ringlist of neighbour(hoodrelation)s
+    nb1 = v.nbPtr, nb2 = v.nbPtr.nextNb, nb3 = v.nbPtr.nextNb.nextNb etc.
+  by the links outgoing from the nbi (i = 1, 2, 3, ...)
+    nb1.edgePtr, nb2.edgePtr, nb3.edgePtr etc.
+  In directed graphs the edges outgoing from a vertex are exactly those ones
+  in the neighbourlist, for which outgoing == true.
+
+  For an edge e one finds its two vertices by the links
+    e.nbPtr0.from = e.nbPtr1.to und e.nbPtr0.to = e.nbPtr1.from.
+
+  Semantics of some variables, that are "hidden" in fields of vAnchor:
+    vAnchor.time0: in that the "time" is incremented for each search step
+    vAnchor.acyclic: (after call of search1) == true <=> graph has no cycles.
+/*/
+
+const (
+  suffix = "gra"
+  inf = uint32(1<<32 - 1)
+)
+type (
+  vertex struct {
+                any "content of the vertex"
+          nbPtr *neighbour
+         marked,
+        acyclic bool   // for the development of design patterns by clients
+           dist,       // for breadth first search/Dijkstra and use in En/Decode
+   time0, time1 uint32 // for applications of depth first search
+    predecessor,       // for back pointers in depth first search and in ways
+           repr,       // for the computation of connected components
+   nextV, prevV *vertex
+                }
+
+  vCell struct {
+          vPtr *vertex
+          next *vCell
+               }
+
+  edge struct {
+              any "attribute of the edge"
+       nbPtr0,
+       nbPtr1 *neighbour
+       marked bool
+ nextE, prevE *edge
+              }
+
+  neighbour struct {
+           edgePtr *edge
+          from, to *vertex
+          outgoing bool
+    nextNb, prevNb *neighbour
+                   }
+
+  graph struct {
+//          name,
+//      filename string
+//          file pseq.PersistentSequence
+      directed bool
+     nVertices,
+        nEdges uint32
+       vAnchor,
+       colocal,
+         local *vertex
+       eAnchor *edge
+          path []*vertex
+     eulerPath []*neighbour
+//          demo Demoset
+         write CondOp
+        write2 CondOp2
+           val,
+         sinks []uint
+    succ, pred []uint
+               }
+)
+type
+  nSeq []*neighbour
+
+func newVertex (a any) *vertex {
+  v := new(vertex)
+  v.any = Clone(a)
+  v.time1 = inf // for applications of depth first search
+  v.dist = inf
+  v.repr = v
+  v.nextV, v.prevV = v, v
+  return v
+}
+
+func newEdge (a any) *edge {
+  e := new(edge)
+  e.any = Clone(a)
+  e.nextE, e.prevE = e, e
+  return e
+}
+
+func new_(d bool, v, e any) Graph {
+  CheckAtomicOrObject(v)
+  x := new(graph)
+  x.directed = d
+  x.vAnchor = newVertex (v)
+  if e == nil {
+    e = uint(1)
+  }
+  CheckUintOrValuator (e)
+  x.eAnchor = newEdge (e)
+  x.colocal, x.local = x.vAnchor, x.vAnchor
+  x.write, x.write2 = CondIgnore, CondIgnore2
+  x.val = make([]uint, 0)
+  x.sinks = make([]uint, 0)
+  x.succ = make([]uint, 0)
+  x.pred = make([]uint, 0)
+  return x
+}
+
+func (x *graph) imp (Y any) *graph {
+  y, ok := Y.(*graph)
+  if ! ok { TypeNotEqPanic (x, Y) }
+  return y
+}
 
 func (x *graph) Directed() bool {
-  return x.bool
+  return x.directed
 }
 
 func (x *graph) Num() uint {
@@ -15,7 +174,7 @@ func (x *graph) Num() uint {
 func (x *graph) NumMarked() uint {
   n := uint(0)
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    if v.bool {
+    if v.marked {
       n++
     }
   }
@@ -25,7 +184,7 @@ func (x *graph) NumMarked() uint {
 func (x *graph) NumMarked1() uint {
   n := uint(0)
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    if e.bool {
+    if e.marked {
       n++
     }
   }
@@ -57,7 +216,7 @@ func newNeighbour (e *edge, v, v1 *vertex, f bool) *neighbour {
 
 func (x *graph) insertedVertex (a any, marked bool) *vertex {
   v := newVertex (a)
-  v.bool = marked
+  v.marked = marked
   v.nbPtr = newNeighbour (nil, v, nil, false)
   v.nextV, v.prevV = x.vAnchor, x.vAnchor.prevV
   v.prevV.nextV = v
@@ -66,6 +225,7 @@ func (x *graph) insertedVertex (a any, marked bool) *vertex {
 }
 
 func (x *graph) insMarked (a any, marked bool) {
+//  if x.vAnchor.any == nil { ker.Oops() }
   CheckTypeEq (a, x.vAnchor.any)
   if x.Ex (a) { // local is set
     return
@@ -84,13 +244,6 @@ func (x *graph) Ins (a any) {
   x.insMarked (a, false)
 }
 
-func newEdge (a any) *edge {
-  e := new(edge)
-  e.any = Clone(a)
-  e.nextE, e.prevE = e, e
-  return e
-}
-
 // Pre: nb.from == e.
 // nb is appended in n.nbPtr
 func insertNeighbour (n *neighbour, v *vertex) {
@@ -102,20 +255,18 @@ func insertNeighbour (n *neighbour, v *vertex) {
 // TODO Spec
 func (x *graph) insertedEdge (a any, marked bool) *edge {
   CheckTypeEq (a, x.eAnchor.any)
+//  if ! TypeEq (a, x.eAnchor.any) { ker.Panic ("gra.insertedEdge: ! TypeEq") }
   e := newEdge (a)
-  e.bool = marked
+  e.marked = marked
   e.nbPtr0 = newNeighbour (e, x.colocal, x.local, true)
   insertNeighbour (e.nbPtr0, x.colocal)
-  e.nbPtr1 = newNeighbour (e, x.local, x.colocal, ! x.bool)
+  e.nbPtr1 = newNeighbour (e, x.local, x.colocal, ! x.directed)
   insertNeighbour (e.nbPtr1, x.local)
+//  if e.nbPtr1 == nil { ker.Panic ("gra.insertedEdge: e.nbPtr1 == nil") }
   e.nextE, e.prevE = x.eAnchor, x.eAnchor.prevE
   e.prevE.nextE = e
   x.eAnchor.prevE = e
   return e
-}
-
-func (x *graph) Edge (a any) {
-  x.edgeMarked (a, false)
 }
 
 // Returns nil, iff there is no edge from n to n1;
@@ -131,7 +282,7 @@ func (x *graph) connection (v, v1 *vertex) *edge {
 
 func (x *graph) edgeMarked (a any, marked bool) {
   if x.Empty() { return }
-  if x.colocal == x.local { panic ("gra.Edge: colocal == local") }
+  if x.colocal == x.local { panic ("gra.edgeMarked: colocal == local") }
   if a == nil { a = uint(1) }
   CheckTypeEq (a, x.eAnchor.any)
 // simple case: local and colocal are not yet adjacent:
@@ -149,14 +300,22 @@ func (x *graph) edgeMarked (a any, marked bool) {
   n = n.nextNb
   for n.to != x.local {
     n = n.nextNb
+//    if n == x.colocal.nbPtr { ker.Oops() }
   }
+  if n.to != x.local { panic ("oops") }
 // and its content is replaced:
-  if ! x.bool {
+  if ! x.directed {
     n.to.nbPtr.outgoing = true
   }
   n.edgePtr.any = Clone(a)
-  n.edgePtr.bool = marked
+  n.edgePtr.marked = marked
   x.nEdges++
+}
+
+func (x *graph) Edge (a any) {
+  if x.Empty() { return }
+  if x.colocal == x.local { panic ("gra.Edge: colocal == local") }
+  x.edgeMarked (a, false)
 }
 
 func (x *graph) Edge2 (v, v1, e any) {
@@ -181,41 +340,6 @@ func (x *graph) Edge2 (v, v1, e any) {
   x.Edge (e)
 }
 
-type nSeq []*neighbour
-
-func (ns nSeq) Less (i, j int) bool {
-  return ns[i].to.any.(Valuator).Val() < ns[j].to.any.(Valuator).Val()
-}
-
-func (x *graph) SortNeighbours() {
-  switch x.vAnchor.any.(type) {
-  case Valuator:
-    // see below
-  default:
-    return
-  }
-  for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    c := x.numEdges (v)
-    if c > 1 {
-      ns := make(nSeq, c)
-      for n, i := v.nbPtr.nextNb, 0; n != v.nbPtr; n, i = n.nextNb, i + 1 {
-        ns[i] = n
-      }
-      sort.Slice (ns, ns.Less)
-      v.nbPtr.nextNb = ns[0]
-      for i := uint(0); i < c - 1; i++ {
-        ns[i].nextNb = ns[i + 1]
-      }
-      ns[c - 1].nextNb = v.nbPtr
-      v.nbPtr.prevNb = ns[c - 1]
-      ns[0].prevNb = v.nbPtr
-      for i := uint(1); i < c; i++ {
-        ns[i].prevNb = ns[i - 1]
-      }
-    }
-  }
-}
-
 func (x *graph) Edged() bool {
   return x.connection (x.colocal, x.local) != nil
 }
@@ -231,6 +355,7 @@ func (x *graph) found (a any) (*vertex, bool) {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
     if Eq (v.any, a) {
       return v, true
+    } else {
     }
   }
   return nil, false
@@ -316,6 +441,19 @@ func (x *graph) ExPred2 (p, p1 Pred) bool {
   return false
 }
 
+//func (g *graph) Val() uint {
+//  return g.local.any.(vtx.Vertex).Val()
+//}
+
+//func (g *graph) ExVal (u uint) bool {
+//  var v vtx.Vertex
+//  if g.ExPred (func (a any) bool { v = a.(vtx.Vertex); return v.(Valuator).Val() == u }) {
+//    if ! g.Ex (v) { ker.Oops() }
+//    return true
+//  }
+//  return false
+//}
+
 func (x *graph) Get() any {
   return Clone (x.local.any)
 }
@@ -326,14 +464,14 @@ func (x *graph) Get2() (any, any) {
 
 func (x *graph) Get1() any {
   if x.local == x.vAnchor || x.local == x.colocal {
-    return Clone (x.eAnchor.any) // XXX
+    return Clone (x.eAnchor.any)
   }
   e := x.connection (x.colocal, x.local)
   if e == nil {
     e = x.connection (x.local, x.colocal)
   }
   if e == nil || e.any == nil {
-    return Clone (x.eAnchor.any) // XXX
+    return Clone (x.eAnchor.any)
   }
   return Clone (e.any)
 }
@@ -358,45 +496,45 @@ func (x *graph) Put2 (v, v1 any) {
 
 func (x *graph) ClrMarked() {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    v.bool = false
+    v.marked = false
   }
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    e.bool = false
+    e.marked = false
   }
 }
 
 func (x *graph) Mark (v any) {
   if x.local == x.vAnchor { return }
-  if ! x.Ex (v) { panic("Mark fails: ! x.Ex(v)"); return }
-  x.local.bool = true
+  if ! x.Ex (v) { return }
+  x.local.marked = true
 }
 
 func (x *graph) Mark1 (v any) {
   if x.local == x.vAnchor { return }
   if ! x.Ex (v) { return }
-  x.local.bool = true
+  x.local.marked = true
   for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
-    n.edgePtr.bool = true
+    n.edgePtr.marked = true
   }
 }
 
 func (x *graph) Mark2 (v, v1 any) {
   if x.local == x.vAnchor { return }
   if ! x.Ex2 (v, v1) { return }
-  x.local.bool = true
-  x.colocal.bool = true
+  x.local.marked = true
+  x.colocal.marked = true
   e := x.connection (x.colocal, x.local)
   if e != nil {
-    e.bool = true
+    e.marked = true
   }
 }
 
 func (x *graph) AllMarked() bool {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    if ! v.bool { return false }
+    if ! v.marked { return false }
   }
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    if ! e.bool { return false }
+    if ! e.marked { return false }
   }
   return true
 }
@@ -429,9 +567,8 @@ func (x *graph) NumNeighbours() uint {
   return c
 }
 
-/*
 func (x *graph) Inv() {
-  if x.bool {
+  if x.directed {
     for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
       e.nbPtr0.outgoing = ! e.nbPtr0.outgoing
       e.nbPtr1.outgoing = ! e.nbPtr1.outgoing
@@ -441,7 +578,7 @@ func (x *graph) Inv() {
 
 func (x *graph) InvLoc() {
   if x.local != x.vAnchor {
-    if x.bool {
+    if x.directed {
       for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
         n.edgePtr.nbPtr0.outgoing = ! n.edgePtr.nbPtr0.outgoing
         n.edgePtr.nbPtr1.outgoing = ! n.edgePtr.nbPtr1.outgoing
@@ -449,7 +586,14 @@ func (x *graph) InvLoc() {
     }
   }
 }
-*/
+
+func (x *graph) Relocate() {
+  x.ClrMarked() // XXX
+  x.local, x.colocal = x.colocal, x.local
+  x.colocal.marked = true
+  x.path = nil
+  x.path = append (x.path, x.colocal)
+}
 
 func (x *graph) locate (colocal2local bool) {
   x.ClrMarked() // XXX
@@ -458,23 +602,13 @@ func (x *graph) locate (colocal2local bool) {
   } else {
     x.local = x.colocal
   }
+  x.path = nil
 }
 
 func (x *graph) Locate (colocal2local bool) {
   x.locate (colocal2local)
-  x.colocal.bool = true
-}
-
-func contains (vs []*vertex, v *vertex) bool {
-  l := uint(len (vs))
-  c := l
-  for i, a := range vs {
-    if a == v {
-      c = uint(i)
-      break
-    }
-  }
-  return c < l
+  x.colocal.marked = true
+  x.path = append (x.path, x.colocal)
 }
 
 func (x *graph) NeighbourOut (i uint) any {
@@ -497,7 +631,7 @@ func (x *graph) Outgoing (i uint) bool {
   if x.vAnchor.nextV == x.vAnchor {
     return false
   }
-  if ! x.bool {
+  if ! x.directed {
     return true
   }
   for n, j := x.local.nbPtr.nextNb, uint(0); n != x.local.nbPtr; n, j = n.nextNb, j + 1 {
@@ -528,7 +662,7 @@ func (x *graph) Incoming (i uint) bool {
   if x.vAnchor.nextV == x.vAnchor {
     return false
   }
-  if ! x.bool {
+  if ! x.directed {
     return true
   }
   for n, j := x.local.nbPtr.nextNb, uint(0); n != x.local.nbPtr; n, j = n.nextNb, j + 1 {
@@ -555,46 +689,42 @@ func (x *graph) Neighbour (i uint) any {
 
 func (x *graph) Star() Graph {
   if x.vAnchor == x.vAnchor.nextV { return nil }
-  y := new_(x.bool, x.vAnchor.any, x.eAnchor.any).(*graph)
+  y := new_(x.directed, x.vAnchor.any, x.eAnchor.any).(*graph)
   y.Ins (x.local.any)
-  y.local.bool = true
-  local := y.local // Rettung der lokalen Ecke von y
-  if ! x.bool {
-    for n, i := x.local.nbPtr.nextNb, uint(0);
-        n != x.local.nbPtr; n, i = n.nextNb, i + 1 {
-      y.Ins (Clone(n.to.any)) // a jetzt colokal
-      y.edgeMarked (Clone(n.edgePtr.any), true) // Kante
-                  // von a zur lokalen eingesetzten Ecke
-                  // mit gleichem Inhalt wie in x
-      y.local = local // a jetzt wieder lokale Ecke in y
+  y.local.marked = true
+  local := y.local
+  if y.local != y.colocal { panic ("Oops") }
+  if ! x.directed {
+    for n, i := x.local.nbPtr.nextNb, uint(0); n != x.local.nbPtr; n, i = n.nextNb, i + 1 {
+      y.Ins (Clone(n.to.any)) // a now colocal
+      y.edgeMarked (Clone(n.edgePtr.any), true) // edge from a to local inserted vertex
+                                                // with same content as in x
+      y.local = local // a now again local in y
     }
   } else { // x.bool
-    for n, i := x.local.nbPtr.nextNb, uint(0);
-        n != x.local.nbPtr; n, i = n.nextNb, i + 1 {
-      y.Ins (Clone(n.to.any)) // a ist jetzt wieder colokale
-   // Ecke und die eingesetzte Ecke ist die lokale Ecke in y
-      if n.outgoing { // wir brauchen eine Kante von a
-                      // zu der eingesetzten Ecke
-      } else { // ! n.outgoing: brauchen wir eine Kante
-               // von der eingesetzten Ecke nach a
+    for n, i := x.local.nbPtr.nextNb, uint(0); n != x.local.nbPtr; n, i = n.nextNb, i + 1 {
+      y.Ins (Clone(n.to.any)) // a colocal, new inserted local
+      if n.outgoing { // want edge from a to new inserted
+      } else { // ! n.outgoing: want edge from new inserted to a
         y.local, y.colocal = y.colocal, y.local
       }
-      y.edgeMarked (Clone(n.edgePtr.any), true) // Kante in y
-                        // von der colokalen zur lokalen Ecke
+      y.edgeMarked (Clone(n.edgePtr.any), true) // edge in y from colocal to local
       y.local = local
     }
   }
+//  y.SetWrite (x.Writes())
   return y
 }
 
 func (x *graph) Add (Ys ...Graph) {
   for _, Y := range Ys {
     y := x.imp(Y)
+    if y.directed != x.directed { panic("Oops") }
     for v := y.vAnchor.nextV; v != y.vAnchor; v = v.nextV {
-      if x.Ex (v.any) && ! x.local.bool {
-        x.local.bool = v.bool
+      if x.Ex (v.any) && ! x.local.marked {
+        x.local.marked = v.marked
       } else {
-        x.insMarked (v.any, v.bool)
+        x.insMarked (v.any, v.marked)
       }
     }
     for e := y.eAnchor.nextE; e != y.eAnchor; e = e.nextE {
@@ -602,11 +732,11 @@ func (x *graph) Add (Ys ...Graph) {
         e1 := x.connection (x.colocal, x.local)
         e2 := x.connection (x.local, x.colocal)
         if e1 == nil && e2 == nil {
-          x.edgeMarked (e.any, e.bool)
-        } else if e1 != nil && ! e1.bool { // x.colocal already connected with x.local
-          e1.bool = e.bool
-        } else if e2 != nil && ! e2.bool {
-          e2.bool = e.bool
+          x.edgeMarked (e.any, e.marked)
+        } else if e1 != nil && ! e1.marked { // x.colacal already connected with x.local
+          e1.marked = e.marked
+        } else if e2 != nil && ! e2.marked {
+          e2.marked = e.marked
         }
       }
     }
@@ -617,7 +747,11 @@ func (x *graph) SetWrite (w CondOp, w2 CondOp2) {
   x.write, x.write2 = w, w2
 }
 
+//func (x *graph) Writes() (CondOp, CondOp) {
+//  return x.writeV, x.writeE
+//}
+
 func (x *graph) Write() {
-  x.trav2Cond (x.write2)
-  x.travCond (x.write)
+  x.Trav2Cond (x.write2)
+  x.TravCond (x.write)
 }

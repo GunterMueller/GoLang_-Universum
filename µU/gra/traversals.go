@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 231225 - license see µU.go
 
 import
   . "µU/obj"
@@ -16,7 +16,7 @@ func (x *graph) True (p Pred) bool {
 
 func (x *graph) TrueMarked (p Pred) bool {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    if v.bool {
+    if v.marked {
       if ! p (v.any) {
         return false
       }
@@ -33,7 +33,7 @@ func (x *graph) Trav (o Op) {
 
 func (x *graph) TravCond (o CondOp) {
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    o (v.any, v.bool)
+    o (v.any, v.marked)
   }
 }
 
@@ -45,7 +45,7 @@ func (x *graph) Trav1 (o Op) {
 
 func (x *graph) Trav1Cond (o CondOp) {
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    o (e.any, e.bool)
+    o (e.any, e.marked)
   }
 }
 

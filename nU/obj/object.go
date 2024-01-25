@@ -2,7 +2,8 @@ package obj
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-type Object interface {
+type
+  Object interface {
 
 // Most objects in computer science can be compared with others,
 // whether they are equal, and can be copied, so they have the type

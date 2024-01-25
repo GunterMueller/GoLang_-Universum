@@ -2,7 +2,8 @@ package barr
 
 // (c) Christian Maurer   v. 170627 - license see nU.go
 
-type Barrier interface {
+type
+  Barrier interface {
 
 // Die Anzahl der Prozesse, die auf die aufrufende Barriere warten, ist inkrementiert.
 // Der aufrufende Prozess war ggf. blockiert, bis die Anzahl der wartenden Prozesse

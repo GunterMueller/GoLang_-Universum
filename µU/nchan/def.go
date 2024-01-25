@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 231230 - license see µU.go
 
 const
 //  Port0 = uint16(1<<16 - 1<<14) // == 49152 (first private port)
@@ -15,7 +15,7 @@ type
 // the calling process is a server, on the actual subchannel of x)
 // to the communication partner of the calling process.
 // Returns otherwise an appropriate error.
-  Send (a any) // error
+  Send (a any) error
 
 // Returns a slice of bytes, if x was created by New with nil as first argument.
 // In this case, the client is responsible for decoding that slice,
@@ -51,6 +51,8 @@ type
 // between h0 and h over port p.
 // p is now used on h0 and h by a network service.
 func New (a any, me, i uint, h string, p uint16) NetChannel { return new_(a,me,i,h,p) }
+
+func NewD (a any, me, i uint, h string, p uint16, d bool) NetChannel { return newd(a,me,i,h,p,d) }
 
 // See above function. To be called in the constructor of a far monitor.
 // h is the server (s = true), if the calling process is the serving monitor.

@@ -2,13 +2,17 @@ package mbbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/bbuf"; "nU/fmon")
-
-type farMonitor struct {
-  any "Musterobjekt"
-  bbuf.BoundedBuffer
-  fmon.FarMonitor
-}
+import (
+  . "nU/obj"
+  "nU/bbuf"
+  "nU/fmon"
+)
+type
+   farMonitor struct {
+                     any "Musterobjekt"
+                     bbuf.BoundedBuffer
+                     fmon.FarMonitor
+                     }
 
 func newfm (a any, n uint, h string, p uint16, s bool) MBoundedBuffer {
   if a == nil || n == 0 { return nil }

@@ -2,9 +2,10 @@ package sem
 
 // (c) Christian Maurer   v. 170121 - license see nU.go
 
-type channel struct {
-  p, v chan int
-}
+type
+  channel struct {
+            p, v chan int
+                 }
 
 func newCh (n uint) Semaphore {
   x := new(channel)

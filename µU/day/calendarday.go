@@ -139,7 +139,7 @@ func (x *calendarday) SetMax() {
 }
 
 func (x *calendarday) Update() {
-  x.day, x.month, x.year = time.UpdateDate()
+  x.day, x.month, x.year = time.ActDate()
 }
 
 func (x *calendarday) Set (d, m, y uint) bool {

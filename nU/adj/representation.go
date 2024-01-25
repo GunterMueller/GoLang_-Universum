@@ -2,16 +2,16 @@ package adj
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import . "nU/obj"
-
+import
+  . "nU/obj"
 type (
   pair struct {
        vertex,
          edge any
               }
   adjacencyMatrix struct {
-                         uint "number of rows/columns"
-                    v, e any // pattern vertex and edge
+                         uint "Anzahl der Zeilen/Spalten"
+                    v, e any // Muster-Vertex und -Kante
                    entry [][]pair
                          }
 )

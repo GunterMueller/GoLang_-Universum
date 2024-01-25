@@ -2,11 +2,12 @@ package rw
 
 // (c) Christian Maurer   v. 200421 - license see nU.go
 
-import "nU/cr"
-
-type criticalResource struct {
-  cr.CriticalResource
-}
+import
+  "nU/cr"
+type
+  criticalResource struct {
+                          cr.CriticalResource
+                          }
 
 func newCR (m uint) ReaderWriter {
   const nc = 2

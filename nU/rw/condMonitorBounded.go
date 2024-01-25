@@ -2,11 +2,12 @@ package rw
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-import "nU/cmon"
-
-type condMonitorBounded struct {
-  cmon.Monitor
-}
+import
+  "nU/cmon"
+type
+  condMonitorBounded struct {
+                            cmon.Monitor
+                            }
 
 func newCMB (mR uint) ReaderWriter {
   x := new(condMonitorBounded)

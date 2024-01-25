@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171228 - license see nU.go
+// (c) Christian Maurer   v. 231221 - license see nU.go
 
 func g8 (i uint) DistributedGraph {
 /*     0 --- 1 --- 2
@@ -24,6 +24,27 @@ func g8 (i uint) DistributedGraph {
   j := "jupiter"; h := []string { j, "uranus", j, j, "saturn", j, j, j }
   return newg (false, l, c, e, h, 4, i)
 */
+  return newg (false, l, c, e, nil, 4, i)
+}
+
+func g8r (i uint) DistributedGraph {
+/*      6 ---- 4 ---- 7
+       /               \
+      /                 \
+     3                   0
+      \                 /
+       \               /
+        1 ---- 5 ---- 2      */
+  l := []uint {  3, 6,  6, 3,  0,  6, 0,  0 }
+  c := []uint { 21, 4, 18, 1, 11, 11, 4, 18 }
+  e := [][]uint { []uint { 7 },
+                  []uint { 5 },
+                  []uint { 0 },
+                  []uint { 1 },
+                  []uint { 6 },
+                  []uint { 2 },
+                  []uint { 3 },
+                  []uint { 4 } }
   return newg (false, l, c, e, nil, 4, i)
 }
 

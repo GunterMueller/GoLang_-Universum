@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 231225 - license see µU.go
 
 import (
   "µU/ker"
@@ -26,7 +26,7 @@ func (x *graph) Matrix() adj.AdjacencyMatrix {
 }
 
 func (x *graph) SetMatrix (matrix adj.AdjacencyMatrix) {
-  if x.bool == matrix.Symmetric() { ker.Panic ("gra.SetMatrix: x directed, matrix not") }
+  if x.directed == matrix.Symmetric() { ker.Panic ("gra.SetMatrix: x directed, matrix not") }
   m := matrix.Num()
   for i := uint(0); i < m; i++ {
     x.Ins (Clone(matrix.Vertex (i)))

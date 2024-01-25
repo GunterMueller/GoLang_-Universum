@@ -2,12 +2,13 @@ package lr
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-import . "sync"
-
-type mutex1 struct {
-  nL, nR uint
-  mL, mR, lr Mutex
-}
+import
+  . "sync"
+type
+  mutex1 struct {
+         nL, nR uint
+     mL, mR, lr Mutex
+                }
 
 func new1() LeftRight {
   return new(mutex1)

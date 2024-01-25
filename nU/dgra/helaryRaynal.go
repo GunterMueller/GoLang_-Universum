@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 180212 - license see nU.go
+// (c) Christian Maurer   v. 231220 - license see nU.go
 
 // >>> Algorithmus von Helary und Raynal
 //     Depth-first traversal and virtual ring construction in distributed Systems.
@@ -15,10 +15,9 @@ const (
 var
   chanus = make(chan UintStream)
 
-func (x *distributedGraph) helaryRaynal (o Op) {
+func (x *distributedGraph) HelaryRaynal() {
   x.connect (nil)
   defer x.fin()
-  x.Op = o
   if x.me == x.root {
     x.parent = x.root
     us := append(UintStream {DISCOVER}, x.me)

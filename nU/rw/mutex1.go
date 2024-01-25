@@ -2,12 +2,13 @@ package rw
 
 // (c) Christian Maurer   v. 170411 - license see nU.go
 
-import . "sync"
-
-type mutex1 struct {
-  nR uint
-  m, rw Mutex
-}
+import
+  . "sync"
+type
+  mutex1 struct {
+             nR uint
+          m, rw Mutex
+                }
 
 func new1() ReaderWriter {
   return new(mutex1)

@@ -4,11 +4,12 @@ package phil
 
 // >>> Solution with conditioned monitor
 
-import "nU/cmon"
-
-type conditionedMonitor struct {
-  cmon.Monitor
-}
+import
+  "nU/cmon"
+type
+  conditionedMonitor struct {
+                            cmon.Monitor
+                            }
 
 func newCM() Philos {
   nForks := make([]uint, 5)

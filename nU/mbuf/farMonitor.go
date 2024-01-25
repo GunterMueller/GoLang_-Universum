@@ -2,15 +2,21 @@ package mbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/buf"; "nU/fmon")
-
-const (ins = uint(iota); get)
-
-type farMonitor struct {
-  any "Musterobjekt"
-  buf.Buffer
-  fmon.FarMonitor
-}
+import (
+  . "nU/obj"
+  "nU/buf"
+  "nU/fmon"
+)
+const (
+  ins = uint(iota)
+  get
+)
+type
+  farMonitor struct {
+                    any "Musterobjekt"
+                    buf.Buffer
+                    fmon.FarMonitor
+                    }
 
 func newfm (a any, h string, p uint16, s bool) MBuffer {
   x := new(farMonitor)

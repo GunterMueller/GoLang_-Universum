@@ -2,11 +2,12 @@ package lr
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import "nU/fmon"
-
-type farMonitor struct {
-  fmon.FarMonitor
-}
+import
+  "nU/fmon"
+type
+  farMonitor struct {
+                    fmon.FarMonitor
+                    }
 
 func newFMon (h string, port uint16, s bool) LeftRight {
   var nL, nR uint

@@ -17,7 +17,7 @@ const (
 )
 type
   szymanski struct {
-                   uint "number of processes"
+                   uint "Anzahl der beteiligten Prozesse"
               flag []uint
                    }
 

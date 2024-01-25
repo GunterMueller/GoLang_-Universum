@@ -2,31 +2,39 @@ package nchan
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import ("time"; "strconv"; "net"; . "nU/obj")
+import (
+  "time"
+  "strconv"
+  "net"
+  . "nU/obj"
+)
+
 
 const (
   maxWidth = uint(1<<12)
   network = "tcp"
 )
+type
+  netChannel struct {
+                any "Musterobjekt"
 
-type netChannel struct {
-  any "Musterobjekt"
-  uint "Kapazität des Kanals"
-  in, out chan any
-  FuncSpectrum
-  PredSpectrum
-  isServer,
-  oneOne bool
-  net.Conn
-  net.Listener
-  Stream "Puffer zur Datenübertragung"
-  error
-}
-var c0 uint
+               uint "Kapazität des Kanals"
+            in, out chan any
+                    FuncSpectrum
+                    PredSpectrum
+           isServer,
+             oneOne bool
+                    net.Conn
+                    net.Listener
+                    Stream "Puffer zur Datenübertragung"
+                    error
+                    }
 
-func init() {
-  c0 = C0()
-}
+
+
+
+
+
 
 func new_(a any, me, i uint, n string, p uint16) NetChannel {
   if me == i { panic("me == i") }
@@ -38,18 +46,20 @@ func new_(a any, me, i uint, n string, p uint16) NetChannel {
   }
   x.in, x.out = make(chan any), make(chan any)
   x.Stream = make(Stream, x.uint)
+
   x.oneOne = true
   x.isServer = me < i
   ps := ":" + strconv.Itoa(int(Port0 + p))
   if x.isServer {
     x.Listener, x.error = net.Listen (network, n + ps)
-if x.error != nil { println ("Listen error", n, ps) }
+    if x.error != nil { println ("Listen error", n, ps) }
     x.Conn, x.error = x.Listener.Accept()
   } else { // client
     for {
       if x.Conn, x.error = net.Dial (network, n + ps); x.error == nil {
         break
       }
+
       time.Sleep (500 * 1e6)
     }
   }
@@ -57,7 +67,7 @@ if x.error != nil { println ("Listen error", n, ps) }
 }
 
 func (x *netChannel) Send (a any) {
-  if x.Conn == nil { panic("no Conn") }
+  if x.Conn == nil { panic ("no Conn") }
   if x.any == nil {
     x.Conn.Write (append (Encode (Codelen(a)), Encode(a)...))
   } else {
@@ -68,15 +78,15 @@ func (x *netChannel) Send (a any) {
 func (x *netChannel) Recv() any {
   if x.Conn == nil { panic("no Conn") }
   if x.any == nil {
-    _, x.error = x.Conn.Read (x.Stream[:c0])
+    _, x.error = x.Conn.Read (x.Stream[:C0])
     if x.error != nil { return nil }
-    x.uint = Decode (uint(0), x.Stream[:c0]).(uint)
-    _, x.error = x.Conn.Read (x.Stream[c0:c0+x.uint])
+    x.uint = Decode (uint(0), x.Stream[:C0]).(uint)
+    _, x.error = x.Conn.Read (x.Stream[C0:C0+x.uint])
     if x.error != nil { return nil }
-    return x.Stream[c0:c0+x.uint]
+    return x.Stream[C0:C0+x.uint]
   }
   x.Conn.Read (x.Stream)
-  return Decode(Clone(x.any), x.Stream)
+  return Decode (Clone(x.any), x.Stream)
 }
 
 func (x *netChannel) Fin() {
@@ -84,8 +94,8 @@ func (x *netChannel) Fin() {
   if x.isServer {
     x.Listener.Close()
     if ! x.oneOne {
-      close(x.in)
-      close(x.out)
+      close (x.in)
+      close (x.out)
     }
   }
 }

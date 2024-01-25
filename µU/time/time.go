@@ -49,18 +49,17 @@ func secnsec() uint {
   return uint(t.Second()) * 1e9 + uint(t.Nanosecond())
 }
 
-func updateTime() (uint, uint, uint) {
+func actTime() (uint, uint, uint) {
   h, m, s := time.Now().Clock()
   return uint(h), uint(m), uint(s)
 }
 
-func updateDate() (uint, uint, uint) {
+func actDate() (uint, uint, uint) {
   t := time.Now()
   return uint(t.Day()), uint(t.Month()), uint(t.Year())
 }
 
-func secondsSinceUnix() (s, us uint) {
+func secSinceUnix() (s, us uint) {
   t := time.Now()
-  s, us = uint(t.Unix()), uint(t.UnixNano())
-  return
+  return uint(t.Unix()), uint(t.UnixNano())
 }

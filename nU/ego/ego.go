@@ -2,7 +2,10 @@ package ego
 
 // (c) Christian Maurer   v. 171227 - license see nU.go
 
-import ("strconv"; "nU/env")
+import (
+  "strconv"
+  "nU/env"
+)
 
 func ego (n uint) uint {
   if i, err := strconv.Atoi(env.Arg(1)); err == nil {

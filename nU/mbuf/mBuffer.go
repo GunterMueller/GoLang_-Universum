@@ -2,12 +2,16 @@ package mbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import ("sync"; "nU/buf")
-
-type mBuffer struct {
-  buf.Buffer
-  notEmpty, mutex sync.Mutex
-}
+import (
+  "sync"
+  "nU/buf"
+)
+type
+  mBuffer struct {
+                 buf.Buffer
+        notEmpty,
+           mutex sync.Mutex
+                 }
 
 func new_(a any) MBuffer {
   x := new(mBuffer)

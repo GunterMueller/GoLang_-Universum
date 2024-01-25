@@ -4,13 +4,14 @@ package lock
 
 // >>> Algorithm of Udding
 
-import "sync"
-
-type udding struct {
-  mutex, door,
-  queue sync.Mutex
-  n0, n uint
-}
+import
+   "sync"
+type
+  udding struct {
+    mutex, door,
+          queue sync.Mutex
+          n0, n uint
+                }
 
 func newUdding() Locker {
   x:= new (udding)

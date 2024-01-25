@@ -1,9 +1,16 @@
 package main
-
-/* (c) Christian Maurer   v. 221021
+/*/
+  (c) Christian Maurer   v. 231226
 
   Dieses Paket - das n(ano)Universum - enthält die Quelltexte aus meinem Lehrbuch
   "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2019).
+
+  Das Nanouniversum nU  ist nur zum Einsatz in der Lehre konstruiert  und hat deshalb einen
+  rein akademischen Charakter. Es liefert u. a. eine Reihe von Beispielen für mein Lehrbuch
+  "Nichtsequentielle und Verteilte Programmierung mit Go" (Springer Vieweg 2019) und dessen
+  Übersetzung  "Nonsequential and Distributed Programming with Go"  (Springer Nature 2021).
+  Für Zwecke der Lehre an Universitäten und in Schulen  sind die Quellen des Nanouniversums
+  uneingeschränkt verwendbar; jede Form weitergehender Nutzung ist jedoch strikt untersagt.
 
   THIS SOFTWARE  IS PROVIDED BY THE AUTHOR  "AS IS"  AND ANY EXPRESS OR IMPLIED WARRANTIES,
   INCLUDING,  BUT NOT LIMITED TO,  THE IMPLIED WARRANTIES  OF MERCHANTABILITY  AND  FITNESS
@@ -14,6 +21,8 @@ package main
   IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
   WAY OUT OF THE USE OF THIS SOFTWARE,  EVEN IF ADVISED  OF THE POSSIBILITY OF SUCH DAMAGE.
 
+  APART FROM THE ABOVE, THE GERMAN TEXT ABOVE AND BELOW IS A MANDATORY PART OF THE LICENSE.
+
   Die Quelltexte von nU sind äußerst sorgfältig entwickelt und werden laufend überarbeitet.
   ABER:  Es gibt keine fehlerfreie Software - dies gilt natürlich auch für _diese_ Quellen.
   Ihre Verwendung in Programmen könnte zu SCHÄDEN führen, z. B. zum Abfackeln von Rechnern,
@@ -21,7 +30,8 @@ package main
   Deshalb wird vor der Verwendung irgendwelcher Quellen von µU in Programmen zu ernsthaften
   Zwecken ausdrücklich gewarnt! (Ausgenommen sind Demo-Programme zum Einsatz in der Lehre.)
 
-  Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angemommen. */
+  Meldungen entdeckter Fehler und Hinweise auf Unklarheiten werden sehr dankbar angemommen.
+/*/
 
 import (
   "nU/achan"; "nU/barb"; "nU/barr"; "nU/dgra"; "nU/dlock"; "nU/ego"

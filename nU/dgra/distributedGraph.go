@@ -1,48 +1,56 @@
 package dgra
 
-// (c) Christian Maurer   v. 220702 - license see nU.go
+// (c) Christian Maurer   v. 231220 - license see nU.go
 
-import ("strconv"; . "nU/obj"; "nU/env"; "nU/nchan"
-        "nU/fmon"; "nU/adj"; "nU/vtx"; "nU/gra")
-
-type distributedGraph struct {
-  gra.Graph
-  tmpGraph gra.Graph
-  bool "gra.Graph.Directed"
-  actVertex vtx.Vertex
-  me uint
-  actHost string
-  n uint
-  nb []vtx.Vertex
-  nr []uint
-  host []string
-  port []uint16
-  ch []nchan.NetChannel
-  tree, cycle gra.Graph
-  root uint
-  tmpVertex vtx.Vertex
-  tmpEdge uint16
-  chan1 chan uint
-  visited, sendTo, echoed []bool
-  labeled bool
-  mon []fmon.FarMonitor
-  parent uint
-  child []bool
-  time, time1 uint
-  matrix adj.AdjacencyMatrix
-  size uint
-  diameter, distance, leader uint
-  HeartbeatAlg; ElectAlg; TravAlg
-  Op
-}
+import (
+  "strconv"
+  . "nU/obj"
+  "nU/env"
+  "nU/nchan"
+  "nU/fmon"
+  "nU/adj"
+  "nU/vtx"
+  "nU/gra"
+)
+type
+  distributedGraph struct {
+                   gra.Graph
+          tmpGraph gra.Graph
+                   bool "gra.Graph.Directed"
+         actVertex vtx.Vertex
+                me uint
+           actHost string
+                 n uint
+                nb []vtx.Vertex
+                nr []uint
+              host []string
+              port []uint16
+                ch []nchan.NetChannel
+       tree, cycle gra.Graph
+              root uint
+         tmpVertex vtx.Vertex
+           tmpEdge uint16
+             chan1 chan uint
+           visited,
+    sendTo, echoed []bool
+           labeled bool
+               mon []fmon.FarMonitor
+            parent uint
+             child []bool
+       time, time1 uint
+            matrix adj.AdjacencyMatrix
+              size uint
+          diameter,
+          distance,
+            leader uint
+                   Op
+                   }
 const (
   p0 = nchan.Port0
   inf = uint(1 << 16)
 )
-var (
-  c0 = C0()
+var 
   done = make(chan int, 1)
-)
 
 func new_(g gra.Graph) DistributedGraph {
   x := new(distributedGraph)
@@ -86,7 +94,6 @@ func new_(g gra.Graph) DistributedGraph {
   x.parent, x.child = inf, make([]bool, x.n)
   x.mon = make([]fmon.FarMonitor, x.n)
   g.Ex (x.actVertex)
-  x.HeartbeatAlg, x.ElectAlg, x.TravAlg = HeartbeatGraph, ChangRoberts, DFS
   x.leader = x.me
   x.Op = Ignore
   return x
@@ -209,6 +216,19 @@ func valueMax (g gra.Graph) uint {
   return m
 }
 
+func vertexMax (g gra.Graph) vtx.Vertex {
+  m := uint(0)
+  var vt vtx.Vertex
+  g.Trav (func (a any) {
+    v := a.(vtx.Vertex).Val()
+    if v > m {
+      m = v
+      vt = a.(vtx.Vertex)
+    }
+  })
+  return vt
+}
+
 func exValue (g gra.Graph, v uint) bool {
   return g.ExPred (func (a any) bool { return a.(uint) == v })
 }
@@ -256,4 +276,34 @@ func (x *distributedGraph) Time() uint {
 
 func (x *distributedGraph) Time1() uint {
   return x.time1
+}
+
+func string_(n uint) string {
+  if n == 0 { return "0" }
+  var s string
+  for s = ""; n > 0; n /= 10 {
+    s = string(n % 10 + '0') + s
+  }
+  return s
+}
+
+func (x *distributedGraph) ParentChildren() string {
+  s := "parent " + string_(x.parent)
+  cs := make([]uint, 0)
+  for i := uint(0); i < x.n; i++ {
+    if x.child[i] {
+      cs = append(cs, x.nr[i])
+    }
+  }
+  k := len(cs)
+  if k > 0 {
+    s += ", child"
+    if k > 1 {
+      s += "ren"
+    }
+    for _, c := range cs {
+      s += " " + string_(c)
+    }
+  }
+  return s
 }

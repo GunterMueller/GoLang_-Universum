@@ -1,10 +1,13 @@
 package dgra
 
-// (c) Christian Maurer   v. 220702 - license see nU.go
+// (c) Christian Maurer   v. 231220 - license see nU.go
 
-import (. "nU/obj"; "nU/fmon")
+import (
+  . "nU/obj"
+  "nU/fmon"
+)
 
-func (x *distributedGraph) dfselectfm() {
+func (x *distributedGraph) Dfselectfm() {
   go func() {
     fmon.New (uint(0), 3, x.de, AllTrueSp,
               x.actHost, p0 + uint16(3 * x.me), true)

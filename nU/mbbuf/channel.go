@@ -4,12 +4,13 @@ package mbbuf
 
 // >>> buffer implementation with asynchronous message passing
 
-import . "nU/obj"
-
-type channel struct {
-  any
-  c chan any
-}
+import
+  . "nU/obj"
+type
+  channel struct {
+                 any
+               c chan any
+                 }
 
 func newCh (a any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }

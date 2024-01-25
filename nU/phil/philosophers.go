@@ -5,10 +5,17 @@ package phil
 import ("sync"; "math"; "nU/col"; "nU/scr")
 
 const (
-  lock = iota; unlock
+  lock = iota
+  unlock
 )
 const (
-  thinking = iota; hungry; starving; hasRightFork; hasLeftFork; dining; nStates
+  thinking = iota
+  hungry
+  starving
+  hasRightFork
+  hasLeftFork
+  dining
+  nStates
 )
 var (
   status [5]int

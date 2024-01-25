@@ -2,11 +2,12 @@ package lr
 
 // (c) Christian Maurer   v. 171126 - license see nU.go
 
-import "nU/cs"
-
-type criticalSection2 struct {
-  cs.CriticalSection
-}
+import
+  "nU/cs"
+type
+  criticalSection2 struct {
+                          cs.CriticalSection
+                          }
 
 func newCS2() LeftRight {
   x := new(criticalSection2)

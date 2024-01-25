@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 230308 - license see µU.go
+// (c) Christian Maurer   v. 231225 - license see µU.go
 
 import
   . "µU/obj"
@@ -8,7 +8,7 @@ import
 // topological Sort, CLR 23.4, CLRS 22.4
 // TODO spec
 func (x *graph) Sort() {
-  if x.nVertices < 2 || ! x.bool { return }
+  if x.nVertices < 2 || ! x.directed { return }
   x.dfs (AllTrue)
 // sort list of vertices due to decrementing times, for which we supply a slice von *vertex:
   f := make ([]*vertex, 2 * x.nVertices)
@@ -37,7 +37,7 @@ func (x *graph) Sort() {
 
 // strongly connected components, CLR 23.5, CLRS 22.5
 func (x *graph) Isolate() {
-  if x.nVertices < 1 || ! x.bool {
+  if x.nVertices < 1 || ! x.directed {
     return
   }
 // depth first search with sorting of the list of vertices by decrementing times:
@@ -53,11 +53,11 @@ func (x *graph) Isolate() {
 // all vertices in the actual subgraph:
 // the depth first search trees are now the strongly connected components with common repr
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    v.bool = true
+    v.marked = true
   }
 // and furthermore all edges, that connect two vertices in the same strongly connected component:
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    e.bool = e.nbPtr0.from.repr == e.nbPtr1.from.repr
+    e.marked = e.nbPtr0.from.repr == e.nbPtr1.from.repr
   }
 }
 
@@ -66,11 +66,11 @@ func (x *graph) IsolateMarked() {
 // only exactly those vertices in the actual subgraph, that
 // are contained in the strong connection component of the local vertex:
   for v := x.vAnchor.nextV; v != x.vAnchor; v = v.nextV {
-    v.bool = v.repr == x.local.repr
+    v.marked = v.repr == x.local.repr
   }
 // and furthermore exactly those edges, that connect these vertices:
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    e.bool = e.nbPtr0.from.bool && e.nbPtr1.from.bool
+    e.marked = e.nbPtr0.from.marked && e.nbPtr1.from.marked
   }
 }
 
@@ -87,7 +87,7 @@ func (x *graph) totallyConnected() bool {
   if x.nVertices <= 1 {
     return true
   }
-  if x.bool {
+  if x.directed {
     x.Isolate()
   } else {
     x.dfs (AllTrue)

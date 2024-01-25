@@ -2,12 +2,13 @@ package rw
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-import "nU/asem"
-
-type addSemaphore struct {
-  uint "maximal number of concurrent readers"
-  asem.AddSemaphore
-}
+import
+  "nU/asem"
+type
+  addSemaphore struct {
+                 uint "Maximalzahl nebenläufiger Leser"
+                      asem.AddSemaphore
+                      }
 
 func newAS (m uint) ReaderWriter {
   x := new(addSemaphore)

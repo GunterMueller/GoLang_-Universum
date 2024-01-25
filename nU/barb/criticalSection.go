@@ -2,11 +2,14 @@ package barb
 
 // (c) Christian Maurer   v. 171019 - license see nU.go
 
-import (. "nU/obj"; "nU/cs")
-
-type barberCS struct {
-  cs.CriticalSection
-}
+import (
+  . "nU/obj"
+  "nU/cs"
+)
+type
+  barberCS struct {
+                  cs.CriticalSection
+                  }
 
 func newCS() Barber {
   var n uint

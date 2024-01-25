@@ -2,13 +2,14 @@ package macc
 
 // (c) Christian Maurer   v. 171020 - license see nU.go
 
-import "sync"
-
-type maccount struct {
-  uint "balance"
-  sync.Mutex
-  *sync.Cond
-}
+import
+   "sync"
+type
+  maccount struct {
+                  uint "balance"
+                  sync.Mutex
+                  *sync.Cond
+                  }
 
 func new_() MAccount {
   x := new(maccount)

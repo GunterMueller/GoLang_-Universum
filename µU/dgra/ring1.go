@@ -1,20 +1,21 @@
 package dgra
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 231229 - license see µU.go
 //
 // >>> Construction of a directed ring using the idea of Awerbuch's algorithm
 
 import (
   . "µU/obj"
+  "µU/scr"
   "µU/vtx"
   "µU/fmon"
 )
 
 func (x *distributedGraph) r1 (a any, i uint) any {
   x.awaitAllMonitors()
-  bs := a.(Stream)
-  s := Decode(uint(0), bs[:C0]).(uint)
-  j := x.channel(s)
+  s := a.(Stream)
+  n := Decode(uint(0), s[:C0]).(uint)
+  j := x.channel(n)
   switch i {
   case visit:
     x.visited[j] = true
@@ -24,7 +25,7 @@ func (x *distributedGraph) r1 (a any, i uint) any {
         x.mon[k].F(Encode(x.me), visit)
       }
     }
-    x.cycle = x.decodedGraph(bs[C0:])
+    x.cycle = x.decodedGraph(s[C0:])
     x.cycle.Ins (x.actVertex)
     a0, a1 := x.cycle.Get2()
     e := x.directedEdge (a0.(vtx.Vertex), a1.(vtx.Vertex))
@@ -35,21 +36,21 @@ func (x *distributedGraph) r1 (a any, i uint) any {
       if k != j && ! x.visited[k] {
         x.visited[k] = true
         x.child[k] = true
-        bs := append(Encode(x.me), x.cycle.Encode()...)
-        bs = x.mon[k].F(bs, discover).(Stream)
-        x.cycle = x.decodedGraph(bs[C0:])
+        s := append(Encode(x.me), x.cycle.Encode()...)
+        s = x.mon[k].F(s, discover).(Stream)
+        x.cycle = x.decodedGraph(s[C0:])
         x.cycle.Write()
         pause()
       }
     }
     return append(Encode(x.me), x.cycle.Encode()...)
   case distribute:
-    x.cycle = x.decodedGraph(bs)
+    x.cycle = x.decodedGraph(s)
     x.cycle.Write()
     pause()
     for k := uint(0); k < x.n; k++ {
       if x.child[k] {
-        x.mon[k].F(bs, 2)
+        x.mon[k].F(s, 2)
       }
     }
     done <- 0
@@ -58,6 +59,7 @@ func (x *distributedGraph) r1 (a any, i uint) any {
 }
 
 func (x *distributedGraph) Ring1() {
+  scr.Cls()
   go func() {
     fmon.New (nil, 3, x.r1, AllTrueSp,
               x.actHost, p0 + uint16(3 * x.me), true)
@@ -82,9 +84,9 @@ func (x *distributedGraph) Ring1() {
         x.visited[k] = true
         x.child[k] = true
         x.cycle.Ex (x.actVertex)
-        bs := append(Encode(x.me), x.cycle.Encode()...)
-        bs = x.mon[k].F(bs, discover).(Stream)
-        x.cycle = x.decodedGraph(bs[C0:])
+        s := append(Encode(x.me), x.cycle.Encode()...)
+        s = x.mon[k].F(s, discover).(Stream)
+        x.cycle = x.decodedGraph(s[C0:])
         x.cycle.Write()
         pause()
       }

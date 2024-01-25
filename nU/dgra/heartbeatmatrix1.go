@@ -1,12 +1,17 @@
 package dgra
 
+// (c) Christian Maurer   v. 231220 - license see nU.go
+
 // see G. Andrews: Concurrent Programming (1991) p. 375
 // >>> The condition to leave the for-loop by the break statement is
 //     not correct; so unfortunately Andrews algorithm is not correct !
 
-import (. "nU/obj"; "nU/adj")
+import (
+  . "nU/obj"
+  "nU/adj"
+)
 
-func (x *distributedGraph) heartbeatmatrix1() {
+func (x *distributedGraph) HeartbeatMatrix1() {
   x.connect (nil)
   defer x.fin()
   active := make([]bool, x.n)

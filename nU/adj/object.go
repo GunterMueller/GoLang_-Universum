@@ -2,7 +2,8 @@ package adj
 
 // (c) Christian Maurer   v. 221021 - license see µU.go
 
-import . "nU/obj"
+import
+  . "nU/obj"
 
 func (x *adjacencyMatrix) imp (Y any) *adjacencyMatrix {
   y, ok := Y.(*adjacencyMatrix)

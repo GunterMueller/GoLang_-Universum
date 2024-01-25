@@ -2,12 +2,13 @@ package lr
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-import "nU/sem"
-
-type semaphore struct {
-  nL, nR uint
-  m, l, r sem.Semaphore
-}
+import
+   "nU/sem"
+type
+  semaphore struct {
+            nL, nR uint
+           m, l, r sem.Semaphore
+                   }
 
 func newS() LeftRight {
   x := new(semaphore)

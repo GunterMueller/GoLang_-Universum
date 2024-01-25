@@ -2,11 +2,12 @@ package rw
 
 // (c) Christian Maurer   v. 171126 - license see nU.go
 
-import "nU/cs"
-
-type criticalSection2 struct {
-  cs.CriticalSection
-}
+import
+  "nU/cs"
+type
+  criticalSection2 struct {
+                          cs.CriticalSection
+                          }
 
 func newCS2() ReaderWriter {
   x := new(criticalSection2)

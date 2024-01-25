@@ -2,11 +2,12 @@ package lr
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-import "nU/cr"
-
-type criticalResource struct {
-  cr.CriticalResource
-}
+import
+  "nU/cr"
+type
+  criticalResource struct {
+                          cr.CriticalResource
+                          }
 
 func newCR() LeftRight {
   const nc = 2

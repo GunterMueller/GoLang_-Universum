@@ -6,13 +6,15 @@ package smok
 //     On a Solution to the Cigarette Smoker's Problem
 //     Comm. ACM 18 (1975), 181-183
 
-import "sync"
-
-type parnas struct {
-  avail [3]bool
-  mutex, agent sync.Mutex
-  supplied, smoke [3]sync.Mutex
-}
+import
+  "sync"
+type
+  parnas struct {
+          avail [3]bool
+   mutex, agent sync.Mutex
+       supplied,
+          smoke [3]sync.Mutex
+                }
 
 func (x *parnas) help (u uint) {
   var first bool

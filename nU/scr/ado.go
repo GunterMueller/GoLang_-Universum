@@ -2,7 +2,8 @@ package scr
 
 // (c) Christian Maurer   v. 171229 - license see nU.go
 
-import "nU/col"
+import
+  "nU/col"
 
 func Wd() uint { return a.Wd() }
 func Ht() uint { return a.Ht() }

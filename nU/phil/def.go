@@ -2,9 +2,11 @@ package phil
 
 // (c) Christian Maurer   v. 220124 - license see nU.go
 
-import "nU/lockn"
+import
+  "nU/lockn"
+type
+  Philos interface {
 
-type Philos interface {
   lockn.LockerN
 }
 

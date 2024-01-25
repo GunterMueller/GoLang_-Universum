@@ -1,6 +1,6 @@
 package rand
 
-// (c) Christian Maurer   v. 220713 - license see µU.go
+// (c) Christian Maurer   v. 240103 - license see µU.go
 
 // see D. E. Knuth, The Art of Computer Programming, 3.2.1.1-2, 3.6 i)-vi)
 
@@ -31,7 +31,7 @@ func init() {
 }
 
 func _init() {
-  s, us:= time.SecondsSinceUnix()
+  s, us:= time.SecSinceUnix()
   randomNumber = 1000 * 1000 * uint(s % 60) + uint(us)
 }
 

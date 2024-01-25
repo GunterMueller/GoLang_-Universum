@@ -2,16 +2,19 @@ package asem
 
 // (c) Christian Maurer   v. 201117 - license see nU.go
 
-import ("sync"; "nU/sem")
-
+import (
+  "sync"
+  "nU/sem"
+)
 const
   M = 20
-type addSemaphore struct {
-  uint "number of processes allowed to use the critical section"
-  sync.Mutex
-  b [M]sem.Semaphore
-  nB [M]uint // number of processes blocked by b
-}
+type
+  addSemaphore struct {
+                      uint "Anzahl der Prozesse, die den k.A. betreten dürfen"
+                      sync.Mutex
+                    b [M]sem.Semaphore
+                   nB [M]uint // number of processes blocked by b
+                      }
 
 func new_(n uint) *addSemaphore {
   x := new(addSemaphore)

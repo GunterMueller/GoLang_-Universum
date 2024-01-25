@@ -2,10 +2,11 @@ package nchan
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-const Port0 = uint16(49152) // erster "privater" Port
-
-type NetChannel interface { // Kanäle zum netzweiten Austausch
-                            // von Objekten zwischen Prozessen
+const
+  Port0 = uint16(49152) // erster "privater" Port
+type
+  NetChannel interface { // Kanäle zum netzweiten Austausch
+                         // von Objekten zwischen Prozessen
 
   Chan() (chan any, chan any)
 

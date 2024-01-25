@@ -1,8 +1,11 @@
 package dgra
 
-import "nU/gra"
+// (c) Christian Maurer   v. 231221 - license see nU.go
 
-type DistributedGraph interface {
+import
+  "nU/gra"
+type
+  DistributedGraph interface {
 
   gra.Graph
 
@@ -16,16 +19,32 @@ type DistributedGraph interface {
   Children() string
   Time() uint
   Time1() uint
+  ParentChildren() string
 
-  SetHeartbeatAlgorithm (a HeartbeatAlg) // s. heartbeatAlgorithms.go
-  HeartbeatAlgorithm() HeartbeatAlg
-  Heartbeat()
+  HeartbeatMatrix()
+  HeartbeatMatrix1()
+  HeartbeatGraph()
+  HeartbeatGraph1()
 
-  SetTravAlgorithm (a TravAlg) // s. travAlgorithms.go
-  TravAlgorithm() TravAlg
+  Dfs() // depth first seach showing discover and finish times
+  Dfs1() // depth first seach showing the DFS-tree
+  Dfsfm() // depth first search without visit phase showing the DFS-tree, with far monitors
+  Awerbuch() // simplified DFS-algorithm of Awerbuch, with far monitors
+  Awerbuch1() // simplified DFS-algorithm of Awerbuch showing the DFS-tree, with far monitors
+  HelaryRaynal() // experimental
+  Ring() // construction of a ring using Dfs showing the vertices of the ring, with far monitors
+  Ring1() // construction of a ring using Dfs showing the ring, with far monitors
+  Bfs() // BFS-algorithm of Zhu/Cheung
+  Bfsfm() // breadth first search, with far monitors
+  Bfsfm1() // breadth first search showing the BFS-tree, with far monitors
 
-  SetElectAlgorithm (a ElectAlg) // s. electAlgorithms.go
-  ElectAlgorithm() ElectAlg
+  ChangRoberts()
+  Peterson()
+  DolevKlaweRodeh()
+  HirschbergSinclair()
+  Maurerfm()
+  Dfselect()
+  Dfselectfm()
   Leader() uint
 }
 
@@ -39,6 +58,7 @@ func New (g gra.Graph) DistributedGraph { return new_(g) }
 // G_ liefert den Stern des verteilten Graphen, der durch g_ definiert ist,
 // wobei die Ecke mit der Identität i das Zentrum ist.
 func G8 (i uint) DistributedGraph { return g8(i) }
+func G8ring (i uint) DistributedGraph { return g8r(i) }
 func G8dirring (i uint) DistributedGraph { return g8dr(i) }
 func G12 (i uint) DistributedGraph { return g12(i) }
 func G12dirring (i uint) DistributedGraph { return g12dr(i) }

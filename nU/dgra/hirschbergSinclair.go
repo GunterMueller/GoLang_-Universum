@@ -1,12 +1,16 @@
 package dgra
 
-// (c) Christian Maurer   v. 200119 - license see nU.go
+// (c) Christian Maurer   v. 231220 - license see nU.go
 
-import "nU/dgra/internal"
+import
+  "nU/dgra/internal"
+const (
+  candidate = iota
+  lost
+  won
+)
 
-const (candidate = iota; lost; won)
-
-func (x *distributedGraph) hirschbergSinclair() {
+func (x *distributedGraph) HirschbergSinclair() {
   x.connect (internal.New())
   defer x.fin()
   maxnum := uint(1)

@@ -2,11 +2,12 @@ package rw
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-import . "sync"
-
-type readerWriter struct {
-  RWMutex
-}
+import
+  . "sync"
+type
+  readerWriter struct {
+                      RWMutex
+                      }
 
 func newG() ReaderWriter {
   return new(readerWriter)

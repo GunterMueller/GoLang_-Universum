@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 200728 - license see µU.go
+// (c) Christian Maurer   v. 231229 - license see µU.go
 
 // >>> Helary, J. M., Raynal, M.:
 //     Depth-first traversal and virtual ring construction in distributed Systems.
@@ -21,8 +21,6 @@ func (x *distributedGraph) HelaryRaynal() {
   if x.me == x.root {
     x.parent = x.root
     us := append(UintStream {DISCOVER}, x.me)
-    x.log("send DISCOVER to", x.nr[0])
-//    x.ch[0].Send (us)
     x.send (0, us)
     x.child[0] = true
   }
@@ -30,7 +28,7 @@ func (x *distributedGraph) HelaryRaynal() {
     go func (j uint) {
       loop:
       for {
-        t := x.ch[j].Recv() // dirty trick to terminate the algorithm:
+        t := x.recv (j) // dirty trick to terminate the algorithm:
         if t == nil {   // no more input available or use of closed network connection:
           chanus <- nil // then force termination of for-loop below
           break loop    // and terminate goroutine
@@ -73,28 +71,20 @@ func (x *distributedGraph) HelaryRaynal() {
       us = append(us, x.me)
       if ! existUnvisitedNeighbours {
         us[0] = RETURN
-        x.log("send RETURN to", x.nr[j])
-//        x.ch[j].Send (us)
         x.send (j, us)
       } else { // existUnvisitedNeighbours
-        x.log("send DISCOVER to", x.nr[k])
-//        x.ch[k].Send (us) // DISCOVER
         x.send (k, us) // DISCOVER
         x.child[k] = true
       }
     } else { // us[0] == RETURN
       if existUnvisitedNeighbours {
         us[0] = DISCOVER
-        x.log("send DISCOVER to", x.nr[k])
-//        x.ch[k].Send (us)
         x.send (k, us)
         x.child[k] = true
       } else { // ! existUnvisitedNeighbours
         if x.parent == x.me {
           return
         } else {
-          x.log("send RETURN to", x.parent)
-//          x.ch[x.channel(x.parent)].Send (us)
           x.send (x.channel(x.parent), us)
         }
       }

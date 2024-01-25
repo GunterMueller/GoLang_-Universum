@@ -2,11 +2,13 @@ package lr
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import . "nU/obj"
-
-type guardedSelect struct {
-  inL, outL, inR, outR chan any
-}
+import
+  . "nU/obj"
+type
+  guardedSelect struct {
+             inL, outL,
+             inR, outR chan any
+                       }
 
 func newGS() LeftRight {
   x := new(guardedSelect)

@@ -2,7 +2,8 @@ package lr
 
 // (c) Christian Maurer   v. 210123 - license see nU.go
 
-type LeftRight interface { // Protokolle für das Links-Rechts-Problem
+type
+  LeftRight interface { // Protokolle für das Links-Rechts-Problem
 
 // Pre: The calling goroutine is notr a rightie.
 // The calling goroutine is a leftie; no goroutine is a rightie.

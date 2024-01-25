@@ -2,11 +2,14 @@ package lock
 
 // (c) Christian Maurer   v. 190312 - license see nU.go
 
-import ("nU/atomic"; . "nU/obj")
-
-type fa struct {
-  uint
-}
+import (
+  "nU/atomic"
+  . "nU/obj"
+)
+type
+  fa struct {
+            uint
+            }
 
 func newFA() Locker {
   return new (fa)

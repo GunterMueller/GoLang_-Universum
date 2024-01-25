@@ -2,7 +2,8 @@ package sem
 
 // (c) Christian Maurer   v. 170121 - license see nU.go
 
-import "sync"
+import
+  "sync"
 
 type correct struct {
   int "value"

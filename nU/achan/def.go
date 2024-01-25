@@ -2,7 +2,8 @@ package achan
 
 // (c) Christian Maurer   v. 220801 - license see nU.go
 
-type AsynchronousChannel interface {
+type
+  AsynchronousChannel interface {
 
   Send (a any)
   Recv() any

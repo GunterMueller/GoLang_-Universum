@@ -2,12 +2,13 @@ package asem
 
 // (c) Christian Maurer   v. 170410 - license see nU.go
 
-import "nU/sem"
-
-type naive struct {
-  uint32 "number of processes allowed to use the critical section, that shall be protected by the semaphore"
-  sem.Semaphore
-}
+import
+  "nU/sem"
+type
+  naive struct {
+               uint32 "Anzahl der Prozesse, die den k.A. betreten dürfen, der durch das Semaphor geschützt werden soll"
+               sem.Semaphore
+               }
 
 func newNaive (n uint) AddSemaphore {
   return &naive { uint32(n), sem.New (n) }

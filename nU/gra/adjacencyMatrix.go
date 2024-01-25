@@ -2,7 +2,10 @@ package gra
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/adj")
+import (
+  . "nU/obj"
+  "nU/adj"
+)
 
 func (x *graph) Matrix() adj.AdjacencyMatrix {
   n := x.Num()
@@ -22,7 +25,7 @@ func (x *graph) Matrix() adj.AdjacencyMatrix {
 }
 
 func (x *graph) SetMatrix (matrix adj.AdjacencyMatrix) {
-  if x.bool == matrix.Symmetric() { panic ("gra.SetMatrix: x directed, matrix not") }
+  if x.directed == matrix.Symmetric() { panic ("gra.SetMatrix: x directed, matrix not") }
   m := matrix.Num()
   for i := uint(0); i < m; i++ {
     x.Ins (Clone(matrix.Vertex (i)))

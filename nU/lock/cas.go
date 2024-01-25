@@ -2,11 +2,14 @@ package lock
 
 // (c) Christian Maurer   v. 190323 - license see nU.go
 
-import (. "nU/obj"; . "nU/atomic")
-
-type cas struct {
-  uint "0 or 1, initially 0"
-}
+import (
+  . "nU/obj"
+  . "nU/atomic"
+)
+type
+  cas struct {
+             uint "0 or 1, initially 0"
+             }
 
 func newCAS() Locker {
   return new(cas)

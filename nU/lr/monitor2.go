@@ -2,11 +2,12 @@ package lr
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import "nU/mon"
-
-type monitor2 struct {
-  mon.Monitor
-}
+import
+  "nU/mon"
+type
+  monitor2 struct {
+                  mon.Monitor
+                  }
 
 func newM2() LeftRight {
   x := new(monitor2)

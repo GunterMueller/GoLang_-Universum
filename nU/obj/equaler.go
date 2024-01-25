@@ -4,7 +4,8 @@ package obj
 
 import "reflect"
 
-type Equaler interface {
+type
+  Equaler interface {
 
 // Returns true, iff the x has the same type as y
 // and coincides with it in all its value[s].

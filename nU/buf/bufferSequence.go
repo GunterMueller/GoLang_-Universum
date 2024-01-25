@@ -2,12 +2,15 @@ package buf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import (. "nU/obj"; "nU/seq")
-
-type bufferSeq struct {
-  any "Musterobjekt"
-  seq.Sequence
-}
+import (
+  . "nU/obj"
+  "nU/seq"
+)
+type
+  bufferSeq struct {
+                   any "Musterobjekt"
+                   seq.Sequence
+                   }
 
 func newS (a any) Buffer {
   x := new(bufferSeq)

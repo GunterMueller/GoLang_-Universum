@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 221210 - license see µU.go
+// (c) Christian Maurer   v. 231225 - license see µU.go
 
 import (
   "sort"
@@ -82,14 +82,14 @@ func (x *graph) defineMarked (v *vertex) {
     }
   }
   for {
-    v.bool = true
+    v.marked = true
     if v == x.colocal { return }
     n := v.nbPtr.nextNb
     for n.to != v.predecessor {
       n = n.nextNb
       if n == v.nbPtr { ker.Oops() }
     }
-    n.edgePtr.bool = true
+    n.edgePtr.marked = true
     v = v.predecessor
   }
 }

@@ -1,6 +1,6 @@
 package edg
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 231226 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,7 +11,7 @@ import (
 )
 type
   edge struct {
-              bool "directed"
+     directed bool
               any "value" // uint[8,16,32,64] or Valuator
        x0, y0,
        x1, y1 int
@@ -24,7 +24,7 @@ var
 
 func new_(d bool, a any) Edge {
   x := new(edge)
-  x.bool = d
+  x.directed = d
   if a == nil {
     a = uint(1)
   }
@@ -44,11 +44,11 @@ func (x *edge) imp (Y any) *edge {
 }
 
 func (x *edge) Directed() bool {
-  return x.bool
+  return x.directed
 }
 
 func (x *edge) Direct (b bool) {
-  x.bool = b
+  x.directed = b
 }
 
 func (e *edge) SetPos0 (x, y int) {
@@ -89,7 +89,7 @@ func (x *edge) Leq (Y any) bool {
 
 func (x *edge) Copy (Y any) {
   y := x.imp (Y)
-  x.bool = y.bool
+  x.directed = y.directed
   x.any = Clone(y.any)
   x.wd, x.label = y.wd, y.label
   x.x0, x.y0, x.x1, x.y1 = y.x0, y.y0, y.x1, y.y1
@@ -97,7 +97,7 @@ func (x *edge) Copy (Y any) {
 }
 
 func (x *edge) Clone() any {
-  y := new_ (x.bool, x.any)
+  y := new_ (x.directed, x.any)
   y.Copy (x)
   return y
 }
@@ -133,7 +133,7 @@ func (x *edge) Write1 (a bool) {
   }
   scr.ColourF (f)
   scr.Line (x.x0, x.y0, x.x1, x.y1)
-  if x.bool {
+  if x.directed {
     x0, y0 := (x.x0 + 4 * x.x1) / 5, (x.y0 + 4 * x.y1) / 5
     scr.CircleFull (x0, y0, 4)
   }
@@ -188,7 +188,7 @@ func (x *edge) Codelen() uint {
 
 func (x *edge) Encode() Stream {
   bs := make (Stream, x.Codelen())
-  bs[0] = 0; if x.bool { bs[0] = 1 }
+  bs[0] = 0; if x.directed { bs[0] = 1 }
   i, a := uint(1), Codelen(x.any)
   copy (bs[i:i+a], Encode(x.any))
   i += a
@@ -217,7 +217,7 @@ func (x *edge) Encode() Stream {
 }
 
 func (x *edge) Decode (bs Stream) {
-  x.bool = bs[0] == 1
+  x.directed = bs[0] == 1
   i, a := uint(1), Codelen(x.any)
   x.any = Decode (x.any, bs[i:i+a])
   i += a

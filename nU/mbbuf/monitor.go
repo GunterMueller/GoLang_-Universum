@@ -2,11 +2,14 @@ package mbbuf
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import ("nU/bbuf"; "nU/mon")
-
-type monitor struct {
-  mon.Monitor
-}
+import (
+  "nU/bbuf"
+  "nU/mon"
+)
+type
+  monitor struct {
+                 mon.Monitor
+                 }
 
 func newM (a any, n uint) MBoundedBuffer {
   if a == nil || n == 0 { return nil }

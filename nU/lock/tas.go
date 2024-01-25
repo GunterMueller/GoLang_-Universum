@@ -2,11 +2,14 @@ package lock
 
 // (c) Christian Maurer   v. 190312 - license see nU.go
 
-import (. "nU/obj"; . "nU/atomic")
-
-type tas struct {
-  bool "true, iff locked"
-}
+import (
+  . "nU/obj"
+  . "nU/atomic"
+)
+type
+  tas struct {
+             bool "true, iff locked"
+             }
 
 func newTAS() Locker {
   return new(tas)

@@ -2,9 +2,10 @@ package smok
 
 // (c) Christian Maurer   v. 171102 - license see nU.go
 
-type channel struct {
-  ch []chan uint
-}
+type
+  channel struct {
+              ch []chan uint
+                 }
 
 func newCh() Smokers {
   x := new(channel)

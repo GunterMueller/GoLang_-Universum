@@ -1,13 +1,12 @@
 package dgra
 
-// (c) Christian Maurer   v. 200728 - license see µU.go
+// (c) Christian Maurer   v. 231229 - license see µU.go
 
 func (x *distributedGraph) Dfselect() {
   x.connect (x.leader)
   defer x.fin()
   if x.me == x.root { // root sends the first message
     x.parent = x.root // inf + 1 // trick, see below
-//    x.ch[0].Send (x.leader)
     x.send (0, x.leader)
     x.child[0] = true
     x.visited[0] = true
@@ -15,7 +14,7 @@ func (x *distributedGraph) Dfselect() {
   x.distance, x.diameter = x.n, inf // both variables only used for temporary information
   for i := uint(0); i < x.n; i++ {
     go func (j uint) {
-      a := x.ch[j].Recv().(uint)
+      a := x.recv (j).(uint)
       v, t := a % inf, a / inf
       mutex.Lock()
       if v > x.me {
@@ -33,7 +32,7 @@ func (x *distributedGraph) Dfselect() {
           t++
           if u == x.n { // all neighbours visited
             t++
-            k = x.channel(x.parent) // send echo back to x.parent
+            k = x.channel (x.parent) // send echo back to x.parent
           }
         } else { // parent is already defined
           k = j // send echo back to sender
@@ -54,7 +53,6 @@ func (x *distributedGraph) Dfselect() {
         x.distance, x.diameter = k, t
         x.child[k] = true // temptative
       }
-//      x.ch[k].Send(x.leader + inf * t)
       x.send (k, x.leader + inf * t)
       mutex.Unlock()
       done <- 0
@@ -66,15 +64,13 @@ func (x *distributedGraph) Dfselect() {
   if x.me == x.root {
     for i := uint(0); i < x.n; i++ {
       if x.child[i] {
-//        x.ch[i].Send(x.leader)
         x.send (i, x.leader)
       }
     }
   } else {
-    x.leader = x.ch[x.channel(x.parent)].Recv().(uint)
+    x.leader = x.recv (x.channel(x.parent)).(uint)
     for i := uint(0); i < x.n; i++ {
       if x.child[i] {
-//        x.ch[i].Send(x.leader)
         x.send (i, x.leader)
       }
     }

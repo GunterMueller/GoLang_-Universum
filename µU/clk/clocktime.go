@@ -1,6 +1,6 @@
 package clk
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 240103 - license see µU.go
 
 import (
   . "µU/ker"
@@ -62,7 +62,7 @@ func (x *clocktime) imp(Y any) *clocktime {
 }
 
 func (x *clocktime) Update() {
-  x.hour, x.minute, x.second = time.UpdateTime()
+  x.hour, x.minute, x.second = time.ActTime()
 }
 
 func (x *clocktime) Empty() bool {

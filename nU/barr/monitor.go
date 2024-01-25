@@ -2,11 +2,12 @@ package barr
 
 // (c) Christian Maurer   v. 220809 - license see nU.go
 
-import "nU/mon"
-
-type monitor struct {
-  mon.Monitor
-}
+import
+  "nU/mon"
+type
+  monitor struct {
+                 mon.Monitor
+                 }
 
 func newM (n uint) Barrier {
   involved := n

@@ -2,7 +2,8 @@ package smok
 
 // (c) Christian Maurer   v. 171227 - license see nU.go
 
-type Smokers interface {
+type
+  Smokers interface {
 
 // Vor.: u < 3.
 // Die aufrufende Wirtin hat die zu u komplementären Utensilien

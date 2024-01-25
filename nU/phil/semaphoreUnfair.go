@@ -4,13 +4,14 @@ package phil
 
 // >>> Unfair solution with semaphores, danger of starvation
 
-import "sync"
-
-type semaphoreUnfair struct {
-  plate []sync.Mutex
-}
-
-var m sync.Mutex
+import
+   "sync"
+type
+   semaphoreUnfair struct {
+                    plate []sync.Mutex
+                          }
+var
+  m sync.Mutex
 
 func (x *semaphoreUnfair) test (p uint) {
   if status[p] == hungry &&

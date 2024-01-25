@@ -2,11 +2,12 @@ package smok
 
 // (c) Christian Maurer   v. 171102 - license see nU.go
 
-import "nU/cmon"
-
-type condMonitor struct {
-  cmon.Monitor
-}
+import
+  "nU/cmon"
+type
+  condMonitor struct {
+                     cmon.Monitor
+                     }
 
 func newCM() Smokers {
   var avail [3]bool

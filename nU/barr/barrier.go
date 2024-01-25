@@ -4,13 +4,14 @@ package barr
 
 // >>> implementation with semaphores
 
-import "nU/sem"
+import
+  "nU/sem"
 
 type barrier struct {
-  uint "number of involved processes"
-  waiting uint
-  mutex, s sem.Semaphore
-}
+               uint "Anzahl der beteiligten Prozesse"
+            waiting uint
+           mutex, s sem.Semaphore
+                    }
 
 func new_(m uint) Barrier {
   if m < 2 { return nil }

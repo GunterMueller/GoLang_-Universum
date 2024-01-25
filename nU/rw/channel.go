@@ -2,9 +2,11 @@ package rw
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-type channel struct {
-  inR, outR, inW, outW chan int
-}
+type
+  channel struct {
+       inR, outR,
+       inW, outW chan int
+                 }
 
 func newCh() ReaderWriter {
   x := new(channel)

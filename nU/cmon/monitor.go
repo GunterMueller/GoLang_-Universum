@@ -2,18 +2,22 @@ package cmon
 
 // (c) Christian Maurer   v. 171125 - license see nU.go
 
-import ( "sync"; . "nU/obj"; "nU/perm";)
-
-type monitor struct {
-  uint "number of monitor functions"
-  sync.Mutex "monitor entry queue"
-  s []sync.Mutex "condition variable queues"
-  ns []uint "numbers of goroutines blocked on s"
-  u sync.Mutex "urgent queue"
-  nu uint "number of goroutines blocked on urgent"
-  NFuncSpectrum "monitor functions"
-  CondSpectrum "conditions"
-  perm.Permutation "indeterminism"
+import (
+  "sync"
+  . "nU/obj"
+  "nU/perm"
+)
+type
+  monitor struct {
+                 uint "Anzahl der Monitorfunktionen"
+                 sync.Mutex "Monitor-Eintrittswarteschlange"
+               s []sync.Mutex "Bedingungsvariablenschlangen"
+              ns []uint "Anzahl der Goroutinen, die auf s blockiert sind"
+               u sync.Mutex "Dringlichkeitswarteschlange"
+              nu uint "Anzahl der Goroutinen, die auf u blockiert sind"
+                 NFuncSpectrum "Monitor-Funktionen"
+                 CondSpectrum "Bedingungen"
+                 perm.Permutation "Indeterminismus"
 }
 
 func new_(n uint, f NFuncSpectrum, c CondSpectrum) Monitor {

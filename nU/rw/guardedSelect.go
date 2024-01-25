@@ -2,11 +2,13 @@ package rw
 
 // (c) Christian Maurer   v. 220702 - license see nU.go
 
-import . "nU/obj"
-
-type guardedSelect struct {
-  inR, outR, inW, outW chan any
-}
+import
+  . "nU/obj"
+type
+  guardedSelect struct {
+             inR, outR,
+             inW, outW chan any
+                       }
 
 func newGS() ReaderWriter {
   x := new(guardedSelect)

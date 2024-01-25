@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 171206 - license see µU.go
+// (c) Christian Maurer   v. 231229 - license see µU.go
 
 func (x *distributedGraph) Dfs() {
   x.connect (x.time) // Netzkanäle sind vom Typ uint
@@ -8,16 +8,14 @@ func (x *distributedGraph) Dfs() {
   if x.me == x.root {
     x.parent = x.root
     x.time = 0
+    x.send (0, x.time) // root sendet als Erster
     x.child[0] = true
     x.visited[0] = true
-//    x.ch[0].Send(x.time) // root sendet als Erster
-    x.send (0, x.time) // root sendet als Erster
   }
   x.distance, x.diameter = x.n, inf
   for i := uint(0); i < x.n; i++ {
     go func (j uint) {
-      t := x.ch[j].Recv().(uint)
-// x.log2("recv", t, "from", x.nr[j])
+      t := x.recv (j).(uint)
       mutex.Lock()
       if x.distance == j && x.diameter == t { // t unverändert
                            // aus dem j-ten Netzkanal zurück,
@@ -60,7 +58,6 @@ func (x *distributedGraph) Dfs() {
         x.distance, x.diameter = k, t // k, t für o.a. Prüfung retten
         x.child[k] = true // versuchsweise
       }
-//      x.ch[k].Send(t) // für k == u Probe, sonst Echo
       x.send (k, t) // für k == u Probe, sonst Echo
       mutex.Unlock()
       done <- 0
