@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 230112 - license see µU.go
+// (c) Christian Maurer   v. 240311 - license see µU.go
 
 import (
   . "µU/obj"
@@ -52,3 +52,6 @@ type
 
 // Returns a new text of length n.
 func New (n uint) Text { return new_(n) }
+
+// Returns a new text of length len(s) with the content s.
+func Def (s string) Text { return def(s) }

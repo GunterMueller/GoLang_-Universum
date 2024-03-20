@@ -19,8 +19,7 @@ type
                     any "Musterobjekt"
                     uint "Kapazität des Kanals"
             in, out chan any // nur für netChannelN
-           isServer,
-             oneOne bool
+   isServer, oneOne bool
                     net.Conn
                     net.Listener
                     Stream "Puffer zur Datenübertragung"

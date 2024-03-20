@@ -1,6 +1,6 @@
 package char
 
-// (c) Christian Maurer   v. 220530 - license see µU.go
+// (c) Christian Maurer   v. 240311 - license see µU.go
 
 const (
   Ä                = byte(0xc4) // 'Ä'  196
@@ -13,7 +13,6 @@ const (
   Cent             = byte(0xa2) // '¢'  162
   Pound            = byte(0xa3) // '£'  163
   Euro             = byte(0xa4) // '€'  164
-  Yen              = byte(0xa5) // '¥'  165
   Paragraph        = byte(0xa7) // '§'  167
   Copyright        = byte(0xa9) // '©'  169
   Not              = byte(0xac) // '¬'  172

@@ -1,15 +1,16 @@
 package set
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 240318 - license see µU.go
 
 import
   . "µU/obj"
 type
   Set interface {
 
+  Equaler
   Collector
 
-// (My work is so secret, that even I don't know what I'm doing.)
+// My work is so secret, that even I don't know what I'm doing.
   Write (x0, x1, y, dy uint, f func (any) string)
   Write1 (f func (any) string)
 }

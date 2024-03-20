@@ -1,9 +1,10 @@
 package errh
 
-// (c) Christian Maurer   v. 231005 - license see µU.go
+// (c) Christian Maurer   v. 240317 - license see µU.go
 
 import (
   "strconv"
+  "µU/env"
   "µU/char"
   "µU/str"
   "µU/kbd"
@@ -49,18 +50,31 @@ var (
 
 func init() {
   for i, l := range (license) { license[i] = str.Lat1 (l) }
-//                                         1         2         3         4         5         6         7
-//                               012345678901234567890123456789012345678901234567890123456789012345678901234567
-  ToWait            = str.Lat1 ("bitte etwas Geduld ...")
-  ToContinue        = str.Lat1 ("weiter: Enter")
-  ToContinueOrNot   = str.Lat1 ("weiter: Enter                                                      fertig: Esc")
-  ToCancel          = str.Lat1 ("abbrechen: Esc")
-  ToScroll          = str.Lat1 ("blättern: Pfeiltasten                                           abbrechen: Esc")
-  ToSelect          = str.Lat1 ("blättern: Pfeiltasten              auswählen: Enter             abbrechen: Esc")
-  ToChange          = str.Lat1 ("blättern: Pfeiltasten       ändern: Enter       abbrechen: Esc")
-  ToSwitch          = str.Lat1 ("blättern: Pfeiltasten    auswählen: Enter    umschalten: Tab    abbrechen: Esc")
-  ToSelectWithPrint = str.Lat1 ("blättern: Pfeiltasten    auswählen: Enter    drucken: Druck     abbrechen: Esc")
-  ToPrint           = str.Lat1 ("ausdrucken: Druck                                         fertig: andere Taste")
+//                                           1         2         3         4         5         6         7
+//                                 012345678901234567890123456789012345678901234567890123456789012345678901234567
+  if env.E() {
+    ToWait            = str.Lat1 ("please be patien ...")
+    ToContinue        = str.Lat1 ("next: Enter")
+    ToContinueOrNot   = str.Lat1 ("next: Enter                                                      finished: Esc")
+    ToCancel          = str.Lat1 ("cancel: Esc")
+    ToScroll          = str.Lat1 ("browse: arrow keys                                                 cancel: Esc")
+    ToSelect          = str.Lat1 ("browse: arrow keys                 select: Enter                   cancel: Esc")
+    ToChange          = str.Lat1 ("browse: arrow keys                 change: Enter                   cancel: Esc")
+    ToSwitch          = str.Lat1 ("browse: arrow keys        select: Enter        toggle: Tab         cancel: Esc")
+    ToSelectWithPrint = str.Lat1 ("browse: arrow keys        select: Enter        print: Druck        cancel: Esc")
+    ToPrint           = str.Lat1 ("print: Prt                                                 finished: other key")
+  } else {
+    ToWait            = str.Lat1 ("bitte etwas Geduld ...")
+    ToContinue        = str.Lat1 ("weiter: Enter")
+    ToContinueOrNot   = str.Lat1 ("weiter: Enter                                                      fertig: Esc")
+    ToCancel          = str.Lat1 ("abbrechen: Esc")
+    ToScroll          = str.Lat1 ("blättern: Pfeiltasten                                           abbrechen: Esc")
+    ToSelect          = str.Lat1 ("blättern: Pfeiltasten              auswählen: Enter             abbrechen: Esc")
+    ToChange          = str.Lat1 ("blättern: Pfeiltasten       ändern: Enter       abbrechen: Esc")
+    ToSwitch          = str.Lat1 ("blättern: Pfeiltasten    auswählen: Enter    umschalten: Tab    abbrechen: Esc")
+    ToSelectWithPrint = str.Lat1 ("blättern: Pfeiltasten    auswählen: Enter    drucken: Druck     abbrechen: Esc")
+    ToPrint           = str.Lat1 ("ausdrucken: Druck                                         fertig: andere Taste")
+  }
 }
 
 func pre() {
@@ -249,7 +263,12 @@ func error2Pos (s string, n uint, s1 string, n1 uint, l, c uint) {
 
 func confirmed() bool {
   pre()
-  s := "Sind Sie sicher?  j(a / n(ein"
+  s := ""
+  if env.E() {
+    s = "Are you sure?  y(es / n(o"
+  } else {
+    s = "Sind Sie sicher?  j(a / n(ein"
+  }
   w := NColumns()
   str.Center (&s, w)
   l := NLines() - 1
@@ -259,7 +278,12 @@ func confirmed() bool {
   Write (s, l, 0)
   Unlock()
   b, _, _ := kbd.Read()
-  a := char.Lower(b) == 'j'
+  var a bool
+  if env.E() {
+    a = char.Lower(b) == 'y'
+  } else {
+    a = char.Lower(b) == 'j'
+  }
   Restore (l, 0, w, 1)
   post()
   return a
@@ -267,7 +291,12 @@ func confirmed() bool {
 
 func confirmedYou() bool {
   pre()
-  s := "Bist Du sicher?  j(a / n(ein"
+  s := ""
+  if env.E() {
+    s = "Are you sure?  y(es / n(o"
+  } else {
+    s = "Bist Du sicher?  j(a / n(ein"
+  }
   w := NColumns()
   str.Center (&s, w)
   l := NLines() - 1
@@ -277,7 +306,12 @@ func confirmedYou() bool {
   Write (s, l, 0)
   Unlock()
   b, _, _ := kbd.Read()
-  a := char.Lower(b) == 'j'
+  var a bool
+  if env.E() {
+    a = char.Lower(b) == 'y'
+  } else {
+    a = char.Lower(b) == 'j'
+  }
   Restore (l, 0, w, 1)
   post()
   return a
@@ -403,7 +437,12 @@ func help (H []string) {
 
 func help1() {
   pre()
-  s := "kurze Bedienungshinweise: F1-Taste"
+  s := ""
+  if env.E() {
+    s = "short operating instructions: F1-key"
+  } else {
+    s = "kurze Bedienungshinweise: F1-Taste"
+  }
   w := uint(len (s))
   l, c := (NLines() - 3) / 2, (NColumns() - w - 4) / 2
   t := str.New (w + 4)

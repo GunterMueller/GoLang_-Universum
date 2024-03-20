@@ -7,7 +7,7 @@ import (
   "µU/col"
 )
 const
-  M = 20 // 1<<64 - 2 = 18446744073709551614 has 20 digits
+  M = 20 // 1<<64 - 1 = 18446744073709551615 has 20 digits
 type
   Natural interface { // natural numbers < 2^64 - 1.
 

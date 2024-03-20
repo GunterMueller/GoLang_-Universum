@@ -1,0 +1,5 @@
+  if env.E() {
+    errh.Hint ("edit strings")
+  } else {
+    errh.Hint ("Zeichenketten eingeben")
+  }

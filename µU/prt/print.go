@@ -1,9 +1,10 @@
 package prt
 
-// (c) Christian Maurer   v. 230923 - license see µU.go
+// (c) Christian Maurer   v. 240317 - license see µU.go
 
 import (
   "os/exec"
+  "µU/env"
   "µU/time"
   "µU/str"
   "µU/errh"
@@ -48,7 +49,11 @@ func setFont (f Font) {
 func possible() bool {
   p := files.IsFile ("/usr/bin/tex")
   if ! p {
-    errh.Error0 ("Es kann nicht gedruckt werden, weil TeX nicht installiert ist.")
+    if env.E() {
+      errh.Error0 ("It is not possible to print, because TeX is not installed.")
+    } else {
+      errh.Error0 ("Es kann nicht gedruckt werden, weil TeX nicht installiert ist.")
+    }
   }
   return p
 }

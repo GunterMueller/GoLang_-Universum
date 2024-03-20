@@ -1,16 +1,17 @@
 package env
 
-// (c) Christian Maurer   v. 210314 - license see µU.go
+// (c) Christian Maurer   v. 240317 - license see µU.go
 
 import (
   "os"
   "strconv"
 )
 var
-  under_C bool
+  under_C, english bool
 
 func init() {
   under_C = val ("DISPLAY") == ""
+  english = false
 }
 
 func underC() bool {
@@ -93,4 +94,12 @@ func n (i uint) uint {
 
 func call() string {
   return os.Args[0]
+}
+
+func setE (b bool) {
+  english = b
+}
+
+func e() bool {
+  return english
 }

@@ -1,6 +1,6 @@
 package audio
 
-// (c) Christian Maurer   v. 221001 - license see µU.go
+// (c) Christian Maurer   v. 240319 - license see µU.go
 
 import
   . "µU/obj"
@@ -17,5 +17,3 @@ type
 }
 
 func New() Audio { return new_() }
-
-func Texdef() string { return texdef() }

@@ -30,10 +30,7 @@ var (
 )
 
 func init() {
-  var e error
-  localname, e = os.Hostname()
-  if e != nil { Panic("hostname not defined") }
-  localHost = localhost()
+  localname, _ = os.Hostname()
 }
 
 func new_() Host {
@@ -114,7 +111,7 @@ func (x *host) Copy (Y any) {
 // println ("len x.name ==", n, "x.name[0] =", x.name[0])
 //  for i, b := range y.ip.To4() { x.ip[i] = b } // changes ip of h0 - WHY THE HELL ???
   if n > 0 {
-    if ! x.Defined(x.name[0]) { Panic("shit: x.name[0] = " + x.name[0] + "!") } // so geht's
+    if ! x.Defined (x.name[0]) { Panic("shit: x.name[0] = " + x.name[0] + "!") } // so geht's
   }
 }
 
@@ -193,12 +190,13 @@ func (x *host) Defined (s string) bool {
   x.Clr()
   x.ip = net.ParseIP(s) // s daraufhin prüfen, ob es eine IP-Nummer ist
   if x.ip != nil {
-    println ("host.Defined: s ist IP-Nummer mit x.ip =", x.ip.String())
+    // println ("host.Defined: s ist IP-Nummer mit x.ip =", x.ip.String())
     // s ist eine IP-Nummer in der Form "a.b.c.d"
   } else { // s ist keine IP-Nummer, sondern muss auf hostname getestet werden
-//    println ("host.Defined: x.ip == nil")
-    addr, err := net.LookupHost(s) // schau'mer moi, ob's oana is
-    if err == nil { // mir hoam's, is oana
+    // println ("host.Defined: x.ip == nil", s)
+    addr, e := net.LookupHost (s) // schau'mer moi, ob's oana is
+    if e == nil { // mir hoam's, is oana
+      // println ("len(addr) ==", len(addr))
       s = addr[0] // ist die IP-Nummer
       if s == providerIP { return false } // chock out above provider
       if s == nullIP.String() { // s == "0.0.0.0"
@@ -219,11 +217,12 @@ func (x *host) Defined (s string) bool {
       }
       x.ip = net.ParseIP(s) // .To4()
 //      println ("host.Defined: len(addr) > 1 => x.ip =", x.ip.String(), len(x.ip))
-    } else { // err != nil
+    } else { // e != nil
       x.Clr()
       return false
     }
   }
+//  if x.ip == nil { panic ("Katzenkacke") }
   var e error // x.name herausfinden
   if x.name, e = net.LookupAddr(s); e == nil {
 //    println ("host.Defined: Ende => x.name[0], x.ip =", x.name[0], ", ", x.ip.String())
@@ -307,8 +306,8 @@ func local (s string) bool {
 */
 
 func localhost() Host {
-  if ! localHost.Defined(localname) { Panic ("Hostname not defined") }
+  if ! localHost.Defined (localname) { Panic ("Hostname not defined") }
   localIP = localHost.(*host).ip
-//  n := len(localHost.(*host).name); if n == 0 { ker.Panic("localhost: jaul") }
+//  n := len(localHost.(*host).name); if n == 0 { Panic("localhost: jaul") }
   return localHost.Clone().(*host)
 }

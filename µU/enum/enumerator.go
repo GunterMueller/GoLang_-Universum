@@ -1,8 +1,9 @@
 package enum
 
-// (c) Christian Maurer   v. 231228 - license see µU.go
+// (c) Christian Maurer   v. 240317 - license see µU.go
 
 import (
+  "µU/env"
   "µU/ker"
   . "µU/obj"
   "µU/col"
@@ -80,7 +81,13 @@ func (x *enumerator) Setk (sk ...string) {
     x.hintk += x.k[i]
     x.hintk += " "
   }
-  x.hintk += " (Auswahl: F1)"
+  if uint(len(x.hintk)) + 16 < scr.NColumns() {
+    if env.E() {
+      x.hintk += " (selection: F2)"
+    } else {
+      x.hintk += " (Auswahl: F2)"
+    }
+  }
 }
 
 func (x *enumerator) SetEdit (name string, l, c uint) {
@@ -92,13 +99,21 @@ func (x *enumerator) SetEdit (name string, l, c uint) {
   x.w = w
   bx.Wd (w)
   bx.Colours (col.FlashWhite(), col.Black())
-  errh.Hint ("Zeichenketten eingeben")
+  if env.E() {
+    errh.Hint ("edit strings")
+  } else {
+    errh.Hint ("Zeichenketten eingeben")
+  }
   for {
     s := str.New (x.w)
     bx.Wd (x.w)
     bx.Edit (&s, l, c)
     if str.Empty (s) {
-      errh.Error0 ("Zeichenkette leer")
+      if env.E() {
+        errh.Error0 ("string empty")
+      } else {
+        errh.Error0 ("Zeichenkette leer")
+      }
     } else {
       if k, _ := kbd.LastCommand(); k == kbd.Esc {
         break
@@ -154,13 +169,13 @@ func (x *enumerator) SetEditk (name string, l, c uint) {
 func (x *enumerator) Get (name string) {
   filename := name + suffix
   if pseq.Length (filename) == 0 {
-    ker.Panic ("die Datei " + filename + " existiert nicht")
+    ker.Panic ("file " + filename + " does not exist")
   }
   file := pseq.New (x.string)
   file.Name (filename)
   n := file.Num()
   if n < 4 {
-    ker.Panic ("die Datei " + filename + " ist zu kurz")
+    ker.Panic ("file " + filename + " is too short")
   }
   file.Seek (0)
   s := file.Get().(string)
@@ -173,7 +188,7 @@ func (x *enumerator) Get (name string) {
   if x.wk > 0 {
     filename = x.namek + suffix
     if pseq.Length (filename) == 0 {
-      ker.Panic ("die Datei " + filename + " existiert nicht")
+      ker.Panic ("file " + filename + " does not exist")
     }
     filek := pseq.New (str.New(x.wk))
     file.Name (filename)
@@ -303,7 +318,7 @@ func (x *enumerator) Edit (l, c uint) {
           x.Select (l, c)
           goto X
         }
-      case kbd.Help:
+      case kbd.Search:
         x.Select (l, c)
         goto X
       }
@@ -320,7 +335,11 @@ func (x *enumerator) Edit (l, c uint) {
         }
       }
     }
-    errh.Error0 ("falsche Eingabe")
+    if env.E() {
+      errh.Error0 ("incorrect input")
+    } else {
+      errh.Error0 ("falsche Eingabe")
+    }
   }
 X:
   x.Write (l, c)

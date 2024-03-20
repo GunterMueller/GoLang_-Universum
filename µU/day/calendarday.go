@@ -43,10 +43,16 @@ var (
   currentCentury uint
   todayCode uint16
   nameMonth = [maxMonth+1]string {"         ",
+/*/
                                   "Januar   ", "Februar  ", "März     ",
                                   "April    ", "Mai      ", "Juni     ",
                                   "Juli     ", "August   ", "September",
                                   "Oktober  ", "November ", "Dezember "}
+/*/
+                                  "January  ", "February ", "March    ",
+                                  "April    ", "Mai      ", "June     ",
+                                  "July     ", "August   ", "September",
+                                  "October  ", "November ", "December "}
   WdText = [NWeekdays]string {"Montag    ", "Dienstag  ", "Mittwoch  ",
                               "Donnerstag", "Freitag   ", "Sonnabend ", "Sonntag   "}
   WdShorttext = [NWeekdays]string {"Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"}

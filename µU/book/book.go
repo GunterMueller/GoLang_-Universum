@@ -1,23 +1,26 @@
 package book
 
-// (c) Christian Maurer   v. 230326 - license see µU.go
+// (c) Christian Maurer   v. 240318 - license see µU.go
 
 import (
+  "µU/env"
   . "µU/obj"
   "µU/kbd"
   "µU/col"
   "µU/scr"
   "µU/errh"
-  "µU/text"
   "µU/str"
+  "µU/text"
   "µU/bn"
   "µU/enum"
 )
 const (
-  lens = 20
-  lenc =  2
+  lenf = 20
   lena = 30
+  lenn =  2
   lent = 63
+  lenl = 22
+  lenlk = 3
   sep = ';'
   seps = ";"
 )
@@ -26,7 +29,11 @@ const (
   authorIndex
   numberIndex
   titleIndex
+  locationIndex
   nIndices
+)
+const (
+  field = "Gebiet"
 )
 type
   book struct {
@@ -35,57 +42,46 @@ type
      coauthor text.Text
               bn.Natural
         title,
-     cupboard,
-        floor text.Text
+     location text.Text
               }
 var
   actIndex = fieldIndex
 
 func new_() Book {
   x := new (book)
-  x.field = enum.Newk (lens, lenc)
-  x.field.Set ("Ägypten",              // w l 6 h
-               "Antike Biographie",    // w l 6 v
-               "Griechischer Text",    // w l 5 h
-               "Lateinischer Text",    // w l 5 h
-               "Rom-Roman",            // w l 5 v   p 5
-               "Rom-Krimi",            //           p 5 6
-               "Neuere Literatur",     // w r 8 h
-               "Italien-Roman",        // w r 8 v
-//                                     // w r 7 h          
-               "Theaterstück(e)",      // w r 7 hv
-               "Horror",               // w r 7 v
-               "Italien-Krimi",        // w r 6 hv  p 4
-//                                     // w r 5 hv  p 3
-               "Krimi",                // w r 4 hv
-               "Jugendbuch",           // w r 3 hv
-               "Englisch",             // w r 2 h
-               "Französisch",          // w r 2 h
-               "Italienisch",          // w r 2 h
-               "Griechisch",           // w r 2 h
-               "Lateinisch",           // w r 2 h
-               "Sachbuch",             // w r 2 h
-               "Pflanzen",             // w r 2 v
-               "Science Fiction",      // w r 2 v
-               "Klassische Literatur", // g r 4 hv
-               "Historischer Roman",   // g 5 3 hv
-//                                     // g r 2 h
-              )
-  x.field.Setk ("äg", "ab", "gt", "lt", "rr", "rk", "nl", "ir", "th", "ho", "ik", "kr",
-                "jb", "en", "fr", "it", "gr", "la", "sb", "pf", "sf", "kl", "hr")
+  x.field = enum.Newk (lenf, lenn)
+  if env.E() {
+// If you want to use the program "books",
+// you should adapt the following to your personal requirements.
+    x.field.Set ("Biography", "Classical Literature", "Crime Novel", "Roman")
+    x.field.Setk ("bi", "cl", "cn", "ro")
+  } else {
+// Wenn Sie das Programm "bücher" benutzen wollen,
+// passen Sie das Folgende an Ihre eigenen Anforderungen an.
+    x.field.Set ("Ägypten", "Antike Biographie", "Etrurien", "Griechenland",
+                 "Griechisch", "Griechischer Text", "Historischer Roman", "Horror",
+                 "Italien", "Italien-Krimi", "Italien-Roman", "Jugendbuch",
+                 "Klassische Literatur", "Krimi", "Kunst", "Lateinisch", "Lateinischer Text",
+                 "Neuere Literatur", "Orient", "Pflanzen", "Rom-Krimi",
+                 "Rom-Roman", "Sachbuch", "Science Fiction", "Theaterstück(e)", "XX")
+    x.field.Setk ("äg", "ab", "et", "gl",
+                  "gr", "gt", "hr", "ho",
+                  "il", "ik", "ir", "jb",
+                  "kl", "kr", "ku", "la", "lt",
+                  "nl", "or", "pf", "rk",
+                  "rr", "sb", "sf", "th", "xx")
+  }
   x.field.Colours (col.FlashWhite(), col.Blue())
   x.author = text.New (lena)
-  x.coauthor = text.New (lena)
-  x.Natural = bn.New (lenc)
-  x.title = text.New (lent)
-  x.cupboard = text.New (3)
-  x.floor = text.New (3)
-  x.Natural.Colours (col.FlashWhite(), col.DarkGray())
   x.author.Colours (col.Yellow(), col.Red())
+  x.coauthor = text.New (lena)
   x.coauthor.Colours (col.Yellow(), col.Red())
+  x.Natural = bn.New (lenn)
+  x.Natural.Colours (col.FlashWhite(), col.DarkGray())
+  x.title = text.New (lent)
   x.title.Colours (col.FlashWhite(), col.DarkGreen())
-  x.cupboard.Colours (col.FlashWhite(), col.Brown())
-  x.floor.Colours (col.FlashWhite(), col.Brown())
+  x.location = text.New (lenl)
+  x.location.Colours (col.FlashWhite(), col.Brown())
   return x
 }
 
@@ -97,11 +93,11 @@ func (x *book) imp (Y any) *book {
 
 func (x *book) Empty() bool {
   return x.field.Empty() &&
-         x.author.Empty() && x.coauthor.Empty() &&
+         x.author.Empty() &&
+         x.coauthor.Empty() &&
          x.Natural.Empty() &&
          x.title.Empty() &&
-         x.cupboard.Empty() &&
-         x.floor.Empty()
+         x.location.Empty()
 }
 
 func (x *book) Clr() {
@@ -110,14 +106,17 @@ func (x *book) Clr() {
   x.coauthor.Clr()
   x.Natural.Clr()
   x.title.Clr()
-  x.cupboard.Clr()
-  x.floor.Clr()
+  x.location.Clr()
 }
 
 func (x *book) Eq (Y any) bool {
   y := x.imp(Y)
-  return x.author.Eq (y.author) &&
-         x.title.Eq (y.title)
+  return x.field.Eq (y.field) &&
+         x.author.Eq (y.author) &&
+         x.coauthor.Eq (y.coauthor) &&
+         x.title.Eq (y.title) &&
+         x.Natural.Eq (y.Natural) &&
+         x.location.Eq (y.location)
 }
 
 func (x *book) Copy (Y any) {
@@ -127,8 +126,7 @@ func (x *book) Copy (Y any) {
   x.coauthor.Copy (y.coauthor)
   x.Natural.Copy (y.Natural)
   x.title.Copy (y.title)
-  x.cupboard.Copy (y.cupboard)
-  x.floor.Copy (y.floor)
+  x.location.Copy (y.location)
 }
 
 func (x *book) Clone() any {
@@ -179,11 +177,81 @@ func (x *book) Less (Y any) bool {
     if ! x.field.Eq (y.field) {
       return x.field.Less (y.field)
     }
+  case locationIndex:
+    if ! x.location.Eq (y.title) {
+      return x.location.Less (y.title)
+    }
+    if ! x.author.Eq (y.author) {
+      return x.author.Less (y.author)
+    }
+    if ! x.Natural.Eq (y.Natural) {
+      return x.Natural.Less (y.Natural)
+    }
+    if ! x.title.Eq (y.title) {
+      return x.title.Less (y.title)
+    }
+    if ! x.field.Eq (y.field) {
+      return x.field.Less (y.field)
+    }
   }
   return false
 }
 
-func (x *book) String() string {
+func (x *book) longL() string {
+  ds := x.location.String()
+  n := str.ProperLen(ds)
+  if n == 0 { return "" }
+//  if n != lenlk { errh.Error (ds, n) }
+  s := ""
+  if env.E() {
+    switch ds[0] {
+// If you want to use the program "books",
+// you should adapt the following to your personal requirements.
+    case 'l':
+      s = "living room"
+    case 's':
+      s = "study"
+    case 'g':
+      s = str.Lat1 ("guest room")
+    default:
+      s = ""
+    }
+    s += " "
+    switch ds[1] {
+    case 'l':
+      s += "left"
+    case 'r':
+      s += "right"
+    }
+    s += " "
+    str.Append (&s, ds[2])
+  } else {
+    switch ds[0] {
+// Wenn Sie das Programm "bücher" benutzen wollen,
+// passen Sie das Folgende an Ihre eigenen Anforderungen an.
+    case 'w':
+      s = "Wohnzimmer"
+    case 'a':
+      s = "Arbeitszimmer"
+    case 'g':
+      s = str.Lat1 ("Gästezimmer")
+    default:
+      s = ""
+    }
+    s += " "
+    switch ds[1] {
+    case 'l':
+      s += "links"
+    case 'r':
+      s += "rechts"
+    }
+    s += " "
+    str.Append (&s, ds[2])
+  }
+  return s
+}
+
+func (x *book) string0() string {
   s := x.field.String()
   str.OffSpc1 (&s)
   s += seps
@@ -199,10 +267,19 @@ func (x *book) String() string {
   t = x.title.String()
   str.OffSpc1 (&t)
   s += t + seps
-  t = x.cupboard.String()
-  str.OffSpc1 (&t)
+  return s
+}
+
+func (x *book) String() string {
+  s := x.string0()
+  t := x.longL()
   s += t + seps
-  t = x.floor.String()
+  return s
+}
+
+func (x *book) String1() string {
+  s := x.string0()
+  t := x.location.String()
   str.OffSpc1 (&t)
   s += t + seps
   return s
@@ -210,14 +287,13 @@ func (x *book) String() string {
 
 func (x *book) Defined (s string) bool {
   ss, n := str.SplitByte (s, sep)
-  if n != 7 { return false }
+  if n != 6 { return false }
   if ! x.field.Defined (ss[0]) { return false }
   if ! x.author.Defined (ss[1]) { return false }
   if ! x.coauthor.Defined (ss[2]) { return false }
   if ! x.Natural.Defined (ss[3]) { return false }
   if ! x.title.Defined (ss[4]) { return false }
-  if ! x.cupboard.Defined (ss[5]) { return false }
-  if ! x.floor.Defined (ss[6]) { return false }
+  if ! x.location.Defined (ss[5]) { return false }
   return true
 }
 
@@ -233,8 +309,8 @@ func (x *book) Sub (Y any) bool {
   if ! x.title.Empty() {
     s = s || x.title.Sub (y.title)
   }
-  if ! x.cupboard.Empty() {
-    s = s || x.cupboard.Sub (y.cupboard)
+  if ! x.location.Empty() {
+    s = s || x.location.Sub (y.location)
   }
   return s
 }
@@ -246,75 +322,47 @@ const (
   ln = 5; cn =  7
   lt = 5; ct = 16
   lc = 7; cc = 49
-  lf = 7; cf = 71
 )
 
 /*        1         2         3         4         5         6         7
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
 
+ field __________________
+
+author ______________________________   coauthor ______________________________
+
+    nr __ title _______________________________________________________________
+
+                                        location _____________________
 Gebiet __________________
 
  Autor ______________________________    Koautor ______________________________
 
     Nr __ Titel _______________________________________________________________
 
-                                 Schrank / Ebene ___________________ / ________ */
-//                                               Papas Zimmer rechts   6 hinten
+                                       Ablageort _____________________ */
 
 func writeMask (l, c uint) {
   scr.Colours (col.LightGray(), col.Black())
-  scr.Write ("Gebiet",  l + 1, c +  0)
-  scr.Write ("Autor",   l + 3, c +  1)
-  scr.Write ("Koautor", l + 3, c + 41)
-  scr.Write ("Nr",      l + 5, c +  4)
-  scr.Write ("Titel",   l + 5, c + 10)
-  scr.Write ("Schrank / Regal", l + 7, c + 33)
-  scr.Write ("/", l + 7, c + 69)
+  if env.E() {
+    scr.Write ("field",    l + 1, c +  1)
+    scr.Write ("author",   l + 3, c +  9)
+    scr.Write ("coauthor", l + 3, c + 40)
+    scr.Write ("nr",       l + 5, c +  4)
+    scr.Write ("title",    l + 5, c + 10)
+    scr.Write ("location", l + 7, c + 40)
+  } else {
+    scr.Write ("Gebiet",  l + 1, c +  0)
+    scr.Write ("Autor",   l + 3, c +  1)
+    scr.Write ("Koautor", l + 3, c + 41)
+    scr.Write ("Nr",      l + 5, c +  4)
+    scr.Write ("Titel",   l + 5, c + 10)
+    scr.Write ("Ablageort", l + 7, c + 39)
+  }
 }
 
 var
   maskWritten = false
-
-func (x *book) longC() string {
-  n := x.cupboard.ProperLen()
-  s := ""
-  if n == 0 { return s }
-  switch x.cupboard.Byte(0) {
-  case 'w':
-    s = "Wohnzimmer"
-  case 'p':
-    s = "Papas Zimmer"
-  case 'g':
-    s = str.Lat1("Gästezimmer")
-  }
-  if n == 3 {
-    s += " "
-    switch x.cupboard.Byte(2) {
-    case 'l':
-      s += "links"
-    case 'r':
-      s += "rechts"
-    }
-  }
-  return s
-}
-
-func (x *book) longF() string {
-  n := x.floor.ProperLen()
-  s := ""
-  if n == 0 { return s }
-  s += string(x.floor.Byte(0))
-  if n == 3 {
-    s += " "
-    switch x.floor.Byte(2) {
-    case 'h':
-      s += "hinten"
-    case 'v':
-      s += "vorne"
-    }
-  }
-  return s
-}
 
 func (x *book) Write (l, c uint) {
   if ! maskWritten {
@@ -329,15 +377,10 @@ func (x *book) Write (l, c uint) {
     x.Natural.Write (l + ln, c + cn)
   }
   x.title.Write (l + lt, c + ct)
-/*/
-  x.cupboard.Write (l + lc, c + cc)
-  x.floor.Write (l + lf, c + cf)
-/*/
-  scr.Colours (x.cupboard.Cols())
-  scr.Write (str.New(19), l + lc, c + cc)
-  scr.Write (x.longC(), l + lc, c + cc)
-  scr.Write (str.New(8), l + lf, c + cf)
-  scr.Write (x.longF(), l + lf, c + cf)
+  scr.Colours (col.FlashWhite(), col.Brown())
+  scr.Write (str.New (lenl), l + lc, c + cc)
+  scr.Colours (col.FlashWhite(), col.Brown())
+  scr.Write (x.longL(), l + lc, c + cc)
 }
 
 func containsSep (t text.Text) bool {
@@ -349,7 +392,11 @@ func edit (t text.Text, s string, l, c uint) {
   for {
     t.Edit (l, c)
     if containsSep (t) {
-      errh.Error0 (s + " darf kein " + seps + " enthalten")
+      if env.E() {
+        errh.Error0 (s + " must not contain " + seps)
+      } else {
+        errh.Error0 (s + " darf kein " + seps + " enthalten")
+      }
     } else {
       break
     }
@@ -357,7 +404,7 @@ func edit (t text.Text, s string, l, c uint) {
 }
 
 func (x *book) Edit (l, c uint) {
-  i := 0
+  i, s := 0, ""
   loop:
   for {
     x.Write (l, c)
@@ -366,47 +413,91 @@ func (x *book) Edit (l, c uint) {
       x.Write (l, c)
       x.field.Edit (l + lg, c + cg)
     case 1:
-      edit (x.author, "Autor", l + la, c + ca)
-/*/
-      if k, _ := kbd.LastCommand(); k == kbd.Tab {
-        for i := 0; i < len(a); i++ {
-          if x.author.Sub0 (author[i]) {
-            x.author.Copy (author[i])
-            x.author.Write (l + la, c + ca)
-            break
-          }
-        }
-      }
-/*/
+      if env.E() { s = "author" } else { s = "Autor" }
+      edit (x.author, s, l + la, c + ca)
     case 2:
-      edit (x.coauthor, "Koautor", l + lk, c + ck)
-/*/
-      if k, _ := kbd.LastCommand(); k == kbd.Tab {
-        if ! x.coauthor.Empty() {
-          for i := 0; i < len(a); i++ {
-            if x.coauthor.Sub0 (author[i]) {
-              x.coauthor.Copy (author[i])
-              x.coauthor.Write (l + lk, c + ck)
-              break
-            }
-          }
-        }
-      }
-/*/
+      if env.E() { s = "coauthor" } else { s = "Koautor" }
+      edit (x.coauthor, s, l + lk, c + ck)
     case 3:
       x.Natural.Edit (l + ln, c + cn)
     case 4:
-      edit (x.title, "Titel", l + lt, c + ct)
+      if env.E() { s = "title" } else { s = "Titel" }
+      edit (x.title, s, l + lt, c + ct)
     case 5:
-      edit (x.cupboard, "Schrank", l + lc, c + cc)
-    case 6:
-      edit (x.floor, "Regal", l + lf, c + cf)
+      if env.E() {
+        errh.Hint ("edit a string of 3 characters")
+      } else {
+        errh.Hint ("Geben Sie eine Zeichenkette aus 3 Zeichen ein")
+      }
+      var ok0, ok1, ok2 bool
+      for {
+        edit (x.location, s, l + lc, c + cc)
+        n := x.location.ProperLen()
+        if n == 3 {
+          t := x.location.String()
+          if env.E() {
+// If you want to use the program "books",
+// you should adapt the following to your personal requirements.
+            switch t[0] {
+            case 'l', 's', 'g':
+              ok0 = true
+            default:
+              ok0 = false
+              errh.Error0 ("as 1st character only \"l\", \"s\" or \"g\" permissible")
+            }
+          } else {
+// Wenn Sie das Programm "bücher" benutzen wollen,
+// passen Sie das Folgende an Ihre eigenen Anforderungen an.
+            switch t[0] {
+            case 'w', 'a', 'g':
+              ok0 = true
+            default:
+              ok0 = false
+              errh.Error0 ("als erste Zeichen nur \"w\", \"a\" oder \"g\" zulässig")
+            }
+          }
+          switch t[1] {
+          case 'l', 'r':
+            ok1 = true
+          default:
+            ok1 = false
+            if env.E() {
+              errh.Error0 ("as 2nd character only \"l\" or \"r\" permissible")
+            } else {
+              errh.Error0 ("als 2. Zeichen nur \"l\" oder \"r\" zulässig")
+            }
+          }
+          switch t[2] {
+          case '1', '2', '3', '4', '5', '6', '7', '8', '9':
+            ok2 = true
+          default:
+            ok2 = false
+            if env.E() {
+              errh.Error0 ("as 3rd character only a digit permissible")
+            } else {
+              errh.Error0 ("als 3. Zeichen ist nur eine Ziffer zulässig")
+            }
+          }
+          if ok0 && ok1 && ok2 {
+            scr.Colours (col.FlashWhite(), col.Brown())
+            scr.Write (x.longL(), l + lc, c + cc)
+            errh.DelHint()
+            break
+          }
+        } else {
+          if env.E() {
+            errh.Error0 (x.location.String() + " does not contain exactly 3 characters")
+          } else {
+            errh.Error0 (x.location.String() + " enthält nicht genau 3 Zeichen")
+          }
+        }
+      }
     }
     switch k, _ := kbd.LastCommand(); k {
     case kbd.Esc:
       break loop
     case kbd.Enter, kbd.Down:
-      if i < 6 {
+      if i < 5 {
         i++
       } else {
         break loop
@@ -420,7 +511,7 @@ func (x *book) Edit (l, c uint) {
 }
 
 var
-  lastField = enum.New (lens)
+  lastField = enum.New (lenf)
 
 func (x *book) TeX() string {
   s := ""
@@ -440,13 +531,8 @@ func (x *book) TeX() string {
   s += "\\hbox to 16pt{\\hfil"
   s += sn
   s += "}\\quad " + x.title.TeX()
-  if ! x.cupboard.Empty() {
-    s += " (" + x.cupboard.TeX()
-  }
-  if x.floor.Empty() {
-    s += ")"
-  } else {
-    s += " " + x.floor.TeX() + ")"
+  if ! x.location.Empty() {
+    s += " (" + x.location.TeX() + ")"
   }
   s += "\n\\par\\smallpagebreak"
   return s
@@ -456,7 +542,8 @@ func (x *book) Codelen() uint {
   return x.field.Codelen() +
        2 * lena +
        x.Natural.Codelen() +
-       2 * 3
+       lent +
+       lenl
 }
 
 func (x *book) Encode() Stream {
@@ -475,10 +562,8 @@ func (x *book) Encode() Stream {
   a = lent
   copy (s[i:i+a], x.title.Encode())
   i += a
-  a = 3
-  copy (s[i:i+a], x.cupboard.Encode())
-  i += a
-  copy (s[i:i+a], x.floor.Encode())
+  a = lenl
+  copy (s[i:i+a], x.location.Encode())
   return s
 }
 
@@ -497,10 +582,8 @@ func (x *book) Decode (s Stream) {
   a = lent
   x.title.Decode (s[i:i+a])
   i += a
-  a = 3
-  x.cupboard.Decode (s[i:i+a])
-  i += a
-  x.floor.Decode (s[i:i+a])
+  a = lenl
+  x.location.Decode (s[i:i+a])
 }
 
 func (x *book) Rotate() {

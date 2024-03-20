@@ -1,6 +1,6 @@
 package fmon
 
-// (c) Christian Maurer   v. 221231 - license see µU.go
+// (c) Christian Maurer   v. 240108 - license see µU.go
 
 import (
 //  "reflect"
@@ -15,7 +15,7 @@ type
                     uint "number of monitor functions"
                  ch []nchan.NetChannel
                     FuncSpectrum; PredSpectrum
-                    bool "true iff the monitor is a server"
+           isServer bool // "true iff the monitor is a server"
                     }
 
 func new_(a any, n uint, fs FuncSpectrum, ps PredSpectrum,
@@ -29,7 +29,7 @@ func new1 (a any, n uint, fs FuncSpectrum, ps PredSpectrum,
   x := new(farMonitor)
   x.input = Clone(a)
   x.uint = n
-  x.bool = s
+  x.isServer = s
   x.ch = make([]nchan.NetChannel, x.uint)
   for i := uint(0); i < x.uint; i++ {
     x.ch[i] = nchan.NewN (x.input, h, p + uint16(i), s)
@@ -46,7 +46,7 @@ func new2 (a, b any, n uint, fs FuncSpectrum, ps PredSpectrum,
   x.input = Clone(a)
   x.output = Clone(b)
   x.uint = n
-  x.bool = s
+  x.isServer = s
   x.ch = make([]nchan.NetChannel, x.uint)
   for i := uint(0); i < x.uint; i++ {
     x.ch[i] = nchan.NewN (nil, h, p + uint16(i), s)
@@ -59,7 +59,7 @@ func (x *farMonitor) common (fs FuncSpectrum, ps PredSpectrum, stmt Stmt) FarMon
   for i := uint(0); i < x.uint; i++ {
     in[i], out[i] = x.ch[i].Chan()
   }
-  if ! x.bool {
+  if ! x.isServer {
     return x // x is a client
   }
   x.FuncSpectrum, x.PredSpectrum = fs, ps

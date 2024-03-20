@@ -1,6 +1,6 @@
 package text
 
-// (c) Christian Maurer   v. 230112 - license see µU.go
+// (c) Christian Maurer   v. 240311 - license see µU.go
 
 import (
   "µU/rand"
@@ -30,12 +30,19 @@ var (
 )
 
 func new_(n uint) Text {
-  x := new (text)
+  x := new(text)
   x.uint = n
   x.string = str.New (n)
   x.f, x.b = col.StartCols()
   x.Size = fontsize.Normal
   x.Font = font.Roman
+  return x
+}
+
+func def (s string) Text {
+  n := uint(len(s))
+  x := new_(n).(*text)
+  x.string = s
   return x
 }
 

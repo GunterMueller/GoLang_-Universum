@@ -50,9 +50,6 @@ type
   Dfselectfm()
   Leader() uint
 
-//  Successor (i uint) uint
-//  Predecessor (i uint) uint
-
   DijkstraScholten (o Op)
 }
 

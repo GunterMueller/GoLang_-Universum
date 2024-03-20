@@ -1,8 +1,9 @@
 package audio
 
-// (c) Christian Maurer   v. 230326 - license see µU.go
+// (c) Christian Maurer   v. 240319 - license see µU.go
 
 import (
+  "µU/env"
   . "µU/obj"
   "µU/str"
   "µU/kbd"
@@ -51,25 +52,36 @@ func (x *audio) imp (Y any) *audio {
 func new_() Audio {
   x := new (audio)
   x.field = enum.Newk (lenf, 1)
-  x.field.Set ("alte Musik", "Barock", "Klassik", "Romantik", "neue Musik", "Pop/Beat/Rock",
-               "Folklore", "Jazz", "Italien", "Weihnachten", "Kinder")
-  x.field.Setk ("a", "b", "k", "r", "n", "p", "f", "j", "i", "w", "c")
+  if env.E() {
+// if you want to use the program "music",
+// adapt the following to you personal requirements.
+    x.field.Set ("classical music", "folklore", "jazz", "modern music")
+    x.field.Setk ("c, f, j, m")
+  } else {
+// Wenn Sie das Programm "musik" benutzen wollen,
+// passen Sie das Folgende an Ihre eigenen Anforderungen an.
+    x.field.Set ("alte Musik", "Barock", "Klassik", "Romantik", "neue Musik", "Pop/Beat/Rock",
+                 "Folklore", "Jazz", "Italien", "Weihnachten", "Kinder")
+    x.field.Setk ("a", "b", "k", "r", "n", "p", "f", "j", "i", "w", "c")
+  }
+  x.field.Colours (col.FlashWhite(), col.Blue())
   x.medium = enum.Newk (lenm, 1)
   x.medium.Set ("LP", "SP", "CD")
   x.medium.Setk ("l", "s", "c")
+  x.medium.Colours (col.FlashWhite(), col.Blue())
   x.composer = text.New (len0)
-  x.work = text.New (len1)
-  x.composer1 = text.New (len0)
-  x.work1 = text.New (len1)
-  x.orchestra = text.New (len1)
-  x.conductor = text.New (len0)
-  x.soloist = text.New (len0)
   x.composer.Colours (col.Yellow(), col.Red())
-  x.composer1.Colours (col.Yellow(), col.Red())
+  x.work = text.New (len1)
   x.work.Colours (col.FlashWhite(), col.DarkGreen())
+  x.composer1 = text.New (len0)
+  x.composer1.Colours (col.Yellow(), col.Red())
+  x.work1 = text.New (len1)
   x.work1.Colours (col.FlashWhite(), col.DarkGreen())
+  x.orchestra = text.New (len1)
   x.orchestra.Colours (col.FlashWhite(), col.DarkGray())
+  x.conductor = text.New (len0)
   x.conductor.Colours (col.FlashWhite(), col.DarkGray())
+  x.soloist = text.New (len0)
   x.soloist.Colours (col.Yellow(), col.Red())
   return x
 }
@@ -78,7 +90,9 @@ func (x *audio) Empty() bool {
   return x.field.Empty() && x.medium.Empty() &&
          x.composer.Empty() && x.work.Empty() &&
          x.composer1.Empty() && x.work1.Empty() &&
-         x.orchestra.Empty() && x.conductor.Empty() && x.soloist.Empty()
+         x.orchestra.Empty() &&
+         x.conductor.Empty() &&
+         x.soloist.Empty()
 }
 
 func (x *audio) Clr() {
@@ -306,7 +320,7 @@ Orchester ____________________________________________________________________
 func writeMask (l, c uint) {
   scr.Colours (col.LightGray(), col.Black())
   scr.Write ("Gebiet",    l + lg,  c +  3)
-  scr.Write ("medium",    l + lm,  c + 42)
+  scr.Write ("Medium",    l + lm,  c + 42)
   scr.Write ("Komponist", l + lc,  c +  0)
   scr.Write ("Werk",      l + lw,  c +  5)
   scr.Write ("Komponist", l + lc1, c +  0)
@@ -451,10 +465,6 @@ func (x *audio) Edit (l, c uint) {
 var
   lastfield = enum.New (lenm)
 //  lastfield = enum.Newk (lenm, 1)
-
-func texdef() string {
-  return "\\def\\n{\\newline} \\def\\p{\\par\\smallpagebreak}\n"
-}
 
 func (x *audio) TeX() string {
   s := ""

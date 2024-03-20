@@ -1,0 +1,20 @@
+341c341
+<       errh.Error0 (s + " darf kein " + seps + " enthalten")
+---
+>       errh.Error0 (s + " must not contain " + seps)
+358c358
+<       edit (x.author, "Autor", l + la, c + ca)
+---
+>       edit (x.author, "author", l + la, c + ca)
+360c360
+<       edit (x.coauthor, "Koautor", l + lk, c + ck)
+---
+>       edit (x.coauthor, "coauthor", l + lk, c + ck)
+364c364
+<       edit (x.title, "Titel", l + lt, c + ct)
+---
+>       edit (x.title, "title", l + lt, c + ct)
+366c366
+<       edit (x.location, "Ablageort", l + lc, c + cc)
+---
+>       edit (x.location, "location", l + lc, c + cc)

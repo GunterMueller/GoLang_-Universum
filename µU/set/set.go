@@ -1,6 +1,6 @@
 package set
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 240318 - license see µU.go
 
 import
   . "µU/obj"
@@ -39,6 +39,36 @@ func (x *set) imp (Y any) *set {
   y, ok := Y.(*set)
   if ! ok { TypeNotEqPanic (x, Y) }
   CheckTypeEq (x.any, y.any)
+  return y
+}
+
+func (x *set) Eq (Y any) bool {
+  xs := make ([]any, 0)
+  x.Trav (func (a any) {xs = append (xs, a)})
+  y := x.imp (Y)
+  ys := make ([]any, 0)
+  y.Trav (func (a any) {ys = append (ys, a)})
+  n := len(xs)
+  if len(ys) != n {
+    return false
+  }
+  for i := 0; i < n; i++ {
+    if ! Eq (xs[i], ys[i]) {
+      return false
+    }
+  }
+  return true
+}
+
+func (x *set) Copy (Y any) {
+  x.Clr()
+  y := x.imp (Y)
+  y.Trav (func (a any) {x.Ins (a)})
+}
+
+func (x *set) Clone() any {
+  y := new_(x.any).(*set)
+  y.Copy (x)
   return y
 }
 

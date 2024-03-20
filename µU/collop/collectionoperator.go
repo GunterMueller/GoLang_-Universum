@@ -1,8 +1,9 @@
 package collop
 
-// (c) Christian Maurer   v. 220814 - license see µU.go
+// (c) Christian Maurer   v. 240317 - license see µU.go
 
 import (
+  "µU/env"
   . "µU/obj"
   "µU/str"
   "µU/kbd"
@@ -10,14 +11,26 @@ import (
 )
 
 func operate (x Collector, o Rotator, f func (x, y Rotator) bool) {
-  help := []string {" vor-/rückwärts: Pfeiltaste ab-/aufwärts",
-                    "zum Anfang/Ende: Pos1/Ende              ",
-                    " Eintrag ändern: Enter                  ",
-                    "       einfügen: Einfg                  ",
-                    "      entfernen: Entf                   ",
-                    "         suchen: F2                     ",
-                    "       umordnen: F3                     ",
-                    "   Programmende: Esc                    "}
+  var help []string
+  if env.E() {
+    help = []string {"for-/backwards: arrow key down-/upwards",
+                     "  to start/end: Pos1/End               ",
+                     "  change entry: shift Enter            ",
+                     "        insert: Ins                    ",
+                     "        delete: Del                    ",
+                     "        search: F2                     ",
+                     "  change order: F3                     ",
+                     "   end program: Esc                    "}
+  } else {
+    help = []string {"  vor-/rückwärts: Pfeiltaste ab-/aufwärts",
+                     " zum Anfang/Ende: Pos1/Ende              ",
+                     "  Eintrag ändern: Umschalt-Enter         ",
+                     "        einfügen: Einfg                  ",
+                     "       entfernen: Entf                   ",
+                     "          suchen: F2                     ",
+                     "        umordnen: F3                     ",
+                     "Programm beenden: Esc                    "}
+  }
   for i, h := range (help) { help[i] = str.Lat1 (h) }
   x.Jump (false)
   if x.Empty() {
@@ -29,7 +42,11 @@ func operate (x Collector, o Rotator, f func (x, y Rotator) bool) {
       }
     }
   }
-  errh.Hint ("Hilfe: F1                  Ende: Esc")
+  if env.E() {
+    errh.Hint ("help: F1                  end: Esc")
+  } else {
+    errh.Hint ("Hilfe: F1                  Ende: Esc")
+  }
   loop:
   for {
     o = x.Get().(Rotator)
@@ -38,6 +55,7 @@ func operate (x Collector, o Rotator, f func (x, y Rotator) bool) {
     case kbd.Esc:
       break loop
     case kbd.Enter:
+      errh.DelHint()
       o1 := o.Clone().(Rotator)
       o.(Editor).Edit (0, 0)
       if o.Empty() {
@@ -46,6 +64,11 @@ func operate (x Collector, o Rotator, f func (x, y Rotator) bool) {
         if ! o.Eq (o1) {
           x.Put (o)
         }
+      }
+      if env.E() {
+        errh.Hint ("help: F1                  end: Esc")
+      } else {
+        errh.Hint ("Hilfe: F1                  Ende: Esc")
       }
     case kbd.Up:
       x.Step (false)
@@ -56,7 +79,7 @@ func operate (x Collector, o Rotator, f func (x, y Rotator) bool) {
     case kbd.End:
       x.Jump (true)
     case kbd.Ins:
-//      errh.DelHint()
+      errh.DelHint()
       o.Clr()
       o.(Editor).Edit (0, 0)
       if ! o.Empty() {
@@ -89,6 +112,7 @@ func operate (x Collector, o Rotator, f func (x, y Rotator) bool) {
                   if f (o, o2) {
                     o2.(Editor).Write (0, 0)
                     break
+                  } else {
                   }
                 }
               case kbd.Up:

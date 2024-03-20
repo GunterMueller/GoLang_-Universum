@@ -1,6 +1,6 @@
 package char
 
-// (c) Christian Maurer   v. 220530 - license see µU.go
+// (c) Christian Maurer   v. 240311 - license see µU.go
 
 const
   delta = 'a' - 'A'
@@ -25,7 +25,7 @@ func init() {
 
 func isLatin1 (b byte) bool {
   switch b {
-  case Ä, Ö, Ü, Ae, Oe, Ue, Sz, Cent, Pound, Euro, Yen, Paragraph, Copyright,
+  case Ä, Ö, Ü, Ae, Oe, Ue, Sz, Cent, Pound, Euro, Paragraph, Copyright,
        Not, Registered, Degree, PlusMinus, ToThe2, ToThe3,
        Mu, Pilcrow, Dot, Times, EmptySet, Division:
     return true
@@ -224,8 +224,6 @@ func tex (b byte) string {
     return "\\it\\S "
   case Euro:
     return ""
-  case Yen:
-    return "\\yen "
   case Paragraph:
     return "\\S "
   case Copyright:
@@ -280,8 +278,6 @@ func postscript (b byte) string {
     return "sterling"
   case Euro:
     return "euro"
-  case Yen:
-    return "yen"
   case Paragraph:
     return "section"
   case Copyright:
@@ -336,8 +332,6 @@ func Latin1Byte (r rune) byte {
     return Pound
   case '€': // E2 82 AC
     return Euro
-  case '¥': // C2 A5
-    return Yen
   case '§': // C2 A7
     return Paragraph
   case '©': // C2 A9

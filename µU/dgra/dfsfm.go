@@ -42,7 +42,7 @@ func (x *distributedGraph) d1 (a any, i uint) any {
         }
       }
     }
-  } else { // deliver
+  } else { // i == deliver
     x.tree.Ex (x.actVertex)
     x.tree.Write()
     for k := uint(0); k < x.n; k++ {

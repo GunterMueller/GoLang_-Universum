@@ -17,7 +17,7 @@ const
   invalid = uint(1<<64 - 1)
 type
   natural struct {
-                 uint
+                 uint "the value of the number"
               wd uint
             f, b col.Colour
                  font.Font

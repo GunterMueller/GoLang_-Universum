@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 240103 - license see µU.go
+// (c) Christian Maurer   v. 240108 - license see µU.go
 
 import (
   "sync"
@@ -105,7 +105,7 @@ func new_(g gra.Graph) DistributedGraph {
   }
   x.tree = gra.New (false, x.tmpVertex, x.tmpEdge); x.tree.SetWrite (x.Graph.Writes())
   x.cycle = gra.New (true, x.tmpVertex, x.tmpEdge); x.cycle.SetWrite (x.Graph.Writes())
-  x.visited = make([]bool, x.n)
+  x.visited = make([]bool, 1000) // nicht x.n
   x.sendTo = make([]bool, x.n)
   x.chan1 = make(chan uint, 1)
   x.parent, x.child = inf, make([]bool, x.n)
@@ -113,12 +113,12 @@ func new_(g gra.Graph) DistributedGraph {
   g.Ex (x.actVertex)
   x.leader = x.me
   x.Op = Ignore
-  x.corn = make ([]mcorn.MCornet, 99)
-  for i := 0; i < 99; i++ {
+  x.corn = make ([]mcorn.MCornet, 99) // x.n)
+  for i := uint(0); i < 99; i++ { // < x.n; i++ {
     x.corn[i] = mcorn.New (uint(0))
   }
-  x.C = make ([]uint, 99)
-  x.D = make ([]uint, 99)
+  x.C = make ([]uint, 99) // x.n)
+  x.D = make ([]uint, 99) // x.n)
   return x
 }
 
@@ -177,15 +177,13 @@ func (x *distributedGraph) finMon() {
   }
 }
 
-func (x *distributedGraph) channel (id uint) uint {
-  j := x.n
+func (x *distributedGraph) channel (n uint) uint {
   for i := uint(0); i < x.n; i++ {
-    if x.nr[i] == id {
-      j = i
-      break
+    if x.nr[i] == n {
+      return i
     }
   }
-  return j
+  return x.n
 }
 
 func point (x0, y0, x1, y1 int, t float64) (int, int) {
@@ -340,4 +338,8 @@ func (x *distributedGraph) ParentChildren() string {
     }
   }
   return s
+}
+
+func (x *distributedGraph) checkVisited (i uint) {
+  if x.visited[i] { errh.Error ("visited", i) } else { errh.Error ("not visited", i) }
 }

@@ -1,6 +1,6 @@
 package env
 
-// (c) Christian Maurer   v. 220203 - license see µU.go
+// (c) Christian Maurer   v. 240317 - license see µU.go
 
 // Returns true, iff the calling process runs under X.
 func UnderX() bool { return underX() }
@@ -56,3 +56,10 @@ func N (i uint) uint { return n(i) }
 
 // Returns the name of the call.
 func Call() string { return call() }
+
+// The actual language is English, iff b, otherwise German.
+// Initially it is German.
+func SetE (b bool) { setE(b)}
+
+// Returns true, if the actual language is English.
+func E() bool { return e() }
