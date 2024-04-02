@@ -32,9 +32,3 @@ func main() {
   g.Ring(); scr.Write ("   is number    in the ring.", 0, 0)
          scr.WriteNat (g.Me(), 0, 0); scr.WriteNat (g.Time(), 0, 13)
 }
-/*/
-  switch g.TravAlgorithm() {
-  case dgra.DFS, dgra.Awerbuch, dgra.Awerbuch1, dgra.HelaryRaynal,
-       dgra.BFS, dgra.BFSfm:
-    scr.Write ("father:     child[ren]:", 0, 0); scr.WriteNat (g.Parent(), 0, 8)
-/*/

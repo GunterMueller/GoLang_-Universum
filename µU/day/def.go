@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 221016 - license see µU.go
+// (c) Christian Maurer   v. 240301 - license see µU.go
 
 import (
   . "µU/obj"
@@ -129,6 +129,11 @@ type
 // of the implemenation, nothing has happened. Otherwise
 // x is decreased by the number of days of p.
   Dec (p Period)
+
+// If x is empty or the effect would lead outside the range
+// of the implemenation, nothing has happened.
+// Otherwise x is decreased by d days.
+  Dec1 (d uint)
 
 // TODO Spec
   Change (c kbd.Comm, d uint)

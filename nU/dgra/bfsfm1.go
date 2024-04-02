@@ -4,25 +4,24 @@ package dgra
 
 import (
   . "nU/obj"
-  "nU/vtx"
+  "nU/scr"
   "nU/fmon"
 )
 
 func (x *distributedGraph) b1 (a any, i uint) any {
   x.awaitAllMonitors()
-  bs := a.(Stream)
-  x.distance = Decode(uint(0), bs[:C0]).(uint)
-  x.tree = x.decodedGraph(bs[C0:])
+  s := a.(Stream)
+  x.distance = Decode(uint(0), s[:C0]).(uint)
+  x.tree = x.decodedGraph(s[C0:])
   x.tree.Write()
-  pause()
-  s := x.tree.Get().(vtx.Vertex).Val()
-  j := x.channel(s)
+  n := nrLocal (x.tree)
+  j := x.channel (n)
   if i == search {
     if x.distance == 0 {
       if x.parent < inf {
         return nil
       }
-      x.parent = s // == x.nr[j]
+      x.parent = n // == x.nr[j]
       if ! x.tree.Ex (x.actVertex) {
         x.tree.Ins (x.actVertex)
       }
@@ -36,16 +35,15 @@ func (x *distributedGraph) b1 (a any, i uint) any {
     for k := uint(0); k < x.n; k++ {
       if k != j && ! x.visited[k] {
         x.tree.Ex (x.actVertex)
-        bs = append(Encode(x.distance - 1), x.tree.Encode()...)
-        bs = x.mon[k].F(bs, search).(Stream)
-        if len(bs) == 0 {
+        s = append(Encode(x.distance - 1), x.tree.Encode()...)
+        s = x.mon[k].F(s, search).(Stream)
+        if len(s) == 0 {
           x.visited[k] = true
         } else {
-          x.tree = x.decodedGraph(bs[C0:])
-          x.tree.Write()
-          pause()
+          x.tree = x.decodedGraph(s[C0:])
           x.child[k] = true
           c++
+          x.tree.Write()
         }
       }
     }
@@ -53,21 +51,22 @@ func (x *distributedGraph) b1 (a any, i uint) any {
       return nil
     }
     x.tree.Ex (x.actVertex)
-    bs = append(Encode(uint(0)), x.tree.Encode()...)
+    s = append(Encode(uint(0)), x.tree.Encode()...)
   } else { // i == deliver
     x.tree.Ex (x.actVertex)
-    bs = append(Encode(uint(0)), x.tree.Encode()...)
+    s = append(Encode(uint(0)), x.tree.Encode()...)
     for k := uint(0); k < x.n; k++ {
       if x.child[k] {
-        x.mon[k].F(bs, deliver)
+        x.mon[k].F(s, deliver)
       }
     }
     done <- 0
   }
-  return bs
+  return s
 }
 
 func (x *distributedGraph) Bfsfm1() {
+  scr.Cls()
   go func() {
     fmon.New (nil, 2, x.b1, AllTrueSp,
               x.actHost, p0 + uint16(2 * x.me), true)
@@ -91,14 +90,14 @@ func (x *distributedGraph) Bfsfm1() {
       for k := uint(0); k < x.n; k++ {
         if ! x.visited[k] {
           x.tree.Ex (x.actVertex)
-          bs := append(Encode(x.distance), x.tree.Encode()...)
-          bs = x.mon[k].F(bs, search).(Stream)
-          if len(bs) == 0 {
+          s := append(Encode(x.distance), x.tree.Encode()...)
+          s = x.mon[k].F(s, search).(Stream)
+          if len(s) == 0 {
             x.visited[k] = true
           } else {
             x.child[k] = true
             c++
-            x.tree = x.decodedGraph(bs[C0:])
+            x.tree = x.decodedGraph(s[C0:])
             x.tree.Write()
             pause()
           }
@@ -109,10 +108,10 @@ func (x *distributedGraph) Bfsfm1() {
       }
       x.distance++
     }
-    bs := append(Encode(uint(0)), x.tree.Encode()...)
+    s := append(Encode(uint(0)), x.tree.Encode()...)
     for k := uint(0); k < x.n; k++ {
       if x.child[k] {
-        x.mon[k].F(bs, deliver)
+        x.mon[k].F(s, deliver)
       }
     }
   } else {

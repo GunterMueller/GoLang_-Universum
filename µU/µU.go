@@ -39,14 +39,15 @@ import (
   "µU/pbar"; "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/pstk"; "µU/qmat"; "µU/reg"
   "µU/rpc"; "µU/rn"; "µU/rw"; "µU/scale"; "µU/schan"; "µU/scr"; "µU/smok"; "µU/term"
   "µU/texts"; "µU/time"; "µU/tval"; "µU/vnset"; "µU/Z"
+  "µU/april"
 )
 const (
   yy = 2024
-  mm =    2
-  dd =   19
+  mm =    4
+  dd =    1
 )
 var (
-  red, green = col.FlashRed(), col.FlashGreen()
+  red = col.FlashRed()
   wd, ht, wd1, ht1, wdtext int
 )
 
@@ -161,11 +162,13 @@ func main() {
   wdtext = 91 * wd1 // 91 == width of license text lines + 2
   files.Cd (env.Gosrc() + "/µU")
   go input()
-  cl, cf, cb := col.FlashWhite(), col.LightGreen(), col.DarkGreen()
-  circ (ht / 2, cf); circ (wd - ht / 2, cl)
-  errh.MuLicense ("µU", v.String(),
-                  "1986-2023  Christian Maurer   https://maurer-berlin.eu/mU", cl, cf, cb)
+  april.First()
+  cl := col.FlashWhite()
+  cf := col.New(); cf.Set (164, 164, 164)
+  cb := col.DarkBlue()
   scr.ScrColourB (cb)
+  errh.MuLicense ("µU", v.String(),
+                  "1986-2024  Christian Maurer   https://maurer-berlin.eu/mU", cl, cf, cb)
   done := make(chan int)
   go drive (cl, cf, cb, done)
   <-done

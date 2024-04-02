@@ -9,10 +9,10 @@ import (
 type
   TelMail interface { // Telephone-Numbers and E-Mail-Address
 
-  TeXer
   Editor
   col.Colourer
   Printer
+  TeXer
 }
 
 // Returns a new empty TelMail.

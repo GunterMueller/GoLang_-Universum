@@ -8,7 +8,7 @@ package dgra
 func (x *distributedGraph) Peterson() {
   x.connect(uint(0))
   defer x.fin()
-  out, in := uint(0), uint(1)
+  out, in := 0, 1
   if x.Graph.Outgoing(1) { in, out = out, in }
   tid := x.me
   for { // active

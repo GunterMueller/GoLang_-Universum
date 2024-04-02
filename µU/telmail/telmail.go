@@ -1,6 +1,6 @@
 package telmail
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 240331 - license see µU.go
 
 import (
   . "µU/obj"
@@ -18,8 +18,7 @@ const
 type
   telmail struct {
      phonenumber,
-      cellnumber,
-       faxnumber phone.PhoneNumber
+      cellnumber phone.PhoneNumber
            email text.Text
                  }
 var (
@@ -31,7 +30,6 @@ func new_() TelMail {
   x := new(telmail)
   x.phonenumber = phone.New()
   x.cellnumber = phone.New()
-  x.faxnumber = phone.New()
   x.email = text.New (lenEmail)
   x.Colours (col.LightCyan(), col.Black())
   return x
@@ -46,14 +44,12 @@ func (x *telmail) imp(Y any) *telmail {
 func (x *telmail) Empty() bool {
   return x.phonenumber.Empty() &&
          x.cellnumber.Empty() &&
-         x.faxnumber.Empty() &&
          x.email.Empty()
 }
 
 func (x *telmail) Clr() {
   x.phonenumber.Clr()
   x.cellnumber.Clr()
-  x.faxnumber.Clr()
   x.email.Clr()
 }
 
@@ -67,7 +63,6 @@ func (x *telmail) Copy (Y any) {
   y := x.imp (Y)
   x.phonenumber.Copy (y.phonenumber)
   x.cellnumber.Copy (y.cellnumber)
-  x.faxnumber.Copy (y.faxnumber)
   x.email.Copy (y.email)
 }
 
@@ -75,7 +70,6 @@ func (x *telmail) Eq (Y any) bool {
   y := x.imp (Y)
   return x.phonenumber.Eq (y.phonenumber) &&
          x.cellnumber.Eq (y.cellnumber) &&
-         x.faxnumber.Eq (y.faxnumber) &&
          x.email.Eq (y.email)
 }
 
@@ -90,7 +84,6 @@ func (x *telmail) Leq (Y any) bool {
 func (x *telmail) Colours (f, b col.Colour) {
   x.phonenumber.Colours (f, b)
   x.cellnumber.Colours (f, b)
-  x.faxnumber.Colours (f, b)
   x.email.Colours (f, b)
 }
 
@@ -105,13 +98,11 @@ const (
 func writeMask (l, c uint) {
 //           1         2         3         4         5         6         7
 // 01234567890123456789012345678901234567890123456789012345678901234567890123456789
-//     Tel.: ________________  Funk: ________________  Fax: ________________
+//     Tel.: ________________  Funk: ________________
 //   E-Mail: ________________________________________
   bx.Wd (5)
   bx.Write ("Tel.:",   l, c + ct - 6)
   bx.Write ("Funk:",   l, c + cf - 6)
-  bx.Wd (4)
-  bx.Write ("Fax:",    l, c + cx - 5)
   bx.Wd (7)
   bx.Write ("E-Mail:", l + 1, c + ct - 8)
 }
@@ -120,12 +111,11 @@ func (x *telmail) Write (l, c uint) {
   writeMask (l, c)
   x.phonenumber.Write (l, c + ct)
   x.cellnumber.Write (l, c + cf)
-  x.faxnumber.Write (l, c + cx)
   x.email.Write (l + 1, c + ct)
 }
 
 func (x *telmail) Edit (l, c uint) {
-  const n = 7
+  const n = 2
   x.Write (l, c)
   i := 0
   if C, _ := kbd.LastCommand(); C == kbd.Up {
@@ -139,8 +129,6 @@ func (x *telmail) Edit (l, c uint) {
     case 1:
       x.cellnumber.Edit (l, c + cf)
     case 2:
-      x.faxnumber.Edit (l, c + cx)
-    case 3:
       x.email.Edit (l + 1, c + ct)
     }
     switch C, d:= kbd.LastCommand(); C {
@@ -163,7 +151,6 @@ func (x *telmail) Edit (l, c uint) {
 func (x *telmail) SetFont (f font.Font) {
   x.phonenumber.SetFont (f)
   x.cellnumber.SetFont (f)
-  x.faxnumber.SetFont (f)
   x.email.SetFont (f)
 }
 
@@ -173,14 +160,12 @@ func (x *telmail) Print (l, c uint) {
   pbx.Print ("Funk:", l + 1, c + ct - 6)
   x.phonenumber.Print (l, c + ct)
   x.cellnumber.Print (l + 1, c + ct)
-  pbx.Print ("Fax:", l + 1, c + cx - 6)
-  x.faxnumber.Print (l + 1, c + cx)
   pbx.Print ("E-Mail:", l + 2, c + ct - 8)
   x.email.Print (l + 2, c + ct)
 }
 
 func (x *telmail) Codelen() uint {
-  return 3 * x.phonenumber.Codelen() +
+  return 2 * x.phonenumber.Codelen() +
          lenEmail
 }
 
@@ -190,8 +175,6 @@ func (x *telmail) Encode() Stream {
   copy (s[i:i+a], x.phonenumber.Encode())
   i += a
   copy (s[i:i+a], x.cellnumber.Encode())
-  i += a
-  copy (s[i:i+a], x.faxnumber.Encode())
   i += a
   a = lenEmail
   copy (s[i:i+a], x.email.Encode())
@@ -204,30 +187,26 @@ func (x *telmail) Decode (s Stream) {
   i += a
   x.cellnumber = Decode (x.cellnumber, s[i:i+a]).(phone.PhoneNumber)
   i += a
-  x.faxnumber = Decode (x.faxnumber, s[i:i+a]).(phone.PhoneNumber)
-  i += a
   a = lenEmail
   x.email = Decode (x.email, s[i:i+a]).(text.Text)
 }
 
 func (x *telmail) TeX() string {
   p, c := ! x.phonenumber.Empty(), ! x.cellnumber.Empty()
-  s := ""
-  if p || c { s = "\\newline " }
+  var s string
   if p {
-    s += "Tel.~" + x.phonenumber.TeX()
+    s = "Tel.~" + x.phonenumber.TeX()
   }
   if c {
     if p { s += ", " }
     s += "Funk " + x.cellnumber.TeX()
   }
-  if ! x.faxnumber.Empty() {
-    s += ", Fax " + x.faxnumber.TeX()
-  }
   if ! x.email.Empty() {
     em := x.email.TeX()
     str.ReplaceAll (&em, '_', "\\_")
-    s += "\\newline\nE-Mail: {\\tt " + em + "}"
+    if p || c {s += ", " }
+    s += "E-Mail: {\\tt " + em + "}"
+
   }
   return s
 }

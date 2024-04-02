@@ -1,0 +1,16 @@
+  p, c := ! x.phonenumber.Empty(), ! x.cellnumber.Empty()
+bluse
+  var s string
+  if p || c { s = "\\newline " }
+  if p {
+    s += "Tel.~" + x.phonenumber.TeX()
+  }
+  if c {
+    if p { s += ", " }
+    s += "Funk " + x.cellnumber.TeX()
+  }
+  if ! x.email.Empty() {
+    em := x.email.TeX()
+    str.ReplaceAll (&em, '_', "\\_")
+    s += "\\newline\nE-Mail: {\\tt " + em + "}"
+  }

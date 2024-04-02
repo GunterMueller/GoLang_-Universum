@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 231030 - license see µU.go
+// (c) Christian Maurer   v. 240401 - license see µU.go
 
 import (
   . "µU/ker"
@@ -43,7 +43,6 @@ var (
   currentCentury uint
   todayCode uint16
   nameMonth = [maxMonth+1]string {"         ",
-/*/
                                   "Januar   ", "Februar  ", "März     ",
                                   "April    ", "Mai      ", "Juni     ",
                                   "Juli     ", "August   ", "September",
@@ -53,6 +52,7 @@ var (
                                   "April    ", "Mai      ", "June     ",
                                   "July     ", "August   ", "September",
                                   "October  ", "November ", "December "}
+/*/
   WdText = [NWeekdays]string {"Montag    ", "Dienstag  ", "Mittwoch  ",
                               "Donnerstag", "Freitag   ", "Sonnabend ", "Sonntag   "}
   WdShorttext = [NWeekdays]string {"Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"}
@@ -589,6 +589,19 @@ func (x *calendarday) Dec (p Period) {
   x.day, x.month, x.year = d, m, y
   t = x.daysInMonth()
   if x.day > t { x.day = t }
+}
+
+func (x *calendarday) Dec1 (n uint) {
+  if x.year == emptyYear { return }
+  d, m, y := x.day, x.month, x.year
+  for n > 0 {
+    x.Dec (Daily)
+    if x.Empty() {
+      x.day, x.month, x.year = d, m, y
+      return
+    }
+    n--
+  }
 }
 
 func (x *calendarday) Change (c kbd.Comm, d uint) {

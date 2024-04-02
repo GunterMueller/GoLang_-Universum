@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 231220 - license see nU.go
+// (c) Christian Maurer   v. 231229 - license see nU.go
 
 import (
   "strconv"
@@ -142,6 +142,10 @@ func newg (dir bool, l, c []uint, e [][]uint, h []string, m, id uint) Distribute
   return d
 }
 
+func value (a any) uint {
+  return a.(vtx.Vertex).Val()
+}
+ 
 func (x *distributedGraph) SetRoot (r uint) {
   x.root = r
 }
@@ -200,6 +204,10 @@ func (x *distributedGraph) decodedGraph (bs Stream) gra.Graph {
   g := x.emptyGraph()
   g.Decode(bs)
   return g
+}
+
+func nrLocal (g gra.Graph) uint {
+  return value (g.Get())
 }
 
 func (x *distributedGraph) edge (v, v1 vtx.Vertex) uint16 {

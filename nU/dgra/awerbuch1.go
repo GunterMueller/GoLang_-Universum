@@ -20,7 +20,7 @@ func (x *distributedGraph) a1 (a any, i uint) any {
   case visit:
     x.visited[j] = true
   case discover:
-    x.tree.Ins (x.actVertex)
+    x.tree.Ins (x.actVertex) // x.nb[j] colocal, x.actVertex local
     x.tree.Edge (x.edge(x.nb[j], x.actVertex))
     x.tree.Write()
     pause()

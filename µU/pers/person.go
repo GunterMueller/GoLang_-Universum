@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 240331 - license see µU.go
 
 import (
   . "µU/obj"
@@ -278,8 +278,7 @@ func (x *person) TeX() string {
   s += "{\\bf " + x.firstName.TeX() + " " + x.surname.TeX() + "}"
 //  if ! x.Sex.Empty() { s += " (" + x.Sex.String() + ")" }
   if ! x.Calendarday.Empty() { s += " (" + x.Calendarday.String() + ")" }
-  s += "\\newline\n"
-  return s
+  return s + "\n"
 }
 
 func (x *person) Write (l, c uint) {

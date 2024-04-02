@@ -46,6 +46,13 @@ func (x *personAddressTelMail) Clr() {
   x.TelMail.Clr()
 }
 
+func (x *personAddressTelMail) Eq (Y any) bool {
+  y := x.imp (Y)
+  return x.Person.Eq (y.Person) &&
+         x.Address.Eq (y.Address) &&
+         x.TelMail.Eq (y.TelMail)
+}
+
 func (x *personAddressTelMail) Copy (Y any) {
   y := x.imp (Y)
   x.Person.Copy (y.Person)
@@ -57,13 +64,6 @@ func (x *personAddressTelMail) Clone() any {
   y := new_()
   y.Copy (x)
   return y
-}
-
-func (x *personAddressTelMail) Eq (Y any) bool {
-  y := x.imp (Y)
-  return x.Person.Eq (y.Person) &&
-         x.Address.Eq (y.Address) &&
-         x.TelMail.Eq (y.TelMail)
 }
 
 func (x *personAddressTelMail) Less (Y any) bool {
@@ -81,7 +81,11 @@ func (x *personAddressTelMail) Sub (Y any) bool {
 }
 
 func (x *personAddressTelMail) TeX() string {
-  s := x.Person.TeX() + x.Address.TeX() + x.TelMail.TeX() + "\n\\smallskip"
+//  s := x.Person.TeX() + x.Address.TeX() + x.TelMail.TeX() + "\n\\smallskip\n"
+  s := "{\\vbox{\\hbox{" + x.Person.TeX() + "}"
+  s += "\\hbox{" + x.Address.TeX() + "}"
+  s += "\\hbox{" + x.TelMail.TeX() + "}}}"
+  s += "\n\\bigskip\n"
   return s
 }
 

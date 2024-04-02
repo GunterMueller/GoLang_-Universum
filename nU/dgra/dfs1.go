@@ -3,10 +3,12 @@ package dgra
 // (c) Christian Maurer   v. 231220 - license see nU.go
 
 import (
-  . "µU/obj"
+  . "nU/obj"
+  "nU/scr"
 )
 
 func (x *distributedGraph) Dfs1() {
+  scr.Cls()
   x.connect (nil)
   defer x.fin()
   x.tree.Clr()
@@ -23,8 +25,8 @@ func (x *distributedGraph) Dfs1() {
   }
   for i := uint(0); i < x.n; i++ {
     go func (j uint) {
-      bs := x.ch[j].Recv().(Stream)
-      x.tree = x.decodedGraph(bs)
+      s := x.ch[j].Recv().(Stream)
+      x.tree = x.decodedGraph (s)
       if x.distance == j && x.tree.Eq (x.tmpGraph) {
         x.child[j] = false
       }
@@ -59,7 +61,7 @@ func (x *distributedGraph) Dfs1() {
         }
       }
       x.visited[k] = true
-//    x.ch[k].Send (x.tree)
+//      x.ch[k].Send (x.tree)
       if k == u {
         x.distance = k
         x.tmpGraph.Copy (x.tree)

@@ -12,13 +12,12 @@ func main() {
   g := dgra.G8ring(me)
   g.SetRoot(4)
 /*/
-  g.ChangRoberts()       // ok
+  g.ChangRoberts()
   g.Peterson()           // XXX
   g.DolevKlaweRodeh()    // XXX
   g.HirschbergSinclair() // XXX
-  g.Dfselect()           // ok
-  g.Dfselectfm()         // ok
-  g.Maurerfm()           // 
+  g.Dfselect()
+  g.Dfselectfm()
 /*/
   g.Peterson()
   if g.Leader() == me {

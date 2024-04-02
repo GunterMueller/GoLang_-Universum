@@ -9,10 +9,10 @@ import (
 type
   Address interface {
 
-  TeXer
   Editor
   col.Colourer
   Printer
+  TeXer
 
 // Pre: y is of type Address.
 // Returns true, iff y has the same postcode as x.

@@ -1,10 +1,14 @@
 package ker
 
-// (c) Christian Maurer   v. 220813 - license see µU.go
+// (c) Christian Maurer   v. 240401 - license see µU.go
 
 import
   "math"
 const (
+  Dot = "."
+  Mu = "µU"
+  DotMu = Dot + Mu
+
   MaxShortNat = uint(math.MaxUint16)
   MaxNat = uint(math.MaxUint64)
   MaxInt = math.MaxInt64

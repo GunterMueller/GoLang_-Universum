@@ -7,9 +7,11 @@ import
 type
   PersonAddressTelMail interface { // Person, Adress and TelMail
 
+  Editor
   TeXer
   Rotator
-
+// Pre: y is of type Pat
+// Returns true, iff x is a part of y.
   Sub (y any) bool
 }
 
