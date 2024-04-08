@@ -1,16 +1,20 @@
 package pat
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 240407 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
   "µU/font"
+  "µU/str"
   "µU/pers"
   "µU/addr"
   "µU/telmail"
 )
-
+const (
+  sep = ','
+  seps = ","
+)
 type
   personAddressTelMail struct {
                               pers.Person
@@ -75,13 +79,41 @@ func (x *personAddressTelMail) Leq (Y any) bool {
   return x.Less (Y) || x.Eq (Y)
 }
 
+func (x *personAddressTelMail) String() string {
+  s := x.Person.String()
+  str.OffSpc1 (&s)
+  t := x.Address.String()
+  str.OffSpc1 (&t)
+  s += t
+  t = x.TelMail.String()
+  str.OffSpc1 (&t)
+  s += t
+  return s
+}
+
+func (x *personAddressTelMail) Defined (s string) bool {
+  ss, n := str.SplitByte (s, sep)
+  const (
+    p = pers.N
+    a = addr.N
+    t = telmail.N
+  )
+  if n != p + a + t { return false }
+  s = ""; for i := uint(0); i < p; i++ { s += ss[i] + seps }
+  if ! x.Person.Defined (s) { return false }
+  s = ""; for i := uint(p); i < p + a; i++ { s += ss[i] + seps }
+  if ! x.Address.Defined (s) { return false }
+  s = ""; for i := uint(p + a); i < p + a + t; i++ { s += ss[i] + seps }
+  if ! x.TelMail.Defined (s) { return false }
+  return true
+}
+
 func (x *personAddressTelMail) Sub (Y any) bool {
   y := x.imp (Y)
   return x.Person.Sub (y.Person)
 }
 
 func (x *personAddressTelMail) TeX() string {
-//  s := x.Person.TeX() + x.Address.TeX() + x.TelMail.TeX() + "\n\\smallskip\n"
   s := "{\\vbox{\\hbox{" + x.Person.TeX() + "}"
   s += "\\hbox{" + x.Address.TeX() + "}"
   s += "\\hbox{" + x.TelMail.TeX() + "}}}"

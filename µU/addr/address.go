@@ -1,11 +1,13 @@
 package addr
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 240407 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/kbd"
   "µU/col"
+  "µU/str"
+// "µU/errh"
   "µU/box"
   "µU/font"
   "µU/pbox"
@@ -17,6 +19,8 @@ const (
   lenStreet = uint(28)
   lenCity   = uint(22)
   lenEmail  = uint(40)
+  sep = ','
+  seps = ","
 )
 type
   address struct {
@@ -107,6 +111,32 @@ func (x *address) Leq (Y any) bool {
   return x.Less (Y) || x.Eq (Y)
 }
 
+func (x *address) String() string {
+  s := x.street.String()
+  str.OffSpc1 (&s)
+  s += seps
+  t := x.Natural.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.city.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.Country.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  return s
+}
+
+func (x *address) Defined (s string) bool {
+  ss, n := str.SplitByte (s, sep)
+  if n != N { return false }
+  if ! x.street.Defined (ss[0]) { return false }
+  if ! x.Natural.Defined (ss[1]) { return false }
+  if ! x.city.Defined (ss[2]) { return false }
+  if ! x.Country.Defined (ss[3]) { return false }
+  return true
+}
+
 func (x *address) Colours (f, b col.Colour) {
   x.street.Colours (f, b)
   x.Natural.Colours (f, b)
@@ -145,11 +175,10 @@ func (x *address) Write (l, c uint) {
 }
 
 func (x *address) Edit (l, c uint) {
-  const n = 4
   x.Write (l, c)
   i := 0
   if C, _ := kbd.LastCommand(); C == kbd.Up {
-    i = n
+    i = N - 1
   }
   loop:
   for {
@@ -168,12 +197,12 @@ func (x *address) Edit (l, c uint) {
       break loop
     case kbd.Enter:
       if d == 0 {
-        if i < n { i++ } else { break loop }
+        if i < N - 1 { i++ } else { break loop }
       } else {
         break loop
       }
     case kbd.Down, kbd.Right:
-      if i < n { i++ } else { break loop }
+      if i < N - 1 { i++ } else { break loop }
     case kbd.Up, kbd.Left:
       if i > 0 { i-- } else { break loop }
     }

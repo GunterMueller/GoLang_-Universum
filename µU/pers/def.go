@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 220831 - license see µU.go
+// (c) Christian Maurer   v. 240407 - license see µU.go
 
 import (
   . "µU/obj"
@@ -16,10 +16,13 @@ const ( // Format
   LongTB       // Anrede + LongB + m/w  2 Zeilen, 80 Spalten
   NFormats
 )
+const
+  N = 5 // number of components of a person
 type
   Person interface {
 
   Editor
+  Stringer
   col.Colourer
   Formatter
   TeXer

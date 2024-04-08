@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 230929 - license see µU.go
+// (c) Christian Maurer   v. 240407 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -109,6 +109,10 @@ loop:
           }
           switch *D {
           case 0:
+            *B = bb[event.C]
+          case 1, 2:
+            *B = aa[event.C]
+          case 3:
             if altGr {
               switch event.C {
               case 3: // 2
@@ -142,28 +146,7 @@ loop:
               case 52: // .
                 *B = division
               }
-            } else {
-              *B = bb[event.C]
             }
-          case 1:
-            if altGr {
-/*/
-              switch event.C {
-              case 26:
-                *B = Ü
-              case 39:
-                *B = Ö
-              case 40:
-                *B = Ä
-              case 86:
-                *B = '|'
-              }
-/*/
-            } else {
-              *B = aa[event.C]
-            }
-          case 2:
-            *B = aa[event.C]
           }
         case isCmd (event.C):
           *C = kK[event.C]

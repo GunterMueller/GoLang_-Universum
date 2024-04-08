@@ -1,6 +1,6 @@
 package pat
 
-// (c) Christian Maurer   v. 221003 - license see µU.go
+// (c) Christian Maurer   v. 240407 - license see µU.go
 
 import
   . "µU/obj"
@@ -8,6 +8,7 @@ type
   PersonAddressTelMail interface { // Person, Adress and TelMail
 
   Editor
+  Stringer 
   TeXer
   Rotator
 // Pre: y is of type Pat

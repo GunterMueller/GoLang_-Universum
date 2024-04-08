@@ -118,11 +118,14 @@ func inputC (B *byte, C *Comm, D *uint) {
 //    if k == 0 { ker.Oops() }
     k1 = k
     k = k % off
-    if shift || ctrl {
+    if shift {
       *D = 1
     }
+    if ctrl {
+      *D = 2
+    }
     if alt || altGr {
-      *D += 2
+      *D = 3
     }
     switch b0 {
     case pgUp, pgDown:
@@ -173,6 +176,41 @@ func inputC (B *byte, C *Comm, D *uint) {
         *C = None
         break loop
       }
+    }
+  }
+  switch *D {
+  case 3:
+    switch k {
+    case 3: // 2
+      *B = twoSup
+    case 4: // 3
+      *B = threeSup
+    case 8: // 7
+      *B = braceL
+    case 9: // 8
+      *B = bracketL
+    case 10: // 9
+      *B = bracketR
+    case 11: // 0
+      *B = braceR
+    case 12: // ß
+      *B = backslash
+    case 16: // Q
+      *B = '@'
+    case 18: // E
+      *B = euro
+    case 19: // R
+      *B = registered
+    case 27: // +
+      *B = '~'
+    case 41:
+      *B = degree
+    case 46: // C
+      *B = copyright
+    case 50: // M
+      *B = mu
+    case 52: // .
+      *B = division
     }
   }
   lastdepth = *D

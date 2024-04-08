@@ -1,6 +1,6 @@
 package telmail
 
-// (c) Christian Maurer   v. 240331 - license see µU.go
+// (c) Christian Maurer   v. 240407 - license see µU.go
 
 import (
   . "µU/obj"
@@ -13,8 +13,11 @@ import (
   "µU/text"
   "µU/phone"
 )
-const
+const (
   lenEmail  = uint(40)
+  sep = ','
+  seps = ","
+)
 type
   telmail struct {
      phonenumber,
@@ -81,6 +84,28 @@ func (x *telmail) Leq (Y any) bool {
   return false
 }
 
+func (x *telmail) String() string {
+  s := x.phonenumber.String()
+  str.OffSpc1 (&s)
+  s += seps
+  t := x.cellnumber.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.email.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  return s
+}
+
+func (x *telmail) Defined (s string) bool {
+  ss, n := str.SplitByte (s, sep)
+  if n != N { return false }
+  if ! x.phonenumber.Defined (ss[0]) { return false }
+  if ! x.cellnumber.Defined (ss[1]) { return false }
+  if ! x.email.Defined (ss[2]) { return false } // TODO check @
+  return true
+}
+
 func (x *telmail) Colours (f, b col.Colour) {
   x.phonenumber.Colours (f, b)
   x.cellnumber.Colours (f, b)
@@ -115,11 +140,10 @@ func (x *telmail) Write (l, c uint) {
 }
 
 func (x *telmail) Edit (l, c uint) {
-  const n = 2
   x.Write (l, c)
   i := 0
   if C, _ := kbd.LastCommand(); C == kbd.Up {
-    i = n
+    i = N - 1
   }
   loop:
   for {
@@ -131,17 +155,17 @@ func (x *telmail) Edit (l, c uint) {
     case 2:
       x.email.Edit (l + 1, c + ct)
     }
-    switch C, d:= kbd.LastCommand(); C {
+    switch C, d := kbd.LastCommand(); C {
     case kbd.Esc:
       break loop
     case kbd.Enter:
       if d == 0 {
-        if i < n { i++ } else { break loop }
+        if i < N - 1 { i++ } else { break loop }
       } else {
         break loop
       }
     case kbd.Down, kbd.Right:
-      if i < n { i++ } else { break loop }
+      if i < N - 1 { i++ } else { break loop }
     case kbd.Up, kbd.Left:
       if i > 0 { i-- } else { break loop }
     }

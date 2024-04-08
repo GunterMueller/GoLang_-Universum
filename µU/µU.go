@@ -39,12 +39,11 @@ import (
   "µU/pbar"; "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/pstk"; "µU/qmat"; "µU/reg"
   "µU/rpc"; "µU/rn"; "µU/rw"; "µU/scale"; "µU/schan"; "µU/scr"; "µU/smok"; "µU/term"
   "µU/texts"; "µU/time"; "µU/tval"; "µU/vnset"; "µU/Z"
-  "µU/april"
 )
 const (
   yy = 2024
   mm =    4
-  dd =    1
+  dd =    7
 )
 var (
   red = col.FlashRed()
@@ -162,7 +161,6 @@ func main() {
   wdtext = 91 * wd1 // 91 == width of license text lines + 2
   files.Cd (env.Gosrc() + "/µU")
   go input()
-  april.First()
   cl := col.FlashWhite()
   cf := col.New(); cf.Set (164, 164, 164)
   cb := col.DarkBlue()

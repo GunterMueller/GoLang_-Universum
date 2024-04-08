@@ -7,6 +7,7 @@ import (
   "µU/kbd"
   "µU/col"
   "µU/box"
+  "µU/str"
   "µU/font"
   "µU/pbox"
   "µU/text"
@@ -17,6 +18,8 @@ const (
   lenName = uint(27)
   lenFirstName = uint(15)
   lenShort = lenName + lenFirstName + 2 // ", "
+  sep = ','
+  seps = ","
 )
 const ( // Order
   nameOrder = iota
@@ -169,6 +172,36 @@ func (x *person) Leq (Y any) bool {
   return x.Less (Y) || x.Eq (Y)
 }
 
+func (x *person) String() string {
+  s := x.surname.String()
+  str.OffSpc1 (&s)
+  s += seps
+  t := x.firstName.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.title.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.Sex.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.Calendarday.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  return s
+}
+
+func (x *person) Defined (s string) bool {
+  ss, n := str.SplitByte (s, sep)
+  if n != 5 { return false }
+  if ! x.surname.Defined (ss[0]) { return false }
+  if ! x.firstName.Defined (ss[1]) { return false }
+  if ! x.title.Defined (ss[2]) { return false }
+  if ! x.Sex.Defined (ss[3]) { return false }
+  if ! x.Calendarday.Defined (ss[4]) { return false }
+  return true
+}
+
 func (x *person) Sub (Y any) bool {
   y := x.imp (Y)
   if ! x.surname.Sub (y.surname) {
@@ -232,8 +265,8 @@ LongB:
  Name: ___________________________   Vorname: _______________    geb.: ________
 
 LongTB:
- Name: ___________________________   Vorname: _______________    geb.: ________
- Anr.: ___________________________       m/w: _
+ Name: ___________________________   Vorname: _______________    Anrede: ______
+ geb.: __________
 *******************************************************************************/
 
 func (x *person) writeMask (l, c uint) {
@@ -299,7 +332,7 @@ func (x *person) Edit (l, c uint) {
   x.Write (l, c)
   i := uint(0)
   if C, _ := kbd.LastCommand(); C == kbd.Up { // see persaddr
-    i = 4
+    i = N - 1
   }
   loop:
   for {
@@ -324,7 +357,7 @@ func (x *person) Edit (l, c uint) {
       break loop
     case kbd.Enter:
       if d == 0 {
-        if i < 4 {
+        if i < N - 1 {
           i++
         } else {
           break loop
@@ -333,7 +366,7 @@ func (x *person) Edit (l, c uint) {
         break loop
       }
     case kbd.Down, kbd.Right:
-      if i < 4 {
+      if i < N - 1 {
         i++
       } else {
         break loop

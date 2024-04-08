@@ -1,13 +1,13 @@
 package pers
 
-// (c) Christian Maurer   v. 221003 - license see µU.go
+// (c) Christian Maurer   v. 240407 - license see µU.go
 
 import (
   "µU/rand"
   "µU/text"
 )
 const
-  N = 200
+  R = 200
 var (
   NN, VN [N]text.Text
   nn int
@@ -36,7 +36,7 @@ func vg (S string) {
 }
 
 func init1() {
-  for n:= 0; n < N; n++ {
+  for n := 0; n < R; n++ {
     NN[n] = text.New (lenName)
     VN[n] = text.New (lenFirstName)
   }
