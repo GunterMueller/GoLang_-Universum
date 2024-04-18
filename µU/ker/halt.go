@@ -1,6 +1,6 @@
 package ker
 
-// (c) Christian Maurer   v. 220923 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 
 import (
   "os"
@@ -42,19 +42,6 @@ func prePanic() {
 
 func oops() {
   panic_("Oops")
-}
-
-func shit() {
-  panic_("shit happens")
-}
-
-func toDo() {
-  panic_("ToDo")
-}
-
-func stopErr (t string, n uint, e error) {
-  s := ""; if e != nil { s = " => " + e.Error() }
-  panic_("error nr. " + strconv.Itoa (int(n)) + ": " + t + s)
 }
 
 func halt (s int) {

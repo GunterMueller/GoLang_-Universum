@@ -1,6 +1,6 @@
 package flat
 
-// (c) Christian Maurer   v. 230326 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 
 import (
   "math"
@@ -191,7 +191,7 @@ func roundTable (x, y, z, r, rf, rb, h, hf, hp float64, c col.Colour) {
 // Pre: d <= w.
 // d = length of straight part
 func ovalTable (x, y, z, w, d, h, a float64, f col.Colour) {
-  if d > w { ker.Oops() }
+  if d > w { ker.PrePanic() }
   s, c := fsin(a), fcos(a)
   r := d / 2
   x1, y1 := x + r * c, y + r * s

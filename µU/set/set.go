@@ -87,7 +87,6 @@ func (x *set) Clr() {
 
 func (x *set) Num() uint {
   n := x.uint
-//  if num (x.anchor) != n { ker.Oops() }
   return n
 }
 

@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 231228 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 
 import (
   "µU/ker"
@@ -113,7 +113,7 @@ func (x *graph) Euler() bool {
   case 2: // Euler path from colocal to local vertex
     ;
   default:
-    ker.Oops()
+    ker.Panic ("e > 2")
   }
   x.ClrMarked()
   x.eulerPath = nil
@@ -125,7 +125,7 @@ func (x *graph) Euler() bool {
   var nb *neighbour
   for {
     nb = notTraversedNeighbour (v)
-    if nb == nil { ker.Oops() }
+    if nb == nil { ker.Panic ("nb == nil") }
     // writeE (N.edgePtr.any, true)
     //  for j := 0; j <= 9; j++ { for a := false; a <= true; a++ { writVe (N.to.any, a); ker.Msleep (100) } } };
     nb.edgePtr.marked = true
@@ -147,7 +147,7 @@ func (x *graph) Euler() bool {
     v1 := v
     for {
       nb = notTraversedNeighbour (v)
-      if nb == nil { ker.Oops() }
+      if nb == nil { ker.Panic ("nb == nil") }
     // writeE (N.edgePtr.any, true)
     // for j := 0 TO 9 { for a := false TO true { writeV (N.to.any, a); ker.Msleep (100) } }
       nb.edgePtr.marked = true

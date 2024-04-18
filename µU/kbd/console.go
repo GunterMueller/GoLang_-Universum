@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 231228 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 
 import (
   "os"
@@ -17,8 +17,6 @@ func catch() {
   for {
     b := terminal.Read()
     switch b {
-    // case 0:
-      // ker.Oops() // Fn-key combination !
     case shiftL, shiftR, shiftLock:
       shift = true
     case ctrlL, ctrlR:
@@ -112,10 +110,9 @@ func inputC (B *byte, C *Comm, D *uint) {
       if ok {
         k = uint(b0)
       } else {
-        ker.Oops()
+        ker.Panic ("! ok")
       }
     }
-//    if k == 0 { ker.Oops() }
     k1 = k
     k = k % off
     if shift {

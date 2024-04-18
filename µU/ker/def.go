@@ -1,6 +1,6 @@
 package ker
 
-// (c) Christian Maurer   v. 231228 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 
 import
   "os"
@@ -16,8 +16,6 @@ func Panic2 (s string, n uint, s1 string, n1 uint) { panic2(s,n,s1,n1) }
 func Panic3 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint) { panic3(s,n,s1,n1,s2,n2) }
 func PrePanic() { prePanic() }
 func Oops() { oops() }
-func ToDo() { toDo() }
-func StopErr (t string, n uint, e error) { stopErr(t,n,e) }
 func Halt (s int) { halt(s) }
 func InstallTerm (h func()) { installTerm(h) }
 

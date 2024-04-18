@@ -1,6 +1,6 @@
 package sel
 
-// (c) Christian Maurer   v. 230926 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 
 import (
   "µU/ker"
@@ -16,9 +16,8 @@ var
   bx, mbx = box.New(), box.New()
 
 func select_ (write WritingCol, n, h, w uint, i *uint, l, c uint, f, b col.Colour) {
-  if n == 0 { ker.Oops() }
+  if n == 0 || h == 0 { ker.Panic ("n == 0 || h == 0") }
   if n == 1 { *i = 0; return }
-  if h == 0 { ker.Oops() }
   if h > n { h = n }
   if w == 0 { w = scr.NColumns() }
   if w > scr.NColumns() { w = scr.NColumns() }

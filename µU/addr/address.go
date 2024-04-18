@@ -1,6 +1,6 @@
 package addr
 
-// (c) Christian Maurer   v. 240407 - license see µU.go
+// (c) Christian Maurer   v. 240409 - license see µU.go
 
 import (
   . "µU/obj"
@@ -149,16 +149,17 @@ func (x *address) Cols() (col.Colour, col.Colour) {
 }
 
 const (
-  cs = 10; cp = 45; cc = 57; cl = cc
+  cs = 9; cp = 44; cc = 56; cl = cc
 )
 
 func writeMask (l, c uint) {
-//           1         2         3         4         5         6         7
-// 01234567890123456789012345678901234567890123456789012345678901234567890123456789
-//  Str./Nr: ____________________________  PLZ: _____  Ort: ______________________
-//                                                    Land: ________________
+/*           1         2         3         4         5         6         7
+01234567890123456789012345678901234567890123456789012345678901234567890123456789
+Str./Nr: ____________________________  PLZ: _____  Ort: ______________________
+                                                  Land: ________________
+*/
   bx.Wd (8)
-  bx.Write ("Str./Nr:", l, c + 1)
+  bx.Write ("Str./Nr:", l, c)
   bx.Wd (4)
   bx.Write ("PLZ:",     l, c + cp - 5)
   bx.Write ("Ort:",     l, c + cc - 5)
@@ -262,7 +263,12 @@ func (x *address) Decode (s Stream) {
 }
 
 func (x *address) TeX() string {
-  s := x.street.TeX() + ", " + x.Natural.String() + " " + x.city.TeX()
+  s := x.street.TeX()
+  if x.Natural.Empty() {
+    s += ", " + x.city.TeX()
+  } else {
+    s += ", " + x.Natural.String() + " " + x.city.TeX()
+  }
   c := x.Country
   if ! c.Empty() && c.TLD() != "de" { s += " (" + c.TeX() + ")" }
   return s

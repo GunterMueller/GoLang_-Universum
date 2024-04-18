@@ -36,14 +36,14 @@ import (
   "µU/dgra"; "µU/dlock"; "µU/env"; "µU/errh"; "µU/fig2"; "µU/fig3"; "µU/files"; "µU/gram"
   "µU/ieee"; "µU/kbd"; "µU/li"; "µU/lock"; "µU/lock2"; "µU/lockn"; "µU/lr"; "µU/macc"
   "µU/masks"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"; "µU/mol"; "µU/mstk"
-  "µU/pbar"; "µU/pat"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/pstk"; "µU/qmat"; "µU/reg"
+  "µU/pbar"; "µU/pac"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/pstk"; "µU/qmat"; "µU/reg"
   "µU/rpc"; "µU/rn"; "µU/rw"; "µU/scale"; "µU/schan"; "µU/scr"; "µU/smok"; "µU/term"
   "µU/texts"; "µU/time"; "µU/tval"; "µU/vnset"; "µU/Z"
 )
 const (
   yy = 2024
   mm =    4
-  dd =    7
+  dd =   13
 )
 var (
   red = col.FlashRed()
@@ -153,7 +153,7 @@ func main() {
   dgra.Touch(); dlock.New(0, nil, 0); fig2.Touch(); fig3.Touch(); gram.Touch(); ieee.New()
   li.New(0); lock.NewChannel(); lock2.NewPeterson(); lockn.NewDijkstra(0); lr.NewMutex()
   macc.New(); masks.New(); mbbuf.New(nil, 2); mbuf.New(0); mcorn.New(0); menue.Touch()
-  mol.New(); mstk.New(0); pbar.Touch(); pat.New(); piset.Touch(); pos.Touch(); pstk.Touch()
+  mol.New(); mstk.New(0); pbar.Touch(); pac.New(); piset.Touch(); pos.Touch(); pstk.Touch()
   qmat.Touch(); reg.Touch(); rpc.Touch(); rn.New0(); rw.New1(); scale.Touch(); schan.New(0)
   smok.Touch(); term.Touch(); texts.Touch(); tval.New(); vnset.EmptySet(); Z.String(0)
   var v day.Calendarday = day.New()
