@@ -1,11 +1,13 @@
 package addr
 
-// (c) Christian Maurer   v. 221021 - license see µU.go
+// (c) Christian Maurer   v. 240409 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/kbd"
   "µU/col"
+  "µU/str"
+// "µU/errh"
   "µU/box"
   "µU/font"
   "µU/pbox"
@@ -17,6 +19,8 @@ const (
   lenStreet = uint(28)
   lenCity   = uint(22)
   lenEmail  = uint(40)
+  sep = ','
+  seps = ","
 )
 type
   address struct {
@@ -107,6 +111,32 @@ func (x *address) Leq (Y any) bool {
   return x.Less (Y) || x.Eq (Y)
 }
 
+func (x *address) String() string {
+  s := x.street.String()
+  str.OffSpc1 (&s)
+  s += seps
+  t := x.Natural.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.city.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  t = x.Country.String()
+  str.OffSpc1 (&t)
+  s += t + seps
+  return s
+}
+
+func (x *address) Defined (s string) bool {
+  ss, n := str.SplitByte (s, sep)
+  if n != N { return false }
+  if ! x.street.Defined (ss[0]) { return false }
+  if ! x.Natural.Defined (ss[1]) { return false }
+  if ! x.city.Defined (ss[2]) { return false }
+  if ! x.Country.Defined (ss[3]) { return false }
+  return true
+}
+
 func (x *address) Colours (f, b col.Colour) {
   x.street.Colours (f, b)
   x.Natural.Colours (f, b)
@@ -119,16 +149,17 @@ func (x *address) Cols() (col.Colour, col.Colour) {
 }
 
 const (
-  cs = 10; cp = 45; cc = 57; cl = cc
+  cs = 9; cp = 44; cc = 56; cl = cc
 )
 
 func writeMask (l, c uint) {
-//           1         2         3         4         5         6         7
-// 01234567890123456789012345678901234567890123456789012345678901234567890123456789
-//  Str./Nr: ____________________________  PLZ: _____  Ort: ______________________
-//                                                    Land: ________________
+/*           1         2         3         4         5         6         7
+01234567890123456789012345678901234567890123456789012345678901234567890123456789
+Str./Nr: ____________________________  PLZ: _____  Ort: ______________________
+                                                  Land: ________________
+*/
   bx.Wd (8)
-  bx.Write ("Str./Nr:", l, c + 1)
+  bx.Write ("Str./Nr:", l, c)
   bx.Wd (4)
   bx.Write ("PLZ:",     l, c + cp - 5)
   bx.Write ("Ort:",     l, c + cc - 5)
@@ -145,11 +176,10 @@ func (x *address) Write (l, c uint) {
 }
 
 func (x *address) Edit (l, c uint) {
-  const n = 4
   x.Write (l, c)
   i := 0
   if C, _ := kbd.LastCommand(); C == kbd.Up {
-    i = n
+    i = N - 1
   }
   loop:
   for {
@@ -168,12 +198,12 @@ func (x *address) Edit (l, c uint) {
       break loop
     case kbd.Enter:
       if d == 0 {
-        if i < n { i++ } else { break loop }
+        if i < N - 1 { i++ } else { break loop }
       } else {
         break loop
       }
     case kbd.Down, kbd.Right:
-      if i < n { i++ } else { break loop }
+      if i < N - 1 { i++ } else { break loop }
     case kbd.Up, kbd.Left:
       if i > 0 { i-- } else { break loop }
     }
@@ -233,7 +263,12 @@ func (x *address) Decode (s Stream) {
 }
 
 func (x *address) TeX() string {
-  s := x.street.TeX() + ", " + x.Natural.String() + " " + x.city.TeX()
+  s := x.street.TeX()
+  if x.Natural.Empty() {
+    s += ", " + x.city.TeX()
+  } else {
+    s += ", " + x.Natural.String() + " " + x.city.TeX()
+  }
   c := x.Country
   if ! c.Empty() && c.TLD() != "de" { s += " (" + c.TeX() + ")" }
   return s

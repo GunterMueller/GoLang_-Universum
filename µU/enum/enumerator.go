@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 240317 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 
 import (
   "µU/env"
@@ -179,7 +179,7 @@ func (x *enumerator) Get (name string) {
   }
   file.Seek (0)
   s := file.Get().(string)
-  if x.w != uint(s[0]) { ker.Oops() }
+  if x.w != uint(s[0]) { ker.Panic ("x.w != uint(s[0])") }
   x.s = make([]string, x.uint - 1)
   for i := uint(0); i < x.uint; i++ {
     file.Seek (i + 1)
@@ -193,10 +193,10 @@ func (x *enumerator) Get (name string) {
     filek := pseq.New (str.New(x.wk))
     file.Name (filename)
     nk := filek.Num()
-    if nk != n { ker.Oops() }
+    if nk != n { ker.Panic ("nk != n") }
     filek.Seek (0)
     sk := file.Get().(string)
-    if x.wk != uint(sk[0]) { ker.Oops() }
+    if x.wk != uint(sk[0]) { ker.Panic ("x.wk != uint(sk[0])") }
     x.k = make([]string, x.uint - 1)
     for i := uint(0); i < x.uint; i++ {
       filek.Seek (i + 1)

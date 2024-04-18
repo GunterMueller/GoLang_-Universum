@@ -152,7 +152,7 @@ func Norm (s *string, n uint) { norm(s,n) }
 // As far as existent, all b's are removed from s.
 func OffBytes (s *string, b byte) { offBytes(s,b) }
 
-// As far as existent, for left resp. !left leading resp. trailing spaces
+// As far as existent, for left resp. ! left leading resp. trailing spaces
 // are removed from s and s is filled up with spaces on the other side
 // to its former length.
 func Move (s *string, left bool) { move(s,left) }

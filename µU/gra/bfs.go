@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 231225 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 
 import (
   "sort"
@@ -49,7 +49,7 @@ func (x *graph) searchShortestPath (p Pred) {
               n1 := n.to.predecessor.nbPtr.nextNb
               for n1.from != n.to.predecessor {
                 n1 = n1.nextNb
-                if n1.nextNb == n1 { ker.Oops() }
+                if n1.nextNb == n1 { ker.Panic ("n1.nextNb == n1") }
               }
               x.writeE (n1.edgePtr.any, false)
               x.writeV (n.to.any, false)
@@ -87,7 +87,7 @@ func (x *graph) defineMarked (v *vertex) {
     n := v.nbPtr.nextNb
     for n.to != v.predecessor {
       n = n.nextNb
-      if n == v.nbPtr { ker.Oops() }
+      if n == v.nbPtr { ker.Panic ("n == v.nbPtr") }
     }
     n.edgePtr.marked = true
     v = v.predecessor
@@ -139,7 +139,7 @@ func (x *graph) breadthFirstSearch (p Pred) {
             n1 = n.to.predecessor.nbPtr.nextNb
             for n1.from != n.to.predecessor {
               n1 = n1.nextNb
-              if n1.nextNb == n1 { ker.Oops() }
+              if n1.nextNb == n1 { ker.Panic ("n1.nextNb == n1") }
             }
             x.writeE (n1.edgePtr.any, false)
             x.writeV (n1.from.any, true)

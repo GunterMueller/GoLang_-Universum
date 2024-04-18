@@ -1,13 +1,13 @@
 package pers
 
-// (c) Christian Maurer   v. 221003 - license see µU.go
+// (c) Christian Maurer   v. 240408 - license see µU.go
 
 import (
   "µU/rand"
   "µU/text"
 )
 const
-  N = 200
+  R = 200
 var (
   NN, VN [N]text.Text
   nn int
@@ -15,13 +15,8 @@ var (
 
 func (x *person) Rand() {
   n := rand.Natural (N)
-  x.surname.Copy (n)
+  x.name.Copy (n)
   x.firstName.Copy (VN[n])
-  if rand.Natural (2) == 0 {
-    x.Sex.Defined ("m")
-  } else {
-    x.Sex.Defined ("w")
-  }
   x.Calendarday.Randomize()
 }
 
@@ -36,9 +31,9 @@ func vg (S string) {
 }
 
 func init1() {
-  for n:= 0; n < N; n++ {
-    NN[n] = text.New (lenName)
-    VN[n] = text.New (lenFirstName)
+  for n := 0; n < R; n++ {
+    NN[n] = text.New (lenn)
+    VN[n] = text.New (lenf)
   }
   nn = 0
   ng ("Aal");       ng ("Adler");     ng ("Affe");      ng ("Albatros");  ng ("Ameise")

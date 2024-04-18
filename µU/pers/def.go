@@ -1,25 +1,24 @@
 package pers
 
-// (c) Christian Maurer   v. 220831 - license see µU.go
+// (c) Christian Maurer   v. 240408 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
 )
 const ( // Format
-// ohne Maske
-  Short = iota // Name, Vorname         1 Zeile,  43 Spalten
-  ShortB       // Short + GebDat        1 Zeile,  53 Spalten
-// mit Maske
-  Long         // Name, Vorname         1 Zeile,  64 Spalten
-  LongB        // Long + GebDat         1 Zeile,  80 Spalten
-  LongTB       // Anrede + LongB + m/w  2 Zeilen, 80 Spalten
+  Name = iota // name, first name    1 line,  64 columns
+  NameB       // Namg + birth date   1 line,  80 columns
+  NameBT      // NameB + title       2 lines, 80 columns
   NFormats
 )
+const
+  N = 4 // surname, first name, title and birth date
 type
   Person interface {
 
   Editor
+  Stringer
   col.Colourer
   Formatter
   TeXer

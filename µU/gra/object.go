@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 231225 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 
 import (
   "µU/ker"
@@ -158,7 +158,7 @@ func (x *graph) Encode() Stream {
   if x.nEdges == 0 { return s }
   i += a
   for e := x.eAnchor.nextE; e != x.eAnchor; e = e.nextE {
-    if x.eAnchor.any == nil { ker.Oops() }
+    if x.eAnchor.any == nil { ker.Panic ("x.eAnchor.any == nil") }
     k := uint32(Codelen (e.any))
     copy (s[i:i+a], Encode (k))
     i += a

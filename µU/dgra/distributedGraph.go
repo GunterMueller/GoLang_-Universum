@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 240108 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 
 import (
   "sync"
@@ -123,17 +123,17 @@ func new_(g gra.Graph) DistributedGraph {
 }
 
 func (x *distributedGraph) setHosts (h []string) {
-  if uint(len(h)) != x.size { ker.Oops() }
+  if uint(len(h)) != x.size { ker.Panic ("uint(len(h)) != x.size") }
   for i := uint(0); i < x.n; i++ {
-    if str.Empty (h[i]) { ker.Oops() }
+    if str.Empty (h[i]) { ker.Panic ("str.Empty (h[i])") }
     x.host[i] = h[x.nr[i]]
   }
 }
 
 func (x *distributedGraph) setHostnames (h []string) {
-  if uint(len(h)) != x.size { ker.Oops() }
+  if uint(len(h)) != x.size { ker.Panic ("uint(len(h)) != x.size") }
   for i := uint(0); i < x.n; i++ {
-    if str.Empty(h[i]) { ker.Oops() }
+    if str.Empty(h[i]) { ker.Panic ("str.Empty(h[i])") }
     x.host[i] = h[i]
   }
 }

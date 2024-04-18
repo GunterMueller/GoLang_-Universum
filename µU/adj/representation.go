@@ -1,6 +1,6 @@
 package adj
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 
 import (
   "µU/ker"
@@ -22,7 +22,7 @@ type (
 )
 
 func new_(n uint, v, e any) AdjacencyMatrix {
-  if n == 0 || e == nil { ker.Oops() }
+  if n == 0 || e == nil { ker.PrePanic() }
   CheckAtomicOrObject (v)
   CheckUintOrValuator (e)
   x := new(adjacencyMatrix)

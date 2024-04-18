@@ -1,9 +1,8 @@
 package piset
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 
 import (
-  "µU/ker"
   . "µU/obj"
   "µU/str"
   "µU/pseq"
@@ -22,7 +21,6 @@ type
                               }
 
 func new_(o Indexer) PersistentIndexedSet {
-  if ! IsIndexer (o) { ker.Oops() }
   x := new (persistentIndexedSet)
   x.Object = o.Clone().(Object)
   x.Func = o.Index()

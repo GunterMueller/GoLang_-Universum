@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 240101 - license see µU.go
+// (c) Christian Maurer   v. 240413 - license see µU.go
 //
 // >>> References:
 // >>> CLR  = Cormen, Leiserson, Rivest        (1990)
@@ -243,7 +243,7 @@ func (x *graph) insertedVertex (a any, marked bool) *vertex {
 }
 
 func (x *graph) insMarked (a any, marked bool) {
-  if x.vAnchor.any == nil { ker.Oops() }
+  if x.vAnchor.any == nil { ker.Panic ("x.vAnchor.any == nil") }
   CheckTypeEq (a, x.vAnchor.any)
   if x.Ex (a) { // local is set
     return
@@ -318,9 +318,8 @@ func (x *graph) edgeMarked (a any, marked bool) {
   n = n.nextNb
   for n.to != x.local {
     n = n.nextNb
-//    if n == x.colocal.nbPtr { ker.Oops() }
   }
-  if n.to != x.local { ker.Oops() }
+  if n.to != x.local { ker.Panic ("n.to != x.local") }
 // and its content is replaced:
   if ! x.directed {
     n.to.nbPtr.outgoing = true
@@ -470,7 +469,7 @@ func (g *graph) Val() uint {
 func (g *graph) ExVal (n uint) bool {
   var v vtx.Vertex
   if g.ExPred (func (a any) bool { v = a.(vtx.Vertex); return v.(Valuator).Val() == n }) {
-    if ! g.Ex (v) { ker.Oops() }
+    if ! g.Ex (v) { ker.Panic ("! g.Ex (v)") }
     return true
   }
   return false
@@ -480,7 +479,7 @@ func (g *graph) ExVal2 (n, n1 uint) bool {
   var v, v1 vtx.Vertex
   if g.ExPred2 (func (a any) bool { v = a.(vtx.Vertex); return v.(Valuator).Val() == n },
                 func (a1 any) bool { v1 = a1.(vtx.Vertex); return v1.(Valuator).Val() == n1 }) {
-    if ! g.Ex2 (v, v1) { ker.Oops() }
+    if ! g.Ex2 (v, v1) { ker.Panic ("! g.Ex2 (v, v1)") }
     return true
   }
   return false
@@ -787,11 +786,11 @@ func (x *graph) Step (i uint, outgoing bool) {
       x.path = append (x.path, x.colocal)
       x.local = x.colocal
     } else {
-      if x.path[0] != x.colocal { ker.Oops() }
+      if x.path[0] != x.colocal { ker.Panic ("x.path[0] != x.colocal") }
     }
     c := uint(len (x.path))
     n := x.path[c - 1]
-    if x.local != n { ker.Oops() }
+    if x.local != n { ker.Panic ("x.local != n") }
     nb := x.local.nbPtr.nextNb
     for {
       if nb.outgoing {
@@ -818,7 +817,7 @@ func (x *graph) Step (i uint, outgoing bool) {
       v.marked = false
     }
     e := x.connection (x.local, v)
-    if e == nil { ker.Oops() }
+    if e == nil { ker.Panic ("e == nil") }
     e.marked = false
     i = uint(0)
     for {
@@ -930,7 +929,7 @@ func (x *graph) Star() Graph {
   y.Ins (x.local.any)
   y.local.marked = true
   local := y.local
-  if y.local != y.colocal { ker.Oops() }
+  if y.local != y.colocal { ker.Panic ("y.local != y.colocal") }
   if ! x.directed {
     for n, i := x.local.nbPtr.nextNb, uint(0); n != x.local.nbPtr; n, i = n.nextNb, i + 1 {
       y.Ins (Clone(n.to.any)) // a now colocal
@@ -956,7 +955,7 @@ func (x *graph) Star() Graph {
 func (x *graph) Add (Ys ...Graph) {
   for _, Y := range Ys {
     y := x.imp(Y)
-    if y.directed != x.directed { ker.Oops() }
+    if y.directed != x.directed { ker.Panic ("y.directed != x.directed") }
     for v := y.vAnchor.nextV; v != y.vAnchor; v = v.nextV {
       if x.Ex (v.any) && ! x.local.marked {
         x.local.marked = v.marked

@@ -1,6 +1,6 @@
 package phone
 
-// (c) Christian Maurer   v. 240413 - license see µU.go
+// (c) Christian Maurer   v. 240409 - license see µU.go
 
 import (
   . "µU/obj"
@@ -14,7 +14,7 @@ import (
 )
 type
   phonenumber struct {
-                     bool "foreign telephone number" 
+                     bool "Vorwahl fängt mit 0 an"
                      uint16 "prefix"
                      uint32 "number"
               cF, cB col.Colour
@@ -48,7 +48,6 @@ func (x *phonenumber) Clr() {
 func (x *phonenumber) Copy (Y any) {
   y := x.imp (Y)
   x.uint16, x.uint32 = y.uint16, y.uint32
-  x.bool = y.bool
 }
 
 func (x *phonenumber) Clone() any {
@@ -79,11 +78,12 @@ func (x *phonenumber) Defined (s string) bool {
     return true
   }
   str.Move (&s, true)
-  x.bool = s[1] == '0'
+  x.bool = s[0] == byte('0')
+  if x.bool { println ("Defined: x.bool", s) } else { println ("Defined: ! x.bool", s) }
   l := str.ProperLen (s)
   if i, ok := str.Pos (s, ' '); ok {
-    k, ok := N.Natural (s[1:i])
-    if ok && s[0] == '0' {
+    k, ok := N.Natural (s[0:i])
+    if ok {
       x.uint16 = uint16(k)
       if l == i {
         return false
@@ -115,8 +115,10 @@ func (x *phonenumber) String() string {
   s := ""
   if x.uint16 > 0 {
     s = N.String (uint(x.uint16))
-    s = "0" + s
-    if x.bool { s = "0" + s }
+    if x.bool {
+      s = "0" + s
+println (x.uint16, "String(): x.bool", s)
+    }
   }
   if x.uint32 > 0 {
     t := N.String (uint(x.uint32))
@@ -189,15 +191,18 @@ func (x *phonenumber) Codelen() uint {
 }
 
 func (x *phonenumber) Encode() Stream {
-  s := make (Stream, x.Codelen())
-  s[0] = '0'; if x.bool { s[0] = '1' }
-  copy (s[1:3], Encode (x.uint16))
-  copy (s[3:7], Encode (x.uint32))
-  return s
+  bs := make (Stream, x.Codelen())
+  bs[0] = '1'
+  if x.bool { bs[0] = '0'
+println ("Encode", x.uint16)
+  }
+  copy (bs[1:3], Encode (x.uint16))
+  copy (bs[3:7], Encode (x.uint32))
+  return bs
 }
 
-func (x *phonenumber) Decode (s Stream) {
-  x.bool = s[0] == '1'
-  x.uint16 = Decode (x.uint16, s[1:3]).(uint16)
-  x.uint32 = Decode (x.uint32, s[3:7]).(uint32)
+func (x *phonenumber) Decode (bs Stream) {
+  x.bool = bs[0] == '0'
+  x.uint16 = Decode (x.uint16, bs[1:3]).(uint16)
+  x.uint32 = Decode (x.uint32, bs[3:7]).(uint32)
 }

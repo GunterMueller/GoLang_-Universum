@@ -1,15 +1,18 @@
 package addr
 
-// (c) Christian Maurer   v. 221003 - license see µU.go
+// (c) Christian Maurer   v. 240407 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
 )
+const
+  N = 4 // number of components of an address
 type
   Address interface {
 
   Editor
+  Stringer
   col.Colourer
   Printer
   TeXer
