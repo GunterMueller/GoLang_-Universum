@@ -41,7 +41,7 @@ func (x *distributedGraph) HirschbergSinclair() {
             status = lost
             num++
             if num < maxnum {
-if j > 1 { ker.Panic1 ("Scheiße: j ==", j) }
+              if j > 1 { ker.Panic1 ("1 < j ==", j) }
               msg.SetPass (id, num, maxnum)
               x.send (1 - j, msg)
             } else { // num >= maxnum
@@ -67,7 +67,7 @@ if j > 1 { ker.Panic1 ("Scheiße: j ==", j) }
             done <- 0
             mutex.Unlock()
             break loop
-          } else {
+          } else { // id != x.me
             status = lost
             msg.SetLeader (id)
             x.send (1 - j, msg)
@@ -91,7 +91,9 @@ if j > 1 { ker.Panic1 ("Scheiße: j ==", j) }
     if ! replyOk {
       status = lost
     }
-    if status != candidate { break }
+    if status != candidate {
+      break
+    }
     maxnum *= 2
   }
   <-done; <-done

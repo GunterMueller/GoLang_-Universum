@@ -1,6 +1,6 @@
 package col
 
-// (c) Christian Maurer   v. 230401 - license see µU.go
+// (c) Christian Maurer   v. 241011 - license see µU.go
 
 import
  . "µU/obj"
@@ -60,7 +60,7 @@ func New3n (n string, r, g, b byte) Colour { return new3n(n,r,g,b) }
 func HeadF() Colour { return flashWhite() }
 func HeadB() Colour { return blue() }
 func HintF() Colour { return flashWhite() }
-func HintB() Colour { return magenta() }
+func HintB() Colour { return darkMagenta() }
 func ErrorF() Colour { return flashYellow() }
 func ErrorB() Colour { return red() }
 func MenuF() Colour { return flashWhite() }
@@ -80,6 +80,7 @@ func StartColsA() (Colour, Colour) { return startColsA() }
 
 // Returns the slice of all colours defined in this package.
 func AllColours() []Colour { return allColours() }
+func NColours() uint { return uint(len(AllColours())) }
 
 func FlashBrown() Colour       { return flashBrown() }
 func BlackBrown() Colour       { return blackBrown() }

@@ -1,29 +1,29 @@
 package rw
 
-// (c) Christian Maurer   v. 230105 - license see µU.go
+// (c) Christian Maurer   v. 241001 - license see µU.go
 
 type
   ReaderWriter interface { // protocols for the readers/writers problem
 
-// Pre: The calling goroutine is neither reading or writing.
-// The calling goroutine is reading; no goroutine is writing.
-// If at the time of the call there was a writing goroutine,
-// the calling goroutine has been delayed, until there was no writing goroutine.
+// Pre: The calling process is neither reading or writing.
+// It isi now reading; no process is writing.
+// If at the time of the call there was a writing process,
+// the calling process has been delayed, until there was no writing process.
   ReaderIn()
 
-// Pre: The calling goroutine is reading.
-// The calling goroutine is neither reading or writing.
+// Pre: The calling process is reading.
+// The calling process is neither reading or writing.
   ReaderOut()
 
-// Pre: The calling goroutine is neither reading or writing.
-// The calling goroutine is writing;
-// no other goroutine is writing and there are no reading goroutines.
-// If at the time of the call there were reading goroutines or a writing one,
-// the calling goroutine has been delayed, until there were no reading or writing goroutines.
+// Pre: The calling process is neither reading or writing.
+// The calling process is writing;
+// no other process is writing and there are no reading processs.
+// If at the time of the call there were reading processs or a writing one,
+// the calling process has been delayed, until there were no reading or writing processs.
   WriterIn()
 
-// Pre: The calling goroutine is writing.
-// The calling goroutine is neither reading or writing.
+// Pre: The calling process is writing.
+// The calling process is neither reading or writing.
   WriterOut()
 
   Fin()
@@ -40,6 +40,9 @@ func NewSemaphore() ReaderWriter { return newS() }
 
 // implementation of the bounded rw-problem with an additive semaphore:
 func NewAddS (m uint) ReaderWriter { return newAddS(m) }
+
+// implementation with a baton
+func NewBaton() ReaderWriter { return newB() }
 
 // implementation of the rw-problem with Googles solution:
 func NewGo() ReaderWriter { return newG() }

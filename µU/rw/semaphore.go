@@ -14,8 +14,8 @@ type
 
 func newS() ReaderWriter {
   x := new(semaphore)
-  x.m = sem.New(1)
-  x.rw = sem.New(1)
+  x.m = sem.New (1)
+  x.rw = sem.New (1)
   return x
 }
 

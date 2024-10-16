@@ -1,11 +1,9 @@
 package dgra
 
-// (c) Christian Maurer   v. 240102 - license see µU.go
+// (c) Christian Maurer   v. 241013 - license see µU.go
 
-import (
-  . "µU/obj"
+import
   "µU/gra"
-)
 type
   DistributedGraph interface {
 
@@ -25,32 +23,38 @@ type
   ParentChildren() string
   Time() uint; Time1() uint
 
+// hearbeat-algorithms
   HeartbeatMatrix()
   HeartbeatMatrix1()
   HeartbeatGraph()
   HeartbeatGraph1()
-
+// search-algorithms
   Dfs() // depth first seach showing discover and finish times
   Dfs1() // depth first seach showing the DFS-tree
   Dfsfm() // depth first search without visit phase showing the DFS-tree, with far monitors
   Awerbuch() // simplified DFS-algorithm of Awerbuch, with far monitors
   Awerbuch1() // simplified DFS-algorithm of Awerbuch showing the DFS-tree, with far monitors
   HelaryRaynal() // experimental
-  Ring() // construction of a ring using Dfs showing the vertices of the ring, with far monitors
-  Ring1() // construction of a ring using Dfs showing the ring, with far monitors
   Bfs() // BFS-algorithm of Zhu/Cheung
   Bfsfm() // breadth first search, with far monitors
   Bfsfm1() // breadth first search showing the BFS-tree, with far monitors
 
+  Ring() // construction of a ring using Dfs showing the vertices of the ring, with far monitors
+  Ring1() // construction of a ring using Dfs showing the ring, with far monitors
+
+// elect-algorithms
   ChangRoberts()
+  HirschbergSinclair()
   Peterson()
   DolevKlaweRodeh()
-  HirschbergSinclair()
+
   Dfselect()
   Dfselectfm()
   Leader() uint
 
-  DijkstraScholten (o Op)
+// termination-detection-algorithms
+  Rana()
+  Misra()
 }
 
 // Pre: The values of the edges of g + nchan.Port0 are the ports
@@ -83,6 +87,7 @@ func G8a (i uint) DistributedGraph { return g8a(i) }
 func G8dir (i uint) DistributedGraph { return g8dir(i) }
 func G8ring (i uint) DistributedGraph { return g8ring(i) }
 func G8ringdir (i uint) DistributedGraph { return g8ringdir(i) }
+func G8ringdirord (i uint) DistributedGraph { return g8ringdirord(i) }
 func G8full (i uint) DistributedGraph { return g8full(i) }
 func G8ds (i uint) DistributedGraph { return g8ds(i) }
 func G9a (i uint) DistributedGraph { return g9a(i) }
@@ -97,3 +102,4 @@ func G16dir (i uint) DistributedGraph { return g16dir(i) }
 func G16ring (i uint) DistributedGraph { return g16ring(i) }
 func G16ringdir (i uint) DistributedGraph { return g16ringdir(i) }
 func G16full (i uint) DistributedGraph { return g16full(i) }
+func G16t (i uint) DistributedGraph { return g16t(i) }

@@ -134,8 +134,8 @@ func (x *edge) Write1 (a bool) {
   scr.ColourF (f)
   scr.Line (x.x0, x.y0, x.x1, x.y1)
   if x.directed {
-    x0, y0 := (x.x0 + 4 * x.x1) / 5, (x.y0 + 4 * x.y1) / 5
-    scr.CircleFull (x0, y0, 4)
+//    x0, y0 := (x.x0 + 4 * x.x1) / 5, (x.y0 + 4 * x.y1) / 5
+//    scr.CircleFull (x0, y0, 4)
   }
   if x.any == uint(1) { return }
   dx := int(x.wd * scr.Wd1() - scr.Wd1() / 2)

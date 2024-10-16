@@ -20,7 +20,7 @@ func SetRange (x, y, w float64) { setRange(x,y,w) }
 
 // Pre: (x, y) is in the range of the coordinates of the virtual points.
 // Returns the screen pixel position of (x, y).
-// If the calling goroutine runs under X, the result is in the range
+// If the calling process runs under X, the result is in the range
 // MinInt16 .. MaxInt16, if it runs in a console, in (0 .. Wd, 0 .. Ht).
 func Scale (x, y float64) (int, int) { return scale(x,y) }
 

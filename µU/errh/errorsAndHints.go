@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 240317 - license see µU.go
+// (c) Christian Maurer   v. 240925 - license see µU.go
 
 import (
   "strconv"
@@ -205,6 +205,12 @@ func conc2 (s string, k uint, s1 string, k1 uint) string {
   return s + " " + s1
 }
 
+func conc2m (s string, k uint, s1 string, k1 uint, s2 string) string {
+  s += " " + N.String (k)
+  s1 += " " + N.String(k1)
+  return s + " " + s1 + " " + s2
+}
+
 func conc3 (s string, k uint, s1 string, k1 uint, s2 string, k2 uint) string {
   s += " " + N.String (k)
   s1 += " " + N.String(k1)
@@ -221,19 +227,23 @@ func conc4 (s string, k uint, s1 string, k1 uint, s2 string, k2 uint, s3 string,
 }
 
 func errorm (s string, n uint, s1 string) {
-  do (concm(s, n, s1), false)
+  do (concm (s, n, s1), false)
 }
 
 func error2 (s string, n uint, s1 string, n1 uint) {
-  do (conc2(s, n, s1, n1), false)
+  do (conc2 (s, n, s1, n1), false)
+}
+
+func error2m (s string, n uint, s1 string, n1 uint, s2 string) {
+  do (conc2m (s, n, s1, n1, s2), false)
 }
 
 func error3 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint) {
-  do (conc3(s, n, s1, n1, s2, n2), false)
+  do (conc3 (s, n, s1, n1, s2, n2), false)
 }
 
 func error4 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint, s3 string, n3 uint) {
-  do (conc4(s, n, s1, n1, s2, n2, s3, n3), false)
+  do (conc4 (s, n, s1, n1, s2, n2, s3, n3), false)
 }
 
 func error0Pos (s string, l, c uint) {

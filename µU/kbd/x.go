@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 240407 - license see µU.go
+// (c) Christian Maurer   v. 240418 - license see µU.go
 
 // #cgo LDFLAGS: -lX11
 // #include <X11/X.h>
@@ -145,6 +145,8 @@ loop:
                 *B = mu
               case 52: // .
                 *B = division
+              case 86: // |
+                *B = pipe
               }
             }
           }

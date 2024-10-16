@@ -27,7 +27,6 @@ func (x *bounded) Lock (p uint) {
   x.Semaphore.P()
   changeStatus (p, hungry)
   x.fork[left (p)].Lock()
-//  changeStatus (p, hasRightFork)
   changeStatus (p, hasLeftFork)
   x.fork[p].Lock()
   changeStatus (p, dining)

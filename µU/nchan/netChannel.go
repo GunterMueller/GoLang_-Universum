@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 231230 - license see nU.go
+// (c) Christian Maurer   v. 241008 - license see nU.go
 
 import (
   "strconv"
@@ -40,7 +40,7 @@ func new_(a any, me, i uint, h string, p uint16) NetChannel {
   } else {
     x.any, x.uint = Clone (a), Codelen (a)
   }
-//  x.in, x.out bleibt undefiniert, weil nur für netChannelN gebraucht
+//  x.in, x.out remains undefined, because only used for netChannelN
   x.Stream = make(Stream, x.uint)
   x.oneOne = true
   x.isServer = me < i
@@ -49,6 +49,7 @@ func new_(a any, me, i uint, h string, p uint16) NetChannel {
     x.Listener, x.error = net.Listen (network, h + ps)
     x.panicIfErr()
     x.Conn, x.error = x.Listener.Accept()
+    x.panicIfErr()
   } else { // client
     for {
       if x.Conn, x.error = net.Dial (network, h + ps); x.error == nil {

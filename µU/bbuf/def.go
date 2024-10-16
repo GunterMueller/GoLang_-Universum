@@ -5,7 +5,7 @@ package bbuf
 import
   "µU/buf"
 type
-  BoundedBuffer interface {
+  BoundedBuffer interface { // buffer of limited capacity
 
   buf.Buffer
 

@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 230330 - license see µU.go
+// (c) Christian Maurer   v. 240418 - license see µU.go
 
 import (
   "µU/env"
@@ -86,6 +86,7 @@ const (
   degree     = char.Degree
   twoSup     = char.ToThe2
   threeSup   = char.ToThe3
+  pipe       = char.Pipe
   Ä          = char.Ä
   Ö          = char.Ö
   Ü          = char.Ü
@@ -135,7 +136,7 @@ func init() {
   bb[40] = ä
   //           0         1         2         3         4         5         6         7         8         9
   //           012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678
-  aa = Stream("  !  $%&/()=?`  QWERTZUIOP ~  ASDFGHJKL    'YXCVBNM;:_ *               789-456+1230,  |           /")
+  aa = Stream("  !  $%&/()=?`  QWERTZUIOP ~  ASDFGHJKL    'YXCVBNM;:_ *               789-456+1230,  >           /")
   //             ¹²³             €       Ü            ÖÄ    ¢©   µ
   aa [3] = '"'
   aa [4] = paragraph

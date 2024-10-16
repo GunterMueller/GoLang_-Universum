@@ -1,6 +1,6 @@
 package main
 
-// (c) Christian Maurer   v. 230326 - license see µU.go
+// (c) Christian Maurer   v. 241005 - license see µU.go
 
 import (
   "µU/mode"
@@ -13,13 +13,8 @@ import (
 )
 
 func main() {
-/*
-  scr.(0, 0, mode.TXT)
-  scr.New (32, 32, TXT)
-  scr.New (192, 144, TXT)
-*/
-  scr.New (32, 32, mode.TXT); defer scr.Fin()
-  scr.Name ("Wie scheißalt bist du denn ...")
+  scr.New (0, 0, mode.TXT); defer scr.Fin()
+  scr.Name ("Wie alt bist du ?")
   var today, birthday = New(), New()
   today.Update()
   birthday.Colours (col.FlashWhite(), col.Blue())

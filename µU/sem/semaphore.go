@@ -1,28 +1,41 @@
 package sem
 
-// (c) Christian Maurer   v. 170121 - license see µU.go
+// (c) Christian Maurer   v. 240930 - license see µU.go
 
-// >>> Implementation with asynchronous message passing
-//     (the most elegant solution, I think)
+// >>> corrected naive solution
 
+import
+  "sync"
 type
   semaphore struct {
-                 c chan int
+               int "value"
+             block,
+             mutex sync.Mutex
                    }
 
-func newS (n uint) Semaphore {
+func new_(n uint) Semaphore {
   x := new(semaphore)
-  x.c = make(chan int, n)
-  for i:= uint(0); i < n; i++ {
-    x.c <- 0
-  }
+  x.int = int(n)
+  x.block.Lock()
   return x
 }
 
 func (x *semaphore) P() {
-  <-x.c
+  x.mutex.Lock()
+  x.int--
+  if x.int < 0 {
+    x.mutex.Unlock()
+    x.block.Lock()
+  }
+  x.mutex.Unlock()
 }
 
 func (x *semaphore) V() {
-  x.c <- 0
+  x.mutex.Lock()
+  x.int++
+  if x.int <= 0 {
+    x.block.Unlock()
+  } else {
+    x.mutex.Unlock()
+  }
 }

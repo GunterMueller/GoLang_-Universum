@@ -14,7 +14,7 @@ type
                    Mutex "to block"
                    }
 
-func newG(m uint) Barrier {
+func newG (m uint) Barrier {
   if m < 2 { return nil }
   x := new(gobarrier)
   x.uint = m

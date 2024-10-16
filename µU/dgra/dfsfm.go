@@ -12,7 +12,7 @@ const (
   deliver
 )
 
-func (x *distributedGraph) d1 (a any, i uint) any {
+func (x *distributedGraph) d (a any, i uint) any {
   x.awaitAllMonitors()
   s := a.(Stream)
   x.tree = x.decodedGraph(s)
@@ -59,11 +59,11 @@ func (x *distributedGraph) d1 (a any, i uint) any {
 func (x *distributedGraph) Dfsfm() {
   scr.Cls()
   go func() {
-    fmon.New (nil, 2, x.d1, AllTrueSp,
+    fmon.New (nil, 2, x.d, AllTrueSp,
               x.actHost, p0 + uint16(2 * x.me), true)
   }()
   for i := uint(0); i < x.n; i++ {
-    x.mon[i] = fmon.New (nil, 2, x.d1, AllTrueSp,
+    x.mon[i] = fmon.New (nil, 2, x.d, AllTrueSp,
                          x.host[i], p0 + uint16(2 * x.nr[i]), false)
   }
   defer x.finMon()

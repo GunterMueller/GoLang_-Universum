@@ -1,28 +1,28 @@
 package lr
 
-// (c) Christian Maurer   v. 230105 - license see µU.go
+// (c) Christian Maurer   v. 241007 - license see µU.go
 
 type
   LeftRight interface { // protocols for the left right problem
 
-// Pre: The calling goroutine is not a rightie.
-// The calling goroutine is a leftie; no goroutine is a rightie.
+// Pre: The calling process is not a rightie.
+// The calling process is a leftie; no process is a rightie.
 // If at the time of the call there were active righties,
-// the calling goroutine has been delayed, until there was no active rightie.
+// the calling process might have been delayed, until there was no active rightie.
   LeftIn ()
 
-// Pre: The calling goroutine is an active leftie.
-// The calling goroutine is not any more active.
+// Pre: The calling process is an active leftie.
+// The calling process is not any more active.
   LeftOut ()
 
-// Pre: The calling goroutine is not a leftie.
-// The calling goroutine is a rightie; no goroutine is a leftie.
+// Pre: The calling process is not a leftie.
+// The calling process is a rightie; no process is a leftie.
 // If at the time of the call there were active lefties, 
-// the calling goroutine has been delayed, until there were no active leftie.
+// the calling process might have been delayed, until there were no active leftie.
   RightIn ()
 
-// Pre: The calling goroutine is an active rightie.
-// The calling goroutine is not any more active.
+// Pre: The calling process is an active rightie.
+// The calling process is not any more active.
   RightOut ()
 
   Fin()
@@ -31,6 +31,9 @@ type
 // implementations of the 1st lr-problem with mutexes and semaphores:
 func NewMutex() LeftRight { return newM() }
 func NewSemaphore() LeftRight { return newS() }
+
+// implementations of the 1st lr-problem with a baton:
+func NewBaton() LeftRight { return newB() }
 
 // implementations of the 1st, 2nd and the bounded lr-problem with cricital sections:
 func NewCriticalSection1() LeftRight { return newCS1() }

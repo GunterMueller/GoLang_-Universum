@@ -524,6 +524,8 @@ func (t *term) Simplification() Term {
 // (replacing quotients x / y by x * y^(-1) ?) to order polynoms by descending powers.
 // ==>  still a large amount of work TODO :-(
 //
+  return t // XXX
+
   y := new_(t.string)
 // println ("Simplification called with t ==", t.string)
   if t.Empty() { return y }

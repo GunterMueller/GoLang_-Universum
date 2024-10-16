@@ -123,15 +123,19 @@ func (x *personAddressContact) TeX() string {
 }
 
 func (x *personAddressContact) Write (l, c uint) {
-  l++ // XXX
+//  l++ // XXX alt XXX XXX alt bleibt
   x.Person.Write (l, c)
-  x.Address.Write (l + 2, c)
-  x.Contact.Write (l + 4, c)
+x.Person.Colours (col.FlashWhite(), col.Red()) // XXX
+//  x.Address.Write (l + 2, c)
+  x.Address.Write (l + 1, c)
+x.Address.Colours (col.FlashWhite(), col.Green()) // XXX
+//  x.Contact.Write (l + 4, c)
+  x.Contact.Write (l + 2, c)
 }
 
 func (x *personAddressContact) Edit (l, c uint) {
   x.Write (l, c)
-  l++ // XXX
+//  l++ // XXX alt XXX XXX alt bleibt
   i := uint(0)
   loop:
   for {
@@ -139,9 +143,10 @@ func (x *personAddressContact) Edit (l, c uint) {
     case 0:
       x.Person.Edit (l, c)
     case 1:
-      x.Address.Edit (l + 2, c)
+      x.Address.Edit (l + 1, c) // XXX
     case 2:
-      x.Contact.Edit (l + 4, c)
+//      x.Contact.Edit (l + 4, c)
+      x.Contact.Edit (l + 2, c) // XXX
     }
     switch C, d := kbd.LastCommand(); C {
     case kbd.Esc: 

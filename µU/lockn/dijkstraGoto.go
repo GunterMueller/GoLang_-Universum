@@ -15,10 +15,10 @@ type
              favoured uint
            interested,
              critical []uint
-                  }
+                      }
 
 func newDijkstraGoto (n uint) LockerN {
-  x := new(dijkstra)
+  x := new(dijkstraGoto)
   x.nProcesses = uint(n)
   x.interested, x.critical = make([]uint, n + 1), make([]uint, n)
   x.favoured = x.nProcesses

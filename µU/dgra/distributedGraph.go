@@ -8,7 +8,7 @@ import (
   . "µU/obj"
   "µU/env"
   "µU/time"
-  "µU/col"
+//  "µU/col"
   "µU/scr"
   "µU/N"
   "µU/str"
@@ -21,6 +21,7 @@ import (
   "µU/gra"
   "µU/adj"
   "µU/ego"
+  . "µU/dgra/st"
 )
 type
   distributedGraph struct {
@@ -56,6 +57,7 @@ type
        diameter, distance,
                    leader uint
                           Op
+                    state []State
                      C, D []uint
                      corn []mcorn.MCornet
                     mutex sync.Mutex
@@ -113,6 +115,7 @@ func new_(g gra.Graph) DistributedGraph {
   g.Ex (x.actVertex)
   x.leader = x.me
   x.Op = Ignore
+  x.state = make ([]State, x.n)
   x.corn = make ([]mcorn.MCornet, 99) // x.n)
   for i := uint(0); i < 99; i++ { // < x.n; i++ {
     x.corn[i] = mcorn.New (uint(0))
@@ -154,14 +157,19 @@ func (x *distributedGraph) setSize (n uint) {
 func (x *distributedGraph) connect (a any) {
   for i := uint(0); i < x.n; i++ {
     x.ch[i] = nchan.New (a, x.me, x.nr[i], x.host[i], x.port[i])
-println (i, x.nr[i], x.port[i])
+  }
+}
+
+// Pre: x is a ring.
+func (x *distributedGraph) connectR (a any) {
+  for i := uint(0); i < x.n; i++ {
+    x.ch[i] = nchan.New (a, x.me, x.nr[i], x.host[i], x.port[i])
   }
 }
 
 func (x *distributedGraph) connectN (a any, s bool) {
   for i := uint(0); i < x.n; i++ {
     x.ch[i] = nchan.NewN (a, x.host[i], x.port[i], s)
-println (i, x.nr[i], x.port[i])
   }
 }
 
@@ -177,6 +185,9 @@ func (x *distributedGraph) finMon() {
   }
 }
 
+// Returns the identity of the neighbour, to which the
+// calling process is connected via the j-th netchannel (j < x.n);
+// therefore, for all j < x.n x.channel(i) == j iff x.nr[j] == i.
 func (x *distributedGraph) channel (n uint) uint {
   for i := uint(0); i < x.n; i++ {
     if x.nr[i] == n {
@@ -198,7 +209,7 @@ func (x *distributedGraph) send (i uint, a any) {
     x0, y0 := x.actVertex.Pos()
     x1, y1 := x.nb[i].Pos()
     f, b := scr.ScrColF(), scr.ScrColB()
-    f = col.LightRed()
+//    f, b = col.LightRed(), col.Yellow()
     scr.ColourF (f)
     scr.Line (x0, y0, x1, y1)
     for t := 0.2; t < 0.9; t+= 0.1 {
@@ -209,15 +220,11 @@ func (x *distributedGraph) send (i uint, a any) {
     }
     scr.Restore1()
   }
-println ("will send", a, "on ch", i)
   x.ch[i].Send (a)
-println ("sent", a, "on ch", i)
 }
 
 func (x *distributedGraph) recv (i uint) any {
-println ("wait on ch", i)
   r := x.ch[i].Recv()
-println ("received", r, "on ch", i)
   return r
 }
 
@@ -281,6 +288,9 @@ func exValue (g gra.Graph, v uint) bool {
   return g.ExPred (func (a any) bool { return a.(vtx.Vertex).Val() == v })
 }
 
+// Returns the number of a netchannel on which
+// no message has yet been sent, if there is one;
+// returns otherwise the number of neighbours.
 func (x *distributedGraph) next (i uint) uint {
   for u := uint(0); u < x.n; u++ {
     if u != i && ! x.visited[u] {

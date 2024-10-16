@@ -11,7 +11,8 @@ import (
 type
   condition struct {
                    bbuf.BoundedBuffer
- notFull, notEmpty *sync.Cond
+           notFull,
+          notEmpty *sync.Cond
                    sync.Mutex
                    }
 

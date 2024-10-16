@@ -1,18 +1,22 @@
 package sem
 
-// (c) Christian Maurer   v. 171127 - license see µU.go
+// (c) Christian Maurer   v. 241001 - license see µU.go
+
+// Protocols for access to a critical sections.
+// The functions P and V cannot be interrupted
+// by calls of these functions of other processes.
 
 type
-  Semaphore interface { // Protocols for critical sections.
-                        // Neither P nor V can be interrupted by calls
-                        // of these functions of other processes.
+  Semaphore interface {
 
-// The calling process is inside the critical section among at most n-1 other processes.
+// Pre: The calling process is not in the critical section.
+// It is in the critical section among at most n-1 other processes,
 // where n is the number of allowed processes to enter.
 // It might have been delayed, until this was possible.
   P()
 
-// The calling process is outside the critical section.
+// Pre: The calling process is in the critical section.
+// It not in the critical section.
   V()
 }
 
@@ -20,13 +24,13 @@ type
 // exactly n processes to enter the critical section:
 
 // Naive incorrect solution
-func NewNaive (n uint) Semaphore { return new_(n) }
+func NewNaive (n uint) Semaphore { return new_n(n) }
 
 // Corrected naive solution
-func NewCorrect (n uint) Semaphore { return newC(n) }
+func New (n uint) Semaphore { return new_(n) }
 
-// Elegant implementation with asynchronous message passing
-func New (n uint) Semaphore { return newS(n) }
+// Corrected solution with more liveliness
+func New1 (n uint) Semaphore { return new_(n) }
 
 // Implementation of the Go authors
 func NewGo (n uint) Semaphore { return newG(n) }

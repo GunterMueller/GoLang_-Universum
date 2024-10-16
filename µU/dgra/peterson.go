@@ -1,15 +1,15 @@
 package dgra
 
-// (c) Christian Maurer   v. 231229 - license see µU.go
+// (c) Christian Maurer   v. 241007 - license see µU.go
 
 // >>> Gary L. Peterson: An O(n log n) Unidirectional Algorithm
 //     for the Circular Extrema Problem. ACM TOPLAS (1982), 758-762
 
 func (x *distributedGraph) Peterson() {
-  x.connect(uint(0))
+  x.connect (uint(0))
   defer x.fin()
-  out, in := uint(0), uint(1)
-  if x.Graph.Outgoing(0) { in, out = out, in }
+  in, out := uint(0), uint(1)
+  if x.Graph.Outgoing(1) { in, out = out, in }
   tid := x.me
   for { // active
     x.send (out, tid)

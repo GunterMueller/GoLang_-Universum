@@ -123,9 +123,11 @@ func st (n uint) string {
 }
 
 func (n *natural) String() string {
+/*/
   if n.uint == 0 {
     return str.New (n.wd)
   }
+/*/
   if n.uint == invalid {
     return str.New (M)
   }
@@ -176,7 +178,6 @@ func (n *natural) EditGr (x, y int) {
     bx.EditGr (&s, x, y)
     if str.Empty (s) {
       n.Clr()
-println ("n.Clr")
       return
     }
     if n.Defined (s) {

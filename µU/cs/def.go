@@ -2,10 +2,6 @@ package cs
 
 // (c) Christian Maurer   v. 171019 - license see µU.go
 
-//     Nichtsequentielle Programmierung mit Go 1 kompakt, S. 85 ff.
-
-import
-  . "µU/obj"
 /* Conditioned critical sections to ensure consistency of common ressources
    used by processes of at most two classes s.t. the critical sections
    can be entered concurrently by several processes of the same class,
@@ -20,9 +16,11 @@ import
    The functions Enter and Leave cannot be interrupted
    by calls of these functions of other processes. */
 
+import
+  . "µU/obj"
 type
   CriticalSection interface {
-// x means in the following always the calling critical section.
+// In the following x means always the calling critical section.
 
 // Pre: i < number of classes of x.
 //      The function is called within the entry conditions of x (see remark).

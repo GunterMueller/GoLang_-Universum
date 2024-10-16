@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 240102 - license see µU.go
+// (c) Christian Maurer   v. 241008 - license see µU.go
 
 import (
   "µU/env"
@@ -14,6 +14,15 @@ import (
   "µU/nchan"
 )
 
+// Pre: len(l) = len(c) = len(e) = len(e[i]) = n for all i < n.
+//      The values of the edges of g, incremented by nchan.Port0,
+//      are the ports of the 1:1-netchannels
+//      between the nodes connected by them.
+// Returns the star of the node id of the graph with the nodes 0..n-1
+// at the screen positions (line, column) = (l[i],c[i]),
+// the by e defined edges with suitable ports for the
+// netchannesl between the by h defined computer as values
+// and with the diameter m.
 func newg (dir bool, l, c []int, es [][]uint, m, id uint) DistributedGraph {
   cf, ca, cb := col.Blue(), col.Red(), col.FlashWhite()
   k := uint(len(l))
@@ -593,6 +602,34 @@ func g8ringdir (i uint) DistributedGraph {
   return newg (true, l, c, e, 7, i)
 }
 
+func g8ringdirord (i uint) DistributedGraph {
+/*
+1                0
+2       7                 1
+3
+4
+5  6                           2
+6
+7
+8       5                 3
+9                4
+
+            1         2         3
+  0123456789012345678901234567890
+*/
+  l := []int { 1,  2,  5,  8,  9, 8, 5, 2}
+  c := []int {15, 24, 29, 24, 15, 6, 1, 6}
+  e := [][]uint {[]uint {1},
+                 []uint {2},
+                 []uint {3},
+                 []uint {4},
+                 []uint {5},
+                 []uint {6},
+                 []uint {7},
+                 []uint {0}}
+  return newg (true, l, c, e, 7, i)
+}
+
 func g8full (i uint) DistributedGraph {
   l := []int { 7,  1,  6,  1,  6,  2,  2,  7}
   c := []int {10, 10,  1, 19, 28,  1, 28, 19}
@@ -961,4 +998,40 @@ func g16full (i uint) DistributedGraph {
     for k:= uint(0); k < m; k++ { if k != i { e[j] = append (e[j], k)}}
   }
   return newg (false, l, c, e, 1, i)
+}
+
+func g16t (i uint) DistributedGraph {
+/*
+1              0
+2            / | \
+3          1   2   3  
+4         /|   |   |\
+5       /  |   |   |  \
+6      4   5   6   7   8
+7     /|      /   /|\   \
+8   /  |    /   /  |  \   \
+9  9  10  11  12  13  14  15 
+
+            1         2
+  01234567890123456789012345
+*/
+  l := []int { 1, 3,  3,  3, 6, 6,  6,  6,  6, 9, 9, 9,  9,  9,  9,  9}
+  c := []int {13, 9, 13, 17, 5, 9, 13, 17, 21, 1, 5, 9, 13, 17, 21, 25}
+  e := [][]uint {[]uint {1, 2, 3},
+                 []uint {4, 5},
+                 []uint {6},
+                 []uint {7, 8},
+                 []uint {9, 10},
+                 []uint {},
+                 []uint {11},
+                 []uint {12, 13, 14},
+                 []uint {15},
+                 []uint {},
+                 []uint {},
+                 []uint {},
+                 []uint {},
+                 []uint {},
+                 []uint {},
+                 []uint {} }
+  return newg (true, l, c, e, 4, i)
 }

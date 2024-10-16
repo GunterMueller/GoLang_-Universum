@@ -33,6 +33,6 @@ func (x *asynchronousChannel) Recv() any {
   x.Mutex.Lock()
   defer x.Mutex.Unlock()
   a := x.Buffer.Get()
-  if a == x.any { panic("fatal error: alle goroutines are asleep - deadlock!") }
+  if a == x.any { panic ("fatal error: all processes are asleep - deadlock!") }
   return a
 }

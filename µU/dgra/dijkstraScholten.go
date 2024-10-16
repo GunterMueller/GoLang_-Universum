@@ -14,26 +14,28 @@ const (
   signal
 )
 const
-  M = uint(1000)
+  Max = uint(1000)
 var
   nSigs = make([]uint, 0)
 
+/*/
 func (x *distributedGraph) c (s string, n uint) {
   errh.Error (s, n); return
   errh.Error3 (s, n, " C", x.C[x.me], " D", x.D[x.me])
   errh.Hint2 ("C", x.C[x.me], " D", x.D[x.me])
 }
+/*/
 
-func (x *distributedGraph) d (a any, i uint) any {
+func (x *distributedGraph) ds (a any, i uint) any {
   errh.Error0 ("waiting")
   var m uint
   x.awaitAllMonitors()
   n := a.(uint)
   j := x.channel (n)
-  if n >= M {
+  if n >= Max {
     for k := uint(0); k < x.n; k++ {
       if x.Outgoing (k) {
-        x.mon[k].F (M + x.me, message)
+        x.mon[k].F (Max + x.me, message)
       }
     }
     errh.Error0 ("terminated")
@@ -43,10 +45,10 @@ func (x *distributedGraph) d (a any, i uint) any {
     errh.DelHint()
     x.C[x.me]++
     x.corn[x.me].Ins (n)
-x.c ("recv msg from", n)
+// x.c ("recv msg from", n)
     if x.NumNeighboursOut() == 0 {
       x.C[x.me]--
-x.c ("E send sig to", x.nr[j])
+// x.c ("E send sig to", x.nr[j])
       x.mon[j].F (x.me, signal)
     } else {
       if true { // rand.Natural (2) == 0 {
@@ -60,19 +62,19 @@ x.c ("E send sig to", x.nr[j])
           k := rand.Natural (uint(len(p))); m = p[k]
         }
         x.D[x.me]++
-x.c ("A send msg to", x.nr[m])
+// x.c ("A send msg to", x.nr[m])
         x.mon[m].F (x.me, message)
       } else { // k == 1
         x.C[x.me]--
         m = x.corn[x.me].Get().(uint)
-x.c ("C send sig to", x.nr[m])
+// x.c ("C send sig to", x.nr[m])
         x.mon[m].F (x.me, signal)
       }
     }
   } else { // i == signal
     errh.DelHint()
     x.D[x.me]--
-x.c ("recv sig from", n)
+// x.c ("recv sig from", n)
     if x.D[x.me] == 0 {
       if x.me == x.root {
         nSigs = append (nSigs, n)
@@ -92,12 +94,12 @@ x.c ("recv sig from", n)
           k := rand.Natural (uint(len(p))); m = p[k]
         }
         x.D[x.me]++
-x.c ("B send msg to", x.nr[m])
+// x.c ("B send msg to", x.nr[m])
         x.mon[m].F (x.me, message)
       } else { // k == 1
         x.C[x.me]--
         m = x.corn[x.me].Get().(uint)
-x.c ("D send sig to", x.nr[m])
+// x.c ("D send sig to", x.nr[m])
         x.mon[m].F (x.me, signal)
       }
     }
@@ -106,9 +108,9 @@ x.c ("D send sig to", x.nr[m])
 }
 
 func (x *distributedGraph) DijkstraScholten (o Op) {
-  go func() {fmon.New (uint(0), 2, x.d, AllTrueSp, x.actHost, p0 + uint16(2 * x.me), true)}()
+  go func() {fmon.New (uint(0), 2, x.ds, AllTrueSp, x.actHost, p0 + uint16(2 * x.me), true)}()
   for i := uint(0); i < x.n; i++ {
-    x.mon[i] = fmon.New (uint(0), 2, x.d, AllTrueSp, x.actHost, p0 + uint16(2 * x.nr[i]), false)
+    x.mon[i] = fmon.New (uint(0), 2, x.ds, AllTrueSp, x.actHost, p0 + uint16(2 * x.nr[i]), false)
   }
   defer x.finMon()
   x.awaitAllMonitors()
@@ -117,14 +119,14 @@ func (x *distributedGraph) DijkstraScholten (o Op) {
     x.C[x.me] = 0
     for i := uint(0); i < x.n; i++ {
       x.D[x.me]++
-x.c ("send msg to", x.nr[i])
+// x.c ("send msg to", x.nr[i])
       x.mon[i].F (x.root, message)
     }
   }
   <-done
   if x.me == x.root {
     for i := uint(0); i < x.n; i++ {
-      x.mon[i].F (M + x.me, message)
+      x.mon[i].F (Max + x.me, message)
     }
   }
   errh.Error0 ("terminated")

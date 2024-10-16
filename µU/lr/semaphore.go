@@ -14,9 +14,9 @@ type
 
 func newS() LeftRight {
   x := new(semaphore)
-  x.m = sem.New(1)
-  x.l = sem.New(1)
-  x.r = sem.New(1)
+  x.m = sem.New (1)
+  x.l = sem.New (1)
+  x.r = sem.New (1)
   return x
 }
 

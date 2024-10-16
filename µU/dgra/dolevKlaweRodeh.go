@@ -1,16 +1,16 @@
 package dgra
 
-// (c) Christian Maurer   v. 231229 - license see µU.go
+// (c) Christian Maurer   v. 241007 - license see µU.go
 
 // >>> D. Dolev, M. Klawe, M. Rodeh: An O(n log n) Unidirectional Algorithm
 //     for Extrema Finding in a Circle. J. Algorithms 3 (1982), 245-260
 
 func (x *distributedGraph) DolevKlaweRodeh() {
-  x.connect(uint(0))
   defer x.fin()
-  var left uint
-  out, in := uint(0), uint(1)
+  x.connect(uint(0))
+  in, out := uint(0), uint(1)
   if x.Graph.Outgoing(1) { in, out = out, in }
+  var left uint
   max := x.me
   x.send (out, max)
   for {

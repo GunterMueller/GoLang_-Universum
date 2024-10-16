@@ -13,7 +13,7 @@ type
          mutex sync.Mutex
                }
 
-func new_(n uint) Semaphore {
+func new_n  (n uint) Semaphore {
   x := new(naive)
   x.int = int(n)
   x.block.Lock()

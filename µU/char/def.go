@@ -1,8 +1,9 @@
 package char
 
-// (c) Christian Maurer   v. 240311 - license see µU.go
+// (c) Christian Maurer   v. 240418 - license see µU.go
 
 const (
+  Pipe             = byte(0x7c) // '|'  124
   Ä                = byte(0xc4) // 'Ä'  196
   Ö                = byte(0xd6) // 'Ö'  214
   Ü                = byte(0xdc) // 'Ü'  220
@@ -86,7 +87,7 @@ func IsDigit (b byte) bool { return isDigit(b) }
 // Returns true, iff b is a letter or a digit.
 func IsLetterOrDigit (b byte) bool { return isLetterOrDigit(b) }
 
-// Returns the postscript name of b.
+// Returns the TeX name of b.
 func TeX (b byte) string { return tex(b) }
 
 // Returns the postscript name of b.

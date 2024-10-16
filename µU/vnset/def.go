@@ -50,8 +50,12 @@ type
 // Returns the subset of x of all elements x with p(x) == true.
   Comprehension (p Predicate) VonNeumannSet
 
-// Returns true, if x is transitive, i.e. iff x.Union().Subset(x).
+// Returns true, iff x is transitive, i.e. iff x.Union().Subset(x).
   Transitive() bool
+
+// Returns true, iff x is founded, i.e.
+// iff every nonempty subset y of x has a minimal element a in y.
+// TODO Founded() bool
 
 // Returns the set {{x}, {x,y}}.
   KuratowskiPair (y VonNeumannSet) VonNeumannSet

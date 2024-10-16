@@ -4,9 +4,8 @@ package smok
 
 // >>> Solution with a universal monitor
 
-import (
+import
   "µU/mon"
-)
 type
   monitor struct {
                  mon.Monitor

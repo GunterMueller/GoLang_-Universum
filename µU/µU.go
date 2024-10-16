@@ -37,12 +37,12 @@ import (
   "µU/ieee"; "µU/kbd"; "µU/li"; "µU/lock"; "µU/lock2"; "µU/lockn"; "µU/lr"; "µU/macc"
   "µU/masks"; "µU/mbbuf"; "µU/mbuf"; "µU/mcorn"; "µU/menue"; "µU/mol"; "µU/mstk"
   "µU/pbar"; "µU/pac"; "µU/piset"; "µU/pos"; "µU/ppm"; "µU/pstk"; "µU/qmat"; "µU/reg"
-  "µU/rpc"; "µU/rn"; "µU/rw"; "µU/scale"; "µU/schan"; "µU/scr"; "µU/smok"; "µU/term"
-  "µU/texts"; "µU/time"; "µU/tval"; "µU/vnset"; "µU/Z"
+  "µU/rpc"; "µU/rn"; "µU/rw"; "µU/scale"; "µU/schan"; "µU/scr"; "µU/sem1"; "µU/smok"
+  "µU/term"; "µU/texts"; "µU/time"; "µU/tval"; "µU/vnset"; "µU/Z"
 )
 const (
   yy = 2024
-  mm =    4
+  mm =   10
   dd =   13
 )
 var (
@@ -137,7 +137,7 @@ func drive (cl, cf, cb col.Colour, d chan int) {
   moon (x + 85 * wd1, col.LightGray())
   dr (x, x1, y + 26 * ht1, cf, false)
   dr (x, x1, y + 27 * ht1, cf, false)
-  dr (x, x1, y + 29 * ht1, col.FlashYellow(), false)
+  dr (x, x1, y + 29 * ht1, col.FlashGreen(), false)
   d <- 0
 }
 
@@ -152,9 +152,9 @@ func main() {
   bytes.Touch(); cdrom.Touch(); char.Touch(); collop.Touch(); comp.Touch(); date.New()
   dgra.Touch(); dlock.New(0, nil, 0); fig2.Touch(); fig3.Touch(); gram.Touch(); ieee.New()
   li.New(0); lock.NewChannel(); lock2.NewPeterson(); lockn.NewDijkstra(0); lr.NewMutex()
-  macc.New(); masks.New(); mbbuf.New(nil, 2); mbuf.New(0); mcorn.New(0); menue.Touch()
-  mol.New(); mstk.New(0); pbar.Touch(); pac.New(); piset.Touch(); pos.Touch(); pstk.Touch()
-  qmat.Touch(); reg.Touch(); rpc.Touch(); rn.New0(); rw.New1(); scale.Touch(); schan.New(0)
+  macc.New(); masks.New(); mbbuf.New(nil, 2); mbuf.New(0); mcorn.New(0); menue.Touch(); mol.New();
+  mstk.New(0); pbar.Touch(); pac.New(); piset.Touch(); pos.Touch(); pstk.Touch(); qmat.Touch()
+  reg.Touch(); rpc.Touch(); rn.New0(); rw.New1(); scale.Touch(); schan.New(0); sem1.Touch()
   smok.Touch(); term.Touch(); texts.Touch(); tval.New(); vnset.EmptySet(); Z.String(0)
   var v day.Calendarday = day.New()
   v.Set (dd, mm, yy); v.SetFormat (day.Yymmdd)
@@ -163,7 +163,7 @@ func main() {
   go input()
   cl := col.FlashWhite()
   cf := col.New(); cf.Set (164, 164, 164)
-  cb := col.DarkBlue()
+  cb := col.DarkRed()
   scr.ScrColourB (cb)
   errh.MuLicense ("µU", v.String(),
                   "1986-2024  Christian Maurer   https://maurer-berlin.eu/mU", cl, cf, cb)

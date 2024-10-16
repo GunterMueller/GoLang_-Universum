@@ -1,11 +1,13 @@
 package barr
 
-// (c) Christian Maurer   v. 170410 - license see µU.go
+// (c) Christian Maurer   v. 240930 - license see µU.go
 
 // >>> implementation with semaphores
 
-import
+import (
+  . "µU/ker"
   "µU/sem"
+)
 type
   barrier struct {
                  uint "number of involved processes"
@@ -15,7 +17,7 @@ type
                  }
 
 func new_(m uint) Barrier {
-  if m < 2 { return nil } // panic ?
+  if m < 2 { PrePanic() }
   x := new(barrier)
   x.uint = m
   x.mutex = sem.New(1)
@@ -29,7 +31,7 @@ func (x *barrier) Wait() {
   if x.waiting < x.uint {
     x.mutex.V()
     x.s.P()
-    // x.mutex ist übernommen
+    // x.mutex is taken over
     x.waiting--
     if x.waiting == 0 {
       x.mutex.V()
@@ -39,6 +41,6 @@ func (x *barrier) Wait() {
   } else { // waiting > 1
     x.waiting--
     x.s.V()
-    // x.mutex wird übergeben
+    // x.mutex is transferred
   }
 }

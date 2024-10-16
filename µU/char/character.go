@@ -1,6 +1,6 @@
 package char
 
-// (c) Christian Maurer   v. 240311 - license see µU.go
+// (c) Christian Maurer   v. 240418 - license see µU.go
 
 const
   delta = 'a' - 'A'
@@ -25,7 +25,7 @@ func init() {
 
 func isLatin1 (b byte) bool {
   switch b {
-  case Ä, Ö, Ü, Ae, Oe, Ue, Sz, Cent, Pound, Euro, Paragraph, Copyright,
+  case Pipe, Ä, Ö, Ü, Ae, Oe, Ue, Sz, Cent, Pound, Euro, Paragraph, Copyright,
        Not, Registered, Degree, PlusMinus, ToThe2, ToThe3,
        Mu, Pilcrow, Dot, Times, EmptySet, Division:
     return true
@@ -204,6 +204,8 @@ func isConsonant (b byte) bool {
 
 func tex (b byte) string {
   switch b {
+  case Pipe:
+    return "\\vert"
   case Ä:
     return "\\\"A"
   case Ö:
@@ -258,6 +260,8 @@ func tex (b byte) string {
 
 func postscript (b byte) string {
   switch b {
+  case Pipe:
+    return "bar"
   case Ä:
     return "Adieresis"
   case Ö:

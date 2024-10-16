@@ -3,7 +3,7 @@ package lockn
 // (c) Christian Maurer   v. 190815 - license see µU.go
 
 // >>> Algorithm of Dijkstra
-//     Cooperating Sequential Processes, 0 -> true, 1 -> false
+//     Cooperating Sequential Processes, 0 <-> true, 1 <-> false
 
 import (
   . "µU/obj"
@@ -15,7 +15,7 @@ type
          favoured uint
        interested,
          critical []uint
-                  }
+                 }
 
 func newDijkstra (n uint) LockerN {
   x := new(dijkstra)

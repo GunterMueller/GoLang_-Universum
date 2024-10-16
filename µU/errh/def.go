@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 231005 - license see µU.go
+// (c) Christian Maurer   v. 240925 - license see µU.go
 
 import
   "µU/col"
@@ -35,6 +35,7 @@ func Error2 (s string, n uint, s1 string, n1 uint) { error2(s,n,s1,n1) }
 func Error3 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint) {
   error3(s,n,s1,n1,s2,n2)
 }
+func Error2m (s string, n uint, s1 string, n1 uint, s2 string) { error2m(s,n,s1,n1,s2) }
 func Error4 (s string, n uint, s1 string, n1 uint, s2 string, n2 uint, s3 string, n3 uint) {
   error4(s,n,s1,n1,s2,n2,s3,n3)
 }

@@ -38,8 +38,11 @@ var (
 func new_() Address {
   x := new(address)
   x.street = text.New (lenStreet)
+x.street.Colours (col.FlashWhite(), col.Green()) // XXX
   x.city =  text.New (lenCity)
+x.city.Colours (col.FlashWhite(), col.Green()) // XXX
   x.Natural = bn.New (5)
+x.Natural.Colours (col.FlashWhite(), col.Green()) // XXX
   x.Country = cntry.New()
   x.Country.SetFormat (cntry.Long)
   x.Colours (cF, cB)
@@ -149,7 +152,8 @@ func (x *address) Cols() (col.Colour, col.Colour) {
 }
 
 const (
-  cs = 9; cp = 44; cc = 56; cl = cc
+//  cs = 9; cp = 44; cc = 56; cl = cc
+  cs = 8; cp = 43; cc = 56; cl = cc // XXX
 )
 
 func writeMask (l, c uint) {
@@ -157,7 +161,9 @@ func writeMask (l, c uint) {
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
 Str./Nr: ____________________________  PLZ: _____  Ort: ______________________
                                                   Land: ________________
+street: ____________________________ zip: _____ city: ______________________
 */
+/*/
   bx.Wd (8)
   bx.Write ("Str./Nr:", l, c)
   bx.Wd (4)
@@ -165,6 +171,13 @@ Str./Nr: ____________________________  PLZ: _____  Ort: ______________________
   bx.Write ("Ort:",     l, c + cc - 5)
   bx.Wd (5)
   bx.Write ("Land:",    l + 1, c + cc - 6)
+/*/ // XXX
+  bx.Wd (7)
+  bx.Write ("street:", l, c)
+  bx.Wd (4)
+  bx.Write ("zip:",     l, c + cp - 5)
+  bx.Wd (5)
+  bx.Write ("city:",     l, c + cc - 6)
 }
 
 func (x *address) Write (l, c uint) {
@@ -172,7 +185,7 @@ func (x *address) Write (l, c uint) {
   x.street.Write (l, c + cs)
   x.Natural.Write (l, c + cp)
   x.city.Write (l, c + cc)
-  x.Country.Write (l + 1, c + cl)
+//  x.Country.Write (l + 1, c + cl) // XXX
 }
 
 func (x *address) Edit (l, c uint) {
@@ -190,8 +203,8 @@ func (x *address) Edit (l, c uint) {
       x.Natural.Edit (l, c + cp)
     case 2:
       x.city.Edit (l, c + cc)
-    case 3:
-      x.Country.Edit (l + 1, c + cl)
+//    case 3: // XXX
+//      x.Country.Edit (l + 1, c + cl)
     }
     switch C, d:= kbd.LastCommand(); C {
     case kbd.Esc:

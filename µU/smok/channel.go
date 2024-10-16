@@ -6,7 +6,7 @@ package smok
 
 type
   channel struct {
-                 ch []chan uint
+              ch []chan uint
                  }
 
 func newCh() Smokers {

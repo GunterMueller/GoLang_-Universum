@@ -1,6 +1,6 @@
 package kbd
 
-// (c) Christian Maurer   v. 240413 - license see µU.go
+// (c) Christian Maurer   v. 240418 - license see µU.go
 
 import (
   "os"
@@ -208,6 +208,8 @@ func inputC (B *byte, C *Comm, D *uint) {
       *B = mu
     case 52: // .
       *B = division
+    case 86: // |
+      *B = pipe 
     }
   }
   lastdepth = *D

@@ -56,7 +56,7 @@ func (x *qmatrix) imp (Y any) *qmatrix {
   return y
 }
 
-func (x *qmatrix) Det() Q.Rational {
+func (x *qmatrix) Det() Q.Rational { // XXX errorprone
   if x.nl != x.nc { nofit() }
   b := Q.New()
   b.Set1 (0)

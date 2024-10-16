@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 220804 - license see µU.go
+// (c) Christian Maurer   v. 241011 - license see µU.go
 
 import (
   . "µU/obj"
@@ -60,10 +60,6 @@ func (v *vertex) Set (x, y int) {
 
 func (x *vertex) Pos() (int, int) {
   return x.x, x.y
-}
-
-func (x *vertex) Contour() (uint, uint) {
-  return x.width, x.height
 }
 
 func (x *vertex) Empty() bool {
@@ -131,7 +127,7 @@ func (x *vertex) ColoursA (f, b col.Colour) {
   x.fa, x.ba = f, b
 }
 
-/* func (x *vertex) Defined (s string) bool {
+func (x *vertex) Defined (s string) bool {
   switch x.EditorGr.(type) {
   case Stringer:
     return x.EditorGr.(Stringer).Defined (s)
@@ -145,32 +141,35 @@ func (x *vertex) String() string {
     return x.EditorGr.(Stringer).String()
   }
   return ""
-} */
+}
 
 func (x *vertex) Write() {
   x.Write1 (false)
 }
 
-func (x *vertex) Write1 (a bool) {
-  f, b := x.f, x.b
-  if a {
-    f, b = x.fa, x.ba
+func (x *vertex) Write1 (b bool) {
+  cf, cb := x.f, x.b
+  if b {
+    cf, cb = x.fa, x.ba
   }
   w1, h1 := scr.Wd1() * x.width, scr.Ht1() * x.height
+  r := w1
+  if h1 > r {
+    r = h1
+  }
   if x.width * x.height > 0 {
     const r0 = 3
-    scr.Colours (f, b)
-    if w1 <= r0 {
-      scr.EllipseFull (x.x, x.y, r0, h1 / 2)
+    scr.Colours (cf, cb)
+    if r <= r0 {
+      panic ("vertex.go: r <= r0")
+      scr.CircleFull (x.x, x.y, r0)
     } else {
-      scr.ColourF (b)
-      scr.EllipseFull (x.x, x.y, w1 * 7 / 10, h1 * 8 / 10)
-      scr.ColourF (f)
-      scr.Ellipse (x.x, x.y, w1 * 7 / 10, h1 * 8 / 10)
+      scr.ColourF (cf)
+      scr.CircleFull (x.x, x.y, r / 2 + 1)
     }
   }
-  x.EditorGr.(col.Colourer).Colours (f, b)
-  x.EditorGr.WriteGr (x.x - int(w1) / 2 - 0 * int(scr.Wd1()), x.y - int(h1) / 2)
+  x.EditorGr.(col.Colourer).Colours (cb, cf)
+  x.EditorGr.WriteGr (x.x - int(w1) / 2, x.y - int(h1) / 2 + 1)
 }
 
 func (x *vertex) Edit() {

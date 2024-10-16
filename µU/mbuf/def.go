@@ -1,11 +1,13 @@
 package mbuf
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 240930 - license see µU.go
+
+// Synchronized buffers.
+// The functions Ins and Get cannot be interrupted
+// by calls of these functions of other processes.
 
 type
-  MBuffer interface { // Synchronized buffers.
-                      // The exported functions cannot be interrupted
-                      // by calls of these functions of other goroutines.
+  MBuffer interface {
 
 // a is inserted as last object into x.
 // The calling process was blocked, until x was not full.

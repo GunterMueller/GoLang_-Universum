@@ -4,9 +4,8 @@ package rw
 
 // >>> 1st readers/writers problem
 
-import (
+import
   "µU/mon"
-)
 type
   monitor1 struct {
                   mon.Monitor

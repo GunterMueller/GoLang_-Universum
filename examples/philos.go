@@ -1,10 +1,12 @@
 package main
 
-// (c) Christian Maurer   v. 230326 - license see µU.go
+// (c) Christian Maurer   v. 241005 - license see µU.go
 
 // >>> E. W. Dijkstra, Hierarchical Ordering of Sequential Processes
 //     Acta Informatica 1 (1971), p. 115-138 (section 6.)
 // >>> Nichtsequentielle und Verteilte Programmierung mit Go, S. 180, 253
+
+// >>> Klick on the philosophers, who want to eat.
 
 import (
   "µU/time"

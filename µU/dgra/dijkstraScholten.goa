@@ -1,0 +1,77 @@
+package dgra
+
+import (. "µU/obj"; "µU/time"; "µU/fmon"; "µU/errh")
+
+const (message = uint(iota); signal)
+
+func sleep() { time.Sleep (1) }
+
+func (x *distributedGraph) d (a any, i uint) any {
+  x.awaitAllMonitors()
+  s := a.(uint)
+  j := x.channel(s)
+  switch i {
+  case message:
+println (x.me, "recv msg from", s, "or", j)
+if x.me == x.root { panic ("Kacke") }
+//     x.Op (x.me)
+    x.C[x.me]++
+    x.corn.Ins (s)
+//    x.corn.Ins (j)
+    for i := uint(0); i < x.n; i++ {
+      if ! x.visited[i] {
+        x.visited[i] = true
+println (x.me, "will send msg to", x.nr[i])
+        x.mon[i].F (x.me, message)
+        x.D[x.me]++
+println (x.me, "sent msg to", x.nr[i]) // , "D =", x.D[x.me])
+        sleep()
+      }
+    }
+  case signal:
+    x.D[x.me]--
+println (x.me, "recv sig from", s, "or", j)
+    if x.D[x.me] == 0 {
+      if x.me == x.root {
+        done <- 0
+      } else {
+        return x.me
+      }
+    }
+    k := x.corn.Get().(uint)
+println (x.me, "will send sig to", x.nr[k])
+    x.mon[k].F (x.me, signal)
+println (x.me, "sent sig to", x.nr[k])
+    x.C[x.me]--
+  }
+  return x.me
+}
+
+func (x *distributedGraph) DijkstraScholten (o Op) {
+  x.visited[x.root] = true
+  go func() {
+    fmon.New (uint(0), 2, x.d, AllTrueSp,
+              x.actHost, p0 + uint16(2 * x.me), true)
+  }()
+  for i := uint(0); i < x.n; i++ {
+    x.mon[i] = fmon.New (uint(0), 2, x.d, AllTrueSp,
+                         x.actHost, p0 + uint16(2 * x.nr[i]), false)
+  }
+  defer x.finMon()
+  x.awaitAllMonitors()
+  n1 := x.Num() + 1
+  x.C, x.D = make([]uint, n1), make([]uint, n1)
+  for i := uint(0); i < n1; i++ { x.C[0], x.D[0] = 0, 0 }
+  x.Op = o
+  if x.me == x.root {
+    for i := uint(0); i < x.n; i++ {
+      x.visited[i] = true
+println (x.me, "will send msg to", x.nr[i])
+      x.mon[i].F (x.root, message)
+      x.D[i]++
+println (x.me, "sent msg to", i)
+    }
+  }
+  <-done
+  errh.Error0 ("termination detected")
+}

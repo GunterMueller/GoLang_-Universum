@@ -4,9 +4,8 @@ package phil
 
 // >>> Unfair monitor solution due to Dijkstra
 
-import (
+import
   "µU/mon"
-)
 type
   monitorUnfair struct {
                        mon.Monitor

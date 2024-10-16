@@ -13,14 +13,14 @@ type
                       uint "value of the semaphore"
                       sync.Mutex
                     s [M]sem.Semaphore
-                    n [M]uint // n[i] = number of processes block on s[i] (i < M)
+                    n [M]uint // n[i] = number of processes blocked on s[i] (i < M)
                       }
 
 func new_(n uint) *addSemaphore {
   x := new(addSemaphore)
   x.uint = n
   for i := 0; i < M; i++ {
-    x.s[i] = sem.New(0)
+    x.s[i] = sem.New (0)
   }
   return x
 }

@@ -17,7 +17,6 @@ func (x *distributedGraph) s (a any, i uint) any {
   switch i {
   case 0:
     x.visited[j] = true
-//////////////////////////////////////////////
   case 1:
     x.parent = s
     if v > x.me {
@@ -30,9 +29,7 @@ func (x *distributedGraph) s (a any, i uint) any {
     }
     for k := uint(0); k < x.n; k++ {
       if k != j && ! x.visited[k] {
-//////////////////////////////////////////////
         x.visited[k] = true
-//////////////////////////////////////////////
         x.child[k] = true
         v = x.mon[k].F (x.me + inf * x.leader, 1).(uint)
         if v > x.leader {
@@ -71,9 +68,7 @@ func (x *distributedGraph) Dfselectfm() {
     }
     for k := uint(0); k < x.n; k++ {
       if ! x.visited[k] {
-//////////////////////////////////////////////
         x.visited[k] = true
-//////////////////////////////////////////////
         x.child[k] = true
         v := x.mon[k].F (x.me + inf * x.leader, 1).(uint)
         if v > x.leader {

@@ -31,7 +31,7 @@ func (x *distributedGraph) HelaryRaynal() {
         t := x.recv (j) // dirty trick to terminate the algorithm:
         if t == nil {   // no more input available or use of closed network connection:
           chanus <- nil // then force termination of for-loop below
-          break loop    // and terminate goroutine
+          break loop    // and terminate process
         }
         us := Decode (UintStream{}, t.(Stream)).(UintStream)
         chanus <- append (UintStream{j}, us...)

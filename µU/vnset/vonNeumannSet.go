@@ -310,6 +310,10 @@ func (x *set) Transitive() bool {
   return true
 }
 
+func (x *set) Founded () bool {
+  return false // TODO
+}
+
 func (x *set) KuratowskiPair (Y VonNeumannSet) VonNeumannSet {
   y := x.imp(Y)
   z := emptySet().(*set)

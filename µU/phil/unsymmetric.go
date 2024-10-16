@@ -3,8 +3,8 @@ package phil
 // (c) Christian Maurer   v. 170627 - license see µU.go
 
 // >>> Unsymmetric case:
-//     Störung der Symmetrie dadurch, dass manche (aber nicht alle)
-//     Philosophen zuerst die linke Gabel aufnehmen
+//     Symmetry is disturbed by the fact that some
+//     (but not all) philosophers pick up the left fork first.
 
 import
   "sync"
@@ -22,7 +22,6 @@ func newU() Philos {
 func (x *unsymmetric) Lock (p uint) {
   changeStatus (p, hungry)
   if p % 2 == 1 {
-//  if p == 0 {
     x.fork [left (p)].Lock()
     changeStatus (p, hasLeftFork)
     x.fork [p].Lock()

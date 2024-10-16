@@ -40,5 +40,10 @@ func newCh1 (a any, n uint) MBoundedBuffer {
   return x
 }
 
-func (x *channel1) Ins (a any) { x.cIns <- a }
-func (x *channel1) Get() any { return <-x.cGet }
+func (x *channel1) Ins (a any) {
+  x.cIns <- a
+}
+
+func (x *channel1) Get() any {
+  return <-x.cGet
+}

@@ -130,18 +130,26 @@ func writeMask (l, c uint) {
    Tel.: ________________  Funk: ________________
  E-Mail: ________________________________________
 */
+/*/
   bx.Wd (5)
   bx.Write ("Tel.:",   l, c + ct - 6)
   bx.Write ("Funk:",   l, c + cf - 6)
   bx.Wd (7)
   bx.Write ("E-Mail:", l + 1, c + ct - 8)
+/*/ // XXX
+  bx.Wd (6)
+  bx.Write ("phone:",   l, c + ct - 8)
 }
 
 func (x *contact) Write (l, c uint) {
   writeMask (l, c)
+  x.phonenumber.Colours (col.FlashWhite(), col.Blue())
+  x.phonenumber.Write (l, c + ct - 1) // XXX
+/*/ // XXX
   x.phonenumber.Write (l, c + ct)
   x.cellnumber.Write (l, c + cf)
   x.email.Write (l + 1, c + ct)
+/*/
 }
 
 func (x *contact) Edit (l, c uint) {
@@ -154,11 +162,14 @@ func (x *contact) Edit (l, c uint) {
   for {
     switch i {
     case 0:
-      x.phonenumber.Edit (l, c + ct)
+//      x.phonenumber.Edit (l, c + ct)
+      x.phonenumber.Edit (l, c + ct-1)
+/*/ // XXX
     case 1:
       x.cellnumber.Edit (l, c + cf)
     case 2:
       x.email.Edit (l + 1, c + ct)
+/*/
     }
     switch C, d := kbd.LastCommand(); C {
     case kbd.Esc:

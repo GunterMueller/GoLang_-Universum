@@ -4,7 +4,7 @@ package atomic
 
 // Tools for the construction of locking algorithms.
 // The execution of any of these cannot be interrupted
-// by other goroutines that call the same function.
+// by other processes that call the same function.
 
 // *a = true. Returns the former value of *a.
 func TestAndSet (a *bool) bool

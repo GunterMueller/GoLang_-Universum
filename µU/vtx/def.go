@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 231213 - license see µU.go
+// (c) Christian Maurer   v. 240926 - license see µU.go
 
 import (
   . "µU/obj"
@@ -12,6 +12,7 @@ type
   Object // Empty means content is empty
   col.Colourer
   Valuator
+  Stringer
 
 // Returns the content of x.
   Content() EditorGr
@@ -30,9 +31,6 @@ type
 
 // Returns the center coordinates of x.
   Pos() (int, int)
-
-// Returns the width and height of x.
-  Contour() (uint, uint)
 
 // The center of x has the position of the mouse.
   Mouse()
@@ -58,4 +56,4 @@ type
 // of size (width, height) = (w, h) (in colums, lines).
 func New (e EditorGr, w, h uint) Vertex { return new_(e,w,h) }
 
-func W (v any, a bool) { v.(Vertex).Write1(a) }
+func W (v any, b bool) { v.(Vertex).Write1(b) }

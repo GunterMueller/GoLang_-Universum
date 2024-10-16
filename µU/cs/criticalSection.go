@@ -11,8 +11,8 @@ type
   criticalSection struct {
                          uint "number of process classes"
                          sync.Mutex "the baton"
-                       s []sync.Mutex "on which goroutines are blocked, if ! CondSpectrum"
-                      ns []uint "numbers of goroutines, that are blocked on these semaphores"
+                       s []sync.Mutex "on which processes are blocked, if ! CondSpectrum"
+                      ns []uint "numbers of processes, that are blocked on these semaphores"
                          CondSpectrum "conditions to enter the critical section"
                       in NFuncSpectrum "functions in the enter protocols"
                      out StmtSpectrum "statements in the leave protocols"

@@ -4,8 +4,8 @@ package macc
 
 type
   MAccount interface { // A multitasking capable account.
-                       // The exported functions cannot be interrupted
-                       // by calls of these functions of other goroutines.
+                       // The functions Deposit and Draw cannot be interrupted
+                       // by calls of these functions of other processes.
 
 // The balance of x is incremented by a.
 // Returns the new balance of x.

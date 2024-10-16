@@ -1,18 +1,18 @@
 package dgra
 
-// (c) Christian Maurer   v. 231229 - license see µU.go
+// (c) Christian Maurer   v. 240927 - license see µU.go
 //
 // >>> Algorithm of Chang and Roberts: An Improved Algorithm for Decentralized Extrema-
 //     Finding in Circular Configurations of Processes. Comm. ACM 22 (1979), 281 - 283
 
-// import "µU/errh"
+const
+  P = 8 // number of involved processes
 
 func (x *distributedGraph) ChangRoberts() {
-  x.connect (uint(0))
   defer x.fin()
-  x.Graph.ExVal (x.me) // my vertex is now the local one
+  x.connect(uint(0))
   in, out := uint(0), uint(1)
-  if x.Outgoing(1) { in, out = out, in}
+  if x.Graph.Outgoing(1) { in, out = out, in }
   x.send (out, x.me)
   for {
     id := x.recv (in).(uint)

@@ -12,6 +12,7 @@ import (
   "µU/pbox"
   "µU/text"
   "µU/day"
+  "µU/errh"
 )
 const (
   lenn = uint(27)
@@ -45,8 +46,11 @@ var (
 func new_() Person {
   x := new(person)
   x.name = text.New (lenn)
+  x.name.Colours (col.FlashWhite(), col.Red()) // XXX
   x.firstName = text.New (lenf)
+  x.firstName.Colours (col.FlashWhite(), col.Red()) // XXX
   x.Calendarday = day.New()
+  x.Calendarday.Colours (col.Blue(), col.Red()) // XXX
   x.title = text.New (lent)
   x.field = []any { x.name, x.firstName, x.Calendarday, x.title }
   x.cl = []uint {lenn, lenf, x.Calendarday.Codelen(), x.title.Codelen()}
@@ -239,6 +243,7 @@ NameBT:
  Anrede: _______________
 */
 
+/*/
 func (x *person) writeMask (l, c uint) {
   cn = 9; cf = 47; cb = 71; ct = cn
   bx.ScrColours()
@@ -256,6 +261,21 @@ func (x *person) writeMask (l, c uint) {
     bx.Write ("Anrede:", l + 1, c + ct - 8)
   }
 }
+/*/
+
+func (x *person) writeMask (l, c uint) { // XXX
+  cn = 7; cf = 48; cb = 71; ct = cn
+  bx.ScrColours()
+  bx.Wd (5)
+  bx.Write ("name:", l, c + cn - 6)
+  bx.Wd (11)
+  bx.Write ("first name:", l, c + cf - 12)
+  switch x.Format {
+  case NameB, NameBT:
+    bx.Wd (5)
+    bx.Write ("born:", l, c + cb - 6)
+  }
+}
 
 func (x *person) TeX() string {
   s := ""
@@ -271,11 +291,15 @@ func (x *person) Write (l, c uint) {
   x.firstName.Write (l, c + cf)
   switch x.Format {
   case NameB, NameBT:
+    x.Calendarday.Colours (col.FlashWhite(), col.Blue())
     x.Calendarday.Write (l, c + cb)
   }
+  errh.Hint ("help: F1    end: Esc") // XXX
+/*/
   if x.Format == NameBT {
     x.title.Write (l + 1, c + ct)
   }
+/*/
 }
 
 func (x *person) Edit (l, c uint) {
@@ -295,10 +319,10 @@ func (x *person) Edit (l, c uint) {
       if x.Format > Name {
         x.Calendarday.Edit (l, c + cb)
       }
-    case 3:
-      if x.Format == NameBT {
-        x.title.Edit (l + 1, c + ct)
-      }
+//    case 3:
+//      if x.Format == NameBT {
+//        x.title.Edit (l + 1, c + ct)
+//      }
     }
     switch C, d := kbd.LastCommand(); C {
     case kbd.Esc:
