@@ -2,7 +2,7 @@ package phil
 
 // (c) Christian Maurer   v. 220420 - license see µU.go
 
-// >>> Solution with far monitor
+// >>> Solution with far monitor XXX is unfortunately buggy
 
 import (
   "µU/fmon"

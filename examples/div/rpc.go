@@ -1,8 +1,8 @@
 package main
 
-// (c) Christian Maurer   v. 241012 - license see µU.go
+// (c) Christian Maurer   v. 241031 - license see µU.go
 
-// start server with "rpc 0" and then client with "rpc 1"
+// >>> Start the server with "rpc 0", then the client with "rpc 1"
 
 import (
   . "µU/obj"
@@ -20,9 +20,10 @@ func f (a any, i uint) any {
 
 func main() {
   me := ego.Me()
-  scr.NewWH (0, 0, 96, 16); defer scr.Fin()
+  scr.NewWH (0, 0, 12 * 8, 16); defer scr.Fin()
   input, output := IntStream {7, 8}, 0
   r := rpc.New (input, output, 1, "terra", 1234, me == 0, f)
+//                    replace this ^^^^^ by the name of your computer
   if me == 0 { // rpc-server is called
     for { }
   } else { // rpc-client

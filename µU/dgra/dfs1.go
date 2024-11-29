@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 231229 - license see µU.go
+// (c) Christian Maurer   v. 241016 - license see µU.go
 
 import (
   . "µU/obj"
@@ -18,7 +18,7 @@ func (x *distributedGraph) Dfs1() {
     x.child[0] = true
     x.visited[0] = true
     x.tree.Ins (x.actVertex)
-    x.tree.Mark (x.actVertex)
+    x.tree.Mark (x.actVertex, true)
     x.tree.Write()
     pause()
     x.send (0, x.tree)

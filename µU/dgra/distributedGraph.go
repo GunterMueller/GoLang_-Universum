@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 240413 - license see µU.go
+// (c) Christian Maurer   v. 241101 - license see µU.go
 
 import (
   "sync"
@@ -8,7 +8,6 @@ import (
   . "µU/obj"
   "µU/env"
   "µU/time"
-//  "µU/col"
   "µU/scr"
   "µU/N"
   "µU/str"
@@ -16,12 +15,11 @@ import (
   "µU/vtx"
   "µU/edg"
   "µU/nchan"
-  "µU/mcorn"
+//  "µU/mcorn"
   "µU/fmon"
   "µU/gra"
   "µU/adj"
   "µU/ego"
-  . "µU/dgra/st"
 )
 type
   distributedGraph struct {
@@ -57,9 +55,8 @@ type
        diameter, distance,
                    leader uint
                           Op
-                    state []State
-                     C, D []uint
-                     corn []mcorn.MCornet
+//                     C, D []uint
+//                     corn []mcorn.MCornet
                     mutex sync.Mutex
                           }
 const (
@@ -115,13 +112,12 @@ func new_(g gra.Graph) DistributedGraph {
   g.Ex (x.actVertex)
   x.leader = x.me
   x.Op = Ignore
-  x.state = make ([]State, x.n)
-  x.corn = make ([]mcorn.MCornet, 99) // x.n)
-  for i := uint(0); i < 99; i++ { // < x.n; i++ {
-    x.corn[i] = mcorn.New (uint(0))
-  }
-  x.C = make ([]uint, 99) // x.n)
-  x.D = make ([]uint, 99) // x.n)
+//  x.corn = make ([]mcorn.MCornet, 99) // x.n)
+//  for i := uint(0); i < 99; i++ { // < x.n; i++ {
+//    x.corn[i] = mcorn.New (uint(0))
+//  }
+//  x.C = make ([]uint, 99) // x.n)
+//  x.D = make ([]uint, 99) // x.n)
   return x
 }
 
@@ -155,13 +151,6 @@ func (x *distributedGraph) setSize (n uint) {
 }
 
 func (x *distributedGraph) connect (a any) {
-  for i := uint(0); i < x.n; i++ {
-    x.ch[i] = nchan.New (a, x.me, x.nr[i], x.host[i], x.port[i])
-  }
-}
-
-// Pre: x is a ring.
-func (x *distributedGraph) connectR (a any) {
   for i := uint(0); i < x.n; i++ {
     x.ch[i] = nchan.New (a, x.me, x.nr[i], x.host[i], x.port[i])
   }
@@ -209,7 +198,6 @@ func (x *distributedGraph) send (i uint, a any) {
     x0, y0 := x.actVertex.Pos()
     x1, y1 := x.nb[i].Pos()
     f, b := scr.ScrColF(), scr.ScrColB()
-//    f, b = col.LightRed(), col.Yellow()
     scr.ColourF (f)
     scr.Line (x0, y0, x1, y1)
     for t := 0.2; t < 0.9; t+= 0.1 {
@@ -350,6 +338,8 @@ func (x *distributedGraph) ParentChildren() string {
   return s
 }
 
+/*/
 func (x *distributedGraph) checkVisited (i uint) {
   if x.visited[i] { errh.Error ("visited", i) } else { errh.Error ("not visited", i) }
 }
+/*/

@@ -1,6 +1,6 @@
 package sem
 
-// (c) Christian Maurer   v. 241001 - license see µU.go
+// (c) Christian Maurer   v. 241023 - license see µU.go
 
 // Protocols for access to a critical sections.
 // The functions P and V cannot be interrupted
@@ -53,5 +53,5 @@ func NewChannel (n uint) Semaphore { return newCh(n) }
 // Implementation with synchronous messsage passing with guarded select
 func NewGSel (n uint) Semaphore { return newGS(n) }
 
-// Implementation for distributed use
-func NewFMon (n uint, h string, p uint16, s bool) Semaphore { return newFM(n,h,p,s) }
+// Implementation with a far monitor
+func NewfarMonitor (n uint, h string, p uint16, s bool) Semaphore { return newFM(n,h,p,s) }

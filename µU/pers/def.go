@@ -1,14 +1,15 @@
 package pers
 
-// (c) Christian Maurer   v. 240408 - license see µU.go
+// (c) Christian Maurer   v. 241109 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/col"
+  "µU/day"
 )
 const ( // Format
   Name = iota // name, first name    1 line,  64 columns
-  NameB       // Namg + birth date   1 line,  80 columns
+  NameB       // Name + birth date   1 line,  80 columns
   NameBT      // NameB + title       2 lines, 80 columns
   NFormats
 )
@@ -24,6 +25,9 @@ type
   TeXer
   Printer
   Rotator
+
+// Returns the date of birth of x, if it is defined, otherwise the empty day.
+  Birthdate() day.Calendarday
 
 // Returns true, if x and y coincide in surname, first name and birthday.
   Equiv (y Person) bool

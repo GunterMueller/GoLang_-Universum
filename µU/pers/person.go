@@ -1,8 +1,9 @@
 package pers
 
-// (c) Christian Maurer   v. 240409 - license see µU.go
+// (c) Christian Maurer   v. 241109 - license see µU.go
 
 import (
+  "µU/env"
   . "µU/obj"
   "µU/kbd"
   "µU/col"
@@ -12,7 +13,6 @@ import (
   "µU/pbox"
   "µU/text"
   "µU/day"
-  "µU/errh"
 )
 const (
   lenn = uint(27)
@@ -28,9 +28,9 @@ const ( // Order
 type (
   person struct {
            name,
-      firstName text.Text
-                day.Calendarday "birthday"
+      firstName,
           title text.Text
+                day.Calendarday "birthdate" // "Geburtsdatum"
           field []any // to [En|De]code
              cl []uint
                 Format
@@ -46,11 +46,12 @@ var (
 func new_() Person {
   x := new(person)
   x.name = text.New (lenn)
-  x.name.Colours (col.FlashWhite(), col.Red()) // XXX
   x.firstName = text.New (lenf)
-  x.firstName.Colours (col.FlashWhite(), col.Red()) // XXX
   x.Calendarday = day.New()
-  x.Calendarday.Colours (col.Blue(), col.Red()) // XXX
+  f, b := col.FlashWhite(), col.DarkRed()
+  x.name.Colours (f, b)
+  x.firstName.Colours (f, b)
+  x.Calendarday.Colours (f, b)
   x.title = text.New (lent)
   x.field = []any { x.name, x.firstName, x.Calendarday, x.title }
   x.cl = []uint {lenn, lenf, x.Calendarday.Codelen(), x.title.Codelen()}
@@ -59,7 +60,7 @@ func new_() Person {
   return x
 }
 
-func (x *person) imp(Y any) *person {
+func (x *person) imp (Y any) *person {
   y, ok := Y.(*person)
   if ! ok { TypeNotEqPanic(x, Y) }
   return y
@@ -83,6 +84,10 @@ func (x *person) Identifiable() bool {
   return ! x.name.Empty() &&
          ! x.firstName.Empty() &&
          ! x.Calendarday.Empty()
+}
+
+func (x *person) Birthdate() day.Calendarday {
+  return x.Calendarday
 }
 
 func (x *person) FullAged() bool {
@@ -227,53 +232,37 @@ func (x *person) Cols() (col.Colour, col.Colour) {
   return x.name.Cols()
 }
 
-var
-  cn, cf, cb, ct uint
+const (
+  cn = 10; cf = 48; cb = 71; ct = 10
+)
 /*        1         2         3         4         5         6         7
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
 
-Name:
-   Name: ___________________________  Vorname: _______________
-
-NameB:
-   Name: ___________________________  Vorname: _______________   geb.: ________
-
-NameBT:
-   Name: ___________________________  Vorname: _______________   geb.: ________
- Anrede: _______________
+Nachname: ___________________________  Vorname: _______________  geb.: ________
+  Anrede: _______________
+ surname: ___________________________  fstname: _______________  born: ________
+   title: _______________
 */
 
-/*/
 func (x *person) writeMask (l, c uint) {
-  cn = 9; cf = 47; cb = 71; ct = cn
+  var n, f, b, t string
+  if env.E() {
+    n, f, b, t = " surname", "fstname", "born", " title"
+  } else {
+    n, f, b, t = "Nachname", "Vorname", "geb.", "Anrede"
+  }
   bx.ScrColours()
-  bx.Wd (5)
-  bx.Write ("Name:", l, c + cn - 6)
+  bx.Wd (9)
+  bx.Write (n + ":", l, c + cn - 10)
   bx.Wd (8)
-  bx.Write ("Vorname:", l, c + cf - 9)
+  bx.Write (f + ":", l, c + cf - 9)
   switch x.Format {
   case NameB, NameBT:
-    bx.Wd (5)
-    bx.Write ("geb.:", l, c + cb - 6)
+    bx.Write (b + ":", l, c + cb - 6)
   }
   if x.Format == NameBT {
     bx.Wd (7)
-    bx.Write ("Anrede:", l + 1, c + ct - 8)
-  }
-}
-/*/
-
-func (x *person) writeMask (l, c uint) { // XXX
-  cn = 7; cf = 48; cb = 71; ct = cn
-  bx.ScrColours()
-  bx.Wd (5)
-  bx.Write ("name:", l, c + cn - 6)
-  bx.Wd (11)
-  bx.Write ("first name:", l, c + cf - 12)
-  switch x.Format {
-  case NameB, NameBT:
-    bx.Wd (5)
-    bx.Write ("born:", l, c + cb - 6)
+    bx.Write (t + ":", l + 1, c + cn - 8)
   }
 }
 
@@ -291,15 +280,12 @@ func (x *person) Write (l, c uint) {
   x.firstName.Write (l, c + cf)
   switch x.Format {
   case NameB, NameBT:
-    x.Calendarday.Colours (col.FlashWhite(), col.Blue())
+//    x.Calendarday.Colours (col.FlashWhite(), col.Blue())
     x.Calendarday.Write (l, c + cb)
   }
-  errh.Hint ("help: F1    end: Esc") // XXX
-/*/
   if x.Format == NameBT {
-    x.title.Write (l + 1, c + ct)
+    x.title.Write (l + 1, c + cn)
   }
-/*/
 }
 
 func (x *person) Edit (l, c uint) {
@@ -319,10 +305,10 @@ func (x *person) Edit (l, c uint) {
       if x.Format > Name {
         x.Calendarday.Edit (l, c + cb)
       }
-//    case 3:
-//      if x.Format == NameBT {
-//        x.title.Edit (l + 1, c + ct)
-//      }
+    case 3:
+      if x.Format == NameBT {
+        x.title.Edit (l + 1, c + cn)
+      }
     }
     switch C, d := kbd.LastCommand(); C {
     case kbd.Esc:

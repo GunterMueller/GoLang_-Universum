@@ -72,10 +72,10 @@ func IsFile (f string) bool { return isFile(f) }
 // otherwise p is appended to the former actual path.
 func Cd (p string) { cd(p) }
 
-// Spec: The actual directory is $HOME + "/." + name of the call.
+// The actual directory is $HOME + "/." + name of the call.
 func Cdp() { cdp() }
 
-// Spec: The actual directory is $GOSRC + "/" + name of the call.
+// The actual directory is $GOSRC + "/" + name of the call.
 func Cds() { cds() }
 
 // Pre: d is a name of a directory entry.

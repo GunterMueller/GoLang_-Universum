@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 221213 - license see µU.go
+// (c) Christian Maurer   v. 241025 - license see µU.go
 
 import (
   . "µU/obj"
@@ -274,7 +274,7 @@ func (x *country) Write (l, c uint) {
   case Tld:
     bx.Write (x.attribut.tld, l, c)
   case Long:
-    bx.Clr (l, c)
+    bx.Write (str.New (length), l, c)
     bx.Write (x.attribut.name, l, c)
   case Tel:
     N.Colours (x.cF, x.cB)

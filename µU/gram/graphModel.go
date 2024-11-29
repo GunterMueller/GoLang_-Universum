@@ -22,7 +22,7 @@ type
               nWays uint
                     string "name"
                     bool "has background"
-       f, b, fa, ba col.Colour
+       f, b, fm, bm col.Colour
                     }
 var (
   h = [...]string { "        neue Ecke: linke Maustaste              ",
@@ -52,9 +52,8 @@ func new_(d bool, v, e any) GraphModel {
   }
   x.edge = edg.New (d, e)
   x.f, x.b = scr.ColF(), scr.ColB()
-  x.Colours (x.f, x.b)
-  x.fa, x.ba = scr.ColB(), scr.ColF()
-  x.ColoursA (x.fa, x.ba)
+  x.fm, x.bm = scr.ColB(), scr.ColF()
+  x.Colours (x.f, x.b, x.fm, x.bm)
   x.Graph = gra.New (d, x.vertex, x.edge)
   x.Graph.SetWrite (vtx.W, edg.W)
   return x
@@ -85,20 +84,19 @@ func (x *graphModel) Background (n string) {
   scr.Save1()
 }
 
-func (x *graphModel) Colours (f, b col.Colour) {
+func (x *graphModel) Colours (f, b, fm, bm col.Colour) {
   x.f, x.b = f, b
-  x.edge.Colours (f, b)
-  x.vertex.Colours (f, b)
+  x.fm, x.bm = fm, bm
+  x.edge.Colours (f, b, fm, bm)
+  x.vertex.Colours (f, b, fm, bm)
 }
 
 func (x *graphModel) Cols() (col.Colour, col.Colour) {
   return x.f, x.b
 }
 
-func (x *graphModel) ColoursA (f, b col.Colour) {
-  x.fa, x.ba = f, b
-  x.edge.ColoursA (f, b)
-  x.vertex.ColoursA (f, b)
+func (x *graphModel) ColsM() (col.Colour, col.Colour) {
+  return x.fm, x.bm
 }
 
 func (x *graphModel) underMouse (a any) bool {
@@ -168,15 +166,14 @@ func (x *graphModel) VertexSelected() bool {
   return s
 }
 
-func (x *graphModel) write (v any, a bool) {
-  v.(vtx.Vertex).Colours (x.f, x.b)
-  v.(vtx.Vertex).ColoursA (x.fa, x.ba)
-  v.(vtx.Vertex).Write1 (a)
+func (x *graphModel) write (v any) {
+  v.(vtx.Vertex).Colours (x.f, x.b, x.fm, x.bm)
+  v.(vtx.Vertex).Write()
 }
 
-func (x *graphModel) write1 (e any, a bool) {
-  e.(edg.Edge).Colours (x.f, x.b)
-  e.(edg.Edge).Write1 (a)
+func (x *graphModel) write1 (e any) {
+  e.(edg.Edge).Colours (x.f, x.b, x.fm, x.bm)
+  e.(edg.Edge).Write()
 }
 
 func (x *graphModel) Write() {
@@ -310,7 +307,7 @@ func wait (w *bool) {
 }
 
 func (x *graphModel) DFS (all bool) {
-  x.Mark (true)
+//  x.Mark (true) // XXX
   x.Write()
 //  kbd.Wait (true)
   n := x.NumNeighboursOut()
@@ -321,7 +318,7 @@ func (x *graphModel) DFS (all bool) {
         x.Step (0, false)
       } else {
         x.DFS (all)
-        if all { x.Mark (false) } // for _all_ ways
+//        if all { x.Mark (false) } // for _all_ ways // XXX
         x.Step (0, false)
         x.Write()
 //        kbd.Wait (true)
@@ -354,7 +351,7 @@ func (x *graphModel) BFS (all bool) {
 }
 
 func (x *graphModel) Hamilton (ready, ok Cond, w *bool) {
-  x.Mark (true)
+//  x.Mark (true) // XXX
   if ready() {
     x.nWays++
     x.Graph.Write()
@@ -368,7 +365,7 @@ func (x *graphModel) Hamilton (ready, ok Cond, w *bool) {
       } else {
         x.Graph.Write(); wait (w)
         x.Hamilton (ready, ok, w)
-        x.Mark (false)
+//        x.Mark (false) // XXX
         x.Step (0, false)
         x.Graph.Write(); wait (w)
       }

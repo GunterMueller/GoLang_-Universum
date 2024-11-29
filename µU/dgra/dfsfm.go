@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 231229 - license see µU.go
+// (c) Christian Maurer   v. 241016 - license see µU.go
 
 import (
   . "µU/obj"
@@ -70,7 +70,7 @@ func (x *distributedGraph) Dfsfm() {
   x.awaitAllMonitors()
   x.tree.Clr()
   x.tree.Ins (x.actVertex)
-  x.tree.Mark (x.actVertex)
+  x.tree.Mark (x.actVertex, true)
   x.tree.Write()
   pause()
   if x.me == x.root {

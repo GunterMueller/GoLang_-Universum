@@ -1,11 +1,12 @@
 package gra
 
-// (c) Christian Maurer   v. 240101 - license see µU.go
+// (c) Christian Maurer   v. 241030 - license see µU.go
 
 import (
   . "µU/obj"
   "µU/adj"
   "µU/pseq"
+  "µU/vtx"
 )
 type
   Demo byte // for demonstration purposes
@@ -168,12 +169,16 @@ type
 
 // Returns the value of the local vertex of x,
 // if it has the type Valuator; return otherwise 1.
-// Val() uint)
+  Val() uint
 
 // Returns true, iff x contains a vertex with the value n.
 // In this case, such a vertex is the local vertex of x.
 // The colocal vertex of x is the same as before.
   ExVal (n uint) bool
+
+// Pre: x contains a vertex with value n.
+// Returns that vertex.
+  Vertex (n uint) vtx.Vertex
 
 // Returns true, iff x contains a vertex v with the value n
 // and a vertex v1 with the value n1. In this case,
@@ -219,9 +224,11 @@ type
 
 // If x is empty or if v is not of the vertex type of x
 // or if v is not contained in x, nothing has happened.
-// Otherwise, v is now the local vertex of x and is marked.
+// Otherwise, v is now the local vertex of x and is marked iff m.
 // The colocal vertex of x is the same as before.
-  Mark (v any)
+  Mark (v any, m bool)
+
+//  Mark1 (e any, m bool)
 
 // If x is empty or if v or v1 is not of the vertex type of x
 // or if v or v1 is not contained in x
@@ -379,6 +386,12 @@ type
 // of the local vertex of x.
   Neighbour (i uint) any
 
+// Returns the diameter of x.
+  Diameter() uint
+
+// d is the diameter of x.
+  SetDiameter (d uint)
+
 // Pre: p is defined on vertices.
 // Returns true, if x is empty or
 // if p returns true for all vertices of x.
@@ -487,10 +500,10 @@ type
 
 // Pre: wv is defined on vertices and we on edges.
 // wv and we are the actual write functions for the vertices and edges of x.
-  SetWrite (wv, we CondOp)
+  SetWrite (wv, we Op)
 
 // Returns the write functions for the vertices and edges of x.
-  Writes() (CondOp, CondOp)
+  Writes() (Op, Op)
 
 // x is written on the screen by means of the actual write functions.
   Write()
@@ -521,3 +534,41 @@ type
 // For e == nil, e is replaced by uint(1) and all edges of x have the value 1.
 // Otherwise e is the pattern edge of x defining the edgetype of x.
 func New (d bool, v, e any) Graph { return new_(d,v,e) }
+
+// Examples of distributed Graphs
+// G_ returns the Graph defined by g_.
+func G3() Graph { return g3() }
+func G3dir() Graph { return g3dir() }
+func G4() Graph { return g4() }
+func G4flat() Graph { return g4flat() }
+func G4ring() Graph { return g4ring() }
+func G4ringdir() Graph { return g4ringdir() }
+func G4full() Graph { return g4full() }
+func G4star() Graph { return g4star() }
+func G4ds() Graph { return g4ds() }
+func G5() Graph { return g5() }
+func G5ring() Graph { return g5ring() }
+func G5ringdir() Graph { return g5ringdir() }
+func G5full() Graph { return g5full() }
+func G6() Graph { return g6() }
+func G6full() Graph { return g6full() }
+func G8() Graph { return g8() }
+func G8a() Graph { return g8a() }
+func G8dir() Graph { return g8dir() }
+func G8ring() Graph { return g8ring() }
+func G8ringdir() Graph { return g8ringdir() }
+func G8ringdirord() Graph { return g8ringdirord() }
+func G8full() Graph { return g8full() }
+func G8ds() Graph { return g8ds() }
+func G9a() Graph { return g9a() }
+func G9b() Graph { return g9b() }
+func G9dir() Graph { return g9dir() }
+func G10() Graph { return g10() }
+func G12() Graph { return g12() }
+func G12ringdir() Graph { return g12ringdir() }
+func G12full() Graph { return g12full() }
+func G16() Graph { return g16() }
+func G16dir() Graph { return g16dir() }
+func G16ring() Graph { return g16ring() }
+func G16ringdir() Graph { return g16ringdir() }
+func G16full() Graph { return g16full() }

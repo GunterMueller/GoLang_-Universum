@@ -1,6 +1,6 @@
 package nchan
 
-// (c) Christian Maurer   v. 231213 - license see µU.go
+// (c) Christian Maurer   v. 241017 - license see µU.go
 
 import (
   "strconv"

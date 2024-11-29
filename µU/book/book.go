@@ -32,9 +32,8 @@ const (
   locationIndex
   nIndices
 )
-const (
+const
   field = "Gebiet"
-)
 type
   book struct {
         field enum.Enum

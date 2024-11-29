@@ -1,8 +1,9 @@
 package cont
 
-// (c) Christian Maurer   v. 240413 - license see µU.go
+// (c) Christian Maurer   v. 240427 - license see µU.go
 
 import (
+  "µU/env"
   . "µU/obj"
   "µU/kbd"
   "µU/col"
@@ -31,10 +32,13 @@ var (
 
 func new_() Contact {
   x := new(contact)
+  f, b := col.FlashWhite(), col.DarkBlue()
   x.phonenumber = phone.New()
+  x.phonenumber.Colours (f, b)
   x.cellnumber = phone.New()
+  x.cellnumber.Colours (f, b)
   x.email = text.New (lenEmail)
-  x.Colours (col.LightCyan(), col.Black())
+  x.email.Colours (f, b)
   return x
 }
 
@@ -121,35 +125,37 @@ func (x *contact) Cols() (col.Colour, col.Colour) {
 }
 
 const (
-  ct = 9; cf = 33
+  ct = 8; cf = 32
 )
 
 func writeMask (l, c uint) {
-/*           1         2         3         4         5         6         7
-01234567890123456789012345678901234567890123456789012345678901234567890123456789
-   Tel.: ________________  Funk: ________________
- E-Mail: ________________________________________
+/*        1         2         3         4
+01234567890123456789012345678901234567890123456789
+ phone: ________________  cell: ________________ if env.E()
+  Tel.: ________________  Funk: ________________
+E-Mail: ________________________________________
 */
-/*/
+  bx.Wd (6)
+  if env.E() {
+    bx.Write ("phone:",  l, c + ct - 7)
+  } else {
+    bx.Write (" Tel.:",  l, c + ct - 7)
+  }
   bx.Wd (5)
-  bx.Write ("Tel.:",   l, c + ct - 6)
-  bx.Write ("Funk:",   l, c + cf - 6)
+  if env.E() {
+    bx.Write ("cell:",   l, c + cf - 6)
+  } else {
+    bx.Write ("Funk:",   l, c + cf - 6)
+  }
   bx.Wd (7)
   bx.Write ("E-Mail:", l + 1, c + ct - 8)
-/*/ // XXX
-  bx.Wd (6)
-  bx.Write ("phone:",   l, c + ct - 8)
 }
 
 func (x *contact) Write (l, c uint) {
   writeMask (l, c)
-  x.phonenumber.Colours (col.FlashWhite(), col.Blue())
-  x.phonenumber.Write (l, c + ct - 1) // XXX
-/*/ // XXX
   x.phonenumber.Write (l, c + ct)
   x.cellnumber.Write (l, c + cf)
   x.email.Write (l + 1, c + ct)
-/*/
 }
 
 func (x *contact) Edit (l, c uint) {
@@ -162,14 +168,11 @@ func (x *contact) Edit (l, c uint) {
   for {
     switch i {
     case 0:
-//      x.phonenumber.Edit (l, c + ct)
-      x.phonenumber.Edit (l, c + ct-1)
-/*/ // XXX
+      x.phonenumber.Edit (l, c + ct)
     case 1:
       x.cellnumber.Edit (l, c + cf)
     case 2:
       x.email.Edit (l + 1, c + ct)
-/*/
     }
     switch C, d := kbd.LastCommand(); C {
     case kbd.Esc:
@@ -195,12 +198,16 @@ func (x *contact) SetFont (f font.Font) {
 }
 
 func (x *contact) Print (l, c uint) {
-// printMask()
-  pbx.Print ("Tel.:", l, c + ct - 6)
-  pbx.Print ("Funk:", l + 1, c + ct - 6)
+  if env.E() {
+    pbx.Print ("phone:", l, c + ct - 6)
+    pbx.Print ("cell:", l + 1, c + ct - 6)
+  } else {
+    pbx.Print ("Tel.:", l, c + ct - 6)
+    pbx.Print ("Funk:", l + 1, c + ct - 6)
+  }
+  pbx.Print ("E-Mail:", l + 2, c + ct - 8)
   x.phonenumber.Print (l, c + ct)
   x.cellnumber.Print (l + 1, c + ct)
-  pbx.Print ("E-Mail:", l + 2, c + ct - 8)
   x.email.Print (l + 2, c + ct)
 }
 
@@ -235,11 +242,19 @@ func (x *contact) TeX() string {
   p, c := ! x.phonenumber.Empty(), ! x.cellnumber.Empty()
   var s string
   if p {
-    s = "Tel.~" + x.phonenumber.TeX()
+    if env.E() {
+      s = "phone " + x.phonenumber.TeX()
+    } else {
+      s = "Tel.~" + x.phonenumber.TeX()
+    }
   }
   if c {
     if p { s += ", " }
-    s += "Funk " + x.cellnumber.TeX()
+    if env.E() {
+      s += "cell " + x.cellnumber.TeX()
+    } else {
+      s += "Funk " + x.cellnumber.TeX()
+    }
   }
   if ! x.email.Empty() {
     em := x.email.TeX()

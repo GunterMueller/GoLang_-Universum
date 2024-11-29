@@ -198,6 +198,7 @@ func (x *postscriptPage) Points (xs, ys []float64) {
 }
 
 func (x *postscriptPage) Line (x1, y1, x2, y2 float64) {
+println ("psp.Line")
   x.newpath()
   x.moveto (x1, y1)
   x.lineto (x2, y2)
@@ -274,6 +275,7 @@ func (x *postscriptPage) Arc (x0, y0, r, a, b float64) {
 }
 
 func (x *postscriptPage) Circle (x0, y0, r float64, f bool) {
+println ("psp.Circle")
   x0 += dx; y0 += dy
   x.newpath()
   x.arc (x0, y0, r, 0, 360)

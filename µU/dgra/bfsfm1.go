@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 231229 - license see µU.go
+// (c) Christian Maurer   v. 241016 - license see µU.go
 
 import (
   . "µU/obj"
@@ -81,7 +81,7 @@ func (x *distributedGraph) Bfsfm1() {
   x.parent = inf
   x.tree.Clr()
   x.tree.Ins (x.actVertex)
-  x.tree.Mark (x.actVertex)
+  x.tree.Mark (x.actVertex, true)
   x.tree.Write()
   if x.me == x.root {
     x.parent = x.root

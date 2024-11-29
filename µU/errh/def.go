@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 240925 - license see µU.go
+// (c) Christian Maurer   v. 241024 - license see µU.go
 
 import
   "µU/col"
@@ -60,6 +60,7 @@ func WriteLicense (p, v, a string, f, l, b col.Colour, g []string, t *string) {
 func MuLicense (p, v, a string, f, l, b col.Colour) { µULicense(p,v,a,f,l,b) }
 func Headline (p, v, a string, f, b col.Colour) { headline(p,v,a,f,b) }
 
+// Pre: All h[i] have the same length.
 // h is written to the center of the screen.
 // The calling process is blocked, until Enter, Esc, Back or a mouse button is pressed;
 // then the former content of the screen is restored.

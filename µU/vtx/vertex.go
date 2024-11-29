@@ -1,6 +1,6 @@
 package vtx
 
-// (c) Christian Maurer   v. 241011 - license see µU.go
+// (c) Christian Maurer   v. 241016 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,10 +11,10 @@ type
   vertex struct {
                 EditorGr
        valuable bool
-          width,
-         height uint
+  width, height uint
            x, y int
-   f, b, fa, ba col.Colour
+         marked bool
+   f, b, fm, bm col.Colour
                 }
 
 func new_(e EditorGr, w, h uint) Vertex {
@@ -28,7 +28,7 @@ func new_(e EditorGr, w, h uint) Vertex {
   }
   x.width, x.height = w, h
   x.f, x.b = col.StartCols()
-  x.fa, x.ba = col.StartColsA()
+  x.fm, x.bm = col.Green(), col.Black()
   return x
 }
 
@@ -85,14 +85,23 @@ func (x *vertex) Copy (Y any) {
   x.EditorGr.(Object).Copy (y.EditorGr.(Object))
   x.width, x.height = y.width, y.height
   x.x, x.y = y.x, y.y
+  x.marked = y.marked
   x.f, x.b = y.f, y.b
-  x.fa, x.ba = y.fa, y.ba
+  x.fm, x.bm = y.fm, y.bm
 }
 
 func (x *vertex) Clone() any {
   y := new_(x.EditorGr, x.width, x.height).(*vertex)
   y.Copy (x)
   return y
+}
+
+func (x *vertex) Mark (m bool) {
+  x.marked = m
+}
+
+func (x *vertex) Marked () bool {
+  return x.marked
 }
 
 func (x *vertex) Mouse() {
@@ -115,16 +124,30 @@ func (x *vertex) UnderMouse() bool {
   return dx < t && dy < t
 }
 
-func (x *vertex) Colours (f, b col.Colour) {
-  x.f, x.b = f, b
+func (x *vertex) ColsM() (col.Colour, col.Colour) {
+  return x.fm, x.bm
 }
 
 func (x *vertex) Cols() (col.Colour, col.Colour) {
   return x.f, x.b
 }
 
-func (x *vertex) ColoursA (f, b col.Colour) {
-  x.fa, x.ba = f, b
+func (x *vertex) Colours (f, b, fm, bm col.Colour) {
+  x.f, x.b = f, b
+  x.fm, x.bm = fm, bm
+}
+
+func (x *vertex) Val() uint {
+  if x.valuable {
+    return x.EditorGr.(Valuator).Val()
+  }
+  return 0
+}
+
+func (x *vertex) SetVal (n uint) {
+  if x.valuable {
+    x.EditorGr.(Valuator).SetVal (n)
+  }
 }
 
 func (x *vertex) Defined (s string) bool {
@@ -144,13 +167,9 @@ func (x *vertex) String() string {
 }
 
 func (x *vertex) Write() {
-  x.Write1 (false)
-}
-
-func (x *vertex) Write1 (b bool) {
   cf, cb := x.f, x.b
-  if b {
-    cf, cb = x.fa, x.ba
+  if x.marked {
+    cf, cb = x.fm, x.bm
   }
   w1, h1 := scr.Wd1() * x.width, scr.Ht1() * x.height
   r := w1
@@ -158,11 +177,10 @@ func (x *vertex) Write1 (b bool) {
     r = h1
   }
   if x.width * x.height > 0 {
-    const r0 = 3
     scr.Colours (cf, cb)
-    if r <= r0 {
-      panic ("vertex.go: r <= r0")
-      scr.CircleFull (x.x, x.y, r0)
+    if r <= 3 {
+      panic ("vertex.go: r <= 3")
+      scr.CircleFull (x.x, x.y, 3)
     } else {
       scr.ColourF (cf)
       scr.CircleFull (x.x, x.y, r / 2 + 1)
@@ -180,69 +198,61 @@ func (x *vertex) Edit() {
 
 func (x *vertex) Codelen() uint {
   return x.EditorGr.(Object).Codelen() +
-         2 +               // width, height
-         2 * C0 +          // x, y
-         4 * x.f.Codelen()
+         2 +                 // width, height
+         2 * C0 +            // x, y
+         4 * x.f.Codelen() + // colours
+         1                   // marked
 }
 
 func (x *vertex) Encode() Stream {
-  bs := make (Stream, x.Codelen())
+  s := make (Stream, x.Codelen())
   i, a  := uint(0), x.EditorGr.(Object).Codelen()
-  copy (bs[i:i+a], x.EditorGr.(Object).Encode())
+  copy (s[i:i+a], x.EditorGr.(Object).Encode())
   i += a
-  bs[i] = uint8(x.width)
+  s[i] = uint8(x.width)
   i++
-  bs[i] = uint8(x.height)
+  s[i] = uint8(x.height)
   i++
   a = C0
-  copy (bs[i:i+a], Encode(x.x))
+  copy (s[i:i+a], Encode(x.x))
   i +=a
-  copy (bs[i:i+a], Encode(x.y))
+  copy (s[i:i+a], Encode(x.y))
   i +=a
   a = x.f.Codelen()
-  copy (bs[i:i+a], x.f.Encode())
+  copy (s[i:i+a], x.f.Encode())
   i += a
-  copy (bs[i:i+a], x.b.Encode())
+  copy (s[i:i+a], x.b.Encode())
   i += a
-  copy (bs[i:i+a], x.fa.Encode())
+  copy (s[i:i+a], x.fm.Encode())
   i += a
-  copy (bs[i:i+a], x.ba.Encode())
-  return bs
+  copy (s[i:i+a], x.bm.Encode())
+  i += a
+  s[i] = byte(0); if x.marked { s[i] = byte(1) }
+  return s
 }
 
-func (x *vertex) Decode (bs Stream) {
+func (x *vertex) Decode (s Stream) {
   i, a  := uint(0), x.EditorGr.(Object).Codelen()
-//  if a + 2 + 2 * C0 + 4 * col.Codelen() >= uint(len(bs)) { return false }
-  x.EditorGr.(Object).Decode (bs[i:i+a])
+//  if a + 2 + 2 * C0 + 4 * col.Codelen() >= uint(len(s)) { return false }
+  x.EditorGr.(Object).Decode (s[i:i+a])
   i += a
-  x.width = uint(bs[i])
+  x.width = uint(s[i])
   i++
-  x.height = uint(bs[i])
+  x.height = uint(s[i])
   i++
   a = C0
-  x.x = Decode(0, bs[i:i+a]).(int)
+  x.x = Decode(0, s[i:i+a]).(int)
   i += a
-  x.y = Decode(0, bs[i:i+a]).(int)
+  x.y = Decode(0, s[i:i+a]).(int)
   i += a
   a = x.f.Codelen()
-  x.f.Decode (bs[i:i+a])
+  x.f.Decode (s[i:i+a])
   i += a
-  x.b.Decode (bs[i:i+a])
+  x.b.Decode (s[i:i+a])
   i += a
-  x.fa.Decode (bs[i:i+a])
+  x.fm.Decode (s[i:i+a])
   i += a
-  x.ba.Decode (bs[i:i+a])
-}
-
-func (x *vertex) Val() uint {
-  if x.valuable {
-    return x.EditorGr.(Valuator).Val()
-  }
-  return 0
-}
-
-func (x *vertex) SetVal (n uint) {
-  if x.valuable {
-    x.EditorGr.(Valuator).SetVal (n)
-  }
+  x.bm.Decode (s[i:i+a])
+  i += a
+  x.marked = s[i] == byte(1)
 }

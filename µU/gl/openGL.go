@@ -1,7 +1,5 @@
 package gl
 
-
-
 // #cgo LDFLAGS: -lGL -lGLU
 // #include <GL/gl.h>
 // #include <GL/glu.h>

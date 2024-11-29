@@ -2,10 +2,9 @@ package dlock
 
 // (c) Christian Maurer   v. 171125 - license see µU.go
 //
-/* >>> Distributed mutual exclusion due to
-       Ricart, G., Agrawala, A. K.:
-         An Optimal Algorithm for Mutual Exclusion in Computer Networks
-         Commun. ACM 24 (1981), 9-17, 581 */
+// >>> Distributed mutual exclusion due to Ricart, G., Agrawala, A. K.:
+//     An Optimal Algorithm for Mutual Exclusion in Computer Networks
+//     Commun. ACM 24 (1981), 9-17
 
 import (
   "sync"

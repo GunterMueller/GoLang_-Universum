@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 240413 - license see µU.go
+// (c) Christian Maurer   v. 240416 - license see µU.go
 
 import (
   "sort"
@@ -51,11 +51,22 @@ func (x *graph) searchShortestPath (p Pred) {
                 n1 = n1.nextNb
                 if n1.nextNb == n1 { ker.Panic ("n1.nextNb == n1") }
               }
-              x.writeE (n1.edgePtr.any, false)
-              x.writeV (n.to.any, false)
+//              *(n1.edgePtr).Mark (false)
+//              x.writeE (n1.edgePtr.any, false)
+//              x.writeV (n.to.any, false)
+//            XXX
+//              x.writeE (n1.edgePtr.any)
+              x.writeE (n1.edgePtr)
+//              x.writeV (n.to.any)
+              x.writeV (n.to)
             }
-            x.writeE (n.edgePtr.any, true)
-            x.writeV (n.to.any, true)
+//            x.writeE (n.edgePtr.any, true)
+//            x.writeV (n.to.any, true)
+//            XXX
+//            x.writeE (n.edgePtr.any)
+            x.writeE (n.edgePtr)
+//            x.writeV (n.to.any)
+            x.writeV (n.to)
             wait()
           }
           n.to.dist, n.to.predecessor = d, v
@@ -141,8 +152,11 @@ func (x *graph) breadthFirstSearch (p Pred) {
               n1 = n1.nextNb
               if n1.nextNb == n1 { ker.Panic ("n1.nextNb == n1") }
             }
-            x.writeE (n1.edgePtr.any, false)
-            x.writeV (n1.from.any, true)
+//            x.writeE (n1.edgePtr.any, false)
+//            x.writeV (n1.from.any, true)
+//          XXX
+            x.writeE (n1.edgePtr.any)
+            x.writeV (n1.from.any)
             wait()
           }
         }

@@ -4,9 +4,8 @@ package rw
 
 // >>> 1st readers/writers problem
 
-import (
+import
   "µU/fmon"
-)
 type
   farMonitor struct {
                     fmon.FarMonitor

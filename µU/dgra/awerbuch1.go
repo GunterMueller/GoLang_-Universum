@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 231229 - license see µU.go
+// (c) Christian Maurer   v. 241016 - license see µU.go
 
 import (
   . "µU/obj"
@@ -71,7 +71,7 @@ func (x *distributedGraph) Awerbuch1() {
   if x.me == x.root {
     x.parent = x.root
     x.tree.Ins (x.actVertex)
-    x.tree.Mark (x.actVertex)
+    x.tree.Mark (x.actVertex, true)
     x.tree.Write()
     pause()
     for k := uint(0); k < x.n; k++ {

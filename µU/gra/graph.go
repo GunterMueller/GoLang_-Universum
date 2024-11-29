@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 240413 - license see µU.go
+// (c) Christian Maurer   v. 241015 - license see µU.go
 //
 // >>> References:
 // >>> CLR  = Cormen, Leiserson, Rivest        (1990)
@@ -107,26 +107,23 @@ type (
            edgePtr *edge
           from, to *vertex
           outgoing bool
-            nextNb,
-            prevNb *neighbour
+    nextNb, prevNb *neighbour
                    }
 
   graph struct {
-          name,
-      filename string
+name, filename string
           file pseq.PersistentSequence
       directed bool
      nVertices,
         nEdges uint32
+      diameter uint
        vAnchor,
-       colocal,
-         local *vertex
+colocal, local *vertex
        eAnchor *edge
           path []*vertex
      eulerPath []*neighbour
           demo Demoset
-        writeV,
-        writeE CondOp
+writeV, writeE Op
                }
 )
 type
@@ -160,7 +157,7 @@ func new_(d bool, v, e any) Graph {
   CheckUintOrValuator (e)
   x.eAnchor = newEdge (e)
   x.colocal, x.local = x.vAnchor, x.vAnchor
-  x.writeV, x.writeE = CondIgnore, CondIgnore
+  x.writeV, x.writeE = Ignore, Ignore
   return x
 }
 
@@ -475,6 +472,11 @@ func (g *graph) ExVal (n uint) bool {
   return false
 }
 
+func (g *graph) Vertex (n uint) vtx.Vertex {
+  if ! g.ExVal (n) { panic ("! g.ExVal (n)") }
+  return g.Get().(vtx.Vertex)
+}
+
 func (g *graph) ExVal2 (n, n1 uint) bool {
   var v, v1 vtx.Vertex
   if g.ExPred2 (func (a any) bool { v = a.(vtx.Vertex); return v.(Valuator).Val() == n },
@@ -538,19 +540,15 @@ func (x *graph) ClrMarked() {
   }
 }
 
-func (x *graph) Mark (v any) {
+func (x *graph) Mark (v any, m bool) {
   if x.local == x.vAnchor { return }
   if ! x.Ex (v) { return }
-  x.local.marked = true
+  x.local.marked = m
 }
 
-func (x *graph) Mark1 (v any) {
-  if x.local == x.vAnchor { return }
-  if ! x.Ex (v) { return }
-  x.local.marked = true
-  for n := x.local.nbPtr.nextNb; n != x.local.nbPtr; n = n.nextNb {
-    n.edgePtr.marked = true
-  }
+func (x *graph) Mark1 (e any, m bool) {
+  if ! x.Ex (e) { return }
+  e.(edg.Edge).Mark (m)
 }
 
 func (x *graph) Mark2 (v, v1 any) {
@@ -666,6 +664,14 @@ func (x *graph) NumNeighbours() uint {
     c++
   }
   return c
+}
+
+func (x *graph) Diameter() uint {
+  return x.diameter
+}
+
+func (x *graph) SetDiameter (d uint) {
+  x.diameter = d
 }
 
 /* func (x *graph) Leaf() {
@@ -984,15 +990,15 @@ func (x *graph) SetDemo (d Demo) {
   if d == Cycle { x.demo[Depth] = true } // Cycle without Depth is pointless
 }
 
-func (x *graph) SetWrite (wv, we CondOp) {
+func (x *graph) SetWrite (wv, we Op) {
   x.writeV, x.writeE = wv, we
 }
 
-func (x *graph) Writes() (CondOp, CondOp) {
+func (x *graph) Writes() (Op, Op) {
   return x.writeV, x.writeE
 }
 
 func (x *graph) Write() {
-  x.Trav1Cond (x.writeE)
-  x.TravCond (x.writeV)
+  x.Trav1 (x.writeE)
+  x.Trav (x.writeV)
 }

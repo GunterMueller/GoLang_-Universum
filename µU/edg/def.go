@@ -1,6 +1,6 @@
 package edg
 
-// (c) Christian Maurer   v. 231226 - license see µU.go
+// (c) Christian Maurer   v. 241016 - license see µU.go
 
 import (
   . "µU/obj"
@@ -11,8 +11,8 @@ type
                    // represented as line segments on the screen.
 
   Object // Empty edges have value 1.
-
   Valuator
+  Marker
 
 // Returns true, if x is directed.
   Directed() bool
@@ -20,11 +20,9 @@ type
 // x is directed iff b == true.
   Direct (b bool)
 
-// f, b are the normal colours of x.
-  Colours (f, b col.Colour)
-
-// f, b are the actual colours of x.
-  ColoursA (f, b col.Colour)
+// f, b are the normal colours of x,
+// fm, bm are the mark colours of x.
+  Colours (f, b, fm, bm col.Colour)
 
 // If x is directed, the direction is 0 -> 1.
   SetPos0 (int, int)
@@ -36,11 +34,10 @@ type
   Label (b bool)
 
 // x is written at its position to the screen in its normal colour.
-  Write()
 
 // x is written at its position to the screen,
-// for a in its actual, otherwise in its normal colour.
-  Write1 (a bool)
+// if x is marked, in its marked, otherwise in its normal colour.
+  Write ()
 
 // x has the name and the value edited by the user.
   Edit()
@@ -51,4 +48,4 @@ type
 // If a == nil, its value is 1, else it is determined by a.
 func New (d bool, a any) Edge { return new_(d,a) }
 
-func W (e any, a bool) { e.(Edge).Write1(a) }
+func W (e any) { e.(Edge).Write() }

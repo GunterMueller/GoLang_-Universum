@@ -1,5 +1,7 @@
 package main
 
+// (c) Christian Maurer   v. 241016 - license see µU.go
+
 import (
   "µU/col"
   "µU/scr"
@@ -24,7 +26,7 @@ func vertex (i uint, x, y int) {
   n.SetVal (i)
   v[i] = vtx.New (n, 1, 1)
   v[i].Set (x, y)
-  v[i].Colours (w ,b)
+  v[i].Colours (w, b, w, b)
   g.Ins (v[i])
 }
 
@@ -33,7 +35,7 @@ func ins (i, j, k uint) {
   e = edg.New (d, uint(k))
   e.SetPos0 (v[i].Pos())
   e.SetPos1 (v[j].Pos())
-  e.Colours (w, b)
+  e.Colours (w, b, w, b)
   e.Direct (d); g.Edge (e)
 }
 

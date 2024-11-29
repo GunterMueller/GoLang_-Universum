@@ -1,6 +1,6 @@
 package collop
 
-// (c) Christian Maurer   v. 240317 - license see µU.go
+// (c) Christian Maurer   v. 241025 - license see µU.go
 
 import (
   "µU/env"
@@ -13,23 +13,19 @@ import (
 func operate (x Collector, o Rotator, f func (x, y Rotator) bool) {
   var help []string
   if env.E() {
-    help = []string {"for-/backwards: arrow key down-/upwards",
-                     "  to start/end: Pos1/End               ",
-                     "  change entry: shift Enter            ",
-                     "        insert: Ins                    ",
-                     "        delete: Del                    ",
-                     "        search: F2                     ",
-                     "  change order: F3                     ",
-                     "   end program: Esc                    "}
+    help = []string {"        for-/backwards: arrow key down-/upwards",
+                     "        to start / end: Pos1 / End             ",
+                     "          change entry: shift Enter            ",
+                     "       insert / delete: Ins / Del              ",
+                     " search / change order: F2 / F3                ",
+                     "            help / end: F1 / Esc               "}
   } else {
-    help = []string {"  vor-/rückwärts: Pfeiltaste ab-/aufwärts",
-                     " zum Anfang/Ende: Pos1/Ende              ",
-                     "  Eintrag ändern: Umschalt-Enter         ",
-                     "        einfügen: Einfg                  ",
-                     "       entfernen: Entf                   ",
-                     "          suchen: F2                     ",
-                     "        umordnen: F3                     ",
-                     "Programm beenden: Esc                    "}
+    help = []string {"       vor-/rückwärts: Pfeiltaste ab-/aufwärts ",
+                     "    zum Anfang / Ende: Pos1 / Ende             ",
+                     "       Eintrag ändern: Umschalt-Enter          ",
+                     " einfügen / entfernen: Einfg / Entf            ",
+                     "    suchen / umordnen: F2 / F3                 ",
+                     "         Hilfe / Ende: F1 / Esc                "}
   }
   for i, h := range (help) { help[i] = str.Lat1 (h) }
   x.Jump (false)
@@ -41,11 +37,6 @@ func operate (x Collector, o Rotator, f func (x, y Rotator) bool) {
         break
       }
     }
-  }
-  if env.E() {
-    errh.Hint ("help: F1                  end: Esc")
-  } else {
-    errh.Hint ("Hilfe: F1                  Ende: Esc")
   }
   loop:
   for {
@@ -64,11 +55,6 @@ func operate (x Collector, o Rotator, f func (x, y Rotator) bool) {
         if ! o.Eq (o1) {
           x.Put (o)
         }
-      }
-      if env.E() {
-        errh.Hint ("help: F1                  end: Esc")
-      } else {
-        errh.Hint ("Hilfe: F1                  Ende: Esc")
       }
     case kbd.Up:
       x.Step (false)

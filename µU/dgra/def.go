@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 241013 - license see µU.go
+// (c) Christian Maurer   v. 241101 - license see µU.go
 
 import
   "µU/gra"
@@ -19,7 +19,8 @@ type
   Blink()
 
 // Pre for all following methods: The hosts of x are set.
-  Me() uint; Root() uint
+  Me() uint
+  Root() uint
   ParentChildren() string
   Time() uint; Time1() uint
 
@@ -51,10 +52,6 @@ type
   Dfselect()
   Dfselectfm()
   Leader() uint
-
-// termination-detection-algorithms
-  Rana()
-  Misra()
 }
 
 // Pre: The values of the edges of g + nchan.Port0 are the ports
@@ -78,10 +75,8 @@ func G5 (i uint) DistributedGraph { return g5(i) }
 func G5ring (i uint) DistributedGraph { return g5ring(i) }
 func G5ringdir (i uint) DistributedGraph { return g5ringdir(i) }
 func G5full (i uint) DistributedGraph { return g5full(i) }
-func G5ds (i uint) DistributedGraph { return g5ds(i) }
 func G6 (i uint) DistributedGraph { return g6(i) }
 func G6full (i uint) DistributedGraph { return g6full(i) }
-func G6ds (i uint) DistributedGraph { return g6ds(i) }
 func G8 (i uint) DistributedGraph { return g8(i) }
 func G8a (i uint) DistributedGraph { return g8a(i) }
 func G8dir (i uint) DistributedGraph { return g8dir(i) }
@@ -102,4 +97,3 @@ func G16dir (i uint) DistributedGraph { return g16dir(i) }
 func G16ring (i uint) DistributedGraph { return g16ring(i) }
 func G16ringdir (i uint) DistributedGraph { return g16ringdir(i) }
 func G16full (i uint) DistributedGraph { return g16full(i) }
-func G16t (i uint) DistributedGraph { return g16t(i) }

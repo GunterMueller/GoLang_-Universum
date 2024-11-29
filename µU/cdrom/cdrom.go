@@ -1,6 +1,6 @@
 package cdrom
 
-// (c) Christian Maurer   v. 240216 - license see µU.go
+// (c) Christian Maurer   v. 241103 - license see µU.go
 
 //#include <stdlib.h>
 //#include <stdio.h>
@@ -11,8 +11,7 @@ package cdrom
 /*
 unsigned char nTracks (int d) {
   struct cdrom_tochdr h;
-  if (ioctl (d, CDROMREADTOCHDR, &h) < 0) return 0;
-  return h.cdth_trk1;
+  if (ioctl (d, CDROMREADTOCHDR, &h) < 0) return 0; return h.cdth_trk1;
 }
 
 unsigned int startFrame (int d, unsigned char t) {
@@ -30,8 +29,7 @@ unsigned int startFrame (int d, unsigned char t) {
   f = e.cdte_addr.msf.minute * CD_SECS;
   f += e.cdte_addr.msf.second;
   f *= CD_FRAMES;
-  f += e.cdte_addr.msf.frame;
-  return f;
+  f += e.cdte_addr.msf.frame; return f;
 }
 
 int status (int d, unsigned int *f) {
@@ -59,13 +57,11 @@ int status (int d, unsigned int *f) {
   *f = c.cdsc_absaddr.msf.minute * CD_SECS;
   *f += c.cdsc_absaddr.msf.second;
   *f *= CD_FRAMES;
-  *f += c.cdsc_absaddr.msf.frame;
-  return s;
+  *f += c.cdsc_absaddr.msf.frame; return s;
 }
 
 int start (int d) {
-  if (ioctl (d, CDROMSTART) < 0) return 0;
-  return 1;
+  if (ioctl (d, CDROMSTART) < 0) return 0; return 1;
 }
 
 int play (int d, unsigned int f, unsigned int f1) {
@@ -76,11 +72,13 @@ int play (int d, unsigned int f, unsigned int f1) {
   p.cdmsf_min1 = (f1 / CD_FRAMES) / CD_SECS;
   p.cdmsf_sec1 = (f1 / CD_FRAMES) % CD_SECS;
   p.cdmsf_frame1 = f1 % CD_FRAMES;
+printf ("cdrom int play\n");
   return ioctl (d, CDROMPLAYMSF, &p);
 }
 
 void volRead (int d, unsigned char *l, unsigned char *r) {
-  *l = 0; *r = 0;
+  *l = 0;
+  *r = 0;
   struct cdrom_volctrl v;
   if (ioctl (d, CDROMVOLREAD, &v) < 0) return;
   if (v.channel0 >= 0 && v.channel0 <= 255) { *l = v.channel0; }
@@ -121,7 +119,11 @@ import (
 )
 const (
   invalid = iota
-  playing; paused; completed; fault; nostatus
+  playing
+  paused
+  completed
+  fault
+  nostatus
   nStat
 )
 const (
@@ -135,20 +137,16 @@ var (
   nTracks uint8
   volume_left, volume_right, balance uint8
   status int32
-  text = [nStat]string {
-           " invalid ",
-           "   play  ",
-           "  pause  ",
-           "completed",
-           "  error  ",
-           "no status",
-         }
-  ctrltext = [NCtrl]string {
-               "left",
-               "right",
-               "balance",
-               "volume",
-             }
+  text = [nStat]string {" invalid ",
+                        "   play  ",
+                        "  pause  ",
+                        "completed",
+                        "  error  ",
+                        "no status"}
+  ctrltext = [NCtrl]string {"left",
+                            "right",
+                            "balance",
+                            "volume" }
 )
 
 func cstatus (d int) (uint32, int32) {
@@ -205,7 +203,7 @@ func soundfile() *os.File {
   }
   counter := 0
   for { // anfangs dauert's manchmal 'ne Weile ...
-    counter ++
+    counter++
     if counter > 30 {
       return nil
     }
@@ -217,14 +215,12 @@ func soundfile() *os.File {
     }
   }
   nTracks = uint8(C.nTracks (C.int(cdd)))
-errh.Error ("nTracks", uint(nTracks))
+  errh.Hint1 ("nTracks", uint(nTracks))
   n1 := nTracks + 1
   startFrame = make ([]uint32, n1)
   StartTime = make ([]clk.Clocktime, nTracks)
-//  Length = make ([]clk.Clocktime, nTracks)
   Length = make ([]clk.Clocktime, n1)
-//  for t := uint8(0); t <= nTracks; t++ {
-  for t := uint8(0); t <= n1; t++ {
+  for t := uint8(0); t < nTracks; t++ {
     startFrame[t] = uint32(C.startFrame (C.int(cdd), C.uchar(t)))
     if t < nTracks {
       StartTime[t] = clk.New()
@@ -247,15 +243,16 @@ errh.Error ("nTracks", uint(nTracks))
   return cdfile
 }
 
-func playTrack (t uint8)() {
+func playTrack (t uint8) {
+println ("cdrom playTrack")
   if t >= nTracks { return }
-  if int(C.start (C.int(cdd))) == 0 { ker.Panic ("playTrack C.start == 0") }
-/*/
-  if int(C.play (C.int(cdd), C.uint(startFrame[t]), C.uint(startFrame[nTracks] - offset))) == -1 {
-    ker.Panic ("playTrack: C.play == -1")
+  if int(C.start (C.int(cdd))) == 0 {
+    ker.Panic ("playTrack C.start == 0")
   }
-/*/
-println ("affe playTrack")
+  if int(C.play (C.int(cdd), C.uint(startFrame[t]), C.uint(startFrame[nTracks] - offset))) == -1 {
+//    ker.Panic ("playTrack: C.play == -1")
+  }
+println ("cdrom playTrack end")
 }
 
 func playTrack0() {
@@ -339,22 +336,22 @@ func volume (c Controller) uint8 {
   return uint8(sum / 2)
 }
 
-func ctrl1 (c Controller, lauter bool) {
+func ctrl1 (c Controller, louder bool) {
   switch c {
   case Left:
-    if lauter {
+    if louder {
       if volume_left < MaxVol { volume_left ++ }
     } else {
       if volume_left > 0 { volume_left -- }
     }
   case Right:
-    if lauter {
+    if louder {
       if volume_right < MaxVol { volume_right ++ }
     } else {
       if volume_right > 0 { volume_right -- }
     }
   case Balance:
-    if lauter {
+    if louder {
       if volume_left < MaxVol { volume_left ++ }
       if volume_right > 0 { volume_right -- }
     } else {
@@ -362,7 +359,7 @@ func ctrl1 (c Controller, lauter bool) {
       if volume_left > 0 { volume_left -- }
     }
   case All:
-    if lauter {
+    if louder {
       if volume_left < MaxVol { volume_left ++ }
       if volume_right < MaxVol { volume_right ++ }
     } else {

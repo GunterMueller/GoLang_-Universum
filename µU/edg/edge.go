@@ -1,6 +1,6 @@
 package edg
 
-// (c) Christian Maurer   v. 231226 - license see µU.go
+// (c) Christian Maurer   v. 241016 - license see µU.go
 
 import (
   . "µU/obj"
@@ -17,7 +17,8 @@ type
        x1, y1 int
            wd uint
         label bool
- f, b, fa, ba col.Colour
+ f, b, fm, bm col.Colour
+       marked bool
               }
 var
   bx = box.New()
@@ -33,7 +34,7 @@ func new_(d bool, a any) Edge {
   x.wd = N.Wd(Val(a))
   x.label = true
   x.f, x.b = col.Black(), col.White()
-  x.fa, x.ba = col.StartColsA()
+  x.fm, x.bm = col.StartColsA()
   return x
 }
 
@@ -91,9 +92,11 @@ func (x *edge) Copy (Y any) {
   y := x.imp (Y)
   x.directed = y.directed
   x.any = Clone(y.any)
-  x.wd, x.label = y.wd, y.label
+  x.wd = y.wd
+  x.label = y.label
   x.x0, x.y0, x.x1, x.y1 = y.x0, y.y0, y.x1, y.y1
-  x.f, x.b, x.fa, x.ba = y.f, y.b, y.fa, y.ba
+  x.f, x.b, x.fm, x.bm = y.f, y.b, y.f, y.bm
+  x.marked = y.marked
 }
 
 func (x *edge) Clone() any {
@@ -110,26 +113,19 @@ func (x *edge) SetVal (n uint) {
   SetVal (&x.any, n)
 }
 
-func (x *edge) Colours (f, b col.Colour) {
+func (x *edge) Colours (f, b, fm, bm col.Colour) {
   x.f, x.b = f, b
-}
-
-func (x *edge) ColoursA (f, b col.Colour) {
-  x.fa, x.ba = f, b
+  x.fm, x.bm = fm, bm
 }
 
 func (x *edge) Label (b bool) {
   x.label = b
 }
 
-func (x *edge) Write () {
-  x.Write1 (false)
-}
-
-func (x *edge) Write1 (a bool) {
+func (x *edge) Write() {
   f, b := x.f, x.b
-  if a {
-    f, b = x.fa, x.ba
+  if x.marked {
+    f, b = x.fm, x.bm
   }
   scr.ColourF (f)
   scr.Line (x.x0, x.y0, x.x1, x.y1)
@@ -158,7 +154,6 @@ func (x *edge) Edit() {
   dx := int(x.wd * scr.Wd1() - scr.Wd1() / 2)
   x0, y0 := (x.x0 + x.x1 - dx) / 2, (x.y0 + x.y1) / 2
   x0 -= int(scr.Wd1()) / 2; y0 -= int(scr.Ht1()) / 2
-//  x.Write1 (false) // XXX false ?
   switch x.any.(type) {
   case EditorGr:
     x.any.(EditorGr).EditGr (x0, y0)
@@ -187,59 +182,70 @@ func (x *edge) Codelen() uint {
 }
 
 func (x *edge) Encode() Stream {
-  bs := make (Stream, x.Codelen())
-  bs[0] = 0; if x.directed { bs[0] = 1 }
+  s := make (Stream, x.Codelen())
+  s[0] = 0; if x.directed { s[0] = 1 }
   i, a := uint(1), Codelen(x.any)
-  copy (bs[i:i+a], Encode(x.any))
+  copy (s[i:i+a], Encode(x.any))
   i += a
-  bs[i] = byte(x.wd)
+  s[i] = byte(x.wd)
   i++
-  bs[i] = 0; if x.label { bs[i] = 1 }
+  s[i] = 0; if x.label { s[i] = 1 }
   i++
   a = 4
-  copy (bs[i:i+a], Encode(int32(x.x0)))
+  copy (s[i:i+a], Encode(int32(x.x0)))
   i += a
-  copy (bs[i:i+a], Encode(int32(x.y0)))
+  copy (s[i:i+a], Encode(int32(x.y0)))
   i += a
-  copy (bs[i:i+a], Encode(int32(x.x1)))
+  copy (s[i:i+a], Encode(int32(x.x1)))
   i += a
-  copy (bs[i:i+a], Encode(int32(x.y1)))
+  copy (s[i:i+a], Encode(int32(x.y1)))
   i += a
   a = x.f.Codelen()
-  copy (bs[i:i+a], x.f.Encode())
+  copy (s[i:i+a], x.f.Encode())
   i += a
-  copy (bs[i:i+a], x.b.Encode())
+  copy (s[i:i+a], x.b.Encode())
   i += a
-  copy (bs[i:i+a], x.fa.Encode())
+  copy (s[i:i+a], x.fm.Encode())
   i += a
-  copy (bs[i:i+a], x.ba.Encode())
-  return bs
+  copy (s[i:i+a], x.bm.Encode())
+  i += a
+  return s
 }
 
-func (x *edge) Decode (bs Stream) {
-  x.directed = bs[0] == 1
+func (x *edge) Decode (s Stream) {
+  x.directed = s[0] == 1
   i, a := uint(1), Codelen(x.any)
-  x.any = Decode (x.any, bs[i:i+a])
+  x.any = Decode (x.any, s[i:i+a])
   i += a
-  x.wd = uint(bs[i])
+  x.wd = uint(s[i])
   i++
-  x.label = bs[i] == 1
+  x.label = s[i] == 1
   i++
   a = 4
-  x.x0 = int(Decode(int32(0), bs[i:i+a]).(int32))
+  x.x0 = int(Decode(int32(0), s[i:i+a]).(int32))
   i += a
-  x.y0 = int(Decode(int32(0), bs[i:i+a]).(int32))
+  x.y0 = int(Decode(int32(0), s[i:i+a]).(int32))
   i += a
-  x.x1 = int(Decode(int32(0), bs[i:i+a]).(int32))
+  x.x1 = int(Decode(int32(0), s[i:i+a]).(int32))
   i += a
-  x.y1 = int(Decode(int32(0), bs[i:i+a]).(int32))
+  x.y1 = int(Decode(int32(0), s[i:i+a]).(int32))
   i += a
   a = x.f.Codelen()
-  x.f.Decode (bs[i:i+a])
+  x.f.Decode (s[i:i+a])
   i += a
-  x.b.Decode (bs[i:i+a])
+  x.b.Decode (s[i:i+a])
   i += a
-  x.fa.Decode (bs[i:i+a])
+  x.fm.Decode (s[i:i+a])
   i += a
-  x.ba.Decode (bs[i:i+a])
+  x.bm.Decode (s[i:i+a])
+  i += a
+
+}
+
+func (x *edge) Mark (m bool) {
+  x.marked = m
+}
+
+func (x *edge) Marked () bool {
+  return x.marked
 }

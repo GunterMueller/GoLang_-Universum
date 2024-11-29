@@ -18,7 +18,7 @@ type
                     fmon.FarMonitor
                     }
 
-func NewFarMonitor (a any, h string, p uint16, s bool) MStack {
+func newFM (a any, h string, p uint16, s bool) MStack {
   CheckAtomicOrObject (a)
   x := new (farMonitor)
   x.Stack = stk.New (a)

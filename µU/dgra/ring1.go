@@ -1,6 +1,6 @@
 package dgra
 
-// (c) Christian Maurer   v. 231229 - license see µU.go
+// (c) Christian Maurer   v. 241016 - license see µU.go
 //
 // >>> Construction of a directed ring using the idea of Awerbuch's algorithm
 
@@ -73,7 +73,7 @@ func (x *distributedGraph) Ring1() {
   x.cycle.Clr()
   if x.me == x.root {
     x.cycle.Ins (x.actVertex)
-    x.cycle.Mark (x.actVertex)
+    x.cycle.Mark (x.actVertex, true)
     x.cycle.Write()
     pause()
     for k := uint(0); k < x.n; k++ {

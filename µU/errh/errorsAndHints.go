@@ -1,6 +1,6 @@
 package errh
 
-// (c) Christian Maurer   v. 240925 - license see µU.go
+// (c) Christian Maurer   v. 241025 - license see µU.go
 
 import (
   "strconv"
@@ -410,38 +410,30 @@ func headline (project, version, author string, f, b col.Colour) {
 
 func help (H []string) {
   pre()
-  h := uint(len (H))
-  var w, l, c uint
-  for i := uint(0); i < h; i++ {
-    c = uint(len (H[i]))
-    if c > w { w = c }
-  }
-  if h + 2 > NLines() { h = NLines() - 2 }
-  if w + 4 > NColumns() { w = NColumns() - 4 }
-  mouseOn := MousePointerOn()
-  if false { // mouseOn {
-    l, c = MousePos()
-    if l >= NLines() - h - 1 { l = NLines() - h - 2 }
-    if c > NColumns() - w - 4 { c = NColumns() - w - 4 }
-    MousePointer (false)
+  h := uint(len(H))
+  if h > NLines() { h = NLines() }
+  w := uint(len(H[0]))
+  wc := NColumns()
+  if w > wc {
+    for i := uint(0); i < h; i++ {
+      str.Norm (&H[i], wc)
+    }
   } else {
-    l, c = (NLines() - h - 2) / 2, (NColumns() - w - 4) / 2
+    w0 := (wc - w) / 2
+    for i := uint(0); i < h; i++ {
+      H[i] = str.New (w0) + H[i]
+      str.Norm (&H[i], wc)
+    }
   }
-  Save (l, c, w + 4, h + 2)
+  Save (0, 0, wc, h + 1)
   Lock()
   Colours (col.HintF(), col.HintB())
-  t := str.New (w + 4)
-  for i := uint(0); i <= h + 1; i++ {
-    Write (t, l + i, c)
-  }
   for i := uint(0); i < h; i++ {
-    str.Center (&H[i], w) 
-    Write (H[i], l + 1 + i, c + 2)
+    Write (H[i], i, 0)
   }
   Unlock()
   kbd.Wait (false)
-  Restore (l, c, w + 4, h + 2)
-  if mouseOn { MousePointer (true) }
+  Restore (0, 0, wc, h + 1)
   post()
 }
 

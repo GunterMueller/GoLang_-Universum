@@ -23,10 +23,10 @@ var (
 // entries of the CD/DVD are defined. Returns otherwise nil.
 // The execution of this function with result != nil
 // is the precondition for all further functions.
-func Soundfile () *os.File { return soundfile() }
+func Soundfile() *os.File { return soundfile() }
 
 // Returns the number of tracks of the CD.
-func NTracks () uint8 { return nTracks }
+func NTracks() uint8 { return nTracks }
 
 // Returns the actual track of the CD.
 // Time and TrackTime are actualized.
@@ -50,7 +50,7 @@ func PlayTrack (n uint8) { playTrack(n) }
 func PlayTrack1 (f bool) { playTrack1(f) }
 
 // The CD plays from start of the actual track.
-func PlayTrack0 () { playTrack0() }
+func PlayTrack0() { playTrack0() }
 
 // The CD is playing for f == true/false for s = 0 from start of the next/previous track,
 // otherwise from s seconds behind/before.

@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 241004 - license see µU.go
+// (c) Christian Maurer   v. 241030 - license see µU.go
 
 import (
   "µU/col"
@@ -16,27 +16,26 @@ import (
 //      The values of the edges of g, incremented by nchan.Port0,
 //      are the ports of the 1:1-netchannels
 //      between the nodes connected by them.
-// Returns the star of the node id of the graph with the nodes 0..n-1
-// at the screen positions (line, column) = (l[i],c[i]),
-// the by e defined edges with suitable ports for the
-// netchannesl between the by h defined computer as values
-// and with the diameter m.
-func newg (dir bool, l, c []int, es [][]uint, m, id uint) Graph {
-//  cf, ca, cb := col.Blue(), col.Red(), col.FlashWhite()
-  cf, ca, cb := col.Blue(), col.Blue(), col.FlashWhite()
+// Returns the graph with the nodes 0..n-1 at the
+// screen positions (line, column) = (l[i],c[i]),
+// the by e defined edges with suitable ports for
+// netchannels as values and with the diameter m.
+func newg (dir bool, l, c []int, es [][]uint, m uint) Graph {
+  cf, cm, cb := col.LightRed(), col.LightGreen(), col.FlashWhite()
   k := uint(len(l))
   if k != uint(len(es)) || k != uint(len(c)) { panic("len's different") }
   wd := N.Wd (k)
-  g := New (dir, vtx.New (bn.New(wd), wd, 1), edg.New(dir, uint32(nchan.Port0)))
+  g := New (dir, vtx.New (bn.New(wd), wd, 1), edg.New (dir, uint32(nchan.Port0)))
   v := make([]vtx.Vertex, k)
   for i := uint(0); i < k; i++ {
     b := bn.New(wd)
     b.SetVal(i)
     v[i] = vtx.New (b, wd, 1)
     v[i].Set (int(scr.Wd1()) * c[i], int(scr.Ht1()) * l[i])
-    v[i].Colours (cf, cb); v[i].ColoursA (ca, cb)
+    v[i].Colours (cf, cb, cm, cb)
     g.Ins (v[i])
   }
+  g.SetDiameter (m)
   for i := uint(0); i < k; i++ {
     for _, j := range es[i] {
       g.Ex2 (v[i], v[j])
@@ -44,19 +43,17 @@ func newg (dir bool, l, c []int, es [][]uint, m, id uint) Graph {
         e := edg.New (dir, uint32(nchan.Port (k, i, j, 0)))
         e.SetPos0 (v[i].Pos()); e.SetPos1 (v[j].Pos())
         e.Label(false)
-        e.Colours (cf, cb); e.ColoursA (ca, cb)
+        e.Colours (cf, cb, cm, cb)
         g.Edge (e)
       }
     }
   }
-  g.SetWrite (vtx.W, edg.W)
-  g.Ex (v[id])
-  return g.Star()
+  return g
 }
 
 // all following screen designs are for mode.HQVGA (10 x 30)
 
-func g3 (i uint) Graph {
+func g3() Graph {
 /*
 1                1
 2               / \
@@ -66,18 +63,18 @@ func g3 (i uint) Graph {
 6       /                 \
 7      2 ----------------- 0
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  01234567890123456789012345
 */
   l := []int { 7,  1, 7}
   c := []int {25, 15, 5}
   e := [][]uint {[]uint {1, 2},
                  []uint {2},
                  []uint {}}
-  return newg (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1)
 }
 
-func g3dir (i uint) Graph {
+func g3dir() Graph {
 /*
 1                1
 2               / \
@@ -87,18 +84,18 @@ func g3dir (i uint) Graph {
 6       *                 *
 7      2 ----------------> 0
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  01234567890123456789012345
 */
   l := []int { 7,  1, 7}
   c := []int {25, 15, 5}
   e := [][]uint {[]uint {},
                  []uint {0, 2},
                  []uint {0}}
-  return newg (true, l, c, e, 1, i)
+  return newg (true, l, c, e, 1)
 }
 
-func g4 (i uint) Graph {
+func g4() Graph {
 /*
 1        0 ------------- 1
 2        |             /
@@ -110,8 +107,8 @@ func g4 (i uint) Graph {
 8        | /
 9        2 ------------- 3
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  012345678901234567890123
 */
   l := []int {1,  1, 9,  9}
   c := []int {7, 23, 7, 23}
@@ -119,15 +116,15 @@ func g4 (i uint) Graph {
                  []uint {0, 2},
                  []uint {0, 1, 3},
                  []uint {2}}
-  return newg (false, l, c, e, 2, i)
+  return newg (false, l, c, e, 2)
 }
 
-func g4flat (i uint) Graph {
+func g4flat() Graph {
 /*
 4  0 ------ 1 ------ 2 ------ 3
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  01234567890123456789012345678
 */
   l := []int {4,  4,  4,  4}
   c := []int {1, 10, 19, 28}
@@ -135,10 +132,10 @@ func g4flat (i uint) Graph {
                  []uint { 2},
                  []uint { 3},
                  []uint { }}
-  return newg (false, l, c, e, 3, i)
+  return newg (false, l, c, e, 3)
 }
 
-func g4ring (i uint) Graph {
+func g4ring() Graph {
 /*
 1        0 ------------- 1
 2        |               |
@@ -150,8 +147,8 @@ func g4ring (i uint) Graph {
 8        |               | 
 9        3 ------------- 2
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  012345678901234567890123
 */
   l := []int {1,  1,  9, 9}
   c := []int {7, 23, 23, 7}
@@ -159,10 +156,10 @@ func g4ring (i uint) Graph {
                  []uint {2, 0},
                  []uint {3, 1},
                  []uint {0, 2}}
-  return newg (false, l, c, e, 2, i)
+  return newg (false, l, c, e, 2)
 }
 
-func g4ringdir (i uint) Graph {
+func g4ringdir() Graph {
 /*
 1        0 ------------> 1
 2        ^               |
@@ -174,8 +171,8 @@ func g4ringdir (i uint) Graph {
 8        |               v 
 9        3 <------------ 2
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  012345678901234567890123
 */
   l := []int {1,  1,  9, 9}
   c := []int {7, 23, 23, 7}
@@ -183,10 +180,10 @@ func g4ringdir (i uint) Graph {
                  []uint {2},
                  []uint {3},
                  []uint {0}}
-  return newg (true, l, c, e, 3, i)
+  return newg (true, l, c, e, 3)
 }
 
-func g4full (i uint) Graph {
+func g4full() Graph {
 /*
 1             /--------  2
 2           /         /  |
@@ -196,8 +193,8 @@ func g4full (i uint) Graph {
 6           \         \  |
 7             \--------  3
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  012345678901234567890123
 */
   l := []int {4,  4,  1,  7}
   c := []int {6, 15, 23, 23}
@@ -205,10 +202,10 @@ func g4full (i uint) Graph {
                  []uint {2, 3},
                  []uint {3},
                  []uint {}}
-  return newg (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1)
 }
 
-func g4star (i uint) Graph {
+func g4star() Graph {
 /*
 1                        1
 2                     /
@@ -218,8 +215,8 @@ func g4star (i uint) Graph {
 6                     \
 7                        3
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  012345678901234567890123
 */
   l := []int { 4,  1,  4,  7}
   c := []int {15, 23,  6, 23}
@@ -227,57 +224,57 @@ func g4star (i uint) Graph {
                  []uint {0},
                  []uint {0},
                  []uint {0}}
-  return newg (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1)
 }
 
-func g4ds (i uint) Graph {
+func g4ds() Graph {
 /*
-1        0 ------------> 1
-2        |             /
-3        |           /
-4        |         /
-5        |       /
-6        |     /
-7        |   /
-8        v *
-9        2 ------------> 3
+1   0 ------------> 1
+2   |             /
+3   |           /
+4   |         /
+5   |       /
+6   |     /
+7   |   /
+8   v *
+9   2 ------------> 3
 
-            1         2         3
-  0123456789012345678901234567890
+            1
+  0123456789012345678
 */
   l := []int {1,  1, 9,  9}
-  c := []int {7, 23, 7, 23}
+  c := []int {2, 18, 2, 18}
   e := [][]uint {[]uint {1, 2},
                  []uint {2},
                  []uint {3},
                  []uint {}}
-  return newg (true, l, c, e, 2, i)
+  return newg (true, l, c, e, 2)
 }
 
-func g5 (i uint) Graph {
+func g5() Graph {
 /*
-1    0 ---------- 1 ---------- 2
-2    |            |
-3    |            |
-4    |            |
-5    |            |
-6    |            |
-7    3 ---------- 4
+1  0 ---------- 1 ---------- 2
+2  |            |
+3  |            |
+4  |            |
+5  |            |
+6  |            |
+7  3 ---------- 4
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  0123456789012345678901234567
 */
   l := []int {1,  1, 1,  7,  7}
-  c := []int {3, 16, 3, 16, 29}
+  c := []int {1, 14, 1, 14, 27}
   e := [][]uint {[]uint {1, 3},
                  []uint {2, 4},
                  []uint {},
                  []uint {4},
                  []uint {}}
-  return newg (false, l, c, e, 3, i)
+  return newg (false, l, c, e, 3)
 }
 
-func g5ring (i uint) Graph {
+func g5ring() Graph {
 /*
 1            3
 2          /   \
@@ -290,8 +287,8 @@ func g5ring (i uint) Graph {
 9     \             /
 10     4 --------- 2
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  0123456789012345678901
 */
   l := []int { 1, 5, 10, 18,  5}
   c := []int {11, 1,  5, 17, 21}
@@ -300,10 +297,10 @@ func g5ring (i uint) Graph {
                  []uint {1, 4},
                  []uint {0, 1},
                  []uint {0, 2}}
-  return newg (false, l, c, e, 4, i)
+  return newg (false, l, c, e, 4)
 }
 
-func g5ringdir (i uint) Graph {
+func g5ringdir() Graph {
 /*
 1            3
 2          /   *
@@ -316,8 +313,8 @@ func g5ringdir (i uint) Graph {
 9     *             /
 10     4 --------> 2
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  0123456789012345678901
 */
   l := []int { 1, 5, 10, 18,  5}
   c := []int {11, 1,  5, 17, 21}
@@ -326,10 +323,10 @@ func g5ringdir (i uint) Graph {
                  []uint {1},
                  []uint {0},
                  []uint {2} }
-  return newg (true, l, c, e, 4, i)
+  return newg (true, l, c, e, 4)
 }
 
-func g5full (i uint) Graph {
+func g5full() Graph {
 /*
 1      /---- 0 ----\
 2     /      |\     \
@@ -342,8 +339,8 @@ func g5full (i uint) Graph {
 9  \   |/         \|   /
 10  \- 2 --------- 3 -/
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  0123456789012345678901
 */
   l := []int { 1, 5, 10, 18,  5}
   c := []int {11, 1,  5, 17, 21}
@@ -352,33 +349,10 @@ func g5full (i uint) Graph {
                  []uint {3, 4},
                  []uint {4},
                  []uint {}}
-  return newg (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1)
 }
 
-func g5ds (i uint) Graph {
-/*
-1    0 --------> 1
-2    |           |
-3    |           |
-4    |           |
-5    |           |
-6    v           v 
-7    2 --------> 3 --------> 4
-
-            1         2         3
-  0123456789012345678901234567890
-*/
-  l := []int {1,  1, 7,  7,  7}
-  c := []int {3, 15, 3, 15, 27}
-  e := [][]uint {[]uint {1, 2},
-                 []uint {3},
-                 []uint {3},
-                 []uint {4},
-                 []uint {} }
-  return newg (true, l, c, e, 3, i)
-}
-
-func g6 (i uint) Graph {
+func g6() Graph {
 /*
 1        /---- 1 ----\
 2      /               \
@@ -388,8 +362,8 @@ func g6 (i uint) Graph {
 6      \   /           /
 7        2 --------- 4 
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  01234567890123456789012345
 */
   l := []int {4,  1, 7,  4,  7,  4}
   c := []int {1, 13, 7, 13, 19, 25}
@@ -399,10 +373,10 @@ func g6 (i uint) Graph {
                  []uint {5},
                  []uint {5},
                  []uint {}}
-  return newg (false, l, c, e, 2, i)
+  return newg (false, l, c, e, 2)
 }
 
-func g6full (i uint) Graph {
+func g6full() Graph {
 /*
 2       ------ 1 ------
 3      /       |       \
@@ -414,8 +388,8 @@ func g6full (i uint) Graph {
 9      \   /       \   /
 10       2 --------- 4 
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  01234567890123456789012345
 */
   l := []int {6,  2, 10,  6, 10,  6}
   c := []int {1, 13,  7, 13, 19, 25}
@@ -425,33 +399,10 @@ func g6full (i uint) Graph {
                  []uint {4, 5},
                  []uint {5},
                  []uint {}}
-  return newg (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1)
 }
 
-func g6ds (i uint) Graph {
-/*
-1    0 --------> 1           2
-2    |           |          *
-3    |           |         / 
-4    |           |   _____/
-5    |           |  / 
-6    v           v /
-7    3 --------> 4 --------> 5
-
-            1         2         3
-  0123456789012345678901234567890
-*/
-  l := []int {1,  1,  1, 7,  7,  7}
-  c := []int {3, 15, 27, 3, 15, 27}
-  e := [][]uint {[]uint {1, 3},
-                 []uint {4},
-                 []uint {},
-                 []uint {4},
-                 []uint {5} }
-  return newg (true, l, c, e, 3, i)
-}
-
-func g8 (i uint) Graph {
+func g8() Graph {
 /*
 2        0 --------- 1 -------- 2
 3       /             \
@@ -476,10 +427,10 @@ func g8 (i uint) Graph {
                  []uint {7},
                  []uint {7},
                  []uint {}}
-  return newg (false, l, c, e, 4, i)
+  return newg (false, l, c, e, 4)
 }
 
-func g8a (i uint) Graph {
+func g8a() Graph {
 /*
 2        1 --------- 4 -------- 7
 3       /             \
@@ -504,10 +455,10 @@ func g8a (i uint) Graph {
                  []uint {2, 6},
                  []uint {3, 4, 5},
                  []uint {4}}
-  return newg (false, l, c, e, 4, i)
+  return newg (false, l, c, e, 4)
 }
 
-func g8dir (i uint) Graph {
+func g8dir() Graph {
 /*
 2        0 --------> 1 --------> 2
 3       *             *         /
@@ -520,10 +471,10 @@ func g8dir (i uint) Graph {
 10       6 --------> 7 
 
             1         2         3
-  0123456789012345678901234567890
+  01234567890123456789012345678901
 */
-  l := []int {2,  2,  2,  6,  6,  6, 10, 10}
-  c := []int {7, 19, 22,  1, 13, 25,  7, 19}
+  l := []int {2,  2,  2, 6,  6,  6, 10, 10}
+  c := []int {7, 19, 31, 1, 13, 25,  7, 19}
   e := [][]uint {[]uint {1},
                  []uint {2},
                  []uint {5},
@@ -532,10 +483,10 @@ func g8dir (i uint) Graph {
                  []uint {7},
                  []uint {7},
                  []uint {}}
-  return newg (true, l, c, e, 3, i)
+  return newg (true, l, c, e, 3)
 }
 
-func g8ring (i uint) Graph {
+func g8ring() Graph {
 /*
 1            1        3
 2
@@ -548,8 +499,8 @@ func g8ring (i uint) Graph {
 9
 10           0        7
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  012345678901234567890123456789
 */
   l := []int {10,  1,  8,  1,  8,  3,  3, 10}
   c := []int {11, 11,  2, 20, 29,  2, 29, 20}
@@ -561,10 +512,10 @@ func g8ring (i uint) Graph {
                  []uint {2},
                  []uint {3},
                  []uint {4} }
-  return newg (false, l, c, e, 4, i)
+  return newg (false, l, c, e, 4)
 }
 
-func g8ringdir (i uint) Graph {
+func g8ringdir() Graph {
 /*
 1            1        3
 2
@@ -577,8 +528,8 @@ func g8ringdir (i uint) Graph {
 9
 10           0        7
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  012345678901234567890123456789
 */
   l := []int {10,  1, 8,  1,  8, 3,  3, 10}
   c := []int {11, 11, 2, 20, 29, 2, 29, 20}
@@ -590,10 +541,10 @@ func g8ringdir (i uint) Graph {
                  []uint {2},
                  []uint {3},
                  []uint {4}}
-  return newg (true, l, c, e, 7, i)
+  return newg (true, l, c, e, 7)
 }
 
-func g8rana (i uint) Graph {
+func g8ringdirord() Graph {
 /*
 1                0
 2       7                 1
@@ -605,8 +556,8 @@ func g8rana (i uint) Graph {
 8       5                 3
 9                4
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  012345678901234567890123456789
 */
   l := []int { 1,  2,  5,  8,  9, 8, 5, 2}
   c := []int {15, 24, 29, 24, 15, 6, 1, 6}
@@ -618,10 +569,10 @@ func g8rana (i uint) Graph {
                  []uint {6},
                  []uint {7},
                  []uint {0}}
-  return newg (true, l, c, e, 7, i)
+  return newg (true, l, c, e, 7)
 }
 
-func g8full (i uint) Graph {
+func g8full() Graph {
   l := []int { 7,  1,  6,  1,  6,  2,  2,  7}
   c := []int {10, 10,  1, 19, 28,  1, 28, 19}
   e := make ([][]uint, 8)
@@ -631,26 +582,26 @@ func g8full (i uint) Graph {
       if k != j { e[j] = append (e[j], k) }
     }
   }
-  return newg (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1)
 }
 
-func g8ds (i uint) Graph {
+func g8ds() Graph {
 /*
-1   0 ---------> 1 <--------- 2
-2   | \________     ________/ ^
-3   |          \   /          |
-4   v           * *           |
-5   3 <--------- 4 ---------> 5
-6   |   ________/            *
-7   |  /           _________/
-8   v *           /
-9   6 ---------> 7
+1  0------>1<------2
+2  |\____     ____/^
+3  |     \   /     |
+4  v      * *      |
+5  3<------4------>5
+6   \     /       *
+7    \   /       /
+8     * /       /
+9      6------>7
 
-            1         2         3
-  0123456789012345678901234567890
+            1
+  012345678901234567
 */
-  l := []int {1,  1,  1, 5,  5,  5, 9,  9}
-  c := []int {2, 15, 28, 2, 15, 28, 2, 15}
+  l := []int {1, 1,  1, 5, 5,  5, 9,  9}
+  c := []int {1, 9, 17, 1, 9, 17, 5, 13}
   e := [][]uint {[]uint {1, 3, 4},
                  []uint {},
                  []uint {1, 4},
@@ -659,10 +610,10 @@ func g8ds (i uint) Graph {
                  []uint {2},
                  []uint {7},
                  []uint {5}}
-  return newg (true, l, c, e, 7, i)
+  return newg (true, l, c, e, 7)
 }
 
-func g9a (i uint) Graph {
+func g9a() Graph {
 /*
 2      2 ----> 4 ----> 6 ----> 8
 3     * \________       \            
@@ -670,11 +621,11 @@ func g9a (i uint) Graph {
 5   /             *       *
 6  0               5       7
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  012345678901234567890123456789
 */
-  l := []int {4, 1,  1,  4,  1,  4,  1 }
-  c := []int {1, 5, 13, 17, 21, 25, 29 }
+  l := []int {4, 1,  1,  4,  1,  4,  1}
+  c := []int {1, 5, 13, 17, 21, 25, 29}
   e := [][]uint {[]uint {2},
                  []uint {4, 5},
                  []uint {6},
@@ -682,10 +633,10 @@ func g9a (i uint) Graph {
                  []uint {7, 8},
                  []uint {},
                  []uint {}}
-  return newg (true, l, c, e, 4, i)
+  return newg (true, l, c, e, 4)
 }
 
-func g9b (i uint) Graph {
+func g9b() Graph {
 /*
 6  0       3               7
 7   \     *               *
@@ -693,8 +644,8 @@ func g9b (i uint) Graph {
 9     * /               /
 10     1 --------------/
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  01234567890123456789012345
 */
   l := []int {4, 7, 4,  4}
   c := []int {1, 5, 9, 25}
@@ -702,10 +653,10 @@ func g9b (i uint) Graph {
                  []uint {3, 7},
                  []uint {},
                  []uint {}}
-  return newg (true, l, c, e, 2, i)
+  return newg (true, l, c, e, 2)
 }
 
-func g9dir (i uint) Graph {
+func g9dir() Graph {
 /*
 2      2 ----> 4 ----> 6 ----> 8
 3     * \________       \            
@@ -717,8 +668,8 @@ func g9dir (i uint) Graph {
 9     * /               /
 10     1 --------------/
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  012345678901234567890123456789
 */
 //  l := []int {6, 10,  0,  6,  0,  6,  0,  6,  0}
   l := []int {4,  7,  1,  4,  1,  4,  1,  4,  1}
@@ -732,10 +683,37 @@ func g9dir (i uint) Graph {
                  []uint {7, 8},
                  []uint {},
                  []uint {}}
-  return newg (true, l, c, e, 4, i)
+  return newg (true, l, c, e, 4)
 }
 
-func g10 (i uint) Graph {
+func g9t() Graph {
+/*
+1        0
+2       /|\
+3      / | \
+4     1  2  3  
+5    /|  |  |\
+6   / |  |  | \
+7  4  5  6  7  8
+
+            1
+  01234567890123
+*/
+  l := []int { 1, 4, 4,  4, 7, 7, 7,  7,  7}
+  c := []int { 7, 4, 7, 10, 1, 4, 7, 10, 13}
+  e := [][]uint {[]uint {1, 2, 3},
+                 []uint {4, 5},
+                 []uint {6},
+                 []uint {7, 8},
+                 []uint {},
+                 []uint {},
+                 []uint {},
+                 []uint {},
+                 []uint {}}
+  return newg (true, l, c, e, 4)
+}
+
+func g10() Graph {
 /*
 1       1 ------ 4 ------ 7
 2     /            \
@@ -745,8 +723,8 @@ func g10 (i uint) Graph {
 6     \   /        /        /
 7       2 ------ 5 ------ 8
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  01234567890123456789012345678
 */
   l := []int {4, 1, 7,  4,  1,  7,  4,  1,  7,  4}
   c := []int {1, 6, 6, 10, 15, 15, 19, 24, 24, 28}
@@ -760,10 +738,10 @@ func g10 (i uint) Graph {
                  []uint {},
                  []uint {9},
                  []uint {}}
-  return newg (false, l, c, e, 4, i)
+  return newg (false, l, c, e, 4)
 }
 
-func g12 (i uint) Graph {
+func g12() Graph {
 /*
 2        0 -------- 1------ 2
 3      / | \       / \       \
@@ -778,7 +756,6 @@ func g12 (i uint) Graph {
             1         2         3
   0123456789012345678901234567890
 */
-//            0   1   2   3   4   5   6   7   8   9  10  11
   l := []int {3,  2,  3,  5,  6,  7,  5,  6,  6,  9, 10,  9}
   c := []int {7, 18, 26,  2,  7, 12, 18, 24, 30,  7, 18, 27}
   e := [][]uint {[]uint {1, 3, 4, 5},
@@ -793,10 +770,10 @@ func g12 (i uint) Graph {
                  []uint {10},
                  []uint {11},
                  []uint {}}
-  return newg (false, l, c, e, 4, i)
+  return newg (false, l, c, e, 4)
 }
 
-func g12ringdir (i uint) Graph {
+func g12ringdir() Graph {
 /*
 1      /-- 4 --- 9 --- 6 --\
 2    10                     11
@@ -808,8 +785,8 @@ func g12ringdir (i uint) Graph {
 8     3                     7
 9      \-- 8 --- 5 --- 1 --/
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  012345678901234567890123456789
 */
   l := []int {5,  9,  5, 8, 1,  9,  1,  8, 9,  1, 2,  2}
   c := []int {1, 21, 29, 4, 9, 15, 21, 26, 9, 15, 4, 26}
@@ -825,10 +802,10 @@ func g12ringdir (i uint) Graph {
                  []uint {8},
                  []uint {3},
                  []uint {0}}
-  return newg (true, l, c, e, 6, i)
+  return newg (true, l, c, e, 6)
 }
 
-func g12full (i uint) Graph {
+func g12full () Graph {
   l := []int { 4,  7,  4, 4,  4,  7, 4, 1,  1, 7,  4,  1}
   c := []int {22, 17, 28, 2, 12, 22, 7, 7, 22, 7, 17, 17}
   e := make ([][]uint, 12)
@@ -838,10 +815,10 @@ func g12full (i uint) Graph {
       if k != j { e[j] = append (e[j], k) }
     }
   }
-  return newg (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1)
 }
 
-func g16 (i uint) Graph {
+func g16() Graph {
 /*
 1     5-----3--------9-----15
 2    / \   / \       |   / | \
@@ -854,8 +831,8 @@ func g16 (i uint) Graph {
             1         2         3
   0123456789012345678901234567890
 */
-  l := []int { 4,  7,  4,  1,  4,  1,  7,  7,  7,  1,  7,  4,  4,  4,  7,  1}
-  c := []int {13, 30,  7, 11, 23,  4, 19,  1, 13, 18,  7, 30, 19,  1, 25, 25}
+  l := []int { 4,  7, 4,  1,  4, 1,  7, 7,  7,  1, 7,  4,  4, 4,  7,  1}
+  c := []int {13, 30, 7, 11, 23, 4, 19, 1, 13, 18, 7, 30, 19, 1, 25, 25}
   e := [][]uint {[]uint {3, 6, 8, 12},
                  []uint {11, 14},
                  []uint {3, 5, 7, 8, 10, 13},
@@ -872,10 +849,10 @@ func g16 (i uint) Graph {
                  []uint {},
                  []uint {},
                  []uint {}}
-  return newg (false, l, c, e, 5, i)
+  return newg (false, l, c, e, 5)
 }
 
-func g16dir (i uint) Graph {
+func g16dir() Graph {
 /*
 1     5*----3----*9----*15
 2    / \   / *     \   / | \
@@ -885,8 +862,8 @@ func g16dir (i uint) Graph {
 6     *  * \ *   * /     |    *
 7   7*--10*-8----*6----*14---*1
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  01234567890123456789012345678
 */
   l := []int { 4,  7, 4,  1,  4, 1,  7, 7,  7,  1, 7,  4,  4, 4,  7,  1}
   c := []int {13, 28, 8, 12, 23, 4, 16, 1, 11, 20, 6, 28, 18, 2, 22, 28}
@@ -906,10 +883,10 @@ func g16dir (i uint) Graph {
                  []uint {},
                  []uint {1, 4},
                  []uint {4, 11, 12}}
-  return newg (true, l, c, e, 5, i)
+  return newg (true, l, c, e, 5)
 }
 
-func g16ring (i uint) Graph {
+func g16ring() Graph {
 /*
 1       6   1   9  13   4
 2   11                     10
@@ -919,8 +896,8 @@ func g16ring (i uint) Graph {
 6    5                      7
 7      12   8   2  14   3
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  01234567890123456789012345678
 */
   l := []int { 4,  1,  7,  7,  1, 6, 1,  6,  7,  1,  2, 2, 7,  1,  7, 4}
   c := []int {28, 10, 14, 22, 22, 3, 6, 26, 10, 14, 26, 3, 6, 18, 18, 1}
@@ -940,10 +917,10 @@ func g16ring (i uint) Graph {
                  []uint {9},
                  []uint {3},
                  []uint {5}}
-  return newg (false, l, c, e, 8, i)
+  return newg (false, l, c, e, 8)
 }
 
-func g16ringdir (i uint) Graph {
+func g16ringdir() Graph {
 /*
 1           9   4  12
 2       3               5
@@ -955,8 +932,8 @@ func g16ringdir (i uint) Graph {
 8       1               7
 9           8   2  15
 
-            1         2         3
-  0123456789012345678901234567890
+            1         2
+  01234567890123456789012345678
 */
   l := []int {5, 8,  9, 2,  1,  2,  5,  8,  9,  1, 3, 7,  1,  3,  7,  9}
   c := []int {1, 6, 14, 6, 14, 22, 28, 22, 10, 10, 3, 3, 18, 26, 26, 18}
@@ -976,38 +953,41 @@ func g16ringdir (i uint) Graph {
                  []uint {1},
                  []uint {11},
                  []uint {0}}
-  return newg (true, l, c, e, 6, i)
+  return newg (true, l, c, e, 6)
 }
 
-func g16full (i uint) Graph {
+func g16full() Graph {
   l := []int { 4,  1,  7,  7,  1, 6, 1,  6,  7,  1,  2, 2, 7,  1,  7, 4}
   c := []int {28, 10, 14, 22, 22, 3, 6, 26, 10, 14, 26, 3, 6, 18, 18, 1}
   m := uint(len(l))
   e := make ([][]uint, m)
-  for j:= uint(0); j < m; j++ {
+  for j := uint(0); j < m; j++ {
     e[j] = make ([]uint, 0)
-    for k:= uint(0); k < m; k++ { if k != i { e[j] = append (e[j], k)}}
+    for k := uint(0); k < m; k++ {
+      if k != j { e[j] = append (e[j], k) }
+    }
   }
-  return newg (false, l, c, e, 1, i)
+  return newg (false, l, c, e, 1)
 }
 
-func g16t (i uint) Graph {
+func g16t() Graph {
 /*
-1              0
-2            / | \
-3          1   2   3  
-4         /|   |   |\
-5       /  |   |   |  \
-6      4   5   6   7   8
-7     /|      /   /|\   \
-8   /  |    /   /  |  \   \
-9  9  10  11  12  13  14  15 
+ 1           0
+ 2          /|\
+ 3         / | \
+ 4        1  2  3  
+ 5       /|  |  |\
+ 6      / |  |  | \
+ 7     4  5  6  7  8
+ 8    /|    /  /|\  \
+ 9   / |   /  / | \  \
+10  9 10 11 12 13 14 15 
 
-            1         2
-  01234567890123456789012345
+             1
+   01234567890123456789
 */
-  l := []int { 1, 3,  3,  3, 6, 6,  6,  6,  6, 9, 9, 9,  9,  9,  9,  9}
-  c := []int {13, 9, 13, 17, 5, 9, 13, 17, 21, 1, 5, 9, 13, 17, 21, 25}
+  l := []int { 1, 4,  4,  4, 7, 7,  7,  7,  7, 10, 10, 10, 10, 10, 10, 10}
+  c := []int {10, 7, 10, 13, 4, 7, 10, 13, 16,  1,  4,  7, 10, 13, 16, 19}
   e := [][]uint {[]uint {1, 2, 3},
                  []uint {4, 5},
                  []uint {6},
@@ -1016,6 +996,13 @@ func g16t (i uint) Graph {
                  []uint {},
                  []uint {11},
                  []uint {12, 13, 14},
-                 []uint {15}}
-  return newg (true, l, c, e, 4, i)
+                 []uint {15},
+                 []uint {},
+                 []uint {},
+                 []uint {},
+                 []uint {},
+                 []uint {},
+                 []uint {},
+                 []uint {}}
+  return newg (true, l, c, e, 4)
 }

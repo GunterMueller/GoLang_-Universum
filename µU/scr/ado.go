@@ -59,11 +59,9 @@ func Cls() { s().Cls() }
 func Buf (on bool) { s().Buf(on) }
 func Buffered() bool { return s().Buffered() }
 func Save (l, c, w, h uint) { s().Save(l,c,w,h) }
-// func SaveGr (x, y, x1, y1 int) { s().SaveGr(x,y,x1,y1) }
 func SaveGr (x, y int, w, h uint) { s().SaveGr(x,y,w,h) }
 func Save1() { s().Save1() }
 func Restore (l, c, w, h uint) { s().Restore(l,c,w,h) }
-// func RestoreGr (x, y, x1, y1 int) { s().RestoreGr(x,y,x1,y1) }
 func RestoreGr (x, y int, w, h uint) { s().RestoreGr(x,y,w,h) }
 func Restore1() { s().Restore1() }
 

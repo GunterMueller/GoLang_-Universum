@@ -1,6 +1,6 @@
 package mstk
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 241019 - license see µU.go
 
 import
   "µU/stk"
@@ -15,3 +15,6 @@ type
 // Returns a new stack for elements of the type of a
 // to be used by concurrent processes.
 func New (a any) MStack { return new_(a) }
+
+// Implementation with a far monitor
+func NewFarMonitor (a any, h string, p uint16, s bool) MStack { return newFM(a,h,p,s) }

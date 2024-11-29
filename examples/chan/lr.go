@@ -1,18 +1,19 @@
 package main
 
-// (c) Christian Maurer   v. 241007 - license see µU.go
+// (c) Christian Maurer   v. 241020 - license see µU.go
 
 import (
+  "µU/ego"
   "µU/time"
   "µU/rand"
   "µU/kbd"
   "µU/col"
   "µU/scr"
+  "µU/errh"
   . "µU/lr"
 )
 const (
-  ht = 60
-  wd = 20
+  ht, wd = 60, 20
 	li = "<<<<<<<<<<<<<<<<<<<<"
   re = ">>>>>>>>>>>>>>>>>>>>"
 )
@@ -30,8 +31,7 @@ func write (s string, f, b col.Colour, l, c uint) {
 }
 
 func drive() {
-  const t = 2
-  time.Msleep (1000 * (t + rand.Natural(t)))
+  const t = 2; time.Msleep (1000 * (t + rand.Natural(t)))
 }
 
 func left (n uint) {
@@ -53,7 +53,9 @@ func right (n uint) {
 }
 
 func main() {
-  scr.NewWH (0, 0, wd * 8, ht * 16); defer scr.Fin()
+  me := ego.Me()
+  w := uint(wd * 8)
+  scr.NewWH ((w + 8) * me, 0, w, ht * 16); defer scr.Fin()
 // choose one of the following implementations (see µU/lr/def.go):
 /*/
   lr = NewMutex()
@@ -69,26 +71,35 @@ func main() {
   lr = NewConditionedMonitor1()
   lr = NewConditionedMonitor2()
   lr = NewConditionedMonitorBounded (2, 3)
+  lr = NewFarMonitor ("terra", 5000, me == 0) // replace "terra" by the name of your computer
   lr = NewChannel()
   lr = NewChannelBounded (2, 3)
   lr = NewGuardedSelect()
-  lr = NewFarMonitor ("s", 5000, env.N(1) == 0) // s = name of the server
 /*/
-  lr = NewMutex()
-  ch <- 0
-  for n := uint(0);; {
-    switch c, _ := kbd.Command(); c {
-    case kbd.Esc:
-      return
-    case kbd.Left:
-      go left (n)
-    case kbd.Right:
-      go right (n)
+  lr = NewBaton()
+  if me == 0 {
+    errh.Hint ("I am the server")
+    for {
+      if c, _ := kbd.Command(); c == kbd.Esc {
+        return
+      }
     }
-    if n + 1 < ht {
-      n++
-    } else {
-      n = 0
+  } else {
+    ch <- 0
+    for n := uint(0);; {
+      switch c, _ := kbd.Command(); c {
+      case kbd.Esc:
+        return
+      case kbd.Left:
+        go left (n)
+      case kbd.Right:
+        go right (n)
+      }
+      if n + 1 < ht {
+        n++
+      } else {
+        n = 0
+      }
     }
   }
 }

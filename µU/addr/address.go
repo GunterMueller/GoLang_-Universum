@@ -1,13 +1,13 @@
 package addr
 
-// (c) Christian Maurer   v. 240409 - license see µU.go
+// (c) Christian Maurer   v. 241025 - license see µU.go
 
 import (
+  "µU/env"
   . "µU/obj"
   "µU/kbd"
   "µU/col"
   "µU/str"
-// "µU/errh"
   "µU/box"
   "µU/font"
   "µU/pbox"
@@ -25,24 +25,25 @@ const (
 type
   address struct {
           street text.Text
-                 bn.Natural "postcode"
+                 bn.Natural "zip" // "PLZ"
             city text.Text
                  cntry.Country
                  }
 var (
   bx = box.New()
   pbx = pbox.New()
-  cF, cB = col.LightCyan(), col.Black()
+  cF, cB = col.FlashWhite(), col.DarkBlue()
 )
 
 func new_() Address {
   x := new(address)
+  f, b := col.FlashWhite(), col.DarkGreen()
   x.street = text.New (lenStreet)
-x.street.Colours (col.FlashWhite(), col.Green()) // XXX
+  x.street.Colours (f, b)
   x.city =  text.New (lenCity)
-x.city.Colours (col.FlashWhite(), col.Green()) // XXX
+  x.city.Colours (f, b)
   x.Natural = bn.New (5)
-x.Natural.Colours (col.FlashWhite(), col.Green()) // XXX
+  x.Natural.Colours (f, b)
   x.Country = cntry.New()
   x.Country.SetFormat (cntry.Long)
   x.Colours (cF, cB)
@@ -152,40 +153,46 @@ func (x *address) Cols() (col.Colour, col.Colour) {
 }
 
 const (
-//  cs = 9; cp = 44; cc = 56; cl = cc
-  cs = 8; cp = 43; cc = 56; cl = cc // XXX
+  cs = 10; cz = 45; cc = 57; cl = cc
 )
 
 func writeMask (l, c uint) {
-/*           1         2         3         4         5         6         7
+/*        1         2         3         4         5         6         7
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
-Str./Nr: ____________________________  PLZ: _____  Ort: ______________________
-                                                  Land: ________________
-street: ____________________________ zip: _____ city: ______________________
+  street: ____________________________  zip: _____ city: ______________________
+                                                country: ________________
+ Str./Nr: ____________________________  PLZ: _____  Ort: ______________________
+                                                   Land: ________________
 */
-/*/
-  bx.Wd (8)
-  bx.Write ("Str./Nr:", l, c)
-  bx.Wd (4)
-  bx.Write ("PLZ:",     l, c + cp - 5)
-  bx.Write ("Ort:",     l, c + cc - 5)
-  bx.Wd (5)
-  bx.Write ("Land:",    l + 1, c + cc - 6)
-/*/ // XXX
-  bx.Wd (7)
-  bx.Write ("street:", l, c)
-  bx.Wd (4)
-  bx.Write ("zip:",     l, c + cp - 5)
-  bx.Wd (5)
-  bx.Write ("city:",     l, c + cc - 6)
+  if env.E() {
+    bx.Wd (7)
+    bx.Write ("street:",  l, c)
+    bx.Wd (4)
+    bx.Write ("zip:",     l, c + cz - 5)
+    bx.Wd (5)
+    bx.Write ("city:",    l, c + cc - 6)
+    bx.Wd (8)
+    bx.Write ("country:", l + 1, c + cc - 9)
+  } else {
+    bx.Wd (8)
+    bx.Write ("Str./Nr:", l, c + cs - 9)
+    bx.Wd (4)
+    bx.Write ("PLZ:",     l, c + cz - 5)
+    bx.Write ("Ort:",     l, c + cc - 5)
+    bx.Wd (5)
+    bx.Write ("Land:",    l + 1, c + cc - 6)
+  }
 }
 
 func (x *address) Write (l, c uint) {
   writeMask (l, c)
   x.street.Write (l, c + cs)
-  x.Natural.Write (l, c + cp)
+  x.Natural.Write (l, c + cz)
   x.city.Write (l, c + cc)
-//  x.Country.Write (l + 1, c + cl) // XXX
+  co := cntry.New()
+  co.Colours (col.FlashWhite(), col.DarkGreen())
+  co.Write (l + 1, c + cl)
+  x.Country.Write (l + 1, c + cl)
 }
 
 func (x *address) Edit (l, c uint) {
@@ -200,13 +207,13 @@ func (x *address) Edit (l, c uint) {
     case 0:
       x.street.Edit (l, c + cs)
     case 1:
-      x.Natural.Edit (l, c + cp)
+      x.Natural.Edit (l, c + cz)
     case 2:
       x.city.Edit (l, c + cc)
-//    case 3: // XXX
-//      x.Country.Edit (l + 1, c + cl)
+    case 3:
+      x.Country.Edit (l + 1, c + cl)
     }
-    switch C, d:= kbd.LastCommand(); C {
+    switch cmd, d := kbd.LastCommand(); cmd {
     case kbd.Esc:
       break loop
     case kbd.Enter:
@@ -233,7 +240,7 @@ func (x *address) SetFont (f font.Font) {
 func (x *address) Print (l, c uint) {
 // printMask()
   x.street.Print (l, c + cs)
-  x.Natural.Print (l, c + cp)
+  x.Natural.Print (l, c + cz)
   x.city.Print (l, c + cc)
   x.Country.Print (l + 1, c + cl)
 }

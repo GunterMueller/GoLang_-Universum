@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 240413 - license see µU.go
+// (c) Christian Maurer   v. 240416 - license see µU.go
 
 import (
   "µU/ker"
@@ -159,15 +159,23 @@ func (x *graph) Euler() bool {
     }
   }
   if x.demo [Euler] {
-    x.writeV (x.colocal.any, true)
+//    x.writeV (x.colocal.any, true)
+//  XXX
+    x.writeV (x.colocal.any)
     wait()
     for i := uint(0); i < uint(len (x.eulerPath)); i++ {
       nb = x.eulerPath[i]
-      x.writeE (nb.edgePtr.any, true)
+//      x.writeE (nb.edgePtr.any, true)
+//    XXX
+      x.writeE (nb.edgePtr.any )
       if nb.edgePtr.nbPtr0 == nb {
-        x.writeV (nb.edgePtr.nbPtr1.from.any, true)
+//        x.writeV (nb.edgePtr.nbPtr1.from.any, true)
+//      XXX
+        x.writeV (nb.edgePtr.nbPtr1.from.any )
       } else {
-        x.writeV (nb.edgePtr.nbPtr0.from.any, true)
+//        x.writeV (nb.edgePtr.nbPtr0.from.any, true)
+//      XXX
+        x.writeV (nb.edgePtr.nbPtr0.from.any)
       }
       if i + 1 < uint(len (x.eulerPath)) {
         wait()

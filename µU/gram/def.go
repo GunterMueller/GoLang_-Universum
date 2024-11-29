@@ -1,6 +1,6 @@
 package gram
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 241016 - license see µU.go
 
 import (
   . "µU/obj"
@@ -15,11 +15,9 @@ type
 // The ppm-image with name n is the background.
   Background (n string)
 
-// f, b are the colour for normal vertices/edges.
-  Colours (f, b col.Colour)
-
-// f, b are the colour for active vertices/edges.
-  ColoursA (f, b col.Colour)
+// f, b are the colour for normal vertices/edges,
+// fm, bm are the colour for marked vertices/edges.
+  Colours (f, b, fm, bm col.Colour)
 
 // x is changed interactively by the user.
   Edit()

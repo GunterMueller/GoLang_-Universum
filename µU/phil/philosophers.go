@@ -41,8 +41,12 @@ var (
                          "Pythagoras", "Diogenes", "Thales", "Epikur", "Anaxagoras",
                          "Protagoras", "Demokrit", "Theophrast", "Nemo" }
   image [max+1]string
-  text = [nStates]string { "    satt    ", "  hungrig   ", "sehr hungrig",
-                           "sehr hungrig", "sehr hungrig", "  speisend  " }
+  text = [nStates]string {"    satt    ", // satisfied
+                          "  hungrig   ", // hungry
+                          "sehr hungrig", // starving
+                          "sehr hungrig", // hasRightFork, starving
+                          "sehr hungrig", // hasLeftFork, starving
+                          "  speisend  "} // dining
   x0, y0 int
   x, y, x1, y1, xt, yt [max]int
   mutex, writeMutex sync.Mutex

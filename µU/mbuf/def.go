@@ -1,6 +1,6 @@
 package mbuf
 
-// (c) Christian Maurer   v. 240930 - license see µU.go
+// (c) Christian Maurer   v. 241019 - license see µU.go
 
 // Synchronized buffers.
 // The functions Ins and Get cannot be interrupted
@@ -22,5 +22,5 @@ type
 // to be used by concurrent processes.
 func New (a any) MBuffer { return new_(a) }
 
-// TODO Spec
+// Implementation with a far monitor.
 func NewFarMonitor (a any, h string, p uint16, s bool) MBuffer { return newfm(a,h,p,s) }

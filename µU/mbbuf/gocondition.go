@@ -37,10 +37,10 @@ func (x *condition) Ins (a any) {
 
 func (x *condition) Get() any {
   x.Mutex.Lock()
+  defer x.Mutex.Unlock()
   for x.BoundedBuffer.Num() == 0 {
     x.notEmpty.Wait()
   }
-  defer x.Mutex.Unlock()
   x.notFull.Signal()
   return x.BoundedBuffer.Get()
 }

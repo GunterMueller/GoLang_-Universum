@@ -3,7 +3,6 @@ package fmon
 // (c) Christian Maurer   v. 240108 - license see µU.go
 
 import (
-//  "reflect"
   . "µU/ker"
   "µU/time"
   . "µU/obj"
@@ -34,8 +33,6 @@ func new1 (a any, n uint, fs FuncSpectrum, ps PredSpectrum,
   for i := uint(0); i < x.uint; i++ {
     x.ch[i] = nchan.NewN (x.input, h, p + uint16(i), s)
   }
-//print ("fmon.new1: type of a is ", reflect.TypeOf(a).String(), "  n == ", n, "  port == ", p)
-//if s { println (" as server") } else { println (" as client") }
   return x.common (fs, ps, stmt)
 }
 

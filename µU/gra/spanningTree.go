@@ -1,6 +1,6 @@
 package gra
 
-// (c) Christian Maurer   v. 231225 - license see µU.go
+// (c) Christian Maurer   v. 241016 - license see µU.go
 
 import (
   "sort"
@@ -36,9 +36,13 @@ func (x *graph) MST() {
     es = es[1:]
     v, v1 := e.nbPtr0.from, e.nbPtr1.from
     if x.demo [SpanTree] {
-      x.writeE (e.any, true)
-      x.writeV (v.any, true)
-      x.writeV (v1.any, true)
+//      x.writeE (e.any, true)
+//    XXX
+      x.writeE (e.any)
+//      x.writeV (v.any, true)
+      x.writeV (v.any)
+//      x.writeV (v1.any, true)
+      x.writeV (v1.any)
       wait()
     }
     if v.repr != v1.repr {
@@ -58,9 +62,13 @@ func (x *graph) MST() {
       v1.repr = v
     } else {
       if x.demo [SpanTree] {
-        x.writeE (e.any, false)
-        x.writeV (v.any, false)
-        x.writeV (v1.any, false)
+//        x.writeE (e.any, false)
+//      XXX
+        x.writeE (e.any)
+//        x.writeV (v.any, false)
+        x.writeV (v.any)
+//        x.writeV (v1.any, false)
+        x.writeV (v1.any )
         wait()
       }
     }

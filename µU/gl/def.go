@@ -1,8 +1,6 @@
 package gl
 
-// (c) Christian Maurer   v. 230322 - license see µU.go
-//
-// >>> At the moment, nothing has been said about the orientation of the figures. TODO
+// (c) Christian Maurer   v. 241127 - license see µU.go
 
 // #include <GL/gl.h>
 import
@@ -11,6 +9,8 @@ import (
   "µU/obj"
   "µU/col"
 )
+const
+  MaxL = 8 // maximal number of lights
 type (
   F = C.GLfloat
   D = C.GLdouble

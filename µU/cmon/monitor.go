@@ -1,12 +1,11 @@
 package cmon
 
-// (c) Christian Maurer   v. 171019 - license see µU.go
+// (c) Christian Maurer   v. 241017 - license see µU.go
 
 import (
   "sync"
   . "µU/obj"
   "µU/perm"
-  "µU/errh"
 )
 type
   monitor struct {
@@ -38,10 +37,9 @@ func new_(n uint, f NFuncSpectrum, c CondSpectrum) Monitor {
 
 func (x *monitor) chk (s string, i uint) {
   if i >= x.uint {
-    errh.Error2 ("i", i, "x.uint", x.uint)
     return
-    WrongUintParameterPanic (s, x, i)
   }
+  WrongUintParameterPanic (s, x, i)
 }
 
 func (x *monitor) wait (i uint) {
