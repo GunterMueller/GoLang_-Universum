@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 240301 - license see µU.go
+// (c) Christian Maurer   v. 241205 - license see µU.go
 
 import (
   . "µU/obj"
@@ -20,27 +20,27 @@ type
 const
   NWeekdays = uint(nWeekdays)
 const ( // Format
-  Dd = iota  // e.g. "07"
-  Dd_mm_     // e.g. "07.09."
-  Dd_mm_yy   // e.g. "07.09.22" // default Format
-  Dd_mm_yyyy // e.g. "07.09.2022"
-  Yymmdd     // e.g. "220931"
-  Yyyymmdd   // e.g. "20220931"
-  Dd_M       // e.g. "07. September"
-  D_M        // e.g. "7. September"
-  Dd_M_yyyy  // e.g. "07. September 2022"
-  D_M_yyyy   // e.g. "7. September 2022"
-  Yy         // e.g. "22"
-  Yyyy       // e.g. "2022"
-  Wd         // e.g. "Mi"
-  WD         // e.g. "Mittwoch"
-  Mmm        // e.g. "Sep"
-  M          // e.g. "September"
-  Myyyy      // e.g. "September 2022"
-  Wn         // e.g. "36" (.Woche)
-  WN         // e.g. "36. Woche"
-  WNyyyy     // e.g. "36. Woche 2022"
-  Qu         // e.g. "III/22"
+  Dd = iota  // e.g. "05"
+  Dd_mm_     // e.g. "05.12."
+  Dd_mm_yy   // e.g. "05.12.24" // default Format
+  Dd_mm_yyyy // e.g. "05.12.2024"
+  Yymmdd     // e.g. "241205"
+  Yyyymmdd   // e.g. "20241205"
+  Dd_M       // e.g. "05. Dezember"
+  Dd_M_yyyy  // e.g. "05. Dezember 2024"
+  D_M        // e.g. "5. Dezember"
+  D_M_yyyy   // e.g. "5. Dezember 2024"
+  Yy         // e.g. "24"
+  Yyyy       // e.g. "2024"
+  Wd         // e.g. "Do"
+  WD         // e.g. "Donnerstag"
+  Mmm        // e.g. "Dez"
+  M          // e.g. "Dezember"
+  Myyyy      // e.g. "Dezember 2024"
+  Wn         // e.g. "49" (.Woche)
+  WN         // e.g. "49. Woche"
+  WNyyyy     // e.g. "49. Woche 2024"
+  Qu         // e.g. "IV/24"
   NFormats
 )
 // Every day has - depending on being a holiday or not

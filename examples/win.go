@@ -4,7 +4,7 @@ package main
 // #include <X11/Xlib.h>
 // #include <X11/Xutil.h>
 // int typ (XEvent *e) { return (*e).type; }
-// void wait (Display *d, XEvent *e) { while (XCheckTypedEvent (d, Expose, e)) ; }
+// void wait (Display *d, XEvent *e) { while (XCheckTypedEvent (d, Expose, e)); }
 import "C"
 
 func main() {
@@ -16,14 +16,13 @@ func main() {
 	C.XSelectInput (d, w, C.ExposureMask + C.KeyPressMask + C.StructureNotifyMask)
 	C.XMapWindow (d, w)
 	var e C.XEvent
-  t := C.CString ("a window")
 	loop:
   for {
 		C.XNextEvent (d, &e)
-		switch C.typ (&e) {
+    switch C.typ (&e) {
 		case C.Expose:
 			C.wait (d, &e)
-			C.XDrawString (d, C.Drawable (w), c, 55, 50, t, 8)
+			C.XDrawString (d, C.Drawable (w), c, 55, 50, C.CString ("a window"), 8)
 		case C.KeyPress:
 			break loop
 		}
