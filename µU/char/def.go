@@ -1,8 +1,14 @@
 package char
 
-// (c) Christian Maurer   v. 240418 - license see µU.go
+// (c) Christian Maurer   v. 241227 - license see µU.go
 
 const (
+  Linefeed         = byte(0x0a) //       10
+  CarriageReturn   = byte(0x0d) //       13
+  Space            = byte(0x20) // ' '   32
+  Plus             = byte(0x2b) // '+'   43
+  Minus            = byte(0x2d) // '-'   45
+  Dot              = byte(0x2e) // '·'   46
   Pipe             = byte(0x7c) // '|'  124
   Ä                = byte(0xc4) // 'Ä'  196
   Ö                = byte(0xd6) // 'Ö'  214
@@ -24,7 +30,7 @@ const (
   ToThe3           = byte(0xb3) // '³'  179
   Mu               = byte(0xb5) // 'µ'  181
   Pilcrow          = byte(0xb6) // '¶'  182
-  Dot              = byte(0xb7) // '·'  183
+  Cdot             = byte(0xb7) // '·'  183
   Times            = byte(0xd7) // '×'  215
   EmptySet         = byte(0xd8) // 'Ø'  216
   Division         = byte(0xf7) // '÷'  247
