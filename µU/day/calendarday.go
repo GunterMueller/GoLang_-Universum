@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 241205 - license see µU.go
+// (c) Christian Maurer   v. 240401 - license see µU.go
 
 import (
   . "µU/ker"
@@ -63,10 +63,10 @@ var (
     Dd_mm_yyyy: 2 + 1 + 2 + 1 + 4,
     Yymmdd:     2 + 2 + 2,
     Yyyymmdd:   4 + 2 + 2,
-    Dd_M:       2 + 1 + wdMonth,
+    Dd_M:       3 + wdMonth,
+    D_M:        3 + wdMonth,
     Dd_M_yyyy:  2 + 1 + 1 + wdMonth + 1 + 4,
-    D_M:        1 + 1 + wdMonth,
-    D_M_yyyy:   1 + 1 + 1 + wdMonth + 1 + 4,
+    D_M_yyyy:   2 + 1 + 1 + wdMonth + 1 + 4,
     Yy:         2,
     Yyyy:       4,
     Wd:         2,
@@ -969,13 +969,6 @@ func (x *calendarday) String() string {
   if x.day == 0 { Panic ("day.String: x.day == 0") }
   s := ""
   switch x.Format {
-  case D_M, D_M_yyyy:
-    if x.day >= 10 { Oops() }
-    s = N.String (x.day) + ". " + nameMonth[x.month]
-    if x.Format == D_M {
-      return s
-    }
-    return s + " " + N.StringFmt (x.year, 4, false)
   case Dd, Dd_mm_, Dd_mm_yy, Dd_mm_yyyy, Dd_M, Dd_M_yyyy:
     s = N.StringFmt (x.day, 2, true)
     if x.Format == Dd {
@@ -985,7 +978,7 @@ func (x *calendarday) String() string {
     switch x.Format {
     case Dd_M, Dd_M_yyyy:
       s += " " + nameMonth[x.month]
-      str.OffSpc1 (&s)
+      str.OffSpc (&s)
       if x.Format == Dd_M { return s }
       s += " "
     case Dd_mm_, Dd_mm_yy, Dd_mm_yyyy:

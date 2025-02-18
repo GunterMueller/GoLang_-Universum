@@ -138,14 +138,12 @@ type
 // The content of the rectangle defined by (l/x, c/y, w, h)
 // is copied into the archive (the former content of the archive is lost).
   Save (l, c, w, h uint)
-//  SaveGr (x, y, x1, y1 int)
   SaveGr (x, y int, w, h uint)
   Save1() // full screen
 
 // The content of the rectangle defined by (l/x, c/y, w, h)
 // is restored from the archive.
   Restore (l, c, w, h uint)
-//  RestoreGr (x, y, x1, y1 int)
   RestoreGr (x, y int, w, h uint)
   Restore1() // full screen
 
