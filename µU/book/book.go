@@ -1,6 +1,6 @@
 package book
 
-// (c) Christian Maurer   v. 240318 - license see µU.go
+// (c) Christian Maurer   v. 250302 - license see µU.go
 
 import (
   "µU/env"
@@ -18,7 +18,7 @@ const (
   lenf = 20
   lena = 30
   lenn =  2
-  lent = 63
+  lent = 15
   lenl = 22
   lenlk = 3
   sep = ';'
@@ -61,13 +61,13 @@ func new_() Book {
                  "Griechisch", "Griechischer Text", "Historischer Roman", "Horror",
                  "Italien", "Italien-Krimi", "Italien-Roman", "Jugendbuch",
                  "Klassische Literatur", "Krimi", "Kunst", "Lateinisch", "Lateinischer Text",
-                 "Neuere Literatur", "Orient", "Pflanzen", "Rom-Krimi",
+                 "Musik", "Neuere Literatur", "Orient", "Pflanzen", "Rom-Krimi",
                  "Rom-Roman", "Sachbuch", "Science Fiction", "Theaterstück(e)", "XX")
     x.field.Setk ("äg", "ab", "et", "gl",
                   "gr", "gt", "hr", "ho",
                   "il", "ik", "ir", "jb",
                   "kl", "kr", "ku", "la", "lt",
-                  "nl", "or", "pf", "rk",
+                  "mu", "nl", "or", "pf", "rk",
                   "rr", "sb", "sf", "th", "xx")
   }
   x.field.Colours (col.FlashWhite(), col.Blue())

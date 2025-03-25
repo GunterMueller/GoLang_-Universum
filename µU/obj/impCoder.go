@@ -517,7 +517,7 @@ func encodes (as AnyStream, c []uint) Stream {
   }
   s := make (Stream, n)
   a := uint(0)
-  for i, x := range as {
+  for i, x := range as { // len(as) == 5
     copy (s[a:a+c[i]], encode(x))
     a += c[i]
   }

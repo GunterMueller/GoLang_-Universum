@@ -1,6 +1,6 @@
 package cntry
 
-// (c) Christian Maurer   v. 241025 - license see µU.go
+// (c) Christian Maurer   v. 250316 - license see µU.go
 
 import (
   . "µU/obj"
@@ -20,24 +20,24 @@ const
 type
   id = byte; const (
               undefined = id(iota)
-/* Europa */  Albanien; Andorra;
-              Belgien; BosnienHerzegowina; Bulgarien
+/* Europa */  Albanien; Andorra; Aserbaidschan
+              Belarus; Belgien; BosnienHerzegowina; Bulgarien
               Dänemark; Deutschland
               Estland
               Finnland; Frankreich
-              Griechenland; Großbritannien
+              Georgien; Griechenland; Großbritannien
               Irland; Island; Italien
-              Kroatien
+              Kasachstan; Kosovo; Kroatien
               Lettland; Liechtenstein; Litauen; Luxemburg
-              Malta; Mazedonien; Moldau; Monaco; Montenegro
-              Niederlande; Norwegen; Österreich
+              Malta; Moldau; Monaco; Montenegro
+              Niederlande; Norwegen
+              Österreich
               Polen; Portugal
               Rumänien; Russland
               SanMarino; Schweden; Schweiz; Serbien; Slowakei; Slowenien; Spanien
               Tschechien; Türkei
               Ukraine; Ungarn
               Vatikan
-              Weißrussland
               Zypern
 /* Afrika */  Ägypten; ÄquatorialGuinea; Äthiopien
               Algerien; Angola; Benin
@@ -72,13 +72,12 @@ type
               Uruguay
               USA
               Venezuela; StVincent
-/* Asien */   Afghanistan; Armenien; Aserbaidschan
+/* Asien */   Afghanistan; Armenien
               Bahrain; Bangladesch; Bhutan; Brunei
               China
-              Georgien
               Indien; Indonesien; Irak; Iran; Israel
               Japan; Jemen; Jordanien
-              Kambodscha; Kasachstan; Katar; Kirgisistan; Kuwait
+              Kambodscha; Katar; Kirgisistan; Kuwait
               Laos; Libanon
               Malaysia; Malediven; Mongolei; Myanmar
               Nepal; Nordkorea
@@ -417,6 +416,7 @@ func init() {
   def (Bahrain,            "Bahrain",                "BHR", "bh", 973 , "BRN", "BRN", "BHR")
   def (Bangladesch,        "Bangladesch",            "BGD", "bd", 880 , "BD ", "BAN", "BAN")
   def (Barbados,           "Barbados",               "BRB", "bb", 1246, "BDS", "BAR", "BRB")
+  def (Belarus,            "Belarus",                "BLR", "by", 375 , "BY ", "BLR", "BLR")
   def (Belgien,            "Belgien",                "BEL", "be", 32  , "B  ", "BEL", "BEL")
   def (Belize,             "Belize",                 "BLZ", "bz", 501 , "BZ ", "BIZ", "")
   def (Benin,              "Benin",                  "BEN", "bj", 229 , "DY ", "BEN", "BEN")
@@ -494,7 +494,7 @@ func init() {
   def (Komoren,            "Komoren",                "COM", "km", 269 , "COM", "COM", "COM")
   def (Kongo,              "Kongo",                  "COG", "cg", 242 , "RCB", "CGO", "CGO")
   def (KongoDemRep,        "Kongo, Dem.Rep.",        "COD", "cd", 243 , "CD ", "COD", "COD")
-//def (Kosovo,             "Kosovo",                 "XXK", "  ", 381 , "   ", "   ", "")
+  def (Kosovo,             "Kosovo",                 "XXK", "  ", 381 , "   ", "   ", "")
   def (Kroatien,           "Kroatien",               "HRV", "hr", 385 , "HR ", "CRO", "CRO")
   def (Kuba,               "Kuba",                   "CUB", "cu", 53  , "C  ", "CUB", "CUB")
   def (Kuwait,             "Kuwait",                 "KWT", "kw", 965 , "KWT", "KUW", "KUW")
@@ -519,7 +519,6 @@ func init() {
   def (Marshallinseln,     "Marshallinseln",         "MHL", "mh", 692 , "MH ", "MHL", "---")
   def (Mauretanien,        "Mauretanien",            "MRT", "mr", 222 , "RIM", "MTN", "MTN")
   def (Mauritius,          "Mauritius",              "MUS", "mu", 230 , "MS ", "MRI", "MRI")
-  def (Mazedonien,         "Mazedonien",             "MKD", "mk", 389 , "MK ", "MKD", "MKD")
   def (Mexiko,             "Mexiko",                 "MEX", "mx", 52  , "MEX", "MEX", "MEX")
   def (Mikronesien,        "Mikronesien",            "FSM", "fm", 691 , "FSM", "FSM", "---")
   def (Moldau,             "Moldau",                 "MDA", "md", 373 , "MD ", "MDA", "MDA")
@@ -617,7 +616,6 @@ func init() {
   def (VerArabEmirate,     "Ver. Arabische Emirate", "ARE", "ae", 971 , "UAE", "UAE", "UAE")
   def (Vietnam,            "Vietnam",                "VNM", "vn", 84  , "VN ", "VIE", "VIE")
 
-  def (Weißrussland,       "Weißrussland",           "BLR", "by", 375 , "BY ", "BLR", "BLR")
 
   def (Zentralafrika,      "Zentralafrikan. Rep.",   "CAF", "cf", 236 , "RZA", "CAF", "CTA")
   def (Zypern,             "Zypern",                 "CYP", "cy", 357 , "CY ", "CYP", "CYP")

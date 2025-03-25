@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 241109 - license see µU.go
+// (c) Christian Maurer   v. 250311 - license see µU.go
 
 import (
   . "µU/obj"
@@ -8,9 +8,9 @@ import (
   "µU/day"
 )
 const ( // Format
-  Name = iota // name, first name    1 line,  64 columns
-  NameB       // Name + birth date   1 line,  80 columns
-  NameBT      // NameB + title       2 lines, 80 columns
+  Name = iota // name, first name        1 line,  64 columns
+  NameB       // Name + birth date       1 line,  80 columns
+  NameBT      // NameB + title + remaks  2 lines, 80 columns
   NFormats
 )
 const

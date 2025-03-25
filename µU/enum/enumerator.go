@@ -1,6 +1,6 @@
 package enum
 
-// (c) Christian Maurer   v. 240413 - license see µU.go
+// (c) Christian Maurer   v. 250302 - license see µU.go
 
 import (
   "µU/env"
@@ -79,7 +79,10 @@ func (x *enumerator) Setk (sk ...string) {
     str.OffSpc(&sk[i])
     x.k[i] = str.Lat1(sk[i])
     x.hintk += x.k[i]
-    x.hintk += " "
+    if i + 1 < x.uint {
+      x.hintk += " "
+    }
+    x.k[i] = str.Lat1(sk[i])
   }
   if uint(len(x.hintk)) + 16 < scr.NColumns() {
     if env.E() {

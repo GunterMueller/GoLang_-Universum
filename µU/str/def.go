@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 231005 - license see µU.go
+// (c) Christian Maurer   v. 250310 - license see µU.go
 
 //     latin-1-strings (without any UTF-8-stuff)
 
@@ -127,8 +127,11 @@ func ReplaceAll (s *string, b byte, t string) { replaceAll (s,b,t) }
 // Otherwise s is not changed.
 func Replace (s *string, p uint, t string) { replace (s,p,t) }
 
-// TODO Spec
+// b is appended to s.
 func Append (s *string, b byte) { app(s,b) }
+
+// t is appended to s.
+func Concat (s *string, t string) { concat(s,t) }
 
 // If s contains at least p + n bytes, then n bytes, beginning
 // at position p, otherwise all bytes, are removed from s.

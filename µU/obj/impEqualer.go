@@ -1,6 +1,6 @@
 package obj
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 250220 - license see µU.go
 
 import(
   "reflect"
@@ -35,14 +35,7 @@ func eq (a, b any) bool {
       return true
     }
   case Stream:
-    n := len(a.(Stream))
-    if n != len(b.(Stream)) { return false }
-    for i, y := range a.(Stream) {
-      if b.(Stream)[i] != y {
-        return false
-      }
-      return true
-    }
+    return string(a.(Stream)) == string(b.(Stream))
   case IntStream:
     n := len(a.(IntStream))
     if n != len(b.(IntStream)) { return false }

@@ -1,6 +1,6 @@
 package str
 
-// (c) Christian Maurer   v. 231005 - license see µU.go
+// (c) Christian Maurer   v. 250310 - license see µU.go
 
 import
   "µU/char"
@@ -323,6 +323,13 @@ func app (s *string, b byte) {
   copy (bs[:n], []byte(*s))
   bs[n] = b
   *s = string(bs)
+}
+
+func concat (s *string, t string) {
+  n := uint(len(t))
+  for i := uint(0); i < n; i++ {
+    app (s, t[i])
+  }
 }
 
 func rem (s *string, p, n uint) {

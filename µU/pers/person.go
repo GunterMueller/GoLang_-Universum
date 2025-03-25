@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 241109 - license see µU.go
+// (c) Christian Maurer   v. 250311 - license see µU.go
 
 import (
   "µU/env"
@@ -55,7 +55,6 @@ func new_() Person {
   x.title = text.New (lent)
   x.field = []any { x.name, x.firstName, x.Calendarday, x.title }
   x.cl = []uint {lenn, lenf, x.Calendarday.Codelen(), x.title.Codelen()}
-//  x.Format = NameB
   x.Format = NameBT
   return x
 }
@@ -239,7 +238,7 @@ const (
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
 
 Nachname: ___________________________  Vorname: _______________  geb.: ________
-  Anrede: _______________
+  Anrede: _______________  Bemerkungen: _______________________________________
  surname: ___________________________  fstname: _______________  born: ________
    title: _______________
 */
@@ -356,6 +355,7 @@ func (x *person) Codelen() uint {
 }
 
 func (x *person) Encode() Stream {
+// len(x.field) == 5
   return Encodes (x.field, x.cl)
 }
 
