@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 250311 - license see µU.go
+// (c) Christian Maurer   v. 250407 - license see µU.go
 
 import (
   . "µU/obj"
@@ -10,11 +10,11 @@ import (
 const ( // Format
   Name = iota // name, first name        1 line,  64 columns
   NameB       // Name + birth date       1 line,  80 columns
-  NameBT      // NameB + title + remaks  2 lines, 80 columns
+  NameBT      // NameB + title + remark  2 lines, 80 columns
   NFormats
 )
 const
-  N = 4 // surname, first name, title and birth date
+  N = 5 // surname, first name, title, birth date and remarks
 type
   Person interface {
 

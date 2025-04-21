@@ -1,6 +1,6 @@
 package pac
 
-// (c) Christian Maurer   v. 240425 - license see µU.go
+// (c) Christian Maurer   v. 250407 - license see µU.go
 
 import (
   . "µU/obj"

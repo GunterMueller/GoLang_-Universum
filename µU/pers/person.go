@@ -1,6 +1,6 @@
 package pers
 
-// (c) Christian Maurer   v. 250311 - license see µU.go
+// (c) Christian Maurer   v. 250407 - license see µU.go
 
 import (
   "µU/env"
@@ -17,6 +17,7 @@ import (
 const (
   lenn = uint(27)
   lenf = uint(15)
+  lenr = uint(46)
   lent = uint(15)
   sep = ','
   seps = ","
@@ -31,8 +32,9 @@ type (
       firstName,
           title text.Text
                 day.Calendarday "birthdate" // "Geburtsdatum"
+            rem text.Text
           field []any // to [En|De]code
-             cl []uint
+        cl, cl1 []uint
                 Format
                 }
 )
@@ -48,13 +50,16 @@ func new_() Person {
   x.name = text.New (lenn)
   x.firstName = text.New (lenf)
   x.Calendarday = day.New()
+  x.rem = text.New (lenr)
   f, b := col.FlashWhite(), col.DarkRed()
   x.name.Colours (f, b)
   x.firstName.Colours (f, b)
   x.Calendarday.Colours (f, b)
   x.title = text.New (lent)
-  x.field = []any { x.name, x.firstName, x.Calendarday, x.title }
-  x.cl = []uint {lenn, lenf, x.Calendarday.Codelen(), x.title.Codelen()}
+  x.title.Colours (f, b)
+  x.rem.Colours (f, b)
+  x.field = []any { x.name, x.firstName, x.Calendarday, x.title, x.rem }
+  x.cl = []uint {lenn, lenf, x.Calendarday.Codelen(), x.title.Codelen(), lenr}
   x.Format = NameBT
   return x
 }
@@ -77,6 +82,7 @@ func (x *person) Clr() {
   x.firstName.Clr()
   x.Calendarday.Clr()
   x.title.Clr()
+  x.rem.Clr()
 }
 
 func (x *person) Identifiable() bool {
@@ -116,6 +122,7 @@ func (x *person) Copy (Y any) {
   x.firstName.Copy (y.firstName)
   x.Calendarday.Copy (y.Calendarday)
   x.title.Copy (y.title)
+  x.rem.Copy (y.rem)
   x.Format = y.Format
 }
 
@@ -130,7 +137,8 @@ func (x *person) Eq (Y any) bool {
   return x.name.Eq (y.name) &&
     x.firstName.Eq (y.firstName) &&
   x.Calendarday.Eq (y.Calendarday) &&
-        x.title.Eq (y.title)
+        x.title.Eq (y.title) &&
+          x.rem.Eq (y.rem)
 }
 
 func (x *person) Equiv (Y Person) bool {
@@ -178,12 +186,15 @@ func (x *person) String() string {
   t = x.Calendarday.String()
   str.OffSpc1 (&t)
   s += t + seps
+  t = x.rem.String()
+  str.OffSpc1 (&t)
+  s += t + seps
   return s
 }
 
 func (x *person) Defined (s string) bool {
   ss, n := str.SplitByte (s, sep)
-  if n != 4 { return false }
+  if n != 5 { return false }
   if ! x.name.Defined (ss[0]) { return false }
   if ! x.firstName.Defined (ss[1]) { return false }
   if ! x.title.Defined (ss[2]) { return false }
@@ -225,6 +236,7 @@ func (x *person) Colours (f, b col.Colour) {
   x.firstName.Colours (f, b)
   x.Calendarday.Colours (f, b)
   x.title.Colours (f, b)
+  x.rem.Colours (f, b)
 }
 
 func (x *person) Cols() (col.Colour, col.Colour) {
@@ -232,23 +244,23 @@ func (x *person) Cols() (col.Colour, col.Colour) {
 }
 
 const (
-  cn = 10; cf = 48; cb = 71; ct = 10
+  cn = 10; cf = 48; cb = 71; ct = 10; cr = 33
 )
 /*        1         2         3         4         5         6         7
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
 
 Nachname: ___________________________  Vorname: _______________  geb.: ________
-  Anrede: _______________  Bemerkungen: _______________________________________
+  Anrede: _______________  Bem.: ______________________________________________
  surname: ___________________________  fstname: _______________  born: ________
-   title: _______________
+   title: _______________  rem.: ______________________________________________
 */
 
 func (x *person) writeMask (l, c uint) {
-  var n, f, b, t string
+  var n, f, b, t, r string
   if env.E() {
-    n, f, b, t = " surname", "fstname", "born", " title"
+    n, f, b, t, r = " surname", "fstname", "born", " title", "rem."
   } else {
-    n, f, b, t = "Nachname", "Vorname", "geb.", "Anrede"
+    n, f, b, t, r = "Nachname", "Vorname", "geb.", "Anrede", "Bem."
   }
   bx.ScrColours()
   bx.Wd (9)
@@ -256,12 +268,16 @@ func (x *person) writeMask (l, c uint) {
   bx.Wd (8)
   bx.Write (f + ":", l, c + cf - 9)
   switch x.Format {
-  case NameB, NameBT:
+  case NameB:
+    bx.Wd (5)
     bx.Write (b + ":", l, c + cb - 6)
-  }
-  if x.Format == NameBT {
+  case NameBT:
+    bx.Wd (5)
+    bx.Write (b + ":", l, c + cb - 6)
     bx.Wd (7)
     bx.Write (t + ":", l + 1, c + cn - 8)
+    bx.Wd (5)
+    bx.Write (r + ":", l + 1, c + cr - 6)
   }
 }
 
@@ -270,6 +286,7 @@ func (x *person) TeX() string {
   if ! x.title.Empty() { s += "{\\bf " + x.title.TeX() + "} " }
   s += "{\\bf " + x.firstName.TeX() + " " + x.name.TeX() + "}"
   if ! x.Calendarday.Empty() { s += " (" + x.Calendarday.String() + ")" }
+// x.rem
   return s + "\n"
 }
 
@@ -279,11 +296,11 @@ func (x *person) Write (l, c uint) {
   x.firstName.Write (l, c + cf)
   switch x.Format {
   case NameB, NameBT:
-//    x.Calendarday.Colours (col.FlashWhite(), col.Blue())
     x.Calendarday.Write (l, c + cb)
   }
   if x.Format == NameBT {
     x.title.Write (l + 1, c + cn)
+    x.rem.Write (l + 1, c + cr)
   }
 }
 
@@ -307,6 +324,7 @@ func (x *person) Edit (l, c uint) {
     case 3:
       if x.Format == NameBT {
         x.title.Edit (l + 1, c + cn)
+        x.rem.Edit (l + 1, c + cr)
       }
     }
     switch C, d := kbd.LastCommand(); C {
@@ -351,11 +369,11 @@ func (x *person) Print (l, c uint) {
 func (x *person) Codelen() uint {
   return lenn + lenf +
          x.Calendarday.Codelen() +
+         lenr + 
          lenn
 }
 
 func (x *person) Encode() Stream {
-// len(x.field) == 5
   return Encodes (x.field, x.cl)
 }
 
@@ -365,6 +383,7 @@ func (x *person) Decode (bs Stream) {
   x.firstName = x.field[1].(text.Text)
   x.Calendarday = x.field[2].(day.Calendarday)
   x.title = x.field[3].(text.Text)
+  x.rem = x.field[4].(text.Text)
 }
 
 func (x *person) Index() Func {

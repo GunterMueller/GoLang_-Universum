@@ -1,11 +1,11 @@
 package pac
 
-// (c) Christian Maurer   v. 240408 - license see µU.go
+// (c) Christian Maurer   v. 250407 - license see µU.go
 
 import
   . "µU/obj"
 type
-  PersonAddressContact interface { // person, address and contact
+  PersonAddressContact interface { // person1, address and contact
 
   Editor
   Stringer 
