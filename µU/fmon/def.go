@@ -1,6 +1,6 @@
 package fmon
 
-// (c) Christian Maurer   v. 220420 - license see µU.go
+// (c) Christian Maurer   v. 250425 - license see µU.go
 
 import
   . "µU/obj"
@@ -21,7 +21,12 @@ type
 // Pre: fs and ps are defined in their second argument for all i < n.
 //      h is contained in /etc/hosts or denotes a DNS-resolvable host,
 //      p is not used by any network service.
-//      If s == true, New is called in a process on the host h.
+//      If s == true, New is called in a process on the host h
+//      and the caller is the server, otherwise a client.
+//      This constructor has at first to be called with s == true
+//      to set up the server. It must first be called with s == true
+//      so that the server is available as a service provider for the clients.
+//      Further calls with s == true have no effect.
 // Returns a new far monitor with n monitor operations.
 // Its type is the type of a, i.e. objects of this type are passed
 // between server and clients.
