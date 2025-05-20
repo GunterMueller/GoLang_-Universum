@@ -1,6 +1,6 @@
 package day
 
-// (c) Christian Maurer   v. 240401 - license see µU.go
+// (c) Christian Maurer   v. 250508 - license see µU.go
 
 import (
   . "µU/ker"
@@ -717,6 +717,9 @@ func computeHolidays() { // Quelle: S. Deschauer, Die Osterfestberechnung. DdM 1
   holiday [1][1] = true // Neujahr
   if actualHolidayYear >= 1890 { // Tag der Arbeit
     holiday [1][5] = true
+  }
+  if actualHolidayYear == 2025 { // Gedenktag an das Ende des 2. Weltkriegs
+    holiday [8][5] = true
   }
   if actualHolidayYear > 1953 { // Tag der deutschen Einheit
     if actualHolidayYear < 1990 { // 17.6.1990 ein Sonntag
